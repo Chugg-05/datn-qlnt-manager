@@ -1,0 +1,86 @@
+package com.example.datn_qlnt_manager.exception;
+
+import org.springframework.http.HttpStatus;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public enum ErrorCode {
+    INTERNAL_SERVER_ERROR(500, "Uncategorized error.", HttpStatus.INTERNAL_SERVER_ERROR),
+    UPLOAD_FAILED(500, "Upload failed.", HttpStatus.INTERNAL_SERVER_ERROR),
+    JSON_PROCESSING_ERROR(500, "Failed to process JSON data.", HttpStatus.INTERNAL_SERVER_ERROR),
+    UNAUTHORIZED(401, "Unauthenticated: Invalid or expired JWT token.", HttpStatus.UNAUTHORIZED),
+    INVALID_TOKEN_FORMAT(401, "Invalid token format.", HttpStatus.UNAUTHORIZED),
+    INVALID_SIGNATURE(401, "Token signature is invalid.", HttpStatus.UNAUTHORIZED),
+    EXPIRED_TOKEN(401, "Token has expired.", HttpStatus.UNAUTHORIZED),
+    TOKEN_BLACKLISTED(401, "Token has been blacklisted (user logged out).", HttpStatus.UNAUTHORIZED),
+
+    FORBIDDEN(403, "You don't have permission.", HttpStatus.FORBIDDEN),
+    BAD_REQUEST(400, "Invalid request.", HttpStatus.BAD_REQUEST),
+
+    INVALID_KEY(400, "Invalid key.", HttpStatus.BAD_REQUEST),
+    INVALID_TOKEN(400, "Invalid token.", HttpStatus.BAD_REQUEST),
+    INVALID_EMAIL_BLANK(400, "Username or email must not be blank", HttpStatus.BAD_REQUEST),
+    INVALID_EMAIL_FORMAT(400, "Must be a valid email with domain", HttpStatus.BAD_REQUEST),
+    INVALID_EMAIL_OR_PASSWORD(400, "Invalid email or password.", HttpStatus.BAD_REQUEST),
+    INVALID_FULL_NAME(400, "Your first name must be at least {min} characters.", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD(400, "Your password must be at least {min} characters.", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD_BLANK(400, "Password must not be blank", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD_LENGTH(400, "Password must be at least 6 characters long", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD_UPPERCASE(400, "Password must contain at least one uppercase letter", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD_LOWERCASE(400, "Password must contain at least one lowercase letter", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD_NUMBER(400, "Password must contain at least one digit", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD_SPECIAL_CHARACTERS(
+            400, "Password must contain at least one special character (@$!%*?&)", HttpStatus.BAD_REQUEST),
+    INVALID_GENDER_BLANK(400, "Gender cannot be blank", HttpStatus.BAD_REQUEST),
+    INVALID_DOB(400, "Your age must be at least {min}.", HttpStatus.BAD_REQUEST),
+    INVALID_PHONE(400, "Your phone must be at least {min}.", HttpStatus.BAD_REQUEST),
+    INVALID_PHONE_BLANK(400, "Phone number is not blank", HttpStatus.BAD_REQUEST),
+    INVALID_PHONE_NUMBER_FORMAT(
+            400,
+            "Phone number must be 10-11 digits, starting with 0 or +84. Example: 0974 xxx xxx",
+            HttpStatus.BAD_REQUEST),
+    INVALID_ROLE_NAME_AND_PERMISSION_BLANK(400, "Name cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_ROLE_NAME_AND_PERMISSION_FORMAT(
+            400,
+            "Names must only contain uppercase letters, numbers, and the '_' character to separate words.",
+            HttpStatus.BAD_REQUEST),
+    INVALID_DESCRIPTION_BLANK(400, "Description cannot be blank", HttpStatus.BAD_REQUEST),
+    INVALID_PERMISSION_BLANK(400, "Permission cannot be blank", HttpStatus.BAD_REQUEST),
+
+    REFRESH_TOKEN_INVALID(400, "Refresh token invalid.", HttpStatus.BAD_REQUEST),
+    REFRESH_TOKEN_EXPIRED(400, "Refresh token expired.", HttpStatus.BAD_REQUEST),
+    USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
+    CHAT_NOT_FOUND(404, "Chat not found.", HttpStatus.NOT_FOUND),
+    MESSAGE_NOT_FOUND(404, "Message not found.", HttpStatus.NOT_FOUND),
+    API_ENDPOINT_NOT_FOUND(404, "API endpoint not found.", HttpStatus.NOT_FOUND),
+    PERMISSION_NOT_FOUND(404, "Permission not found", HttpStatus.NOT_FOUND),
+    ROLE_NOT_FOUND(404, "Role not found", HttpStatus.NOT_FOUND),
+
+    EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
+    PHONE_NUMBER_EXISTED(409, "Phone already existed.", HttpStatus.CONFLICT),
+    PERMISSION_EXISTED(409, "Permission already existed", HttpStatus.BAD_REQUEST),
+    ROLE_EXISTED(409, "Role already existed", HttpStatus.BAD_REQUEST),
+
+    CANT_REMOVE_USER(403, "You can't remove another user.", HttpStatus.FORBIDDEN),
+    ACCOUNT_HAS_BEEN_LOCKED(403, "User account is locked.", HttpStatus.FORBIDDEN),
+    NOT_IN_GROUP(403, "You are not a member of this group.", HttpStatus.FORBIDDEN),
+    NOT_RELATED_TO_CHAT(403, "You are not related to this chat.", HttpStatus.FORBIDDEN),
+    CANT_DELETE_OTHER_MESSAGE(403, "You can't delete another user's message.", HttpStatus.FORBIDDEN),
+
+    CANNOT_ADD_USER_TO_SINGLE_CHAT(400, "You can't add a user to a single chat.", HttpStatus.BAD_REQUEST),
+    CANNOT_REMOVE_USER_FROM_SINGLE_CHAT(400, "You can't remove a user from a single chat.", HttpStatus.BAD_REQUEST);
+
+    final int code;
+    final String message;
+    final HttpStatus status;
+
+    ErrorCode(int code, String message, HttpStatus status) {
+        this.code = code;
+        this.message = message;
+        this.status = status;
+    }
+}

@@ -1,3 +1,0 @@
-jwt:
-  valid-duration: 3600
-  refreshable-duration: 36000

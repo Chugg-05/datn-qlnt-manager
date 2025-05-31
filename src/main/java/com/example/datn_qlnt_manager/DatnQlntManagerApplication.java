@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class DatnQlntManagerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DatnQlntManagerApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(DatnQlntManagerApplication.class, args);
+    }
 }

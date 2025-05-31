@@ -1,0 +1,57 @@
+package com.example.datn_qlnt_manager.controller;
+
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
+import com.example.datn_qlnt_manager.dto.ApiResponse;
+import com.example.datn_qlnt_manager.dto.request.RoleRequest;
+import com.example.datn_qlnt_manager.dto.response.RoleResponse;
+import com.example.datn_qlnt_manager.service.RoleService;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/roles")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class RoleController {
+    RoleService roleService;
+
+    @PostMapping("/create-role")
+    public ApiResponse<RoleResponse> createRole(@Valid @RequestBody RoleRequest request) {
+        return ApiResponse.<RoleResponse>builder()
+                .message("Role has been created!")
+                .data(roleService.createRole(request))
+                .build();
+    }
+
+    @GetMapping("/role-list")
+    public ApiResponse<List<RoleResponse>> getRoles() {
+        return ApiResponse.<List<RoleResponse>>builder()
+                .message("Role List")
+                .data(roleService.getRoles())
+                .build();
+    }
+
+    @DeleteMapping("/delete-role/{roleId}")
+    public ApiResponse<String> deleteRole(@PathVariable("roleId") String roleId) {
+        roleService.deleteRole(roleId);
+        return ApiResponse.<String>builder().data("Role has been deleted!").build();
+    }
+
+    @PutMapping("/update-role/{roleId}")
+    public ApiResponse<RoleResponse> updateRole(
+            @Valid @RequestBody RoleRequest request, @PathVariable("roleId") String roleId) {
+        return ApiResponse.<RoleResponse>builder()
+                .message("Role updated!")
+                .data(roleService.updateRole(roleId, request))
+                .build();
+    }
+}

@@ -1,7 +1,7 @@
 server:
-  port: 8080
+  port: ${PORT}
   servlet:
-    context-path: /identity
+    context-path: /api
 
 spring:
   datasource:
@@ -11,5 +11,24 @@ spring:
     driver-class-name: "com.mysql.cj.jdbc.Driver"
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+
+cloudinary_url: ${CLOUDINARY_URL}
+
+logging:
+  level:
+    org:
+      springframework: DEBUG
+      apache:
+        tomcat: DEBUG
+        catalina: DEBUG
+
+app:
+  name: TRO_HUB

@@ -1,0 +1,4 @@
+jwt:
+  secretKey: ${JWT_SIGNER_KEY}
+  valid-duration: 7200
+  refreshable-duration: 1209600

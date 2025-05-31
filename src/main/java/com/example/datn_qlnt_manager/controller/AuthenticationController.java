@@ -1,0 +1,97 @@
+package com.example.datn_qlnt_manager.controller;
+
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.util.Map;
+
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.datn_qlnt_manager.common.Meta;
+import com.example.datn_qlnt_manager.dto.ApiResponse;
+import com.example.datn_qlnt_manager.dto.request.AuthenticationRequest;
+import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
+import com.example.datn_qlnt_manager.dto.response.*;
+import com.example.datn_qlnt_manager.entity.User;
+import com.example.datn_qlnt_manager.mapper.UserMapper;
+import com.example.datn_qlnt_manager.service.AuthenticationService;
+import com.example.datn_qlnt_manager.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RestController
+@RequestMapping("/auth")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class AuthenticationController {
+    AuthenticationService authenticationService;
+    UserService userService;
+    UserMapper userMapper;
+
+    @PostMapping("/register")
+    public ApiResponse<UserDetailResponse> register(@Valid @RequestBody UserCreationRequest request) {
+        var user = userService.createUser(request);
+
+        return ApiResponse.<UserDetailResponse>builder()
+                .message("User registered!")
+                .data(user)
+                .build();
+    }
+
+    @PostMapping("/login")
+    public ApiResponse<?> login(@RequestBody AuthenticationRequest request, HttpServletResponse response)
+            throws UnsupportedEncodingException {
+        LoginResponse loginResponse = authenticationService.login(request, response);
+
+        User user = userService.findUserWithRolesAndPermissionsById(loginResponse.getUserId());
+        UserDetailResponse userResponse = userMapper.toUserResponse(user);
+
+        loginResponse.setUserId(null);
+
+        Meta<LoginResponse> meta =
+                Meta.<LoginResponse>builder().tokenInfo(loginResponse).build();
+
+        return ApiResponse.builder()
+                .message("Login successful!")
+                .meta(meta)
+                .data(userResponse)
+                .build();
+    }
+
+    @PostMapping("/refresh-token")
+    public ApiResponse<?> refreshToken(
+            @CookieValue(name = "ARTICLE_SERVICE") String cookieValue, HttpServletResponse response)
+            throws ParseException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, String> tokenData = objectMapper.readValue(cookieValue, Map.class);
+
+        String refreshToken = tokenData.get("refreshToken");
+
+        log.info("cookie value: {}", cookieValue);
+        log.info("refreshToken: {}", refreshToken);
+
+        var data = authenticationService.refreshToken(refreshToken, response);
+        return ApiResponse.builder()
+                .message("Refresh token successful!")
+                .data(data)
+                .build();
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token, HttpServletResponse response)
+            throws ParseException {
+        authenticationService.logout(token, response);
+
+        return ApiResponse.<Void>builder().message("Logout successful!").build();
+    }
+}
