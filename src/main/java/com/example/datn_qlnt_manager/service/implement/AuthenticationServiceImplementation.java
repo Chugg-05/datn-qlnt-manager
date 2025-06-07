@@ -13,17 +13,24 @@ import org.springframework.security.authentication.InternalAuthenticationService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.datn_qlnt_manager.configuration.OtpProperties;
 import com.example.datn_qlnt_manager.configuration.TokenProvider;
 import com.example.datn_qlnt_manager.dto.request.AuthenticationRequest;
+import com.example.datn_qlnt_manager.dto.request.ResetPasswordRequest;
+import com.example.datn_qlnt_manager.dto.request.SendEmailRequest;
 import com.example.datn_qlnt_manager.dto.response.LoginResponse;
 import com.example.datn_qlnt_manager.dto.response.RefreshTokenResponse;
+import com.example.datn_qlnt_manager.entity.Recipient;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.repository.UserRepository;
 import com.example.datn_qlnt_manager.service.AuthenticationService;
+import com.example.datn_qlnt_manager.service.EmailService;
+import com.example.datn_qlnt_manager.service.OtpService;
 import com.example.datn_qlnt_manager.service.RedisService;
 import com.example.datn_qlnt_manager.utils.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,12 +48,15 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationServiceImplementation implements AuthenticationService {
     UserRepository userRepository;
+    PasswordEncoder passwordEncoder;
     TokenProvider tokenProvider;
     AuthenticationManager authenticationManager;
     JwtUtil jwtUtil;
     RedisService redisService;
-
-    private static final String KEY_COOKIE = "ARTICLE_SERVICE";
+    OtpService otpService;
+    EmailService emailService;
+    OtpProperties otpProperties;
+    static String KEY_COOKIE = "ARTICLE_SERVICE";
 
     @Override
     public LoginResponse login(AuthenticationRequest request, HttpServletResponse response) {
@@ -174,6 +184,7 @@ public class AuthenticationServiceImplementation implements AuthenticationServic
         return cookie;
     }
 
+    @Override
     public void deleteCookie(HttpServletResponse response) {
         Cookie cookie = new Cookie(KEY_COOKIE, "");
         cookie.setHttpOnly(true);
@@ -182,5 +193,75 @@ public class AuthenticationServiceImplementation implements AuthenticationServic
         cookie.setSecure(true);
         cookie.setDomain("localhost");
         response.addCookie(cookie);
+    }
+
+    @Override
+    public void sendOtp(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+
+        if (otpService.isOtpExist(email)) {
+            throw new AppException(ErrorCode.OTP_ALREADY_SENT);
+        }
+
+        String otp = otpService.generateOtp(email); // tạo random OTP
+
+        sendOtpEmail(user, otp);
+
+        log.info("OTP sent successfully to email: {}", email);
+    }
+
+    @Override
+    public void verifyOtp(String email, String otpCode) {
+        boolean isValid = otpService.verifyOtp(email, otpCode);
+        if (!isValid) {
+            log.warn("Invalid OTP attempt for email: {}", email);
+            throw new AppException(ErrorCode.INVALID_OTP_CODE);
+        }
+        log.info("OTP verified successfully for email: {}", email);
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordRequest request) {
+        User user = userRepository
+                .findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new AppException(ErrorCode.NEW_PASSWORD_SAME_AS_OLD);
+        }
+
+        if (!request.getNewPassword().equals(request.getReNewPassword())) {
+            throw new AppException(ErrorCode.PASSWORDS_CONFIRM_NOT_MATCH);
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        otpService.clearOtp(request.getEmail());
+
+        log.info("Password reset successfully for email: {}", request.getEmail());
+    }
+
+    private void sendOtpEmail(User user, String otp) {
+        String subject = "Mã xác nhận đặt lại mật khẩu";
+        String content = "<p>Xin chào " + user.getFullName() + "</p>"
+                + "<p>Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản TroHub của bạn.</p>"
+                + "<p>Mã OTP của bạn là: <b>" + otp + "</b></p>"
+                + "<p>Mã này có hiệu lực trong 5 phút.</p>"
+                + "<p>Nếu không phải bạn thực hiện, không chia sẻ cho bất cứ ai mã OTP và vui lòng bỏ qua email này.</p>";
+
+        try {
+            emailService.sendEmail(SendEmailRequest.builder()
+                    .to(Recipient.builder()
+                            .name(user.getFullName())
+                            .email(user.getEmail())
+                            .build())
+                    .subject(subject)
+                    .htmlContent(content)
+                    .build());
+        } catch (Exception e) {
+            log.error("Failed to send OTP email to: {}", user.getEmail(), e);
+            throw new AppException(ErrorCode.EMAIL_SENDING_FAILED);
+        }
     }
 }

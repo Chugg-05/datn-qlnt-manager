@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TokenProvider {
     static final String EMAIL_CLAIM = "email";
-    static final String ISSUER = "trohub88";
+    static final String ISSUER = "TroHub88";
     final JwtUtil jwtUtil;
     final RedisService redisService;
 

@@ -37,7 +37,15 @@ public class SecurityConfiguration {
     JwtTokenValidator jwtTokenValidator;
     UserDetailsService userDetailsService;
     private static final String[] PUBLIC_ENDPOINTS = {
-        "/auth/login", "/auth/logout", "/auth/refresh-token", "/auth/register", "/ws/**"
+        "/auth/login",
+        "/auth/logout",
+        "/auth/refresh-token",
+        "/auth/register",
+        "/auth/forgot-password",
+        "/auth/verify-otp",
+        "/auth/reset-password",
+        "/email/send",
+        "ws/**"
     };
 
     @Bean

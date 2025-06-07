@@ -53,9 +53,9 @@ public class PermissionServiceImplementation implements PermissionService {
                 .findById(permissionId)
                 .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_FOUND));
 
-        //        if (permissionRepository.existsByName(request.getName())) {
-        //            throw new AppException(ErrorCode.PERMISSION_EXISTED);
-        //        }
+        if (permissionRepository.existsByName(request.getName())) {
+            throw new AppException(ErrorCode.PERMISSION_EXISTED);
+        }
 
         permissionMapper.updatePermission(request, permission);
         permission.setUpdateAt(Instant.now());

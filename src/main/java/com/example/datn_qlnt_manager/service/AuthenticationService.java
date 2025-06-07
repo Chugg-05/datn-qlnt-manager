@@ -6,6 +6,7 @@ import java.text.ParseException;
 import jakarta.servlet.http.HttpServletResponse;
 
 import com.example.datn_qlnt_manager.dto.request.AuthenticationRequest;
+import com.example.datn_qlnt_manager.dto.request.ResetPasswordRequest;
 import com.example.datn_qlnt_manager.dto.response.LoginResponse;
 import com.example.datn_qlnt_manager.dto.response.RefreshTokenResponse;
 
@@ -16,4 +17,12 @@ public interface AuthenticationService {
     RefreshTokenResponse refreshToken(String refreshToken, HttpServletResponse response) throws ParseException;
 
     void logout(String token, HttpServletResponse response) throws ParseException;
+
+    void deleteCookie(HttpServletResponse response);
+
+    void sendOtp(String email);
+
+    void verifyOtp(String email, String otpCode);
+
+    void resetPassword(ResetPasswordRequest request);
 }

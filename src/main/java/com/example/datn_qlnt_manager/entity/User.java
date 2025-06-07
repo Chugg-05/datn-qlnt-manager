@@ -58,19 +58,19 @@ public class User extends AbstractEntity<String> implements UserDetails {
     @Column(name = "password", nullable = false)
     String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
+    @ManyToMany(fetch = FetchType.LAZY) // tránh N + 1 query: nhiều query gây chậm hệ thống
+    @JoinTable( // tạo bảng trung gian: dành cho mqh N-N
             name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+            joinColumns = @JoinColumn(name = "user_id"), // tham chiếu tới user_id
+            inverseJoinColumns = @JoinColumn(name = "role_id")) // tham chiếu tới role_id
     private Set<Role> roles = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-                .flatMap(role -> role.getPermissions().stream())
+        return this.roles.stream() // chuyển ds roles thành luồng xử lý
+                .flatMap(role -> role.getPermissions().stream()) // hợp nhất các luồng
                 .map(permission -> new SimpleGrantedAuthority(permission.getName()))
-                .toList();
+                .toList(); // đóng gói thành ds
     }
 
     @Override

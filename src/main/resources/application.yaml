@@ -20,8 +20,6 @@ spring:
       port: ${REDIS_PORT}
       password: ${REDIS_PASSWORD}
 
-cloudinary_url: ${CLOUDINARY_URL}
-
 logging:
   level:
     org:
@@ -29,6 +27,16 @@ logging:
       apache:
         tomcat: DEBUG
         catalina: DEBUG
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+
+email-client:
+  url: https://api.brevo.com
 
 app:
   name: TRO_HUB

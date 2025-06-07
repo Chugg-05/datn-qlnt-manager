@@ -2,3 +2,16 @@ jwt:
   secretKey: ${JWT_SIGNER_KEY}
   valid-duration: 7200
   refreshable-duration: 1209600
+
+cloudinary-url: ${CLOUDINARY_URL}
+
+brevo:
+  api:
+    key: ${API_KEY}
+  sender:
+    name: ${SENDER_NAME}
+    email: ${SENDER_EMAIL}
+
+otp:
+  expiration: 5 # phút
+  resend: 120 # giây

@@ -49,6 +49,14 @@ public class ApplicationConfiguration {
                         .name(PredefinedRole.MANAGER_ROLE)
                         .description("Manager role")
                         .build());
+                roleRepository.save(Role.builder()
+                        .name(PredefinedRole.STAFF_ROLE)
+                        .description("Staff role")
+                        .build());
+                roleRepository.save(Role.builder()
+                        .name(PredefinedRole.USER_ROLE)
+                        .description("User role")
+                        .build());
 
                 Role adminRole = roleRepository.save(Role.builder()
                         .name(PredefinedRole.ADMIN_ROLE)

@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
-import com.example.datn_qlnt_manager.dto.request.AuthenticationRequest;
-import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.*;
 import com.example.datn_qlnt_manager.dto.response.*;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.mapper.UserMapper;
@@ -93,5 +92,30 @@ public class AuthenticationController {
         authenticationService.logout(token, response);
 
         return ApiResponse.<Void>builder().message("Logout successful!").build();
+    }
+
+    @PostMapping("/forgot-password")
+    public ApiResponse<String> sendOtp(@Valid @RequestBody ForgotPasswordRequest request) {
+        authenticationService.sendOtp(request.getEmail());
+
+        return ApiResponse.<String>builder()
+                .message("OTP code sent successfully!")
+                .build();
+    }
+
+    @PostMapping("/verify-otp")
+    public ApiResponse<String> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
+        authenticationService.verifyOtp(request.getEmail(), request.getOtpCode());
+
+        return ApiResponse.<String>builder().message("Valid OTP Code").build();
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authenticationService.resetPassword(request);
+
+        return ApiResponse.<String>builder()
+                .message("Password reset successful")
+                .build();
     }
 }
