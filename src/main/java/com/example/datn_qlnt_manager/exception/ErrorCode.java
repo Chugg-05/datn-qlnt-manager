@@ -20,6 +20,9 @@ public enum ErrorCode {
 
     FORBIDDEN(403, "You don't have permission.", HttpStatus.FORBIDDEN),
     BAD_REQUEST(400, "Invalid request.", HttpStatus.BAD_REQUEST),
+    CANNOT_SEND_EMAIL(400, "Cannot send email", HttpStatus.BAD_REQUEST),
+    OTP_ALREADY_SENT(400, "OTP already sent", HttpStatus.BAD_REQUEST),
+    EMAIL_SENDING_FAILED(400, "Email sending failed", HttpStatus.BAD_REQUEST),
 
     INVALID_KEY(400, "Invalid key.", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(400, "Invalid token.", HttpStatus.BAD_REQUEST),
@@ -39,6 +42,8 @@ public enum ErrorCode {
     INVALID_DOB(400, "Your age must be at least {min}.", HttpStatus.BAD_REQUEST),
     INVALID_PHONE(400, "Your phone must be at least {min}.", HttpStatus.BAD_REQUEST),
     INVALID_PHONE_BLANK(400, "Phone number is not blank", HttpStatus.BAD_REQUEST),
+    PASSWORDS_CONFIRM_NOT_MATCH(400, "Password confirm not match", HttpStatus.BAD_REQUEST),
+    NEW_PASSWORD_SAME_AS_OLD(400, "New password same as old", HttpStatus.BAD_REQUEST),
     INVALID_PHONE_NUMBER_FORMAT(
             400,
             "Phone number must be 10-11 digits, starting with 0 or +84. Example: 0974 xxx xxx",
@@ -50,15 +55,19 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST),
     INVALID_DESCRIPTION_BLANK(400, "Description cannot be blank", HttpStatus.BAD_REQUEST),
     INVALID_PERMISSION_BLANK(400, "Permission cannot be blank", HttpStatus.BAD_REQUEST),
+    INVALID_OTP_BLANK(400, "OTP code cannot be left blank", HttpStatus.BAD_REQUEST),
+    INVALID_OTP_FORMAT(400, "OTP code is not in correct format", HttpStatus.BAD_REQUEST),
 
     REFRESH_TOKEN_INVALID(400, "Refresh token invalid.", HttpStatus.BAD_REQUEST),
     REFRESH_TOKEN_EXPIRED(400, "Refresh token expired.", HttpStatus.BAD_REQUEST),
+    INVALID_OTP_CODE(400, "OTP code is incorrect or expired.", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     CHAT_NOT_FOUND(404, "Chat not found.", HttpStatus.NOT_FOUND),
     MESSAGE_NOT_FOUND(404, "Message not found.", HttpStatus.NOT_FOUND),
     API_ENDPOINT_NOT_FOUND(404, "API endpoint not found.", HttpStatus.NOT_FOUND),
     PERMISSION_NOT_FOUND(404, "Permission not found", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND(404, "Role not found", HttpStatus.NOT_FOUND),
+    EMAIL_NOT_FOUND(404, "Email not found", HttpStatus.NOT_FOUND),
 
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
     PHONE_NUMBER_EXISTED(409, "Phone already existed.", HttpStatus.CONFLICT),

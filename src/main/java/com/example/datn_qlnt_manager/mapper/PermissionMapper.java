@@ -14,5 +14,4 @@ public interface PermissionMapper {
     PermissionResponse toPermissionResponse(Permission permission);
 
     void updatePermission(PermissionRequest request, @MappingTarget Permission permission);
-    // @MappingTarget: chỉ định đối tượng sẽ được cập nhật thay vì tạo mới
 }

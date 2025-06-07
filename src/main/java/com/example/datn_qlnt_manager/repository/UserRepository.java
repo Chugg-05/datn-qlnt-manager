@@ -35,9 +35,9 @@ public interface UserRepository extends JpaRepository<User, String> {
             + "WHERE u.email = :email")
     Optional<User> findWithRolesAndPermissionsByEmail(@Param("email") String email);
 
-    Optional<User> findByEmail(String email);
+    Optional<User> findByEmail(String email); // tìm theo email
 
-    boolean existsByEmail(String email);
+    boolean existsByEmail(String email); // ktra email đã tồn tại
 
-    boolean existsByPhoneNumber(String phoneNumber);
+    boolean existsByPhoneNumber(String phoneNumber); // ktra sđt đã tồn tại
 }

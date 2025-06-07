@@ -19,16 +19,19 @@ import lombok.experimental.FieldDefaults;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public abstract class AbstractEntity<T extends Serializable> implements Serializable {
+// class này định nghĩa ctruc chung cho tất cả các entity
+public abstract class AbstractEntity<T extends Serializable>
+        implements Serializable { // 'implements Serializable' tránh lỗi runtime khi truyền/ lưu entity (cho phép chuyển
+    // đối tượng thành luồng byte)
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     T id;
 
     @Column(name = "created_at")
-    @CreatedDate
+    @CreatedDate // tự động set khi add
     Instant createAt;
 
     @Column(name = "updated_at")
-    @LastModifiedDate
+    @LastModifiedDate // tự động update thời gian khi Update
     Instant updateAt;
 }

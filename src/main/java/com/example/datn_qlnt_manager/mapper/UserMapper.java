@@ -9,16 +9,20 @@ import com.example.datn_qlnt_manager.entity.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    @Mapping(target = "userStatus", ignore = true)
+    @Mapping(target = "userStatus", ignore = true) // bỏ qua trường này khi ánh xạ
     @Mapping(target = "profilePicture", ignore = true)
-    User toUser(UserCreationRequest request);
+    User toUser(UserCreationRequest request); // chuyển đổi UserCreationRequest sang User
+
+    @Mapping(source = "roles", target = "roles")
+    UserDetailResponse toUserResponse(User user); // chuyển đổi từ  User sang UserDetailResponse
 
     @Mapping(target = "userStatus", ignore = true)
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "roles", ignore = true)
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateUser(UserUpdateRequest request, @MappingTarget User user);
-
-    @Mapping(source = "roles", target = "roles")
-    UserDetailResponse toUserResponse(User user);
+    @BeanMapping(
+            nullValuePropertyMappingStrategy =
+                    NullValuePropertyMappingStrategy.IGNORE) // nếu thuộc tinh trong request là null thì khoong cập nhật
+    void updateUser(
+            UserUpdateRequest request,
+            @MappingTarget User user); // @MappingTarget: chỉ định đối tượng sẽ được cập nhật thay vì tạo mới
 }
