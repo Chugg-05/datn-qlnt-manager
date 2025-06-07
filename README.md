@@ -1,3 +1,5 @@
+* LƯU Ý: Không tự ý thêm bất cứ gì vào file này (chỉ đọc).
+
 I. QUY TẮC ĐẶT TÊN NHÁNH
   1. Cấu trúc chung: <type>/<task-name>-<short-description>
     - Các loại type:
