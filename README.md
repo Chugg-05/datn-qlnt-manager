@@ -14,7 +14,7 @@ II. QUY TẮC ĐẶT TÊN COMMIT
       + feat: Tính năng mới --VD:  add reset password endpoint
       + fix: Sửa lỗi --VD: otp not clearing after verification
       + refactor: Cải tiến code --VD: extract otp logic to separate service
-      + sytle: Format code
+      + style: Format code
       + test: thêm test
       + hotfix: sửa lỗi khẩn cấp
       + chore: linh tinh (update config) --VD: configure lombok and annotation processor
