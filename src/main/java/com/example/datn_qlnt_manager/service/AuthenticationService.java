@@ -1,8 +1,10 @@
 package com.example.datn_qlnt_manager.service;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 
+import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.HttpServletResponse;
 
 import com.example.datn_qlnt_manager.dto.request.AuthenticationRequest;
@@ -11,6 +13,9 @@ import com.example.datn_qlnt_manager.dto.response.LoginResponse;
 import com.example.datn_qlnt_manager.dto.response.RefreshTokenResponse;
 
 public interface AuthenticationService {
+    LoginResponse authenticate(String code, HttpServletResponse response)
+        throws  ParseException, IOException, JOSEException;
+
     LoginResponse login(AuthenticationRequest request, HttpServletResponse response)
             throws UnsupportedEncodingException;
 

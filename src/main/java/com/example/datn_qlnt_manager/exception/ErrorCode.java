@@ -61,6 +61,9 @@ public enum ErrorCode {
     REFRESH_TOKEN_INVALID(400, "Refresh token invalid.", HttpStatus.BAD_REQUEST),
     REFRESH_TOKEN_EXPIRED(400, "Refresh token expired.", HttpStatus.BAD_REQUEST),
     INVALID_OTP_CODE(400, "OTP code is incorrect or expired.", HttpStatus.BAD_REQUEST),
+    INVALID_ISSUER(400, "Invalid issuer", HttpStatus.BAD_REQUEST),
+    INVALID_AUDIENCE(400, "Invalid audience", HttpStatus.BAD_REQUEST),
+
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     CHAT_NOT_FOUND(404, "Chat not found.", HttpStatus.NOT_FOUND),
     MESSAGE_NOT_FOUND(404, "Message not found.", HttpStatus.NOT_FOUND),

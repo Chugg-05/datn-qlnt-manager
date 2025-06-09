@@ -1,9 +1,11 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Map;
 
+import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -43,6 +45,17 @@ public class AuthenticationController {
         return ApiResponse.<UserDetailResponse>builder()
                 .message("User registered!")
                 .data(user)
+                .build();
+    }
+
+    @PostMapping("/login/google/authentication")
+    public ApiResponse<?> loginWithGoogle(@RequestParam("code") String code, HttpServletResponse response)
+            throws ParseException, IOException, JOSEException {
+        LoginResponse loginResponse = authenticationService.authenticate(code, response);
+
+        return ApiResponse.builder()
+                .message("Login with google successful!")
+                .data(loginResponse)
                 .build();
     }
 

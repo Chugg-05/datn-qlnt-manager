@@ -45,6 +45,7 @@ public class SecurityConfig {
         "/auth/verify-otp",
         "/auth/reset-password",
         "/email/send",
+        "/auth/login/google/authentication/**",
         "ws/**"
     };
 
@@ -91,7 +92,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.setExposedHeaders(List.of("Authorization"));

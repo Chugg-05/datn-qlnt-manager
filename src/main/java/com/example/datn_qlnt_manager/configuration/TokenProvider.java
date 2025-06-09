@@ -1,14 +1,22 @@
 package com.example.datn_qlnt_manager.configuration;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.server.ServletServerHttpRequest;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.entity.User;
@@ -37,6 +45,10 @@ public class TokenProvider {
     static final String ISSUER = "TroHub88";
     final JwtUtil jwtUtil;
     final RedisService redisService;
+    @Value("${google.client.id}")
+    protected String CLIENT_ID;
+    private static final String GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs";
+    private static final String EXPECTED_ISSUER = "https://accounts.google.com";
 
     public String generateAccessToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
@@ -145,16 +157,16 @@ public class TokenProvider {
         return emailClaim.toString();
     }
 
-    public String verifyAndExtractEmail(ServletServerHttpRequest request) throws ParseException {
-        String token = request.getServletRequest().getHeader(HttpHeaders.AUTHORIZATION);
-        Object emailClaim = this.verifyToken(token).getJWTClaimsSet().getClaim(EMAIL_CLAIM);
-
-        if (Objects.isNull(emailClaim)) {
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-        }
-
-        return emailClaim.toString();
-    }
+//    public String verifyAndExtractEmail(ServletServerHttpRequest request) throws ParseException {
+//        String token = request.getServletRequest().getHeader(HttpHeaders.AUTHORIZATION);
+//        Object emailClaim = this.verifyToken(token).getJWTClaimsSet().getClaim(EMAIL_CLAIM);
+//
+//        if (Objects.isNull(emailClaim)) {
+//            throw new AppException(ErrorCode.UNAUTHORIZED);
+//        }
+//
+//        return emailClaim.toString();
+//    }
 
     public long verifyAndExtractTokenExpired(String token) throws ParseException {
         Date expiredClaim = this.verifyToken(token).getJWTClaimsSet().getExpirationTime();
@@ -164,5 +176,53 @@ public class TokenProvider {
         }
 
         return expiredClaim.getTime();
+    }
+
+    // Xác thực token đăng nhập từ gg
+    public Map<String, Object> verifyTokenIdGoogle(String token)
+            throws ParseException, IOException, JOSEException {
+        SignedJWT signedJWT = SignedJWT.parse(token); // giải mã ID Token đc truyền vào
+        String keyId = signedJWT.getHeader().getKeyID(); // lấy key trong JWT Header
+
+        InputStream is = URI.create(GOOGLE_JWK_URL).toURL().openStream();
+        JWKSet jwkSet = JWKSet.load(is); // tải ds pubkey của gg
+
+        JWK jwk  = jwkSet.getKeyByKeyId(keyId); // tìm đúng public key với keyId từ token
+        if (jwk == null) {
+            log.error("Không tìm thấy public key tương ứng: " + keyId);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        RSAKey rsaKey = (RSAKey) jwk; // Convert JWK về RSAKey để láy RSAPublicKey
+        RSAPublicKey publicKey = rsaKey.toRSAPublicKey();
+
+        // xác minh chữ ký JWT có khớp với RSAPublicKey không
+        boolean isVerified = signedJWT.verify(new RSASSAVerifier(publicKey));
+
+        if (!isVerified) {
+            log.error("❌ Token không hợp lệ (chữ ký sai).");
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+
+        Map<String, Object> claims = signedJWT.getJWTClaimsSet().getClaims();
+
+        if (!EXPECTED_ISSUER.equals(claims.get("iss"))) {
+            log.error("❌ Sai issuer.");
+            throw new AppException(ErrorCode.INVALID_ISSUER);
+        }
+
+        if (!CLIENT_ID.equals(((java.util.List<?>) claims.get("aud")).get(0))) {
+            log.error("❌ Sai audience.");
+            throw new AppException(ErrorCode.INVALID_AUDIENCE);
+        }
+
+        long exp = signedJWT.getJWTClaimsSet().getExpirationTime().getTime(); // lấy thời gian hết hạn để kiểm tra
+
+        if (System.currentTimeMillis() > exp) {
+            log.error("❌ Token đã hết hạn.");
+            throw new AppException(ErrorCode.TOKEN_BLACKLISTED);
+        }
+
+        return claims;
     }
 }

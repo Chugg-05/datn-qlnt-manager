@@ -1,4 +1,4 @@
-package com.example.datn_qlnt_manager.repository.httpclient;
+package com.example.datn_qlnt_manager.repository.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
