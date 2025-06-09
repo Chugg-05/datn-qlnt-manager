@@ -54,7 +54,7 @@ II. QUY TẮC ĐẶT TÊN COMMIT
       + feat: Tính năng mới --VD:  add reset password endpoint
       + fix: Sửa lỗi --VD: otp not clearing after verification
       + refactor: Cải tiến code --VD: extract otp logic to separate service
-      + sytle: Format code
+      + style: Format code
       + test: thêm test
       + hotfix: sửa lỗi khẩn cấp
       + chore: linh tinh (update config) --VD: configure lombok and annotation processor
@@ -62,4 +62,6 @@ II. QUY TẮC ĐẶT TÊN COMMIT
 
 III. Git
  1. Kéo code mới nhất từ nhánh master: trước khi bắt đầu làm
- 2. Không được push code vào nhánh chính: ❌ git push origin master
+ 2. **Không được** push hoặc merge code vào nhánh chính: 
+    ❌ git push origin master or 
+    ❌ git merge masteradda
