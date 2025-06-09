@@ -19,7 +19,7 @@
 
 # 🧱 Quy ước tạo file mới trong dự án: tạo các thư để chứa những file không phải global
   # Tuân thủ các quy tắc đặt tên:
-    - class: Invoice 
+    - class: Invoice aaaaaa
     - folder: invoice 
     - loại: 
      + biến đơn: camelCase, rõ chức năng --VD: fullName
