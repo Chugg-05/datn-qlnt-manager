@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RoleServiceImplementation implements RoleService {
+public class RoleServiceImpl implements RoleService {
     RoleMapper roleMapper;
     RoleRepository roleRepository;
     PermissionRepository permissionRepository;

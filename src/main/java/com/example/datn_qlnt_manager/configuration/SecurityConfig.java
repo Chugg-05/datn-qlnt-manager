@@ -33,7 +33,7 @@ import lombok.experimental.FieldDefaults;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class SecurityConfiguration {
+public class SecurityConfig {
     JwtTokenValidator jwtTokenValidator;
     UserDetailsService userDetailsService;
     private static final String[] PUBLIC_ENDPOINTS = {

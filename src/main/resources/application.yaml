@@ -18,15 +18,9 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+      username: ${REDIS_USERNAME}
       password: ${REDIS_PASSWORD}
 
-logging:
-  level:
-    org:
-      springframework: DEBUG
-      apache:
-        tomcat: DEBUG
-        catalina: DEBUG
 feign:
   client:
     config:
@@ -37,6 +31,14 @@ feign:
 
 email-client:
   url: https://api.brevo.com
+
+logging:
+  level:
+    org:
+      springframework: DEBUG
+      apache:
+        tomcat: DEBUG
+        catalina: DEBUG
 
 app:
   name: TRO_HUB

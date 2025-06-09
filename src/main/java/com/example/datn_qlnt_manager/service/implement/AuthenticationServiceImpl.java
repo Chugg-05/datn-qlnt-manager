@@ -23,7 +23,7 @@ import com.example.datn_qlnt_manager.dto.request.ResetPasswordRequest;
 import com.example.datn_qlnt_manager.dto.request.SendEmailRequest;
 import com.example.datn_qlnt_manager.dto.response.LoginResponse;
 import com.example.datn_qlnt_manager.dto.response.RefreshTokenResponse;
-import com.example.datn_qlnt_manager.entity.Recipient;
+import com.example.datn_qlnt_manager.dto.request.Recipient;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
@@ -46,7 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AuthenticationServiceImplementation implements AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService {
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
     TokenProvider tokenProvider;

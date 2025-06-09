@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class PermissionServiceImplementation implements PermissionService {
+public class PermissionServiceImpl implements PermissionService {
     PermissionMapper permissionMapper;
     PermissionRepository permissionRepository;
 

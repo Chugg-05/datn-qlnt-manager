@@ -17,7 +17,7 @@ import lombok.experimental.FieldDefaults;
 @Configuration
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RedisConfiguration {
+public class RedisConfig {
     @Value("${spring.data.redis.host}")
     String redisHost;
 
