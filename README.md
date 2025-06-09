@@ -7,7 +7,8 @@
 
 # 🧩 Công nghệ sử dụng
 - Java 21
-- Spring Boot 3.4.5
+- Spring Boot 3.5.1
+- Maven 4.0.0
 - Spring Data JPA
 - Spring Mail
 - Spring Security / JWT
@@ -63,5 +64,5 @@ II. QUY TẮC ĐẶT TÊN COMMIT
 III. Git
  1. Kéo code mới nhất từ nhánh master: trước khi bắt đầu làm
  2. **Không được** push hoặc merge code vào nhánh chính: 
-    ❌ git push origin master or 
-    ❌ git merge masteradda
+    ❌ git push origin master
+    ❌ git merge master

@@ -1,12 +1,20 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.io.IOException;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import com.example.datn_qlnt_manager.common.Gender;
+import com.example.datn_qlnt_manager.common.UserStatus;
+import com.example.datn_qlnt_manager.repository.client.GoogleClient;
+import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -16,7 +24,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.datn_qlnt_manager.configuration.OtpProperties;
 import com.example.datn_qlnt_manager.configuration.TokenProvider;
 import com.example.datn_qlnt_manager.dto.request.AuthenticationRequest;
 import com.example.datn_qlnt_manager.dto.request.ResetPasswordRequest;
@@ -41,12 +48,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationServiceImpl implements AuthenticationService {
+
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
     TokenProvider tokenProvider;
@@ -55,8 +65,56 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     RedisService redisService;
     OtpService otpService;
     EmailService emailService;
-    OtpProperties otpProperties;
-    static String KEY_COOKIE = "ARTICLE_SERVICE";
+    GoogleClient googleClient;
+    static String KEY_COOKIE = "TRO_HUB_SERVICE";
+    static String GRANT_TYPE = "authorization_code";
+
+    @NonFinal
+    @Value("${google.client.id}")
+    protected String CLIENT_ID;
+    @NonFinal
+    @Value("${google.client.secret}")
+    protected String CLIENT_SECRET;
+    @NonFinal
+    @Value("${google.redirect.uri}")
+    protected String REDIRECT_URI;
+    @Override
+    public LoginResponse authenticate(String code, HttpServletResponse response)
+        throws  ParseException, IOException, JOSEException {
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+
+        form.add("code", code);
+        form.add("client_id", CLIENT_ID);
+        form.add("client_secret", CLIENT_SECRET);
+        form.add("redirect_uri", REDIRECT_URI);
+        form.add("grant_type", GRANT_TYPE);
+
+        var exchangeTokenResponse = googleClient.exchangeTokenResponse(form);
+        var claims = tokenProvider.verifyTokenIdGoogle(exchangeTokenResponse.getIdToken());
+
+        String email = claims.get("email").toString();
+        String name = claims.get("name").toString();
+        String profilePicture = claims.get("picture").toString();
+
+        if (!userRepository.existsByEmail(email)) {
+            User user = User.builder()
+                    .email(email)
+                    .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                    .fullName(name)
+                    .gender(Gender.OTHER)
+                    .profilePicture(profilePicture)
+                    .userStatus(UserStatus.ACTIVE)
+                    .build();
+            user.setCreateAt(Instant.now());
+
+            return getLoginResponse(response, user);
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        return getLoginResponse(response, user);
+    }
 
     @Override
     public LoginResponse login(AuthenticationRequest request, HttpServletResponse response) {
@@ -71,22 +129,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         User user = (User) authentication.getPrincipal();
 
-        String accessToken = tokenProvider.generateAccessToken(user);
-        String refreshToken = tokenProvider.generateRefreshToken(user);
-
-        user.setRefreshToken(refreshToken);
-        userRepository.save(user);
-
-        Cookie cookie = setCookie(accessToken, refreshToken);
-        response.addCookie(cookie);
-
-        return LoginResponse.builder()
-                .accessToken(accessToken)
-                .accessTokenTTL(jwtUtil.getValidDuration())
-                .refreshTokenTTL(jwtUtil.getRefreshableDuration())
-                .refreshToken(refreshToken)
-                .userId(user.getId())
-                .build();
+        return getLoginResponse(response, user);
     }
 
     @Override
@@ -263,5 +306,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             log.error("Failed to send OTP email to: {}", user.getEmail(), e);
             throw new AppException(ErrorCode.EMAIL_SENDING_FAILED);
         }
+    }
+
+    private LoginResponse getLoginResponse(HttpServletResponse response, User user) {
+        String accessToken = tokenProvider.generateAccessToken(user);
+        String refreshToken = tokenProvider.generateRefreshToken(user);
+
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
+
+        Cookie cookie = setCookie(accessToken, refreshToken);
+        response.addCookie(cookie);
+
+        return LoginResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .accessTokenTTL(jwtUtil.getValidDuration())
+                .refreshTokenTTL(jwtUtil.getRefreshableDuration())
+                .userId(user.getId())
+                .build();
     }
 }

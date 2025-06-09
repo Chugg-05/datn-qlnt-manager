@@ -11,7 +11,7 @@ import com.example.datn_qlnt_manager.dto.response.EmailResponse;
 import com.example.datn_qlnt_manager.dto.request.Sender;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
-import com.example.datn_qlnt_manager.repository.httpclient.EmailClient;
+import com.example.datn_qlnt_manager.repository.client.EmailClient;
 import com.example.datn_qlnt_manager.service.EmailService;
 
 import feign.FeignException;
@@ -53,10 +53,19 @@ public class EmailServiceImpl implements EmailService {
             return emailClient.sendEmail(apiKey, emailRequest);
         } catch (FeignException exception) {
             log.error(
-                    "Failed to send email. Status: {}, ContentUTF8: {}",
+                    "\n--- FEIGN ERROR ---\n" +
+                            "URL: {}\n" +
+                            "Status: {}\n" +
+                            "Message: {}\n" +
+                            "Response Body: {}\n" +
+                            "Headers: {}\n",
+                    exception.request().url(),
                     exception.status(),
+                    exception.getMessage(),
                     exception.contentUTF8(),
-                    exception);
+                    exception.responseHeaders(),
+                    exception
+            );
             throw new AppException(ErrorCode.CANNOT_SEND_EMAIL);
         }
     }

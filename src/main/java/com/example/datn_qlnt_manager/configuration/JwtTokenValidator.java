@@ -49,7 +49,9 @@ public class JwtTokenValidator extends OncePerRequestFilter {
         try {
             email = tokenProvider.verifyAndExtractEmail(header);
         } catch (ParseException e) {
-            filterChain.doFilter(request, response);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"code\":401,\"message\":\"Unauthenticated: Invalid or expired JWT token.\"}");
             return;
         }
 
