@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.datn_qlnt_manager.dto.request.EmailRequest;
 import com.example.datn_qlnt_manager.dto.request.SendEmailRequest;
 import com.example.datn_qlnt_manager.dto.response.EmailResponse;
-import com.example.datn_qlnt_manager.entity.Sender;
+import com.example.datn_qlnt_manager.dto.request.Sender;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.repository.httpclient.EmailClient;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class EmailServiceImplement implements EmailService {
+public class EmailServiceImpl implements EmailService {
     EmailClient emailClient;
 
     @Value("${brevo.api.key}")

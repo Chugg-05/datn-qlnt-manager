@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class OtpServiceImplementation implements OtpService {
+public class OtpServiceImpl implements OtpService {
     RedisTemplate<String, String> redisTemplate;
     OtpProperties otpProperties;
 

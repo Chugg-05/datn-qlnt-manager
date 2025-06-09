@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RedisServiceImplementation implements RedisService {
+public class RedisServiceImpl implements RedisService {
     RedisTemplate<String, Object> redisTemplate;
 
     @Override

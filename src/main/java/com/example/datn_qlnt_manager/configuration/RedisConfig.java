@@ -17,7 +17,7 @@ import lombok.experimental.FieldDefaults;
 @Configuration
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RedisConfiguration {
+public class RedisConfig {
     // Lấy giá trị host Redis từ file cấu hình (application.yml)
     @Value("${spring.data.redis.host}")
     String redisHost; // Lấy giá trị port Redis từ file cấu hình
