@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Map;
 
+import com.example.datn_qlnt_manager.service.OtpService;
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -37,6 +38,7 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
     UserService userService;
     UserMapper userMapper;
+    OtpService otpService;
 
     @PostMapping("/register")
     public ApiResponse<UserDetailResponse> register(@Valid @RequestBody UserCreationRequest request) {
@@ -48,10 +50,12 @@ public class AuthenticationController {
                 .build();
     }
 
-    @PostMapping("/login/google/authentication")
+    @PostMapping("/login/oauth2/google/authentication")
     public ApiResponse<?> loginWithGoogle(@RequestParam("code") String code, HttpServletResponse response)
             throws ParseException, IOException, JOSEException {
         LoginResponse loginResponse = authenticationService.authenticate(code, response);
+
+        log.info("login ok");
 
         return ApiResponse.builder()
                 .message("Login with google successful!")
@@ -109,7 +113,7 @@ public class AuthenticationController {
 
     @PostMapping("/forgot-password")
     public ApiResponse<String> sendOtp(@Valid @RequestBody ForgotPasswordRequest request) {
-        authenticationService.sendOtp(request.getEmail());
+        otpService.sendOtp(request.getEmail());
 
         return ApiResponse.<String>builder()
                 .message("OTP code sent successfully!")
@@ -118,7 +122,7 @@ public class AuthenticationController {
 
     @PostMapping("/verify-otp")
     public ApiResponse<String> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
-        authenticationService.verifyOtp(request.getEmail(), request.getOtpCode());
+        otpService.verifyOtp(request.getEmail(), request.getOtpCode());
 
         return ApiResponse.<String>builder().message("Valid OTP Code").build();
     }

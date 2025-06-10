@@ -2,6 +2,10 @@ package com.example.datn_qlnt_manager.service.implement;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.request.Recipient;
+import com.example.datn_qlnt_manager.entity.User;
+import com.example.datn_qlnt_manager.repository.UserRepository;
+import com.example.datn_qlnt_manager.service.OtpService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmailServiceImpl implements EmailService {
     EmailClient emailClient;
-
     @Value("${brevo.api.key}")
     @NonFinal
     String apiKey;
