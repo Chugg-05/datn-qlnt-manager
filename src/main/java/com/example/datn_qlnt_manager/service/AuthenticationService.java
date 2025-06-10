@@ -25,9 +25,5 @@ public interface AuthenticationService {
 
     void deleteCookie(HttpServletResponse response);
 
-    void sendOtp(String email);
-
-    void verifyOtp(String email, String otpCode);
-
     void resetPassword(ResetPasswordRequest request);
 }

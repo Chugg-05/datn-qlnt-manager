@@ -45,7 +45,7 @@ public class SecurityConfig {
         "/auth/verify-otp",
         "/auth/reset-password",
         "/email/send",
-        "/auth/login/google/authentication/**",
+        "/auth/login/oauth2/google/authentication/**",
         "ws/**"
     };
 

@@ -1,11 +1,11 @@
 package com.example.datn_qlnt_manager.service;
 
 public interface OtpService {
-    String generateOtp(String email);
+    void sendOtp(String email);
 
-    boolean verifyOtp(String email, String otpInput);
+
+    void verifyOtp(String email, String otpCode);
 
     void clearOtp(String email);
 
-    boolean isOtpExist(String email);
 }
