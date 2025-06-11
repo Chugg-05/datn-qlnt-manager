@@ -1,0 +1,40 @@
+package com.example.datn_qlnt_manager.repository;
+
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import com.example.datn_qlnt_manager.entity.Room;
+
+import io.lettuce.core.dynamic.annotation.Param;
+
+@Repository
+public interface RoomRepository extends JpaRepository<Room, UUID> {
+
+    @Query(
+            """
+	SELECT r
+	FROM Room r
+	INNER JOIN Floor f ON r.floor = f
+	WHERE (:status IS NULL OR r.trangThai = :status)
+	AND (:maxPrice IS NULL OR r.gia <= :maxPrice)
+	AND (:minPrice IS NULL OR r.gia >= :minPrice)
+	AND (:maxAcreage IS NULL OR r.dienTich <= :maxAcreage)
+	AND (:minAcreage IS NULL OR r.dienTich >= :minAcreage)
+	AND (:maxPerson IS NULL OR r.soNguoiToiDa <= :maxPerson)
+	AND (:nameFloor IS NULL OR f.nameFloor LIKE CONCAT('%', :nameFloor, '%'))
+	""")
+    Page<Room> findAllPagingAndFilter(
+            @Param("status") String status,
+            @Param("maxPrice") Double maxPrice,
+            @Param("minPrice") Double minPrice,
+            @Param("maxAcreage") Double maxAcreage,
+            @Param("minAcreage") Double minAcreage,
+            @Param("maxPerson") Integer maxPerson,
+            @Param("nameFloor") String nameFloor,
+            Pageable pageable);
+}

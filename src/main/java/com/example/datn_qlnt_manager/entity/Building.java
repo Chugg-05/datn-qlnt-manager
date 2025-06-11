@@ -1,10 +1,13 @@
 package com.example.datn_qlnt_manager.entity;
 
-import com.example.datn_qlnt_manager.common.BuildingStatus;
 import jakarta.persistence.*;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.example.datn_qlnt_manager.common.BuildingStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Setter

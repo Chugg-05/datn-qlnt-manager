@@ -1,13 +1,11 @@
 package com.example.datn_qlnt_manager.entity;
 
-import com.example.datn_qlnt_manager.common.FloorStatus;
 import jakarta.persistence.*;
+
+import com.example.datn_qlnt_manager.common.FloorStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -30,7 +28,6 @@ public class Floor extends AbstractEntity {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn( name = "toa_nha_id", nullable = false)
+    @JoinColumn(name = "toa_nha_id", nullable = false)
     private Building building;
-
 }

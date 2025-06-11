@@ -6,14 +6,9 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import com.example.datn_qlnt_manager.common.Gender;
-import com.example.datn_qlnt_manager.common.UserStatus;
-import com.example.datn_qlnt_manager.repository.client.GoogleClient;
-import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
-import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,7 +18,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
+import com.example.datn_qlnt_manager.common.Gender;
+import com.example.datn_qlnt_manager.common.UserStatus;
 import com.example.datn_qlnt_manager.configuration.TokenProvider;
 import com.example.datn_qlnt_manager.dto.request.AuthenticationRequest;
 import com.example.datn_qlnt_manager.dto.request.ResetPasswordRequest;
@@ -33,20 +32,21 @@ import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.repository.UserRepository;
+import com.example.datn_qlnt_manager.repository.client.GoogleClient;
 import com.example.datn_qlnt_manager.service.AuthenticationService;
 import com.example.datn_qlnt_manager.service.OtpService;
 import com.example.datn_qlnt_manager.service.RedisService;
 import com.example.datn_qlnt_manager.utils.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JOSEException;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 @Slf4j
 @Service
@@ -68,15 +68,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @NonFinal
     @Value("${google.client.id}")
     protected String CLIENT_ID;
+
     @NonFinal
     @Value("${google.client.secret}")
     protected String CLIENT_SECRET;
+
     @NonFinal
     @Value("${google.redirect.uri}")
     protected String REDIRECT_URI;
+
     @Override
     public LoginResponse authenticate(String code, HttpServletResponse response)
-        throws  ParseException, IOException, JOSEException {
+            throws ParseException, IOException, JOSEException {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 
         form.add("code", code);
@@ -106,8 +109,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return getLoginResponse(response, user);
         }
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         return getLoginResponse(response, user);
     }

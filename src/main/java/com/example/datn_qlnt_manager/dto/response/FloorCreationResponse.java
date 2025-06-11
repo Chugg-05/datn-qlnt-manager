@@ -1,8 +1,8 @@
 package com.example.datn_qlnt_manager.dto.response;
 
-import com.example.datn_qlnt_manager.common.FloorStatus;
-
 import java.time.LocalDate;
+
+import com.example.datn_qlnt_manager.common.FloorStatus;
 
 public class FloorCreationResponse {
     private String id;

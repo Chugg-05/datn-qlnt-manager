@@ -5,12 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Map;
 
-import com.example.datn_qlnt_manager.service.OtpService;
-import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +18,11 @@ import com.example.datn_qlnt_manager.dto.response.*;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.mapper.UserMapper;
 import com.example.datn_qlnt_manager.service.AuthenticationService;
+import com.example.datn_qlnt_manager.service.OtpService;
 import com.example.datn_qlnt_manager.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JOSEException;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

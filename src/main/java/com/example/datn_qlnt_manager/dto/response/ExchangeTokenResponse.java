@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,6 +16,7 @@ public class ExchangeTokenResponse {
     String refreshToken;
     String scope;
     String tokenType;
+
     @JsonProperty("id_token")
     String idToken;
 }

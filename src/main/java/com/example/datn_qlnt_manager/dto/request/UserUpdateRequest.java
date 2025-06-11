@@ -3,14 +3,14 @@ package com.example.datn_qlnt_manager.dto.request;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.Size;
 
 import com.example.datn_qlnt_manager.common.Gender;
 import com.example.datn_qlnt_manager.validator.constraints.DobConstraints;
 import com.example.datn_qlnt_manager.validator.constraints.PasswordConstraints;
 import com.example.datn_qlnt_manager.validator.constraints.PhoneNumberConstraints;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
