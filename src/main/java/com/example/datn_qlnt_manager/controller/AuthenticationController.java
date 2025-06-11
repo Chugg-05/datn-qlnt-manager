@@ -10,6 +10,7 @@ import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,8 +56,6 @@ public class AuthenticationController {
             throws ParseException, IOException, JOSEException {
         LoginResponse loginResponse = authenticationService.authenticate(code, response);
 
-        log.info("login ok");
-
         return ApiResponse.builder()
                 .message("Login with google successful!")
                 .data(loginResponse)
@@ -85,15 +84,12 @@ public class AuthenticationController {
 
     @PostMapping("/refresh-token")
     public ApiResponse<?> refreshToken(
-            @CookieValue(name = "ARTICLE_SERVICE") String cookieValue, HttpServletResponse response)
+            @CookieValue(name = "TRO_HUB_SERVICE") String cookieValue, HttpServletResponse response)
             throws ParseException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> tokenData = objectMapper.readValue(cookieValue, Map.class);
 
         String refreshToken = tokenData.get("refreshToken");
-
-        log.info("cookie value: {}", cookieValue);
-        log.info("refreshToken: {}", refreshToken);
 
         var data = authenticationService.refreshToken(refreshToken, response);
         return ApiResponse.builder()

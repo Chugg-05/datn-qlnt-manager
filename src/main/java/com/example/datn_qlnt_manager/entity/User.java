@@ -26,7 +26,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "user")
-public class User extends AbstractEntity<String> implements UserDetails {
+public class User extends AbstractEntity implements UserDetails {
     @Column(name = "full_name", nullable = false)
     String fullName;
 

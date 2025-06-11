@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.entity;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.UUID;
 
 import jakarta.persistence.*;
 
@@ -20,12 +21,11 @@ import lombok.experimental.FieldDefaults;
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 // class này định nghĩa ctruc chung cho tất cả các entity
-public abstract class AbstractEntity<T extends Serializable>
-        implements Serializable { // 'implements Serializable' tránh lỗi runtime khi truyền/ lưu entity (cho phép chuyển
+public abstract class AbstractEntity implements Serializable { // 'implements Serializable' tránh lỗi runtime khi truyền/ lưu entity (cho phép chuyển
     // đối tượng thành luồng byte)
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    T id;
+    String id;
 
     @Column(name = "created_at")
     @CreatedDate // tự động set khi add

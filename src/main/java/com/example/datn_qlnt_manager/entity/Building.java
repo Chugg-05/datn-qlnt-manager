@@ -15,7 +15,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "toa_nha")
-public class Building extends AbstractEntity<String> {
+public class Building extends AbstractEntity {
     @Column(name = "ma_toa_nha", nullable = false, unique = true)
     private String buildingCode;
 
@@ -31,6 +31,4 @@ public class Building extends AbstractEntity<String> {
 
     @Column(name = "mo_ta")
     private String description;
-
-
 }

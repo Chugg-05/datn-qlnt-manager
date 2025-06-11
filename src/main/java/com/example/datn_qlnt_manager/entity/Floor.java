@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "tang")
-public class Floor extends AbstractEntity<String>{
+public class Floor extends AbstractEntity {
 
     @Column(name = "ten_tang", unique = true, nullable = false)
     private String nameFloor;
