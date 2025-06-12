@@ -7,6 +7,8 @@ import java.util.*;
 import com.example.datn_qlnt_manager.constant.PredefinedPermission;
 import com.example.datn_qlnt_manager.constant.PredefinedRolePermissionMapping;
 import com.example.datn_qlnt_manager.entity.Permission;
+import com.example.datn_qlnt_manager.exception.AppException;
+import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.repository.PermissionRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -113,7 +115,7 @@ public class ApplicationConfig {
 
             if (existingAdmin.isEmpty()) {
                 Role adminRole = roleRepository.findByName(PredefinedRole.ADMIN_ROLE)
-                        .orElseThrow(() -> new RuntimeException("Admin role not found"));
+                        .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
                 var roles = new HashSet<Role>();
                 roles.add(adminRole);
@@ -132,8 +134,8 @@ public class ApplicationConfig {
                         .roles(roles)
                         .build();
 
-                admin.setCreateAt(Instant.now());
-                admin.setUpdateAt(Instant.now());
+                admin.setCreatedAt(Instant.now());
+                admin.setUpdatedAt(Instant.now());
 
                 userRepository.save(admin);
                 log.info("Default admin user created.");

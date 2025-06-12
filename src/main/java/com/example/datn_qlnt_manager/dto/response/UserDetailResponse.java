@@ -25,7 +25,7 @@ public class UserDetailResponse implements Serializable {
     String phoneNumber;
     String profilePicture;
     UserStatus userStatus;
-    Instant createAt;
-    Instant updateAt;
+    Instant createdAt;
+    Instant updatedAt;
     Set<RoleResponse> roles;
 }

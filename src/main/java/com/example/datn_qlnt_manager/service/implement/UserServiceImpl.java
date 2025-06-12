@@ -58,7 +58,8 @@ public class UserServiceImpl implements UserService {
         Role role = roleRepository.findByName("MANAGER").orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
         user.setRoles(Set.of(role));
-        user.setCreateAt(Instant.now());
+        user.setCreatedAt(Instant.now());
+        user.setUpdatedAt(Instant.now());
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
@@ -94,7 +95,7 @@ public class UserServiceImpl implements UserService {
             user.setRoles(new HashSet<>(roles));
         }
 
-        user.setUpdateAt(Instant.now());
+        user.setUpdatedAt(Instant.now());
 
         return userMapper.toUserResponse(userRepository.save(user));
     }

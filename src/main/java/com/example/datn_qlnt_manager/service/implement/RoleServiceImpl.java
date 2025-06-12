@@ -45,7 +45,8 @@ public class RoleServiceImpl implements RoleService {
         var permission = permissionRepository.findAllById(request.getPermissions());
 
         role.setPermissions(new HashSet<>(permission));
-        role.setCreateAt(Instant.now());
+        role.setCreatedAt(Instant.now());
+        role.setUpdatedAt(Instant.now());
         role = roleRepository.save(role);
 
         return roleMapper.toRoleResponse(role);
@@ -64,7 +65,7 @@ public class RoleServiceImpl implements RoleService {
         var permissions = permissionRepository.findAllById(request.getPermissions());
 
         role.setPermissions(new HashSet<>(permissions));
-        role.setUpdateAt(Instant.now());
+        role.setUpdatedAt(Instant.now());
 
         return roleMapper.toRoleResponse(roleRepository.save(role));
     }
