@@ -14,8 +14,8 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Pagination {
     Long total;
-    Long count;
-    Long perPage;
-    Long currentPage;
-    Long totalPages;
+    Integer count;
+    Integer perPage;
+    Integer currentPage;
+    Integer totalPages;
 }

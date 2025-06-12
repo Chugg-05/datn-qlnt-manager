@@ -10,6 +10,8 @@ import com.example.datn_qlnt_manager.common.Gender;
 import com.example.datn_qlnt_manager.common.UserStatus;
 import com.example.datn_qlnt_manager.validator.constraints.DobConstraints;
 import com.example.datn_qlnt_manager.validator.constraints.PhoneNumberConstraints;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
