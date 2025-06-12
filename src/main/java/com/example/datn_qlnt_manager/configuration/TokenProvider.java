@@ -12,10 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +23,10 @@ import com.example.datn_qlnt_manager.utils.JwtUtil;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -45,8 +45,10 @@ public class TokenProvider {
     static final String ISSUER = "TroHub88";
     final JwtUtil jwtUtil;
     final RedisService redisService;
+
     @Value("${google.client.id}")
     protected String CLIENT_ID;
+
     private static final String GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs";
     private static final String EXPECTED_ISSUER = "https://accounts.google.com";
 
@@ -157,16 +159,16 @@ public class TokenProvider {
         return emailClaim.toString();
     }
 
-//    public String verifyAndExtractEmail(ServletServerHttpRequest request) throws ParseException {
-//        String token = request.getServletRequest().getHeader(HttpHeaders.AUTHORIZATION);
-//        Object emailClaim = this.verifyToken(token).getJWTClaimsSet().getClaim(EMAIL_CLAIM);
-//
-//        if (Objects.isNull(emailClaim)) {
-//            throw new AppException(ErrorCode.UNAUTHORIZED);
-//        }
-//
-//        return emailClaim.toString();
-//    }
+    //    public String verifyAndExtractEmail(ServletServerHttpRequest request) throws ParseException {
+    //        String token = request.getServletRequest().getHeader(HttpHeaders.AUTHORIZATION);
+    //        Object emailClaim = this.verifyToken(token).getJWTClaimsSet().getClaim(EMAIL_CLAIM);
+    //
+    //        if (Objects.isNull(emailClaim)) {
+    //            throw new AppException(ErrorCode.UNAUTHORIZED);
+    //        }
+    //
+    //        return emailClaim.toString();
+    //    }
 
     public long verifyAndExtractTokenExpired(String token) throws ParseException {
         Date expiredClaim = this.verifyToken(token).getJWTClaimsSet().getExpirationTime();
@@ -179,15 +181,14 @@ public class TokenProvider {
     }
 
     // Xác thực token đăng nhập từ gg
-    public Map<String, Object> verifyTokenIdGoogle(String token)
-            throws ParseException, IOException, JOSEException {
+    public Map<String, Object> verifyTokenIdGoogle(String token) throws ParseException, IOException, JOSEException {
         SignedJWT signedJWT = SignedJWT.parse(token); // giải mã ID Token đc truyền vào
         String keyId = signedJWT.getHeader().getKeyID(); // lấy key trong JWT Header
 
         InputStream is = URI.create(GOOGLE_JWK_URL).toURL().openStream();
         JWKSet jwkSet = JWKSet.load(is); // tải ds pubkey của gg
 
-        JWK jwk  = jwkSet.getKeyByKeyId(keyId); // tìm đúng public key với keyId từ token
+        JWK jwk = jwkSet.getKeyByKeyId(keyId); // tìm đúng public key với keyId từ token
         if (jwk == null) {
             log.error("Không tìm thấy public key tương ứng: " + keyId);
             throw new AppException(ErrorCode.UNAUTHORIZED);

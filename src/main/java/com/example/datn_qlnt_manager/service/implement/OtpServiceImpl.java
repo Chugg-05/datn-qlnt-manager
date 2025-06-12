@@ -4,6 +4,10 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Objects;
 
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+
+import com.example.datn_qlnt_manager.configuration.OtpProperties;
 import com.example.datn_qlnt_manager.dto.request.Recipient;
 import com.example.datn_qlnt_manager.dto.request.SendEmailRequest;
 import com.example.datn_qlnt_manager.entity.User;
@@ -11,10 +15,6 @@ import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.repository.UserRepository;
 import com.example.datn_qlnt_manager.service.EmailService;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-
-import com.example.datn_qlnt_manager.configuration.OtpProperties;
 import com.example.datn_qlnt_manager.service.OtpService;
 
 import lombok.AccessLevel;

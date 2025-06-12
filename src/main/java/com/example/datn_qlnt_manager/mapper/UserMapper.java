@@ -16,12 +16,12 @@ public interface UserMapper {
     @Mapping(source = "roles", target = "roles")
     UserDetailResponse toUserResponse(User user); // chuyển đổi từ  User sang UserDetailResponse
 
-    @Mapping(target = "userStatus", ignore = true)
-    @Mapping(target = "email", ignore = true)
+    //    @Mapping(target = "userStatus", ignore = true)
     @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "email", ignore = true)
     @BeanMapping(
             nullValuePropertyMappingStrategy =
-                    NullValuePropertyMappingStrategy.IGNORE) // nếu thuộc tinh trong request là null thì khoong cập nhật
+                    NullValuePropertyMappingStrategy.IGNORE) // nếu thuộc tinh trong request là null thì khong cập nhật
     void updateUser(
             UserUpdateRequest request,
             @MappingTarget User user); // @MappingTarget: chỉ định đối tượng sẽ được cập nhật thay vì tạo mới

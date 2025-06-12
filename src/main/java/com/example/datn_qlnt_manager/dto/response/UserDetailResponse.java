@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import com.example.datn_qlnt_manager.common.Gender;
+import com.example.datn_qlnt_manager.common.UserStatus;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -23,7 +24,8 @@ public class UserDetailResponse implements Serializable {
     String email;
     String phoneNumber;
     String profilePicture;
+    UserStatus userStatus;
     Instant createAt;
     Instant updateAt;
-    private Set<RoleResponse> roles;
+    Set<RoleResponse> roles;
 }

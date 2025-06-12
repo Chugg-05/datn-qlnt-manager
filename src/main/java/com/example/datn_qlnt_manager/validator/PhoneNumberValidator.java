@@ -10,7 +10,7 @@ import com.example.datn_qlnt_manager.validator.constraints.PhoneNumberConstraint
 
 public class PhoneNumberValidator implements ConstraintValidator<PhoneNumberConstraints, String> {
 
-    private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("^(\\\\+84|0)(3|5|7|8|9)[0-9]{8}$");
+    private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("^(\\+84|0)[35789][0-9]{8}$");
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {

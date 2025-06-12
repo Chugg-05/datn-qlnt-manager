@@ -1,6 +1,8 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.transaction.Transactional;
@@ -86,8 +88,10 @@ public class UserServiceImpl implements UserService {
 
         userMapper.updateUser(request, user);
 
-        if (request.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        if (request.getRoles() != null && !request.getRoles().isEmpty()) {
+            List<Role> roles = roleRepository.findAllById(request.getRoles());
+
+            user.setRoles(new HashSet<>(roles));
         }
 
         user.setUpdateAt(Instant.now());
