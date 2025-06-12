@@ -19,4 +19,6 @@ public interface UserService {
     void deleteUser(String userId);
 
     String uploadProfilePicture(MultipartFile file);
+
+    User findById(String id);
 }

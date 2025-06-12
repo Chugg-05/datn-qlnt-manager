@@ -57,7 +57,11 @@ public class AuthenticationController {
 
         return ApiResponse.builder()
                 .message("Login with google successful!")
-                .data(loginResponse)
+                .data(userMapper.toUserResponse(userService
+                        .findById(loginResponse.getUserId())))
+                .meta(Meta.<LoginResponse>builder()
+                        .tokenInfo(loginResponse)
+                        .build())
                 .build();
     }
 
