@@ -2,8 +2,13 @@ package com.example.datn_qlnt_manager.configuration;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.*;
 
+import com.example.datn_qlnt_manager.constant.PredefinedPermission;
+import com.example.datn_qlnt_manager.constant.PredefinedRolePermissionMapping;
+import com.example.datn_qlnt_manager.entity.Permission;
+import com.example.datn_qlnt_manager.repository.PermissionRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -32,58 +37,111 @@ public class ApplicationConfig {
     PasswordEncoder passwordEncoder;
 
     @NonFinal
-    static final String ADMIN_EMAIL = "trohub88@gmail.com";
+    @Value("${admin.email}")
+    String adminEmail;
+
 
     @NonFinal
-    static final String ADMIN_PASSWORD = "Trohub@88";
+    @Value("${admin.password}")
+    String adminPassword;
 
     @Bean
     @ConditionalOnProperty(
             prefix = "spring",
             value = "datasource.driver-class-name",
             havingValue = "com.mysql.cj.jdbc.Driver")
-    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository) {
-        log.info("Initializing application...");
+    ApplicationRunner applicationRunner(
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            PermissionRepository permissionRepository
+    ) {
         return args -> {
-            if (userRepository.findByEmail(ADMIN_EMAIL).isEmpty()) {
-                roleRepository.save(Role.builder()
-                        .name(PredefinedRole.MANAGER_ROLE)
-                        .description("Manager role")
-                        .build());
-                roleRepository.save(Role.builder()
-                        .name(PredefinedRole.STAFF_ROLE)
-                        .description("Staff role")
-                        .build());
-                roleRepository.save(Role.builder()
-                        .name(PredefinedRole.USER_ROLE)
-                        .description("User role")
-                        .build());
+            log.info("🔧 Starting application initialization...");
 
-                Role adminRole = roleRepository.save(Role.builder()
-                        .name(PredefinedRole.ADMIN_ROLE)
-                        .description("Admin role")
-                        .build());
+            //Tạo Permission nếu chưa tồn tại
+            Map<String, String> predefinedPermissions = Map.of(
+                    PredefinedPermission.READ, "Quyền xem dữ liệu",
+                    PredefinedPermission.WRITE, "Quyền tạo mới dữ liệu",
+                    PredefinedPermission.EDIT, "Quyền chỉnh sửa dữ liệu",
+                    PredefinedPermission.DELETE, "Quyền xóa dữ liệu"
+            );
+
+            predefinedPermissions.forEach((name, description) -> {
+                if (!permissionRepository.existsByName(name)) {
+                    permissionRepository.save(Permission.builder()
+                            .name(name)
+                            .description(description)
+                            .build());
+                }
+            });
+
+            // Lấy danh sách permission đã lưu để map
+            Map<String, Permission> permissionMap = new HashMap<>();
+            permissionRepository.findAll().forEach(p -> permissionMap.put(p.getName(), p));
+
+            //Tạo Role nếu chưa tồn tại và gán permission tương ứng
+            Map<String, String> predefinedRoles = Map.of(
+                    PredefinedRole.ADMIN_ROLE, "Admin role",
+                    PredefinedRole.MANAGER_ROLE, "Manager role",
+                    PredefinedRole.STAFF_ROLE, "Staff role",
+                    PredefinedRole.USER_ROLE, "User role"
+            );
+
+            predefinedRoles.forEach((roleName, description) -> {
+                Role role = roleRepository.findByName(roleName)
+                        .orElseGet(() -> roleRepository.save(
+                                Role.builder()
+                                        .name(roleName)
+                                        .description(description)
+                                        .build()
+                        ));
+
+                // Lấy danh sách quyền tương ứng từ enum
+                List<String> permissionNames = PredefinedRolePermissionMapping.getPermissionsForRole(roleName);
+                Set<Permission> assignedPermissions = new HashSet<>();
+
+                for (String permissionName : permissionNames) {
+                    Permission p = permissionMap.get(permissionName);
+                    if (p != null) assignedPermissions.add(p);
+                }
+
+                role.setPermissions(assignedPermissions);
+                roleRepository.save(role);
+            });
+
+            Optional<User> existingAdmin = userRepository.findByEmail(adminEmail);
+
+            if (existingAdmin.isEmpty()) {
+                Role adminRole = roleRepository.findByName(PredefinedRole.ADMIN_ROLE)
+                        .orElseThrow(() -> new RuntimeException("Admin role not found"));
 
                 var roles = new HashSet<Role>();
                 roles.add(adminRole);
 
-                User user = User.builder()
+
+                User admin = User.builder()
                         .fullName("Admin")
                         .gender(Gender.MALE)
                         .dob(LocalDate.parse("2000-01-01"))
-                        .email(ADMIN_EMAIL)
+                        .email(adminEmail)
                         .profilePicture(null)
                         .phoneNumber("0325454545")
-                        .password(passwordEncoder.encode(ADMIN_PASSWORD))
+                        .password(passwordEncoder.encode(adminPassword))
                         .userStatus(UserStatus.ACTIVE)
                         .refreshToken(null)
                         .roles(roles)
                         .build();
-                user.setCreateAt(Instant.now());
 
-                userRepository.save(user);
+                admin.setCreateAt(Instant.now());
+                admin.setUpdateAt(Instant.now());
+
+                userRepository.save(admin);
+                log.info("Default admin user created.");
+            } else {
+                log.info("Admin user already exists.");
             }
-            log.info("Application initialization completed .....");
+
+            log.info("Application initialization completed...");
         };
     }
 }
