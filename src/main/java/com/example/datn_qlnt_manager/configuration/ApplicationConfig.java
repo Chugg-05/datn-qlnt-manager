@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.configuration;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashSet;
 
@@ -78,6 +79,7 @@ public class ApplicationConfig {
                         .refreshToken(null)
                         .roles(roles)
                         .build();
+                user.setCreateAt(Instant.now());
 
                 userRepository.save(user);
             }
