@@ -1,10 +1,13 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import com.cloudinary.Cloudinary;
 import jakarta.transaction.Transactional;
 
 import org.springframework.security.core.context.SecurityContext;
@@ -29,6 +32,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -39,6 +43,7 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
+    Cloudinary cloudinary;
 
     @Override
     @Transactional
@@ -88,6 +93,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         userMapper.updateUser(request, user);
+        user.setProfilePicture(request.getProfilePicture());
 
         if (request.getRoles() != null && !request.getRoles().isEmpty()) {
             List<Role> roles = roleRepository.findAllById(request.getRoles());
@@ -103,5 +109,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public String uploadProfilePicture(MultipartFile file) {
+        try {
+            Map<String, Object> uploadResult =
+                    cloudinary.uploader().upload(file.getBytes(), Map.of("resource_type", "image"));
+            return (String) uploadResult.get("secure_url");
+        } catch (IOException | AppException e) {
+            throw new AppException(ErrorCode.UPLOAD_FAILED);
+        }
     }
 }

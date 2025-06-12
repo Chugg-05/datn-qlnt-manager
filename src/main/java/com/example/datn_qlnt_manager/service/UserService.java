@@ -4,6 +4,7 @@ import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
 import com.example.datn_qlnt_manager.entity.User;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 
@@ -16,4 +17,6 @@ public interface UserService {
     UserDetailResponse updateUser(String userId, UserUpdateRequest request);
 
     void deleteUser(String userId);
+
+    String uploadProfilePicture(MultipartFile file);
 }
