@@ -1,3 +1,7 @@
+admin:
+  email: ${ADMIN_EMAIL}
+  password: ${ADMIN_PASSWORD}
+
 jwt:
   secretKey: ${JWT_SIGNER_KEY}
   valid-duration: 7200
