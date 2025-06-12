@@ -17,6 +17,7 @@ public interface UserMapper {
     UserDetailResponse toUserResponse(User user); // chuyển đổi từ  User sang UserDetailResponse
 
     //    @Mapping(target = "userStatus", ignore = true)
+    @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "email", ignore = true)
     @BeanMapping(
