@@ -121,4 +121,9 @@ public class UserServiceImpl implements UserService {
             throw new AppException(ErrorCode.UPLOAD_FAILED);
         }
     }
+
+    @Override
+    public User findById(String id) {
+        return userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+    }
 }
