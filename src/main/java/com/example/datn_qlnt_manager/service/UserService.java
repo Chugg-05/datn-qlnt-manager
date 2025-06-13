@@ -1,10 +1,11 @@
 package com.example.datn_qlnt_manager.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
 import com.example.datn_qlnt_manager.entity.User;
-import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 

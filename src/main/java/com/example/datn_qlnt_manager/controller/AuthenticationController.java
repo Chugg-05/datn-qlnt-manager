@@ -21,6 +21,7 @@ import com.example.datn_qlnt_manager.service.AuthenticationService;
 import com.example.datn_qlnt_manager.service.OtpService;
 import com.example.datn_qlnt_manager.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 
@@ -57,11 +58,8 @@ public class AuthenticationController {
 
         return ApiResponse.builder()
                 .message("Login with google successful!")
-                .data(userMapper.toUserResponse(userService
-                        .findById(loginResponse.getUserId())))
-                .meta(Meta.<LoginResponse>builder()
-                        .tokenInfo(loginResponse)
-                        .build())
+                .data(userMapper.toUserResponse(userService.findById(loginResponse.getUserId())))
+                .meta(Meta.<LoginResponse>builder().tokenInfo(loginResponse).build())
                 .build();
     }
 
@@ -90,7 +88,8 @@ public class AuthenticationController {
             @CookieValue(name = "TRO_HUB_SERVICE") String cookieValue, HttpServletResponse response)
             throws ParseException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, String> tokenData = objectMapper.readValue(cookieValue, Map.class);
+        Map<String, String> tokenData =
+                objectMapper.readValue(cookieValue, new TypeReference<Map<String, String>>() {});
 
         String refreshToken = tokenData.get("refreshToken");
 

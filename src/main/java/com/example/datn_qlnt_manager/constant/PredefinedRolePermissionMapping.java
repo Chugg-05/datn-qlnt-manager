@@ -3,23 +3,21 @@ package com.example.datn_qlnt_manager.constant;
 import java.util.List;
 
 public enum PredefinedRolePermissionMapping {
-    ADMIN(PredefinedRole.ADMIN_ROLE, List.of(
-            PredefinedPermission.READ,
-            PredefinedPermission.WRITE,
-            PredefinedPermission.EDIT,
-            PredefinedPermission.DELETE)),
+    ADMIN(
+            PredefinedRole.ADMIN_ROLE,
+            List.of(
+                    PredefinedPermission.READ,
+                    PredefinedPermission.WRITE,
+                    PredefinedPermission.EDIT,
+                    PredefinedPermission.DELETE)),
 
-    MANAGER(PredefinedRole.MANAGER_ROLE, List.of(
-            PredefinedPermission.READ,
-            PredefinedPermission.WRITE,
-            PredefinedPermission.EDIT)),
+    MANAGER(
+            PredefinedRole.MANAGER_ROLE,
+            List.of(PredefinedPermission.READ, PredefinedPermission.WRITE, PredefinedPermission.EDIT)),
 
-    STAFF(PredefinedRole.STAFF_ROLE, List.of(
-            PredefinedPermission.READ,
-            PredefinedPermission.WRITE)),
+    STAFF(PredefinedRole.STAFF_ROLE, List.of(PredefinedPermission.READ, PredefinedPermission.WRITE)),
 
-    USER(PredefinedRole.USER_ROLE, List.of(
-            PredefinedPermission.READ));
+    USER(PredefinedRole.USER_ROLE, List.of(PredefinedPermission.READ));
 
     public final String roleName;
     public final List<String> permissions;

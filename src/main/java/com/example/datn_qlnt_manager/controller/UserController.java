@@ -1,13 +1,14 @@
 package com.example.datn_qlnt_manager.controller;
 
-import com.example.datn_qlnt_manager.common.Gender;
-import com.example.datn_qlnt_manager.common.UserStatus;
-import jakarta.validation.Valid;
+import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.example.datn_qlnt_manager.common.Gender;
+import com.example.datn_qlnt_manager.common.UserStatus;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
@@ -18,9 +19,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
 
 @Slf4j
 @RestController
@@ -48,8 +46,7 @@ public class UserController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
             @RequestParam(required = false) String phoneNumber,
             @RequestParam(required = false) UserStatus userStatus,
-            @RequestParam(required = false) MultipartFile file
-    ) {
+            @RequestParam(required = false) MultipartFile file) {
         var user = userService.getCurrentUser();
 
         String uploadedImageUrl = null;
@@ -71,7 +68,6 @@ public class UserController {
                 .data(userService.updateUser(user.getId(), request))
                 .build();
     }
-
 
     @DeleteMapping("/delete/{userId}")
     public ApiResponse<String> deleteUser(@PathVariable("userId") String userId) {

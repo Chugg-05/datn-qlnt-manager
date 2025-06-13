@@ -34,9 +34,7 @@ public class RedisConfig {
     /**
      *
      * Bean LettuceConnectionFactory để kết nối đến Redis server.
-     *
      * Sử dụng RedisStandaloneConfiguration để cấu hình thông tin kết nối.
-     *
      * Gán hostname, port, username và password cho cấu hình Redis.
      *
      */
@@ -59,7 +57,6 @@ public class RedisConfig {
     /**
      *
      * Bean RedisTemplate dùng để thao tác với Redis.
-     *
      * Định nghĩa các serializer cho key và value giúp dữ liệu lưu trữ dễ đọc và tránh lỗi.
      *
      */

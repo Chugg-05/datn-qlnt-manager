@@ -7,14 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.cloudinary.Cloudinary;
 import jakarta.transaction.Transactional;
 
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.cloudinary.Cloudinary;
 import com.example.datn_qlnt_manager.common.UserStatus;
 import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
@@ -32,7 +33,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -114,8 +114,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public String uploadProfilePicture(MultipartFile file) {
         try {
-            Map<String, Object> uploadResult =
+            @SuppressWarnings("unchecked") // bỏ qua cảnh báo
+            Map<String, Object> uploadResult = (Map<String, Object>)
                     cloudinary.uploader().upload(file.getBytes(), Map.of("resource_type", "image"));
+
             return (String) uploadResult.get("secure_url");
         } catch (IOException | AppException e) {
             throw new AppException(ErrorCode.UPLOAD_FAILED);

@@ -56,10 +56,6 @@ public class RoleServiceImpl implements RoleService {
     public RoleResponse updateRole(String roleId, RoleRequest request) {
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
-        //        if (roleRepository.existsByName(request.getName())) {
-        //            throw new AppException(ErrorCode.ROLE_EXISTED);
-        //        }
-
         roleMapper.updateRole(request, role);
 
         var permissions = permissionRepository.findAllById(request.getPermissions());

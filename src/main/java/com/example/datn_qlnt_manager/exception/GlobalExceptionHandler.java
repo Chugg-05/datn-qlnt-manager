@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ApiResponse> handleException(Exception e) {
+    public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .message(ErrorCode.INTERNAL_SERVER_ERROR.getMessage())
                 .code(ErrorCode.INTERNAL_SERVER_ERROR.getCode())
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = AppException.class)
-    public ResponseEntity<ApiResponse> handleAppException(AppException e) {
+    public ResponseEntity<ApiResponse<?>> handleAppException(AppException e) {
         ErrorCode errorCode = e.getErrorCode();
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .message(errorCode.getMessage())
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
 
     // url invalid
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<?> handleNotFoundException(NoResourceFoundException ex) {
+    public ResponseEntity<?> handleNotFoundException(NoResourceFoundException e) {
         ErrorCode errorCode = ErrorCode.API_ENDPOINT_NOT_FOUND;
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .message(errorCode.getMessage())
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
 
     // handler account has been locked
     @ExceptionHandler(value = LockedException.class)
-    public ResponseEntity<ApiResponse> handleLockedException(LockedException e) {
+    public ResponseEntity<ApiResponse<?>> handleLockedException(LockedException e) {
         ErrorCode errorCode = ErrorCode.ACCOUNT_HAS_BEEN_LOCKED;
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .message(errorCode.getMessage())
@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = MissingRequestHeaderException.class)
-    public ResponseEntity<ApiResponse> handleMissingRequestHeaderException(MissingRequestHeaderException e) {
+    public ResponseEntity<ApiResponse<?>> handleMissingRequestHeaderException(MissingRequestHeaderException e) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .message(e.getMessage())
                 .code(e.getStatusCode().value())
@@ -77,7 +77,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ApiResponse<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String enumKey = e.getFieldError() != null ? e.getFieldError().getDefaultMessage() : "INVALID_KEY";
 
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
