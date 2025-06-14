@@ -19,6 +19,6 @@ public interface EmailClient {
             )
     EmailResponse sendEmail(
             @RequestHeader("api-key") String apiKey, // truyền key api qua header
-            @RequestBody EmailRequest body // thông tin (người nhận, nội dung..)
+            @RequestBody EmailRequest request // thông tin (người nhận, nội dung..)
             );
 }

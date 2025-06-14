@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import com.example.datn_qlnt_manager.common.Gender;
 import com.example.datn_qlnt_manager.common.UserStatus;
 import com.example.datn_qlnt_manager.validator.constraints.DobConstraints;
+import com.example.datn_qlnt_manager.validator.constraints.PhoneNumberConstraints;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
@@ -30,7 +31,7 @@ public class UserUpdateRequest implements Serializable {
     @DobConstraints(min = 18, message = "INVALID_DOB")
     LocalDate dob;
 
-    //    @PhoneNumberConstraints
+    @PhoneNumberConstraints
     String phoneNumber;
 
     String profilePicture;
