@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PermissionController {
     PermissionService permissionService;
 
-    @PostMapping("/create-permission")
+    @PostMapping("/createn")
     public ApiResponse<PermissionResponse> createRole(@Valid @RequestBody PermissionRequest request) {
         return ApiResponse.<PermissionResponse>builder()
                 .message("Permission has been created!")
@@ -40,7 +40,7 @@ public class PermissionController {
                 .build();
     }
 
-    @DeleteMapping("/delete-permission/{permissionId}")
+    @DeleteMapping("/delete/{permissionId}")
     public ApiResponse<String> deletePermission(@PathVariable("permissionId") String permissionId) {
         permissionService.deletePermission(permissionId);
         return ApiResponse.<String>builder()
@@ -48,7 +48,7 @@ public class PermissionController {
                 .build();
     }
 
-    @PutMapping("/update-permission/{permissionId}")
+    @PutMapping("/{permissionId}")
     public ApiResponse<PermissionResponse> updatePermission(
             @Valid @RequestBody PermissionRequest request, @PathVariable("permissionId") String permissionId) {
         return ApiResponse.<PermissionResponse>builder()

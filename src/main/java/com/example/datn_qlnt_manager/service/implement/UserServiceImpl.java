@@ -92,7 +92,13 @@ public class UserServiceImpl implements UserService {
     public UserDetailResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        if (!user.getPhoneNumber().equals(request.getPhoneNumber())
+                && userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
+        }
+
         userMapper.updateUser(request, user);
+
         user.setProfilePicture(request.getProfilePicture());
 
         if (request.getRoles() != null && !request.getRoles().isEmpty()) {
@@ -115,8 +121,11 @@ public class UserServiceImpl implements UserService {
     public String uploadProfilePicture(MultipartFile file) {
         try {
             @SuppressWarnings("unchecked") // bỏ qua cảnh báo
-            Map<String, Object> uploadResult = (Map<String, Object>)
-                    cloudinary.uploader().upload(file.getBytes(), Map.of("resource_type", "image"));
+            Map<String, Object> uploadResult = (Map<String, Object>) cloudinary
+                    .uploader()
+                    .upload(
+                            file.getBytes(),
+                            Map.of("resource_type", "image", "upload_preset", "DATN_QLNT", "folder", "avatar"));
 
             return (String) uploadResult.get("secure_url");
         } catch (IOException | AppException e) {
