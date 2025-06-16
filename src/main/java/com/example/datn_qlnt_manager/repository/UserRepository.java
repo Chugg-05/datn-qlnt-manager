@@ -3,6 +3,8 @@ package com.example.datn_qlnt_manager.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.datn_qlnt_manager.common.Gender;
+import com.example.datn_qlnt_manager.common.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +17,25 @@ import com.example.datn_qlnt_manager.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
 
+    @Query("""
+        SELECT u FROM User u
+        LEFT JOIN u.roles r
+        WHERE (:fullName IS NULL OR u.fullName LIKE CONCAT('%', :fullName, '%'))
+        AND (:email IS NULL OR u.email LIKE CONCAT('%', :email, '%'))
+        AND (:phoneNumber IS NULL OR u.phoneNumber LIKE CONCAT('%', :phoneNumber, '%'))
+        AND (:gender IS NULL OR u.gender = :gender)
+        AND (:userStatus IS NULL OR u.userStatus = :userStatus)
+        AND (:role IS NULL OR r.name = :role)
+        """)
+    Page<User> filterUsersPaging(
+            @Param("fullName") String fullName,
+            @Param("email") String email,
+            @Param("phoneNumber") String phoneNumber,
+            @Param("gender") Gender gender,
+            @Param("userStatus") UserStatus userStatus,
+            @Param("role") String role,
+            Pageable pageable);
+
     @Query("SELECT u FROM User u JOIN u.roles r WHERE r.name = :role")
     List<User> getUsersByRole(@Param("role") String role);
 
@@ -25,15 +46,6 @@ public interface UserRepository extends JpaRepository<User, String> {
             + "WHERE u.id = :userId")
     Optional<User> findUserWithRolesAndPermissionsById(@Param("userId") String userId);
 
-    @Query("SELECT DISTINCT u FROM User u " + "LEFT JOIN FETCH u.roles "
-            + // LEFT JOIN FETCH: cho phép lấy những User không có role
-            "WHERE (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :query, '%')) "
-            + "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :query, '%')) "
-            + "OR LOWER(u.phoneNumber) LIKE LOWER(CONCAT('%', :query, '%'))) "
-            + "AND u.id != :currentUserId "
-            + "AND u.userStatus = 'ACTIVE'")
-    Page<User> searchUser(
-            @Param("query") String query, @Param("currentUserId") String currentUserId, Pageable pageable);
 
     @Query("SELECT DISTINCT u FROM User u " + "LEFT JOIN FETCH u.roles r "
             + "LEFT JOIN FETCH r.permissions "
