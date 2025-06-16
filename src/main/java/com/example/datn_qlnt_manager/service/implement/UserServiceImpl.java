@@ -6,20 +6,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import jakarta.transaction.Transactional;
 
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
 import com.example.datn_qlnt_manager.common.UserStatus;
 import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import com.example.datn_qlnt_manager.entity.Role;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
@@ -47,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDetailResponse createUser(UserCreationRequest request) {
+    public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
@@ -70,13 +73,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findUserWithRolesAndPermissionsById(String id) {
-        return userRepository
-                .findUserWithRolesAndPermissionsById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-    }
-
-    @Override
     public User getCurrentUser() {
         try {
             SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -89,7 +85,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetailResponse updateUser(String userId, UserUpdateRequest request) {
+    public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         if (!user.getPhoneNumber().equals(request.getPhoneNumber())
@@ -100,12 +96,6 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUser(request, user);
 
         user.setProfilePicture(request.getProfilePicture());
-
-        if (request.getRoles() != null && !request.getRoles().isEmpty()) {
-            List<Role> roles = roleRepository.findAllById(request.getRoles());
-
-            user.setRoles(new HashSet<>(roles));
-        }
 
         user.setUpdatedAt(Instant.now());
 
@@ -131,6 +121,57 @@ public class UserServiceImpl implements UserService {
         } catch (IOException | AppException e) {
             throw new AppException(ErrorCode.UPLOAD_FAILED);
         }
+    }
+
+    @Override
+    public User findUserWithRolesAndPermissionsById(String id) {
+        return userRepository
+                .findUserWithRolesAndPermissionsById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    public UserResponse updateUserForAdmin(String userId, UserUpdateForAdminRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (!user.getPhoneNumber().equals(request.getPhoneNumber())
+                && userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
+        }
+
+        userMapper.updateUserForAdmin(request, user);
+
+        user.setProfilePicture(request.getProfilePicture());
+
+        if (request.getRoles() != null && !request.getRoles().isEmpty()) {
+            List<Role> roles = roleRepository.findAllById(request.getRoles());
+
+            user.setRoles(new HashSet<>(roles));
+        }
+
+        user.setUpdatedAt(Instant.now());
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Override
+    public UserResponse getUser(@PathVariable("userId") String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return userMapper.toUserResponse(user);
+    }
+
+    @Override
+    public List<UserResponse> getUsersForAdmin(String role) {
+        List<User> users = userRepository.getUsersByRole(role);
+
+        if (users.isEmpty()) {
+            throw new AppException(ErrorCode.NO_DATA);
+        }
+
+        return  users
+                .stream()
+                .map(userMapper::toUserResponse)
+                .collect(Collectors.toList());
     }
 
     @Override

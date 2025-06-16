@@ -1,10 +1,11 @@
 package com.example.datn_qlnt_manager.mapper;
 
+import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import org.mapstruct.*;
 
 import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import com.example.datn_qlnt_manager.entity.User;
 
 @Mapper(componentModel = "spring")
@@ -14,10 +15,8 @@ public interface UserMapper {
     User toUser(UserCreationRequest request); // chuyển đổi UserCreationRequest sang User
 
     @Mapping(source = "roles", target = "roles")
-    UserDetailResponse toUserResponse(User user); // chuyển đổi từ  User sang UserDetailResponse
+    UserResponse toUserResponse(User user); // chuyển đổi từ  User sang UserDetailResponse
 
-    //    @Mapping(target = "userStatus", ignore = true)
-    @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "email", ignore = true)
     @BeanMapping(
@@ -26,4 +25,13 @@ public interface UserMapper {
     void updateUser(
             UserUpdateRequest request,
             @MappingTarget User user); // @MappingTarget: chỉ định đối tượng sẽ được cập nhật thay vì tạo mới
+
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "roles", ignore = true)
+    @BeanMapping(
+            nullValuePropertyMappingStrategy =
+                    NullValuePropertyMappingStrategy.IGNORE)
+    void updateUserForAdmin(
+            UserUpdateForAdminRequest request,
+            @MappingTarget User user);
 }

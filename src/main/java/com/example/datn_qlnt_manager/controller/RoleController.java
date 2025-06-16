@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RoleController {
     RoleService roleService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ApiResponse<RoleResponse> createRole(@Valid @RequestBody RoleRequest request) {
         return ApiResponse.<RoleResponse>builder()
                 .message("Role has been created!")
@@ -32,7 +32,7 @@ public class RoleController {
                 .build();
     }
 
-    @GetMapping("/role-list")
+    @GetMapping
     public ApiResponse<List<RoleResponse>> getRoles() {
         return ApiResponse.<List<RoleResponse>>builder()
                 .message("Role List")
@@ -40,7 +40,7 @@ public class RoleController {
                 .build();
     }
 
-    @DeleteMapping("/delete/{roleId}")
+    @DeleteMapping("/{roleId}")
     public ApiResponse<String> deleteRole(@PathVariable("roleId") String roleId) {
         roleService.deleteRole(roleId);
         return ApiResponse.<String>builder().data("Role has been deleted!").build();

@@ -1,4 +1,4 @@
-#3 LƯU Ý: Không tự ý thêm bất cứ gì vào file này (chỉ đọc).
+### LƯU Ý: Không tự ý thêm bất cứ gì vào file này (chỉ đọc).
 
 # 📦 Tên dự án: Xây dựng website quản lý nhà trọ - TroHub (BE)
 
@@ -29,6 +29,19 @@
      + method: --VD: lấy danh sách tất cả user = public UserResponse users(){}
      + tên tham số trong method: id của user = userId
      + trong repository: findByFullName()
+
+# Quy tắc đặt Path
+    VD: user
+        -> RequestMapping("/users")
+        -> GetMapping -- để trống (getList)
+        -> PostMapping -- để trống (create)
+        -> Put/PatMapping("/{userId}")
+        -> DeleteMapping("/{userId}")
+# Quy tắc đặt tên method
+    VD: user
+        -> lấy ds: getUsers
+        -> lấy user detail: getUser
+        -> thêm user: createUser(update, delete tương tự)
 
 VD: 
 ├── entity/

@@ -17,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse implements Serializable {
+    String id;
     String fullName;
     Gender gender;
     LocalDate dob;

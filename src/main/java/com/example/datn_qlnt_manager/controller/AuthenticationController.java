@@ -42,10 +42,10 @@ public class AuthenticationController {
     OtpService otpService;
 
     @PostMapping("/register")
-    public ApiResponse<UserDetailResponse> register(@Valid @RequestBody UserCreationRequest request) {
+    public ApiResponse<UserResponse> register(@Valid @RequestBody UserCreationRequest request) {
         var user = userService.createUser(request);
 
-        return ApiResponse.<UserDetailResponse>builder()
+        return ApiResponse.<UserResponse>builder()
                 .message("User registered!")
                 .data(user)
                 .build();
@@ -69,7 +69,7 @@ public class AuthenticationController {
         LoginResponse loginResponse = authenticationService.login(request, response);
 
         User user = userService.findUserWithRolesAndPermissionsById(loginResponse.getUserId());
-        UserDetailResponse userResponse = userMapper.toUserResponse(user);
+        UserResponse userResponse = userMapper.toUserResponse(user);
 
         loginResponse.setUserId(null);
 

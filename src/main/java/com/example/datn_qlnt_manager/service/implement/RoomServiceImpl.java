@@ -26,7 +26,7 @@ import lombok.experimental.FieldDefaults;
 @Transactional
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RoomServiceImplementation implements RoomService {
+public class RoomServiceImpl implements RoomService {
 
     RoomRepository roomRepository;
     RoomMapper roomMapper;
