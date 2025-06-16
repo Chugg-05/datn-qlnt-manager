@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.dto.filter;
 
 import com.example.datn_qlnt_manager.common.Gender;
+import com.example.datn_qlnt_manager.common.UserStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,9 +11,10 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserFilter {
-    String name;
+    String fullName;
     String email;
-    String phone;
-    String address;
+    String phoneNumber;
     Gender gender;
+    UserStatus userStatus;
+    String role;
 }
