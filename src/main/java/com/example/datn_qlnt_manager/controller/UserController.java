@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import org.springframework.http.MediaType;
@@ -22,10 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "User", description = "API User")
 public class UserController {
     UserService userService;
     UserMapper userMapper;
 
+    @Operation(summary = "Lấy thông tin người đang đăng nhập")
     @GetMapping("/me")
     public ApiResponse<UserResponse> getMyInfo() {
         var user = userService.getCurrentUser();
@@ -36,6 +40,7 @@ public class UserController {
                 .build();
     }
 
+    @Operation(summary = "Cập nhật thông tin người dùng (user)")
     @PatchMapping(value = "/me/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UserResponse> updateUser(
             @Valid @ModelAttribute UserUpdateRequest request,
@@ -52,6 +57,7 @@ public class UserController {
                 .build();
     }
 
+    @Operation(summary = "Xóa người dùng (manager)")
     @DeleteMapping("/{userId}")
     public ApiResponse<String> deleteUser(@PathVariable("userId") String userId) {
         userService.deleteUser(userId);

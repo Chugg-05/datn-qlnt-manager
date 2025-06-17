@@ -2,6 +2,8 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
@@ -16,10 +18,12 @@ import lombok.experimental.FieldDefaults;
 @RequestMapping("/rooms")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Room", description = "API Room")
 public class RoomController {
 
     RoomService roomService;
 
+    @Operation(summary = "Phân trang, tìm kiếm, lọc phòng")
     @GetMapping
     public ApiResponse<List<RoomResponse>> findAll(
             @RequestParam(defaultValue = "1") Integer page,

@@ -5,6 +5,8 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -35,12 +37,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Authentication", description = "API authentication")
 public class AuthenticationController {
     AuthenticationService authenticationService;
     UserService userService;
     UserMapper userMapper;
     OtpService otpService;
 
+    @Operation(summary = "Đăng ký tài khoản cho chủ trọ")
     @PostMapping("/register")
     public ApiResponse<UserResponse> register(@Valid @RequestBody UserCreationRequest request) {
         var user = userService.createUser(request);
@@ -51,6 +55,7 @@ public class AuthenticationController {
                 .build();
     }
 
+    @Operation(summary = "Đăng nhập với google (cho chủ trọ)")
     @PostMapping("/login/oauth2/google/authentication")
     public ApiResponse<?> loginWithGoogle(@RequestParam("code") String code, HttpServletResponse response)
             throws ParseException, IOException, JOSEException {
@@ -63,6 +68,7 @@ public class AuthenticationController {
                 .build();
     }
 
+    @Operation(summary = "Đăng nhập vào hệ thống")
     @PostMapping("/login")
     public ApiResponse<?> login(@RequestBody AuthenticationRequest request, HttpServletResponse response)
             throws UnsupportedEncodingException {
@@ -83,6 +89,7 @@ public class AuthenticationController {
                 .build();
     }
 
+    @Operation(summary = "Làm mới token (gia hạn đăng nhập)")
     @PostMapping("/refresh-token")
     public ApiResponse<?> refreshToken(
             @CookieValue(name = "TRO_HUB_SERVICE") String cookieValue, HttpServletResponse response)
@@ -100,6 +107,7 @@ public class AuthenticationController {
                 .build();
     }
 
+    @Operation(summary = "Đăng xuất")
     @PostMapping("/logout")
     public ApiResponse<Void> logout(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token, HttpServletResponse response)
@@ -108,7 +116,7 @@ public class AuthenticationController {
 
         return ApiResponse.<Void>builder().message("Logout successful!").build();
     }
-
+    @Operation(summary = "Quên mật khẩu")
     @PostMapping("/forgot-password")
     public ApiResponse<String> sendOtp(@Valid @RequestBody ForgotPasswordRequest request) {
         otpService.sendOtp(request.getEmail());
@@ -118,6 +126,7 @@ public class AuthenticationController {
                 .build();
     }
 
+    @Operation(summary = "Xác thực OTP")
     @PostMapping("/verify-otp")
     public ApiResponse<String> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
         otpService.verifyOtp(request.getEmail(), request.getOtpCode());
@@ -125,6 +134,7 @@ public class AuthenticationController {
         return ApiResponse.<String>builder().message("Valid OTP Code").build();
     }
 
+    @Operation(summary = "Đổi mật khẩu sau khi xác thực")
     @PostMapping("/reset-password")
     public ApiResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         authenticationService.resetPassword(request);

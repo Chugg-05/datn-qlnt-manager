@@ -46,7 +46,14 @@ public class SecurityConfig {
         "/auth/reset-password",
         "/emails/send",
         "/auth/login/oauth2/google/authentication/**",
-        "ws/**"
+        "/docs/**",
+        "/swagger-ui.html",
+        "/v3/api-docs/**",
+        "/swagger-ui/**",
+        "/swagger-resources/**",
+        "/webjars/**",
+        "/configuration/**",
+        "/ws/**"
     };
 
     @Bean
