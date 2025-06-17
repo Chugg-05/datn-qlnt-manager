@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Không đẩy file cấu hình dev chứa thông tin nhạy cảm ###
+application-dev.yaml
