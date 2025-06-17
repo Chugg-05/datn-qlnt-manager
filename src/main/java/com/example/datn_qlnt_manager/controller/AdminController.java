@@ -2,6 +2,8 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import org.springframework.http.MediaType;
@@ -25,14 +27,17 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/admins")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Admin", description = "API Admin")
 public class AdminController {
     UserService userService;
 
+    @Operation(summary = "Phân trang, tìm kiếm, lọc người dùng")
     @GetMapping
     public ApiResponse<List<UserResponse>> filterUsers(
             @ModelAttribute UserFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
+
         PaginatedResponse<UserResponse> result = userService.filterUsers(filter, page, size);
 
         return ApiResponse.<List<UserResponse>>builder()
@@ -42,6 +47,7 @@ public class AdminController {
                 .build();
     }
 
+    @Operation(summary = "Cập nhật thông tin người dùng")
     @PatchMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UserResponse> updateUserForAdmin(
             @PathVariable("userId") String userId,
@@ -58,6 +64,7 @@ public class AdminController {
                 .build();
     }
 
+    @Operation(summary = "Xóa người dùng")
     @DeleteMapping("/{userId}")
     public ApiResponse<String> deleteUser(@PathVariable("userId") String userId) {
         userService.deleteUser(userId);

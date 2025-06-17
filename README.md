@@ -60,6 +60,11 @@ VD:
     4. Muốn chạy với môi trường dev thì vào 'Edit configuration' -> xóa '-Dspring.profiles.active=prod' -> Apply -> Ok.
     
     ** Không bắt buộc chạy với môi trường dev. Nhưng lên chạy để có log DEBUG rõ ràng, chuyên nghiệp hơn.
+## Thêm tên và mô tả trong controller cho Swagger
+    @Tag(name = "", description = " ") -- Thêm ngoài class cùng chỗ với @ResController
+    @Operation(summary = "") -- Mô tả chức năng của API
+    
+    ** Tham khảo mẫu trong AdminController
 
 I. QUY TẮC ĐẶT TÊN NHÁNH
   1. Cấu trúc chung: <type>/<task-name>-<short-description>

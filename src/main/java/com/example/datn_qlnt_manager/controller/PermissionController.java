@@ -2,6 +2,8 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RequestMapping("/permissions")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Permission", description = "API Permission")
 public class PermissionController {
     PermissionService permissionService;
 
+    @Operation(summary = "Tạo quyền")
     @PostMapping
     public ApiResponse<PermissionResponse> createRole(@Valid @RequestBody PermissionRequest request) {
         return ApiResponse.<PermissionResponse>builder()
@@ -32,6 +36,7 @@ public class PermissionController {
                 .build();
     }
 
+    @Operation(summary = "Lấy danh sách quyền")
     @GetMapping
     public ApiResponse<List<PermissionResponse>> getRoles() {
         return ApiResponse.<List<PermissionResponse>>builder()
@@ -40,6 +45,7 @@ public class PermissionController {
                 .build();
     }
 
+    @Operation(summary = "Xóa quyền")
     @DeleteMapping("/{permissionId}")
     public ApiResponse<String> deletePermission(@PathVariable("permissionId") String permissionId) {
         permissionService.deletePermission(permissionId);
@@ -48,6 +54,7 @@ public class PermissionController {
                 .build();
     }
 
+    @Operation(summary = "Cập nhật quyền")
     @PutMapping("/{permissionId}")
     public ApiResponse<PermissionResponse> updatePermission(
             @Valid @RequestBody PermissionRequest request, @PathVariable("permissionId") String permissionId) {

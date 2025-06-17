@@ -1,5 +1,3 @@
-# application-dev.example.yaml
-
 # Cấu hình cho môi trường dev (local)
 spring:
   datasource:
@@ -50,6 +48,12 @@ google:
     secret: your_google_client_secret
   redirect:
     uri: http://localhost:3000/oauth2/callback
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /docs
+    display-request-duration: true
 
 logging:
   level:
