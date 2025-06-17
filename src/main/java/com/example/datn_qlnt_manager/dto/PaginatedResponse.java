@@ -1,12 +1,13 @@
 package com.example.datn_qlnt_manager.dto;
 
+import java.util.List;
+
 import com.example.datn_qlnt_manager.common.Meta;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @Builder

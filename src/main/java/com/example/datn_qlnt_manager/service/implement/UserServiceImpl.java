@@ -7,11 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.example.datn_qlnt_manager.common.Meta;
-import com.example.datn_qlnt_manager.common.Pagination;
-import com.example.datn_qlnt_manager.dto.PaginatedResponse;
-import com.example.datn_qlnt_manager.dto.filter.UserFilter;
-import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -25,8 +20,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
+import com.example.datn_qlnt_manager.common.Meta;
+import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.common.UserStatus;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.UserFilter;
 import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import com.example.datn_qlnt_manager.entity.Role;
@@ -179,12 +179,10 @@ public class UserServiceImpl implements UserService {
                 filter.getGender(),
                 filter.getUserStatus(),
                 filter.getRole(),
-                pageable
-        );
+                pageable);
 
         // chuyển ds user entity sang UserResponse để return
-        List<UserResponse> users = paging.getContent()
-                .stream()
+        List<UserResponse> users = paging.getContent().stream()
                 .map(userMapper::toUserResponse) // ánh xạ từng entity
                 .toList();
 
@@ -200,10 +198,7 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         // trả về ds data và meta
-        return PaginatedResponse.<UserResponse>builder()
-                .data(users)
-                .meta(meta)
-                .build();
+        return PaginatedResponse.<UserResponse>builder().data(users).meta(meta).build();
     }
 
     @Override

@@ -1,9 +1,9 @@
 package com.example.datn_qlnt_manager.mapper;
 
-import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import org.mapstruct.*;
 
 import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import com.example.datn_qlnt_manager.entity.User;
@@ -28,10 +28,6 @@ public interface UserMapper {
 
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "roles", ignore = true)
-    @BeanMapping(
-            nullValuePropertyMappingStrategy =
-                    NullValuePropertyMappingStrategy.IGNORE)
-    void updateUserForAdmin(
-            UserUpdateForAdminRequest request,
-            @MappingTarget User user);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateUserForAdmin(UserUpdateForAdminRequest request, @MappingTarget User user);
 }

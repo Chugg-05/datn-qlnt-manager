@@ -61,7 +61,6 @@ VD:
     
     ** Không bắt buộc chạy với môi trường dev. Nhưng lên chạy để có log DEBUG rõ ràng, chuyên nghiệp hơn.
 
-
 I. QUY TẮC ĐẶT TÊN NHÁNH
   1. Cấu trúc chung: <type>/<task-name>-<short-description>
     - Các loại type:

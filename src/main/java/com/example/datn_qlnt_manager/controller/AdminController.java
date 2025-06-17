@@ -1,21 +1,24 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.UserFilter;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import com.example.datn_qlnt_manager.service.UserService;
-import jakarta.validation.Valid;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -29,8 +32,7 @@ public class AdminController {
     public ApiResponse<List<UserResponse>> filterUsers(
             @ModelAttribute UserFilter filter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
+            @RequestParam(defaultValue = "15") int size) {
         PaginatedResponse<UserResponse> result = userService.filterUsers(filter, page, size);
 
         return ApiResponse.<List<UserResponse>>builder()
@@ -44,8 +46,7 @@ public class AdminController {
     public ApiResponse<UserResponse> updateUserForAdmin(
             @PathVariable("userId") String userId,
             @Valid @ModelAttribute UserUpdateForAdminRequest request,
-            @RequestParam(name = "profilePictureFile", required = false) MultipartFile profilePictureFile
-    ) {
+            @RequestParam(name = "profilePictureFile", required = false) MultipartFile profilePictureFile) {
 
         if (profilePictureFile != null && !profilePictureFile.isEmpty()) {
             request.setProfilePicture(userService.uploadProfilePicture(profilePictureFile));
@@ -62,5 +63,4 @@ public class AdminController {
         userService.deleteUser(userId);
         return ApiResponse.<String>builder().message("User has been deleted!").build();
     }
-
 }
