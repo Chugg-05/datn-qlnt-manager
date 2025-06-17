@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.service;
 
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.UserFilter;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +29,7 @@ public interface UserService {
 
     UserResponse getUser(@PathVariable("userId") String userId);
 
-    List<UserResponse> getUsersForAdmin(String role);
+    PaginatedResponse<UserResponse> filterUsers(UserFilter filter, int page, int size);
 
     User findById(String id);
 

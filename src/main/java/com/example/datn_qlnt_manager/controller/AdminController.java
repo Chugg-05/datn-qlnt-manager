@@ -1,6 +1,8 @@
 package com.example.datn_qlnt_manager.controller;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.UserFilter;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import com.example.datn_qlnt_manager.service.UserService;
@@ -24,10 +26,17 @@ public class AdminController {
     UserService userService;
 
     @GetMapping
-    public ApiResponse<List<UserResponse>> getUsersForAdmin(@RequestParam("role") String role) {
+    public ApiResponse<List<UserResponse>> filterUsers(
+            @ModelAttribute UserFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        PaginatedResponse<UserResponse> result = userService.filterUsers(filter, page, size);
+
         return ApiResponse.<List<UserResponse>>builder()
-                .message("Get all users by role")
-                .data(userService.getUsersForAdmin(role))
+                .message("Filter users successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
                 .build();
     }
 

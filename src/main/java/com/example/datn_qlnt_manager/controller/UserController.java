@@ -1,15 +1,10 @@
 package com.example.datn_qlnt_manager.controller;
 
-import java.time.LocalDate;
-
 import jakarta.validation.Valid;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.datn_qlnt_manager.common.Gender;
-import com.example.datn_qlnt_manager.common.UserStatus;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.UserResponse;

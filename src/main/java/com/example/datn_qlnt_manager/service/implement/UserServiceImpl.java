@@ -6,11 +6,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import com.example.datn_qlnt_manager.common.Meta;
+import com.example.datn_qlnt_manager.common.Pagination;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.UserFilter;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import jakarta.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -161,17 +167,43 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getUsersForAdmin(String role) {
-        List<User> users = userRepository.getUsersByRole(role);
+    public PaginatedResponse<UserResponse> filterUsers(UserFilter filter, int page, int size) {
+        // tạo đối tượng phân trang
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size); // đảm bảo page luôn >= 0
 
-        if (users.isEmpty()) {
-            throw new AppException(ErrorCode.NO_DATA);
-        }
+        // custom lọc người dùng theo dk kèm phân trang
+        Page<User> paging = userRepository.filterUsersPaging(
+                filter.getFullName(),
+                filter.getEmail(),
+                filter.getPhoneNumber(),
+                filter.getGender(),
+                filter.getUserStatus(),
+                filter.getRole(),
+                pageable
+        );
 
-        return  users
+        // chuyển ds user entity sang UserResponse để return
+        List<UserResponse> users = paging.getContent()
                 .stream()
-                .map(userMapper::toUserResponse)
-                .collect(Collectors.toList());
+                .map(userMapper::toUserResponse) // ánh xạ từng entity
+                .toList();
+
+        // tạo đối tượng chứa thông tin phân trang
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        // trả về ds data và meta
+        return PaginatedResponse.<UserResponse>builder()
+                .data(users)
+                .meta(meta)
+                .build();
     }
 
     @Override
