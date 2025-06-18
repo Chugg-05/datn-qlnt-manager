@@ -3,6 +3,12 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.Meta;
+import com.example.datn_qlnt_manager.common.Pagination;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.dto.request.PermissionRequest;
@@ -28,10 +34,26 @@ public class PermissionServiceImpl implements PermissionService {
     PermissionRepository permissionRepository;
 
     @Override
-    public List<PermissionResponse> getPermissions() {
-        var permission = permissionRepository.findAll();
+    public PaginatedResponse<PermissionResponse> filterPermissions(String name, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
-        return permission.stream().map(permissionMapper::toPermissionResponse).toList();
+        Page<Permission> paging = permissionRepository.filterPermissionsPaging(name, pageable);
+
+        List<PermissionResponse> permissions = paging.getContent().stream()
+                .map(permissionMapper::toPermissionResponse)
+                .toList();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<PermissionResponse>builder().data(permissions).meta(meta).build();
     }
 
     @Override
