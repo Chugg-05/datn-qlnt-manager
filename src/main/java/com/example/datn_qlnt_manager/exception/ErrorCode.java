@@ -65,6 +65,18 @@ public enum ErrorCode {
     INVALID_ISSUER(400, "Invalid issuer", HttpStatus.BAD_REQUEST),
     INVALID_AUDIENCE(400, "Invalid audience", HttpStatus.BAD_REQUEST),
 
+    INVALID_FLOORS_NUMBER_FOR_RENT(
+            400, "Number of floors for rent exceeds actual number of floors", HttpStatus.BAD_REQUEST),
+    ACTUAL_FLOOR_NUMBER_IS_INVALID(400, "The actual number of floors must be at least {min}.", HttpStatus.BAD_REQUEST),
+    INVALID_RENTAL_FLOOR_NUMBER(400, "Number of floors for rent must be greater than 0", HttpStatus.BAD_REQUEST),
+    INVALID_BUILDING_CODE_BLANK(400, "Building Code cannot be blank", HttpStatus.BAD_REQUEST),
+    INVALID_BUILDING_NAME_BLANK(400, "Building Name cannot be blank", HttpStatus.BAD_REQUEST),
+    INVALID_ADDRESS_BLANK(400, "Address cannot be blank", HttpStatus.BAD_REQUEST),
+    INVALID_ACTUAL_NUMBER_OF_FLOORS_BLANK(400, "Actual Number Of Floors cannot be blank", HttpStatus.BAD_REQUEST),
+    INVALID_NUMBER_OF_FLOORS_FOR_RENT_BLANK(400, "Number Of Floors For Rent cannot be blank", HttpStatus.BAD_REQUEST),
+    INVALID_BUILDING_TYPE_BLANK(400, "Building Type cannot be blank", HttpStatus.BAD_REQUEST),
+    INVALID_BUILDING_STATUS_BLANK(400, "Building Status cannot be blank", HttpStatus.BAD_REQUEST),
+
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     CHAT_NOT_FOUND(404, "Chat not found.", HttpStatus.NOT_FOUND),
     MESSAGE_NOT_FOUND(404, "Message not found.", HttpStatus.NOT_FOUND),
@@ -72,12 +84,14 @@ public enum ErrorCode {
     PERMISSION_NOT_FOUND(404, "Permission not found", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND(404, "Role not found", HttpStatus.NOT_FOUND),
     EMAIL_NOT_FOUND(404, "Email not found", HttpStatus.NOT_FOUND),
+    BUILDING_NOT_FOUND(404, "Building not found", HttpStatus.NOT_FOUND),
 
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
     PHONE_NUMBER_EXISTED(409, "Phone already existed.", HttpStatus.CONFLICT),
     PERMISSION_EXISTED(409, "Permission already existed", HttpStatus.BAD_REQUEST),
     ROLE_EXISTED(409, "Role already existed", HttpStatus.BAD_REQUEST),
-
+    BUILDING_CODE_EXISTED(409, "Building Code already existed.", HttpStatus.CONFLICT),
+    BUILDING_NAME_EXISTED(409, "Building Name already existed.", HttpStatus.CONFLICT),
     CANT_REMOVE_USER(403, "You can't remove another user.", HttpStatus.FORBIDDEN),
     ACCOUNT_HAS_BEEN_LOCKED(403, "User account is locked.", HttpStatus.FORBIDDEN),
     NOT_IN_GROUP(403, "You are not a member of this group.", HttpStatus.FORBIDDEN),

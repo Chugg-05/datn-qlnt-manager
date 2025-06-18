@@ -2,8 +2,6 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +11,8 @@ import com.example.datn_qlnt_manager.dto.request.PermissionRequest;
 import com.example.datn_qlnt_manager.dto.response.PermissionResponse;
 import com.example.datn_qlnt_manager.service.PermissionService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
