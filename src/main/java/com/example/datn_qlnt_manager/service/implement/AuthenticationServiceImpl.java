@@ -104,7 +104,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .profilePicture(profilePicture)
                     .userStatus(UserStatus.ACTIVE)
                     .build();
-            user.setCreateAt(Instant.now());
+            user.setCreatedAt(Instant.now());
 
             return getLoginResponse(response, user);
         }

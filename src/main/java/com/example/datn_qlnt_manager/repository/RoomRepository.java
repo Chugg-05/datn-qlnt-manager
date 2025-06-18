@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -20,12 +21,12 @@ public interface RoomRepository extends JpaRepository<Room, UUID> {
 	SELECT r
 	FROM Room r
 	INNER JOIN Floor f ON r.floor = f
-	WHERE (:status IS NULL OR r.trangThai = :status)
-	AND (:maxPrice IS NULL OR r.gia <= :maxPrice)
-	AND (:minPrice IS NULL OR r.gia >= :minPrice)
-	AND (:maxAcreage IS NULL OR r.dienTich <= :maxAcreage)
-	AND (:minAcreage IS NULL OR r.dienTich >= :minAcreage)
-	AND (:maxPerson IS NULL OR r.soNguoiToiDa <= :maxPerson)
+	WHERE (:status IS NULL OR r.description = :status)
+	AND (:maxPrice IS NULL OR r.price <= :maxPrice)
+	AND (:minPrice IS NULL OR r.price >= :minPrice)
+	AND (:maxAcreage IS NULL OR r.acreage <= :maxAcreage)
+	AND (:minAcreage IS NULL OR r.acreage >= :minAcreage)
+	AND (:maxPerson IS NULL OR r.maximumPeople <= :maxPerson)
 	AND (:nameFloor IS NULL OR f.nameFloor LIKE CONCAT('%', :nameFloor, '%'))
 	""")
     Page<Room> findAllPagingAndFilter(
@@ -37,4 +38,6 @@ public interface RoomRepository extends JpaRepository<Room, UUID> {
             @Param("maxPerson") Integer maxPerson,
             @Param("nameFloor") String nameFloor,
             Pageable pageable);
+
+	boolean existsByMaPhong(String id);
 }

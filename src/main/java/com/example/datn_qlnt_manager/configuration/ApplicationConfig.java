@@ -79,7 +79,7 @@ public class ApplicationConfig {
                         .refreshToken(null)
                         .roles(roles)
                         .build();
-                user.setCreateAt(Instant.now());
+                user.setCreatedAt(Instant.now());
 
                 userRepository.save(user);
             }

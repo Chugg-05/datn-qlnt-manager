@@ -71,11 +71,17 @@ public enum ErrorCode {
     PERMISSION_NOT_FOUND(404, "Permission not found", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND(404, "Role not found", HttpStatus.NOT_FOUND),
     EMAIL_NOT_FOUND(404, "Email not found", HttpStatus.NOT_FOUND),
+    /* FLOOR */
+    FLOOR_NOT_FOUND(404, "Floor not found", HttpStatus.NOT_FOUND),
+    /* ROOM */
+    ROOM_NOT_FOUND(404, "Room not found", HttpStatus.NOT_FOUND),
 
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
     PHONE_NUMBER_EXISTED(409, "Phone already existed.", HttpStatus.CONFLICT),
     PERMISSION_EXISTED(409, "Permission already existed", HttpStatus.BAD_REQUEST),
     ROLE_EXISTED(409, "Role already existed", HttpStatus.BAD_REQUEST),
+    /* ROOM */
+    MA_PHONG_EXISTED(409, "Ma phong already existed.", HttpStatus.BAD_REQUEST),
 
     CANT_REMOVE_USER(403, "You can't remove another user.", HttpStatus.FORBIDDEN),
     ACCOUNT_HAS_BEEN_LOCKED(403, "User account is locked.", HttpStatus.FORBIDDEN),

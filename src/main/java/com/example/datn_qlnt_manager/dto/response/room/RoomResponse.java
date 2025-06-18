@@ -15,6 +15,7 @@ public class RoomResponse {
 
     String id;
     String maPhong;
+    String tenPhong;
     Double dienTich;
     Double gia;
     Long soNguoiToiDa;

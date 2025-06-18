@@ -29,9 +29,9 @@ public abstract class AbstractEntity
 
     @Column(name = "created_at")
     @CreatedDate // tự động set khi add
-    Instant createAt;
+    Instant createdAt;
 
     @Column(name = "updated_at")
     @LastModifiedDate // tự động update thời gian khi Update
-    Instant updateAt;
+    Instant updatedAt;
 }

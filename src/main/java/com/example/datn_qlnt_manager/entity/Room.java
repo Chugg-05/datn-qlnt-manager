@@ -24,30 +24,35 @@ public class Room extends AbstractEntity {
     // sua ten theo tieng anh nha
 
     @Column(name = "ma_phong", nullable = false, unique = true, length = 20)
-    String maPhong;
+    String roomId;
+
+    @Column(name = "ten_phong", nullable = false)
+    String roomName;
 
     @Column(name = "dien_tich", nullable = false, precision = 3, scale = 2)
-    BigDecimal dienTich;
+    BigDecimal acreage;
 
     @Column(name = "gia", nullable = false, precision = 15, scale = 2)
-    BigDecimal gia;
+    BigDecimal price;
 
     @Builder.Default
     @Column(name = "so_nguoi_toi_da", nullable = false)
-    Integer soNguoiToiDa = 0;
+    Integer maximumPeople = 0;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "loai_phong")
-    RoomType loaiPhong;
+    RoomType roomType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai", nullable = false)
-    RoomStatus trangThai;
+    RoomStatus status;
 
     @Column(name = "mo_ta", columnDefinition = "TEXT")
-    String moTa;
+    String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tang_id")
     Floor floor;
+
+
 }

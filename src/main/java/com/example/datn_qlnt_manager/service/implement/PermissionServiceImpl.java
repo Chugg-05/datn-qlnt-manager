@@ -41,7 +41,7 @@ public class PermissionServiceImpl implements PermissionService {
         }
 
         Permission permission = permissionMapper.toPermission(request);
-        permission.setCreateAt(Instant.now());
+        permission.setCreatedAt(Instant.now());
         permission = permissionRepository.save(permission);
 
         return permissionMapper.toPermissionResponse(permission);
@@ -58,7 +58,7 @@ public class PermissionServiceImpl implements PermissionService {
         }
 
         permissionMapper.updatePermission(request, permission);
-        permission.setUpdateAt(Instant.now());
+        permission.setUpdatedAt(Instant.now());
 
         return permissionMapper.toPermissionResponse(permissionRepository.save(permission));
     }
