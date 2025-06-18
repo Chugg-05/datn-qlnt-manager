@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.example.datn_qlnt_manager.common.BuildingStatus;
+import com.example.datn_qlnt_manager.common.BuildingType;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -19,19 +20,33 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @Table(name = "toa_nha")
 public class Building extends AbstractEntity {
-    @Column(name = "ma_toa_nha", nullable = false, unique = true)
-    private String buildingCode;
+    @Column(name = "ma_toa_nha", unique = true)
+    String buildingCode;
 
-    @Column(name = "ten_toa_nha", nullable = false)
-    private String buildingName;
+    @Column(name = "ten_toa_nha")
+    String buildingName;
 
-    @Column(name = "dia_chi", nullable = false)
-    private String address;
+    @Column(name = "dia_chi")
+    String address;
+
+    @Column(name = "so_tang_thuc_te")
+    Integer actualNumberOfFloors;
+
+    @Column(name = "so_tang_cho_thue")
+    Integer numberOfFloorsForRent;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "trang_thai", nullable = false)
-    private BuildingStatus status;
+    @Column(name = "loai_toa_nha")
+    BuildingType buildingType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai")
+    BuildingStatus status;
 
     @Column(name = "mo_ta")
-    private String description;
+    String description;
+
+    @ManyToOne(fetch = FetchType.LAZY) // sửa
+    @JoinColumn(name = "user_id")
+    User user;
 }
