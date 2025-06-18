@@ -45,7 +45,7 @@ public class FloorServiceImpl implements FloorService {
 
         // Tìm tòa nhà theo ID
         Building building = buildingRepository.findById(request.getBuildingId())
-                .orElseThrow(() -> new AppException(ErrorCode.BUILDING_ID_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
         // Check trùng tên tầng trong cùng tòa nhà
         floorRepository.findByNameFloorAndBuilding_IdAndIdNot(
