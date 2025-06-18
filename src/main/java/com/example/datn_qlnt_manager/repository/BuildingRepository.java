@@ -8,8 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.entity.Building;
-
-import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BuildingRepository extends JpaRepository<Building, String> {
