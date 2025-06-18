@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -27,21 +28,28 @@ import lombok.extern.slf4j.Slf4j;
 public class RoleController {
     RoleService roleService;
 
+    @Operation(summary = "Phân trang, tìm kiếm, lọc vai trò (admin)")
+    @GetMapping
+    public ApiResponse<List<RoleResponse>> filterUsers(
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+
+        PaginatedResponse<RoleResponse> result = roleService.filterRoles(name, page, size);
+
+        return ApiResponse.<List<RoleResponse>>builder()
+                .message("Filter roles successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
     @Operation(summary = "Tạo vai trò")
     @PostMapping
     public ApiResponse<RoleResponse> createRole(@Valid @RequestBody RoleRequest request) {
         return ApiResponse.<RoleResponse>builder()
                 .message("Role has been created!")
                 .data(roleService.createRole(request))
-                .build();
-    }
-
-    @Operation(summary = "Lấy danh sách role")
-    @GetMapping
-    public ApiResponse<List<RoleResponse>> getRoles() {
-        return ApiResponse.<List<RoleResponse>>builder()
-                .message("Role List")
-                .data(roleService.getRoles())
                 .build();
     }
 

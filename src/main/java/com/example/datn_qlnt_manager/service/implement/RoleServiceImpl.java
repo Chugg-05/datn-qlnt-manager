@@ -4,6 +4,12 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.Meta;
+import com.example.datn_qlnt_manager.common.Pagination;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.dto.request.RoleRequest;
@@ -31,8 +37,26 @@ public class RoleServiceImpl implements RoleService {
     PermissionRepository permissionRepository;
 
     @Override
-    public List<RoleResponse> getRoles() {
-        return roleRepository.findAll().stream().map(roleMapper::toRoleResponse).toList();
+    public PaginatedResponse<RoleResponse> filterRoles(String name, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+
+        Page<Role> paging = roleRepository.filterRolesPaging(name, pageable);
+
+        List<RoleResponse> roles = paging.getContent().stream()
+                .map(roleMapper::toRoleResponse)
+                .toList();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<RoleResponse>builder().data(roles).meta(meta).build();
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -27,21 +28,28 @@ import lombok.extern.slf4j.Slf4j;
 public class PermissionController {
     PermissionService permissionService;
 
+    @Operation(summary = "Phân trang, tìm kiếm, lọc quyền (admin)")
+    @GetMapping
+    public ApiResponse<List<PermissionResponse>> filterPermissions(
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+
+        PaginatedResponse<PermissionResponse> result = permissionService.filterPermissions(name, page, size);
+
+        return ApiResponse.<List<PermissionResponse>>builder()
+                .message("Filter permissions successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
     @Operation(summary = "Tạo quyền")
     @PostMapping
     public ApiResponse<PermissionResponse> createRole(@Valid @RequestBody PermissionRequest request) {
         return ApiResponse.<PermissionResponse>builder()
                 .message("Permission has been created!")
                 .data(permissionService.createPermission(request))
-                .build();
-    }
-
-    @Operation(summary = "Lấy danh sách quyền")
-    @GetMapping
-    public ApiResponse<List<PermissionResponse>> getRoles() {
-        return ApiResponse.<List<PermissionResponse>>builder()
-                .message("Permissions List")
-                .data(permissionService.getPermissions())
                 .build();
     }
 
