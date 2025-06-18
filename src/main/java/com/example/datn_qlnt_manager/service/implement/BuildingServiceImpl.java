@@ -125,7 +125,6 @@ public class BuildingServiceImpl implements BuildingService {
                 .findById(buildingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
         building.setStatus(BuildingStatus.HUY_HOAT_DONG);
-
         buildingMapper.toBuildingResponse(buildingRepository.save(building));
     }
 

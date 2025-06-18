@@ -25,14 +25,6 @@ public enum ErrorCode {
     OTP_ALREADY_SENT(400, "OTP already sent", HttpStatus.BAD_REQUEST),
     EMAIL_SENDING_FAILED(400, "Email sending failed", HttpStatus.BAD_REQUEST),
 
-    //floor
-    FLOOR_NAME_INVALID(400, "Floor name can not be blank", HttpStatus.BAD_REQUEST),
-    MAX_ROOM_INVALID(400, "Maximum room must not be null", HttpStatus.BAD_REQUEST),
-    FLOOR_TYPE_INVALID(400, "Floor type must not be null", HttpStatus.BAD_REQUEST),
-    STATUS_TYPE_INVALID(400, "Floor status must not be null", HttpStatus.BAD_REQUEST),
-    MAX_ROOM_AT_LEAST(400, "Maximum number of rooms must be at least 1", HttpStatus.BAD_REQUEST),
-    MAX_ROOM_SEARCH(400, "Maximum room must be >= 0", HttpStatus.BAD_REQUEST),
-
     INVALID_KEY(400, "Invalid key.", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(400, "Invalid token.", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL_BLANK(400, "Username or email must not be blank", HttpStatus.BAD_REQUEST),
@@ -73,6 +65,7 @@ public enum ErrorCode {
     INVALID_OTP_CODE(400, "OTP code is incorrect or expired.", HttpStatus.BAD_REQUEST),
     INVALID_ISSUER(400, "Invalid issuer", HttpStatus.BAD_REQUEST),
     INVALID_AUDIENCE(400, "Invalid audience", HttpStatus.BAD_REQUEST),
+
     INVALID_FLOORS_NUMBER_FOR_RENT(
             400, "Number of floors for rent exceeds actual number of floors", HttpStatus.BAD_REQUEST),
     ACTUAL_FLOOR_NUMBER_IS_INVALID(400, "The actual number of floors must be at least {min}.", HttpStatus.BAD_REQUEST),
@@ -85,7 +78,16 @@ public enum ErrorCode {
     INVALID_BUILDING_TYPE_BLANK(400, "Building Type cannot be blank", HttpStatus.BAD_REQUEST),
     INVALID_BUILDING_STATUS_BLANK(400, "Building Status cannot be blank", HttpStatus.BAD_REQUEST),
 
+    //floor
+    FLOOR_NAME_INVALID(400, "Floor name can not be blank", HttpStatus.BAD_REQUEST),
+    MAX_ROOM_INVALID(400, "Maximum room must not be null", HttpStatus.BAD_REQUEST),
+    FLOOR_TYPE_INVALID(400, "Floor type must not be null", HttpStatus.BAD_REQUEST),
+    STATUS_TYPE_INVALID(400, "Floor status must not be null", HttpStatus.BAD_REQUEST),
+    MAX_ROOM_AT_LEAST(400, "Maximum number of rooms must be at least 1", HttpStatus.BAD_REQUEST),
+    MAX_ROOM_SEARCH(400, "Maximum room must be >= 0", HttpStatus.BAD_REQUEST),
+
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
+    BUILDING_ID_NOT_FOUND(404, "Building ID not found.", HttpStatus.NOT_FOUND),
     CHAT_NOT_FOUND(404, "Chat not found.", HttpStatus.NOT_FOUND),
     MESSAGE_NOT_FOUND(404, "Message not found.", HttpStatus.NOT_FOUND),
     API_ENDPOINT_NOT_FOUND(404, "API endpoint not found.", HttpStatus.NOT_FOUND),
@@ -95,7 +97,6 @@ public enum ErrorCode {
     BUILDING_NOT_FOUND(404, "Building not found", HttpStatus.NOT_FOUND),
     FLOOR_NOT_FOUND(404, "floor not found", HttpStatus.NOT_FOUND),
 
-
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
     PHONE_NUMBER_EXISTED(409, "Phone already existed.", HttpStatus.CONFLICT),
     FlOOR_EXISTED(409, "FLoor already existed.", HttpStatus.CONFLICT),
@@ -104,12 +105,9 @@ public enum ErrorCode {
     ROLE_EXISTED(409, "Role already existed", HttpStatus.BAD_REQUEST),
     BUILDING_CODE_EXISTED(409, "Building Code already existed.", HttpStatus.CONFLICT),
     BUILDING_NAME_EXISTED(409, "Building Name already existed.", HttpStatus.CONFLICT),
-
     CANT_REMOVE_USER(403, "You can't remove another user.", HttpStatus.FORBIDDEN),
     ACCOUNT_HAS_BEEN_LOCKED(403, "User account is locked.", HttpStatus.FORBIDDEN),
-
     ;
-
 
     final int code;
     final String message;

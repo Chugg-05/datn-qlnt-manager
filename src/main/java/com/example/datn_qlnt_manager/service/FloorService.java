@@ -19,7 +19,7 @@ public interface FloorService {
     PaginatedResponse<FloorResponse> filterFloors(FloorFilter filter, int page, int size);
 
     // xóa mềm (trạng thái tầng về KHONG_SU_DUNG)
-    ApiResponse<Void>softDeleteFloorById(String floorId);
+    void softDeleteFloorById(String floorId);
 
     //sửa
     ApiResponse<FloorResponse> updateFloor(String id, FloorUpdateRequest request);
