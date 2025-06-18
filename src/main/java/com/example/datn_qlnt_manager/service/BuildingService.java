@@ -11,7 +11,7 @@ public interface BuildingService {
 
     BuildingResponse updateBuilding(String buildingId, BuildingUpdateRequest request);
 
-    BuildingResponse softDeleteBuildingById(String buildingId);
+    void softDeleteBuildingById(String buildingId);
 
     PaginatedResponse<BuildingResponse> filterBuildings(BuildingFilter filter, int page, int size);
 

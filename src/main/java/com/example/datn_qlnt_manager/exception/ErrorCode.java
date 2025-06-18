@@ -25,14 +25,6 @@ public enum ErrorCode {
     OTP_ALREADY_SENT(400, "OTP already sent", HttpStatus.BAD_REQUEST),
     EMAIL_SENDING_FAILED(400, "Email sending failed", HttpStatus.BAD_REQUEST),
 
-    //floor
-    FLOOR_NAME_INVALID(400, "Floor name can not be blank", HttpStatus.BAD_REQUEST),
-    MAX_ROOM_INVALID(400, "Maximum room must not be null", HttpStatus.BAD_REQUEST),
-    FLOOR_TYPE_INVALID(400, "Floor type must not be null", HttpStatus.BAD_REQUEST),
-    STATUS_TYPE_INVALID(400, "Floor status must not be null", HttpStatus.BAD_REQUEST),
-    MAX_ROOM_AT_LEAST(400, "Maximum number of rooms must be at least 1", HttpStatus.BAD_REQUEST),
-    MAX_ROOM_SEARCH(400, "Maximum room must be >= 0", HttpStatus.BAD_REQUEST),
-
     INVALID_KEY(400, "Invalid key.", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(400, "Invalid token.", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL_BLANK(400, "Username or email must not be blank", HttpStatus.BAD_REQUEST),
@@ -86,6 +78,14 @@ public enum ErrorCode {
     INVALID_BUILDING_TYPE_BLANK(400, "Building Type cannot be blank", HttpStatus.BAD_REQUEST),
     INVALID_BUILDING_STATUS_BLANK(400, "Building Status cannot be blank", HttpStatus.BAD_REQUEST),
 
+    //floor
+    FLOOR_NAME_INVALID(400, "Floor name can not be blank", HttpStatus.BAD_REQUEST),
+    MAX_ROOM_INVALID(400, "Maximum room must not be null", HttpStatus.BAD_REQUEST),
+    FLOOR_TYPE_INVALID(400, "Floor type must not be null", HttpStatus.BAD_REQUEST),
+    STATUS_TYPE_INVALID(400, "Floor status must not be null", HttpStatus.BAD_REQUEST),
+    MAX_ROOM_AT_LEAST(400, "Maximum number of rooms must be at least 1", HttpStatus.BAD_REQUEST),
+    MAX_ROOM_SEARCH(400, "Maximum room must be >= 0", HttpStatus.BAD_REQUEST),
+
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     BUILDING_ID_NOT_FOUND(404, "Building ID not found.", HttpStatus.NOT_FOUND),
     CHAT_NOT_FOUND(404, "Chat not found.", HttpStatus.NOT_FOUND),
@@ -95,6 +95,7 @@ public enum ErrorCode {
     ROLE_NOT_FOUND(404, "Role not found", HttpStatus.NOT_FOUND),
     EMAIL_NOT_FOUND(404, "Email not found", HttpStatus.NOT_FOUND),
     BUILDING_NOT_FOUND(404, "Building not found", HttpStatus.NOT_FOUND),
+    FLOOR_NOT_FOUND(404, "floor not found", HttpStatus.NOT_FOUND),
 
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
     PHONE_NUMBER_EXISTED(409, "Phone already existed.", HttpStatus.CONFLICT),
@@ -106,12 +107,7 @@ public enum ErrorCode {
     BUILDING_NAME_EXISTED(409, "Building Name already existed.", HttpStatus.CONFLICT),
     CANT_REMOVE_USER(403, "You can't remove another user.", HttpStatus.FORBIDDEN),
     ACCOUNT_HAS_BEEN_LOCKED(403, "User account is locked.", HttpStatus.FORBIDDEN),
-    NOT_IN_GROUP(403, "You are not a member of this group.", HttpStatus.FORBIDDEN),
-    NOT_RELATED_TO_CHAT(403, "You are not related to this chat.", HttpStatus.FORBIDDEN),
-    CANT_DELETE_OTHER_MESSAGE(403, "You can't delete another user's message.", HttpStatus.FORBIDDEN),
-
-    CANNOT_ADD_USER_TO_SINGLE_CHAT(400, "You can't add a user to a single chat.", HttpStatus.BAD_REQUEST),
-    CANNOT_REMOVE_USER_FROM_SINGLE_CHAT(400, "You can't remove a user from a single chat.", HttpStatus.BAD_REQUEST);
+    ;
 
     final int code;
     final String message;

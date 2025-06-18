@@ -98,15 +98,11 @@ public class FloorServiceImpl implements FloorService {
     }
 
     @Override
-    public ApiResponse<Void> softDeleteFloorById(String floorId) { // xóa mềm
+    public void softDeleteFloorById(String floorId) { // xóa mềm
         Floor floor = floorRepository.findById(floorId)
                 .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
         floor.setStatus(FloorStatus.KHONG_SU_DUNG);
         floorRepository.save(floor);
-
-        return ApiResponse.<Void>builder()
-                .message("Floor deleted successfully!")
-                .build();
     }
 
     @Override

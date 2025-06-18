@@ -120,17 +120,17 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public BuildingResponse softDeleteBuildingById(String buildingId) {
+    public void softDeleteBuildingById(String buildingId) {
         Building building = buildingRepository
                 .findById(buildingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
         building.setStatus(BuildingStatus.HUY_HOAT_DONG);
-        return buildingMapper.toBuildingResponse(buildingRepository.save(building));
+        buildingMapper.toBuildingResponse(buildingRepository.save(building));
     }
 
     @Override
     public void deleteBuildingById(String buildingId) {
-        Building building = buildingRepository
+        buildingRepository
                 .findById(buildingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
         buildingRepository.deleteById(buildingId);
