@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.entity;
 
+import com.example.datn_qlnt_manager.common.FloorType;
 import jakarta.persistence.*;
 
 import com.example.datn_qlnt_manager.common.FloorStatus;
@@ -14,20 +15,29 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "tang")
+@Table(name = "tang",uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"toa_nha_id","ten_tang"})
+})
 public class Floor extends AbstractEntity {
 
-    @Column(name = "ten_tang", unique = true, nullable = false)
-    private String nameFloor;
+    @Column(name = "ten_tang", nullable = false)
+    String nameFloor;
+
+    @Column(name = "so_phong_toi_da", nullable = false)
+    Integer maximumRoom;
+
+    @Column(name = "loai_tang", nullable = false)
+    @Enumerated(EnumType.STRING)
+    FloorType floorType;
 
     @Column(name = "trang_thai", nullable = false)
     @Enumerated(EnumType.STRING)
-    private FloorStatus status;
+    FloorStatus status;
 
     @Column(name = "mo_ta")
-    private String description;
+    String descriptionFloor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "toa_nha_id", nullable = false)
-    private Building building;
+    Building building;
 }
