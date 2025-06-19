@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.constant;
 
 import java.util.List;
 
+// Enum để ánh xạ vai trò với quyền
 public enum PredefinedRolePermissionMapping {
     ADMIN(
             PredefinedRole.ADMIN_ROLE,
@@ -22,11 +23,13 @@ public enum PredefinedRolePermissionMapping {
     public final String roleName;
     public final List<String> permissions;
 
+    // Khởi tạo enum với tên vai trò và danh sách quyền
     PredefinedRolePermissionMapping(String roleName, List<String> permissions) {
         this.roleName = roleName;
         this.permissions = permissions;
     }
 
+    // Trả về các quyền cho một tên vai trò nhất định
     public static List<String> getPermissionsForRole(String roleName) {
         for (PredefinedRolePermissionMapping entry : values()) {
             if (entry.roleName.equals(roleName)) return entry.permissions;
