@@ -1,14 +1,13 @@
 package com.example.datn_qlnt_manager.service;
 
-import java.util.List;
-
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.request.PermissionRequest;
 import com.example.datn_qlnt_manager.dto.response.PermissionResponse;
 
 public interface PermissionService {
-    PermissionResponse createPermission(PermissionRequest request);
+    PaginatedResponse<PermissionResponse> filterPermissions(String name, int page, int size);
 
-    List<PermissionResponse> getPermissions();
+    PermissionResponse createPermission(PermissionRequest request);
 
     PermissionResponse updatePermission(String permissionId, PermissionRequest request);
 
