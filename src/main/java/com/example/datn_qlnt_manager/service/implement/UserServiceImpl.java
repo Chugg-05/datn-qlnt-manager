@@ -16,7 +16,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
@@ -53,6 +52,41 @@ public class UserServiceImpl implements UserService {
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
     Cloudinary cloudinary;
+
+    @Override
+    public PaginatedResponse<UserResponse> filterUsers(UserFilter filter, int page, int size) {
+        // tạo đối tượng phân trang
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size); // đảm bảo page luôn >= 0
+
+        // custom lọc người dùng theo dk kèm phân trang
+        Page<User> paging = userRepository.filterUsersPaging(
+                filter.getFullName(),
+                filter.getEmail(),
+                filter.getPhoneNumber(),
+                filter.getGender(),
+                filter.getUserStatus(),
+                filter.getRole(),
+                pageable);
+
+        // chuyển ds user entity sang UserResponse để return
+        List<UserResponse> users = paging.getContent().stream()
+                .map(userMapper::toUserResponse) // ánh xạ từng entity
+                .toList();
+
+        // tạo đối tượng chứa thông tin phân trang
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        // trả về ds data và meta
+        return PaginatedResponse.<UserResponse>builder().data(users).meta(meta).build();
+    }
 
     @Override
     @Transactional
@@ -109,34 +143,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(String userId) {
-        userRepository.deleteById(userId);
-    }
-
-    @Override
-    public String uploadProfilePicture(MultipartFile file) {
-        try {
-            @SuppressWarnings("unchecked") // bỏ qua cảnh báo
-            Map<String, Object> uploadResult = (Map<String, Object>) cloudinary
-                    .uploader()
-                    .upload(
-                            file.getBytes(),
-                            Map.of("resource_type", "image", "upload_preset", "DATN_QLNT", "folder", "avatar"));
-
-            return (String) uploadResult.get("secure_url");
-        } catch (IOException | AppException e) {
-            throw new AppException(ErrorCode.UPLOAD_FAILED);
-        }
-    }
-
-    @Override
-    public User findUserWithRolesAndPermissionsById(String id) {
-        return userRepository
-                .findUserWithRolesAndPermissionsById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-    }
-
-    @Override
     public UserResponse updateUserForAdmin(String userId, UserUpdateForAdminRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
@@ -161,44 +167,100 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUser(@PathVariable("userId") String userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        return userMapper.toUserResponse(user);
+    public String uploadProfilePicture(MultipartFile file) {
+        try {
+            @SuppressWarnings("unchecked") // bỏ qua cảnh báo
+            Map<String, Object> uploadResult = (Map<String, Object>) cloudinary
+                    .uploader()
+                    .upload(
+                            file.getBytes(),
+                            Map.of("resource_type", "image", "upload_preset", "DATN_QLNT", "folder", "avatar"));
+
+            return (String) uploadResult.get("secure_url");
+        } catch (IOException | AppException e) {
+            throw new AppException(ErrorCode.UPLOAD_FAILED);
+        }
     }
 
     @Override
-    public PaginatedResponse<UserResponse> filterUsers(UserFilter filter, int page, int size) {
-        // tạo đối tượng phân trang
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size); // đảm bảo page luôn >= 0
+    public void deleteUserById(String userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        userRepository.deleteById(userId);
+    }
 
-        // custom lọc người dùng theo dk kèm phân trang
-        Page<User> paging = userRepository.filterUsersPaging(
-                filter.getFullName(),
-                filter.getEmail(),
-                filter.getPhoneNumber(),
-                filter.getGender(),
-                filter.getUserStatus(),
-                filter.getRole(),
-                pageable);
+    @Override
+    public void softDeleteUserById(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        // chuyển ds user entity sang UserResponse để return
-        List<UserResponse> users = paging.getContent().stream()
-                .map(userMapper::toUserResponse) // ánh xạ từng entity
-                .toList();
+        if (user.getUserStatus() == UserStatus.DELETED) {
+            throw new AppException(ErrorCode.USER_ALREADY_DELETED);
+        }
 
-        // tạo đối tượng chứa thông tin phân trang
-        Meta<?> meta = Meta.builder()
-                .pagination(Pagination.builder()
-                        .count(paging.getNumberOfElements())
-                        .perPage(size)
-                        .currentPage(page)
-                        .totalPages(paging.getTotalPages())
-                        .total(paging.getTotalElements())
-                        .build())
-                .build();
+        user.setUserStatus(UserStatus.DELETED);
+        user.setUpdatedAt(Instant.now());
+        // Cập nhật trạng thái người dùng thành DELETED
+        userRepository.save(user);
+    }
 
-        // trả về ds data và meta
-        return PaginatedResponse.<UserResponse>builder().data(users).meta(meta).build();
+    @Override
+    public void restoreUserById(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getUserStatus() != UserStatus.DELETED) {
+            throw new AppException(ErrorCode.USER_NOT_DELETED);
+        }
+
+        user.setUserStatus(UserStatus.ACTIVE);
+        user.setUpdatedAt(Instant.now());
+        // Cập nhật trạng thái người dùng thành ACTIVE
+        userRepository.save(user);
+    }
+
+    @Override
+    public void accountLockById(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getUserStatus() == UserStatus.LOCKED) {
+            throw new AppException(ErrorCode.USER_ALREADY_LOCKED);
+        }
+
+        user.setUserStatus(UserStatus.LOCKED);
+        user.setUpdatedAt(Instant.now());
+        // Cập nhật trạng thái người dùng thành LOCKED
+        userRepository.save(user);
+    }
+
+    @Override
+    public void recoverLockedUsersById(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getUserStatus() != UserStatus.LOCKED) {
+            throw new AppException(ErrorCode.USER_NOT_LOCKED);
+        }
+
+        user.setUserStatus(UserStatus.ACTIVE);
+        user.setUpdatedAt(Instant.now());
+        // Cập nhật trạng thái người dùng thành ACTIVE
+        userRepository.save(user);
+    }
+
+    @Override
+    public User findUserWithRolesAndPermissionsById(String id) {
+        return userRepository
+                .findUserWithRolesAndPermissionsById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    public UserResponse getUserById(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return userMapper.toUserResponse(user);
     }
 
     @Override

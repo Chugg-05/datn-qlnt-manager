@@ -1,14 +1,12 @@
 package com.example.datn_qlnt_manager.configuration;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import com.example.datn_qlnt_manager.service.implement.GoogleJwkCacheService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +20,6 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -42,38 +38,40 @@ public class TokenProvider {
     static final String ISSUER = "TroHub88";
     final JwtUtil jwtUtil;
     final RedisService redisService;
+    final GoogleJwkCacheService jwkCacheService;
 
     @Value("${google.client.id}")
     protected String CLIENT_ID;
 
-    private static final String GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs";
     private static final String EXPECTED_ISSUER = "https://accounts.google.com";
 
+    // Tạo token truy cập (access token)
     public String generateAccessToken(User user) {
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS256); // sử dụng thuật toán HS256 để ký token
 
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getId()) // định danh user
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder() // tạo một bộ claims cho token
+                .subject(user.getId()) // id của người dùng
                 .issuer(ISSUER) // tên hệ thống
-                .issueTime(Date.from(Instant.now())) // thời gian phát hành
+                .issueTime(Date.from(Instant.now())) // thời gian phát hành token
                 .expirationTime(Date.from(
                         Instant.now().plus(jwtUtil.getValidDuration(), ChronoUnit.SECONDS))) // thời gian hết hạn
-                .claim(EMAIL_CLAIM, user.getEmail()) // custom claim
-                .jwtID(UUID.randomUUID().toString()) // id
+                .claim(EMAIL_CLAIM, user.getEmail()) // thêm claim email vào token
+                .jwtID(UUID.randomUUID().toString()) // tạo một unique ID cho token (jti)
                 .build();
 
         Payload payload = new Payload(
-                jwtClaimsSet.toJSONObject()); // chuyển các claims sang json rồi bọc lại làm pay load cho JWT
-        JWSObject jwsObject = new JWSObject(header, payload);
+                jwtClaimsSet.toJSONObject()); // chuyển đổi bộ claims thành JSON và tạo payload
+        JWSObject jwsObject = new JWSObject(header, payload); // tạo một JWSObject với header và payload đã tạo
 
         try {
-            jwsObject.sign(new MACSigner(jwtUtil.getSecretKey())); // ký token
-            return jwsObject.serialize(); // trả về token dạng chuỗi
+            jwsObject.sign(new MACSigner(jwtUtil.getSecretKey())); // ký JWSObject bằng secret key
+            return jwsObject.serialize(); // chuyển đổi JWSObject thành chuỗi và trả về
         } catch (JOSEException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
+    // Tạo token làm mới (refresh token)
     public String generateRefreshToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
 
@@ -86,7 +84,7 @@ public class TokenProvider {
                         .toEpochMilli()))
                 .claim(EMAIL_CLAIM, user.getEmail())
                 .jwtID(UUID.randomUUID().toString())
-                .build();
+                .build(); // Tạo bộ claims cho refresh token
 
         var payload = new Payload(claimSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);
@@ -100,136 +98,141 @@ public class TokenProvider {
         return jwsObject.serialize();
     }
 
+    // Xác thực và giải mã token
     public SignedJWT verifyToken(String token) {
+        if (StringUtils.isBlank(token)) {
+            throw new AppException(ErrorCode.INVALID_TOKEN_FORMAT);
+        }
+
+        if (token.startsWith("Bearer")) {
+            token = token.replace("Bearer", "").trim();
+        }
+
+        SignedJWT signedJWT;
         try {
-            if (token.startsWith("Bearer")) {
-                token = token.replace("Bearer ", "").trim();
-            }
+            signedJWT = SignedJWT.parse(token); // Giải mã token thành SignedJWT
+        } catch (ParseException e) {
+            log.warn("Token parse failed: {}", e.getMessage());
+            throw new AppException(ErrorCode.INVALID_TOKEN_FORMAT);
+        }
 
-            SignedJWT signedJWT;
-
-            try {
-                signedJWT = SignedJWT.parse(token);
-            } catch (ParseException e) {
-                throw new AppException(ErrorCode.INVALID_TOKEN_FORMAT);
-            }
-
-            JWSVerifier verifier = new MACVerifier(jwtUtil.getSecretKey());
-
-            boolean verified;
-            try {
-                verified = signedJWT.verify(verifier);
-            } catch (JOSEException e) {
+        try {
+            JWSVerifier verifier = new MACVerifier(jwtUtil.getSecretKey()); // Tạo verifier với secret key
+            if (!signedJWT.verify(verifier)) { // Kiểm tra chữ ký của token
+                log.warn("Token signature verification failed.");
                 throw new AppException(ErrorCode.INVALID_SIGNATURE);
             }
+        } catch (JOSEException e) {
+            log.warn("JOSE exception during verification: {}", e.getMessage());
+            throw new AppException(ErrorCode.INVALID_SIGNATURE);
+        }
 
-            if (!verified) {
-                throw new AppException(ErrorCode.INVALID_SIGNATURE);
-            }
-
-            Date expiration = signedJWT.getJWTClaimsSet().getExpirationTime();
+        try {
+            Date expiration = signedJWT.getJWTClaimsSet().getExpirationTime(); // Lấy thời gian hết hạn từ claims
             if (expiration == null || expiration.before(Date.from(Instant.now()))) {
+                log.warn("Token expired at: {}", expiration);
                 throw new AppException(ErrorCode.EXPIRED_TOKEN);
             }
 
-            String jti = signedJWT.getJWTClaimsSet().getJWTID();
-            if (StringUtils.isNotBlank(redisService.get(jti))) {
+            String jti = signedJWT.getJWTClaimsSet().getJWTID(); // Lấy jti (unique ID) từ claims
+            if (StringUtils.isNotBlank(redisService.get(jti))) { // Kiểm tra xem token có bị blacklist không
+                log.warn("Token is blacklisted: jti={}", jti);
                 throw new AppException(ErrorCode.TOKEN_BLACKLISTED);
             }
 
-            return signedJWT;
-
-        } catch (AppException e) {
-            throw e;
+            return signedJWT; // Trả về SignedJWT đã xác thực
+        } catch (ParseException e) {
+            log.error("JWT claims parse failed: {}", e.getMessage(), e);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         } catch (Exception e) {
+            log.error("Unexpected error in verifyToken: {}", e.getMessage(), e);
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
     }
 
+    // Lấy email từ token
     public String verifyAndExtractEmail(String token) throws ParseException {
+        // Lấy claim email từ token
         Object emailClaim = this.verifyToken(token).getJWTClaimsSet().getClaim(EMAIL_CLAIM);
 
-        if (Objects.isNull(emailClaim)) {
+        if (Objects.isNull(emailClaim)) { // Kiểm tra xem claim email có tồn tại không
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
-        return emailClaim.toString();
+        return emailClaim.toString(); // Trả về email từ claim
     }
 
-    //    public String verifyAndExtractEmail(ServletServerHttpRequest request) throws ParseException {
-    //        String token = request.getServletRequest().getHeader(HttpHeaders.AUTHORIZATION);
-    //        Object emailClaim = this.verifyToken(token).getJWTClaimsSet().getClaim(EMAIL_CLAIM);
-    //
-    //        if (Objects.isNull(emailClaim)) {
-    //            throw new AppException(ErrorCode.UNAUTHORIZED);
-    //        }
-    //
-    //        return emailClaim.toString();
-    //    }
-
+    // Lấy id từ token
     public long verifyAndExtractTokenExpired(String token) throws ParseException {
+        // Lấy claim thời gian hết hạn từ token
         Date expiredClaim = this.verifyToken(token).getJWTClaimsSet().getExpirationTime();
 
         if (Objects.isNull(expiredClaim)) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
-        return expiredClaim.getTime();
+        return expiredClaim.getTime(); // Trả về thời gian hết hạn của token
     }
 
-    // Xác thực token đăng nhập từ gg
-    public Map<String, Object> verifyTokenIdGoogle(String token) throws ParseException, IOException, JOSEException {
-        SignedJWT signedJWT = SignedJWT.parse(token); // giải mã ID Token đc truyền vào
-        String keyId = signedJWT.getHeader().getKeyID(); // lấy key trong JWT Header
+    // Xác minh ID Token của Google
+    public Map<String, Object> verifyTokenIdGoogle(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token); // giải mã token thành SignedJWT
+            String keyId = signedJWT.getHeader().getKeyID(); // lấy keyId từ header của token
 
-        InputStream is = URI.create(GOOGLE_JWK_URL).toURL().openStream();
-        JWKSet jwkSet = JWKSet.load(is); // tải ds pubkey của gg
+            // Lấy JWK tương ứng với keyId
+            JWK jwk = jwkCacheService.getJwkByKeyId(keyId)
+                    .orElseThrow(() -> {
+                        log.error("Không tìm thấy public key tương ứng: {}", keyId);
+                        return new AppException(ErrorCode.UNAUTHORIZED);
+                    });
 
-        JWK jwk = jwkSet.getKeyByKeyId(keyId); // tìm đúng public key với keyId từ token
-        if (jwk == null) {
-            log.error("Không tìm thấy public key tương ứng: {}", keyId);
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-        }
+            // ép kiểu JWK thành RSAPublicKey
+            RSAPublicKey publicKey = jwk.toRSAKey().toRSAPublicKey();
 
-        RSAKey rsaKey = (RSAKey) jwk; // Convert JWK về RSAKey để láy RSAPublicKey
-        RSAPublicKey publicKey = rsaKey.toRSAPublicKey();
+            // Kiểm tra chữ ký của token bằng public key
+            boolean isVerified = signedJWT.verify(new RSASSAVerifier(publicKey));
+            if (!isVerified) {
+                log.error("Token không hợp lệ (chữ ký sai).");
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
 
-        // xác minh chữ ký JWT có khớp với RSAPublicKey không
-        boolean isVerified = signedJWT.verify(new RSASSAVerifier(publicKey));
+            // Kiểm tra các claims trong token
+            Map<String, Object> claims = signedJWT.getJWTClaimsSet().getClaims();
+            if (!EXPECTED_ISSUER.equals(claims.get("iss"))) {
+                log.error("Sai issuer.");
+                throw new AppException(ErrorCode.INVALID_ISSUER);
+            }
 
-        if (!isVerified) {
-            log.error("❌ Token không hợp lệ (chữ ký sai).");
+            // Lấy claim "aud" từ token
+            Object audClaim = claims.get("aud");
+            if (!(audClaim instanceof List<?> audList) || audList.isEmpty()) {
+                log.error("Audience không hợp lệ.");
+                throw new AppException(ErrorCode.INVALID_AUDIENCE);
+            }
+
+            // Lấy giá trị đầu tiên trong danh sách audience
+            String audience = String.valueOf(audList.getFirst());
+            if (!CLIENT_ID.equals(audience)) {
+                log.error("Sai audience.");
+                throw new AppException(ErrorCode.INVALID_AUDIENCE);
+            }
+
+            // Lấy thời gian hết hạn từ claims
+            long exp = signedJWT.getJWTClaimsSet().getExpirationTime().getTime();
+            if (System.currentTimeMillis() > exp) {
+                log.error("Token đã hết hạn.");
+                throw new AppException(ErrorCode.EXPIRED_TOKEN);
+            }
+
+            // Trả về các claims đã xác thực
+            return claims;
+        } catch (AppException e) {
+            log.error("Lỗi xác thực token: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Lỗi không xác định khi xác thực Google token: {}", e.getMessage(), e);
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
-
-        Map<String, Object> claims = signedJWT.getJWTClaimsSet().getClaims();
-
-        if (!EXPECTED_ISSUER.equals(claims.get("iss"))) {
-            log.error("❌ Sai issuer.");
-            throw new AppException(ErrorCode.INVALID_ISSUER);
-        }
-
-        Object audClaim = claims.get("aud");
-
-        if (!(audClaim instanceof List<?> audList) || audList.isEmpty()) {
-            log.error("❌ Audience không hợp lệ.");
-            throw new AppException(ErrorCode.INVALID_AUDIENCE);
-        }
-
-        String audience = String.valueOf(audList.get(0));
-
-        if (!CLIENT_ID.equals(audience)) {
-            log.error("❌ Sai audience.");
-            throw new AppException(ErrorCode.INVALID_AUDIENCE);
-        }
-
-        long exp = signedJWT.getJWTClaimsSet().getExpirationTime().getTime(); // lấy thời gian hết hạn để kiểm tra
-
-        if (System.currentTimeMillis() > exp) {
-            log.error("❌ Token đã hết hạn.");
-            throw new AppException(ErrorCode.TOKEN_BLACKLISTED);
-        }
-
-        return claims;
     }
 }

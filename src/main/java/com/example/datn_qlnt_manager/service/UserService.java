@@ -1,6 +1,5 @@
 package com.example.datn_qlnt_manager.service;
 
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -15,17 +14,25 @@ public interface UserService {
 
     UserResponse createUser(UserCreationRequest request);
 
+    void softDeleteUserById(String userId);
+
+    void restoreUserById(String userId);
+
+    void accountLockById(String userId);
+
+    void recoverLockedUsersById(String userId);
+
     User findUserWithRolesAndPermissionsById(String id);
 
     User getCurrentUser();
 
     UserResponse updateUser(String userId, UserUpdateRequest request);
 
-    void deleteUser(String userId);
+    void deleteUserById(String userId);
 
     String uploadProfilePicture(MultipartFile file);
 
-    UserResponse getUser(@PathVariable("userId") String userId);
+    UserResponse getUserById(String userId);
 
     PaginatedResponse<UserResponse> filterUsers(UserFilter filter, int page, int size);
 

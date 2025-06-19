@@ -1,6 +1,5 @@
 package com.example.datn_qlnt_manager.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -36,9 +35,6 @@ public interface UserRepository extends JpaRepository<User, String> {
             @Param("userStatus") UserStatus userStatus,
             @Param("role") String role,
             Pageable pageable);
-
-    @Query("SELECT u FROM User u JOIN u.roles r WHERE r.name = :role")
-    List<User> getUsersByRole(@Param("role") String role);
 
     // Lấy User kèm Roles và Permissions
     @Query("SELECT DISTINCT u FROM User u " + // DISTINCT: tránh bị nhân bản dòng khi join nhiều bảng

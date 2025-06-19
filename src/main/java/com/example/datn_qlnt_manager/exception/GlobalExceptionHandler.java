@@ -21,8 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    //xử lý ngoại lệ chung
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
+        log.error("Unhandled exception occurred: {}", e.getMessage(), e);
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .message(ErrorCode.INTERNAL_SERVER_ERROR.getMessage())
                 .code(ErrorCode.INTERNAL_SERVER_ERROR.getCode())
@@ -31,6 +33,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
+    // xử lý ngoại lệ tùy chỉnh
     @ExceptionHandler(value = AppException.class)
     public ResponseEntity<ApiResponse<?>> handleAppException(AppException e) {
         ErrorCode errorCode = e.getErrorCode();
@@ -42,9 +45,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
-    // url invalid
+    // trình xử lý không tìm thấy tài nguyên
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<?> handleNotFoundException(NoResourceFoundException e) {
+        log.warn("No resource found: {}", e.getMessage(), e);
+
         ErrorCode errorCode = ErrorCode.API_ENDPOINT_NOT_FOUND;
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .message(errorCode.getMessage())
@@ -54,9 +59,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
-    // handler account has been locked
+    // trình xử lý ngoại lệ khóa tài khoản
     @ExceptionHandler(value = LockedException.class)
     public ResponseEntity<ApiResponse<?>> handleLockedException(LockedException e) {
+        log.warn("Account is locked: {}", e.getMessage(), e);
+
         ErrorCode errorCode = ErrorCode.ACCOUNT_HAS_BEEN_LOCKED;
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .message(errorCode.getMessage())
@@ -66,6 +73,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
+    // trình xử lý ngoại lệ thiếu tiêu đề yêu cầu
     @ExceptionHandler(value = MissingRequestHeaderException.class)
     public ResponseEntity<ApiResponse<?>> handleMissingRequestHeaderException(MissingRequestHeaderException e) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
@@ -76,6 +84,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
+    // trình xử lý ngoại lệ không hợp lệ
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String enumKey = e.getFieldError() != null ? e.getFieldError().getDefaultMessage() : "INVALID_KEY";
@@ -90,7 +99,7 @@ public class GlobalExceptionHandler {
             ConstraintViolation<?> constraintViolation = null;
 
             if (!allErrors.isEmpty()) {
-                constraintViolation = allErrors.get(0).unwrap(ConstraintViolation.class);
+                constraintViolation = allErrors.getFirst().unwrap(ConstraintViolation.class);
             }
 
             if (constraintViolation != null) {
@@ -111,6 +120,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
+    // trình xử lý ngoại lệ không hợp lệ
     private String mapAttribute(String message, Map<String, Object> attributes) {
         String result = message;
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {

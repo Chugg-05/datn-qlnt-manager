@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import com.example.datn_qlnt_manager.common.UserStatus;
 import jakarta.transaction.Transactional;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,11 +22,23 @@ import lombok.experimental.FieldDefaults;
 public class CustomUserDetailService implements UserDetailsService {
     UserRepository userRepository;
 
-    @Override // ghi đè phương thức từ lớp cha, dễ phát hiện lỗi khi viết sai tên phương thức
+    // Phương pháp này được Spring Security sử dụng để tải thông tin chi tiết người dùng theo tên người dùng (trong trường hợp này là email).
+    @Override
     @Transactional
     public User loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository
+        User user = userRepository
                 .findWithRolesAndPermissionsByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_EMAIL_OR_PASSWORD));
+
+        // Kiểm tra trạng thái của người dùng trước khi tải thông tin chi tiết
+        if (user.getUserStatus() == UserStatus.DELETED) {
+            throw new AppException(ErrorCode.USER_ALREADY_DELETED);
+        }
+
+        if (user.getUserStatus() == UserStatus.LOCKED) {
+            throw new AppException(ErrorCode.USER_ALREADY_LOCKED);
+        }
+
+        return user;
     }
 }

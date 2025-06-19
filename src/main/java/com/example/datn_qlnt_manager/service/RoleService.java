@@ -1,12 +1,11 @@
 package com.example.datn_qlnt_manager.service;
 
-import java.util.List;
-
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.request.RoleRequest;
 import com.example.datn_qlnt_manager.dto.response.RoleResponse;
 
 public interface RoleService {
-    List<RoleResponse> getRoles();
+    PaginatedResponse<RoleResponse> filterRoles(String name, int page, int size);
 
     RoleResponse createRole(RoleRequest request);
 

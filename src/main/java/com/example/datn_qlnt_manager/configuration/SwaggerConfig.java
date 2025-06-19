@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
+    // Cấu hình Swagger cho API TroHub
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
@@ -18,6 +19,7 @@ public class SwaggerConfig {
                 );
     }
 
+    // Tạo nhóm OpenAPI cho các public endpoint
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()

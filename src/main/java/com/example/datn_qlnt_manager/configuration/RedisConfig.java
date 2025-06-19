@@ -18,29 +18,27 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RedisConfig {
-    // Lấy giá trị host Redis từ file cấu hình (application.yml)
+    // Lấy giá trị host Redis
     @Value("${spring.data.redis.host}")
-    String redisHost; // Lấy giá trị port Redis từ file cấu hình
+    String redisHost;
 
+    // Lấy giá trị port Redis
     @Value("${spring.data.redis.port}")
-    int redisPort; // Lấy username Redis (nếu có) từ file cấu hình
+    int redisPort;
 
+    // Lấy giá trị username Redis
     @Value("${spring.data.redis.username}")
-    String redisUsername; // Lấy password Redis từ file cấu hình
+    String redisUsername;
 
+    // Lấy giá trị password Redis
     @Value("${spring.data.redis.password}")
     String redisPassword;
 
-    /**
-     *
-     * Bean LettuceConnectionFactory để kết nối đến Redis server.
-     * Sử dụng RedisStandaloneConfiguration để cấu hình thông tin kết nối.
-     * Gán hostname, port, username và password cho cấu hình Redis.
-     *
-     */
+    // Tạo kết nối Redis sử dụng LettuceConnectionFactory
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
 
+        // Cấu hình kết nối Redis với các thông số như host, port, username và password
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(redisHost);
 
@@ -50,32 +48,34 @@ public class RedisConfig {
 
         config.setPassword(redisPassword);
 
-        // Trả về factory để Spring Data Redis sử dụng kết nối Lettuce
+        // Trả về factory để Spring Data Redis sử dụng kết nối LettuceConnectionFactory
         return new LettuceConnectionFactory(config);
     }
 
-    /**
-     *
-     * Bean RedisTemplate dùng để thao tác với Redis.
-     * Định nghĩa các serializer cho key và value giúp dữ liệu lưu trữ dễ đọc và tránh lỗi.
-     *
-     */
+    // Tạo RedisTemplate để sử dụng trong ứng dụng
     @Bean
     @Primary
     public RedisTemplate<String, Object> redisTemplate() {
 
+        // Tạo một RedisTemplate với kiểu dữ liệu String cho key và Object cho value
         RedisTemplate<String, Object> template = new RedisTemplate<>();
-        // Set connection factory cho RedisTemplate
 
+        // Thiết lập kết nối Redis cho RedisTemplate
         template.setConnectionFactory(redisConnectionFactory());
-        // Chuyển đổi key thành String để dễ đọc và debug
 
+        // Thiết lập serializer cho key và value của RedisTemplate
         template.setKeySerializer(new StringRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer());
-        // Chuyển đổi value sang JSON giúp dễ đọc và tránh lỗi serialization
 
+        // Thiết lập serializer cho key trong hash
+        template.setHashKeySerializer(new StringRedisSerializer());
+
+        // Sử dụng GenericJackson2JsonRedisSerializer để serialize và deserialize giá trị
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+        // Thiết lập serializer cho giá trị trong hash
         template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+        // Khởi tạo RedisTemplate
         return template;
     }
 }
