@@ -5,6 +5,8 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -25,8 +27,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -116,7 +116,6 @@ public class AuthenticationController {
 
         return ApiResponse.<Void>builder().message("Logout successful!").build();
     }
-
     @Operation(summary = "Quên mật khẩu")
     @PostMapping("/forgot-password")
     public ApiResponse<String> sendOtp(@Valid @RequestBody ForgotPasswordRequest request) {

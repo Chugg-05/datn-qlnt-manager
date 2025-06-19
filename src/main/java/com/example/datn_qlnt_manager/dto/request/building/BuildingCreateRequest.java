@@ -16,7 +16,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BuildingCreateRequest {
 
-    //    @NotNull(message = "USER_NOT_FOUND")
     String userId;
 
     @NotBlank(message = "INVALID_BUILDING_CODE_BLANK")

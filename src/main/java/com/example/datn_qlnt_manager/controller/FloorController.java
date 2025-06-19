@@ -31,18 +31,22 @@ public class FloorController {
 
     FloorService floorService;
 
-    @Operation(summary = "thêm tầng mới")
+    @Operation(summary = "Thêm tầng mới")
     @PostMapping
     public ApiResponse<FloorResponse> createFloor(@Valid @RequestBody FloorCreationRequest request) {
-        return floorService.createFloor(request);
+        return ApiResponse.<FloorResponse>builder()
+                .message("Floor has been created!")
+                .data(floorService.createFloor(request))
+                .build();
     }
 
-    @Operation(summary = "Hiển hị, lọc(trạng thái tầng), tìm kiếm (tên tầng, số tầng tối đa)")
+    @Operation(summary = "Hiển hị, lọc (trạng thái tầng), tìm kiếm (tên tầng, số tầng tối đa)")
     @GetMapping
     public ApiResponse<List<FloorResponse>> getFloors(
             @Valid @ModelAttribute FloorFilter filter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "15") int size
+
     ) {
         PaginatedResponse<FloorResponse> result = floorService.filterFloors(filter, page, size);
         return ApiResponse.<List<FloorResponse>>builder()
@@ -52,9 +56,9 @@ public class FloorController {
                 .build();
     }
 
-    @Operation(summary = "Xóa mềm(trạng thái của tầng về KHONG_SU_DUNG)")
-    @DeleteMapping("/soft-delete/{id}")
-    public ApiResponse<Void> softDeleteFloor(@PathVariable("id") String floorId) {
+    @Operation(summary = "Xóa mềm (chuyển trạng thái thành KHONG_SU_DUNG)")
+    @PutMapping("/soft-delete/{floorId}")
+    public ApiResponse<Void> softDeleteFloor(@PathVariable("floorId") String floorId) {
         floorService.softDeleteFloorById(floorId);
         return ApiResponse.<Void>builder()
                 .message("Floor deleted successfully.")
@@ -62,16 +66,23 @@ public class FloorController {
     }
 
     @Operation(summary = "Sửa thông tin tầng")
-    @PutMapping("/{id}")
+    @PutMapping("/{floorId}")
     public ApiResponse<FloorResponse> updateFloor(
-            @PathVariable("id") String id,
+            @PathVariable("floorId") String floorId,
             @Valid @RequestBody FloorUpdateRequest request) {
-        return floorService.updateFloor(id, request);
+        return ApiResponse.<FloorResponse>builder()
+                .message("Floor has been updated!")
+                .data(floorService.updateFloor(floorId, request))
+                .build();
     }
 
-    @Operation(summary = "Xóa tầng (Mất dữ liệu luôn từ DB)")
-    @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteFloor(@PathVariable("id") String floorId) {
-        return floorService.deleteFloor(floorId);
+    @Operation(summary = "Xóa hoàn toàn")
+    @DeleteMapping("/{floorId}")
+    public ApiResponse<String> deleteFloor(@PathVariable("floorId") String floorId) {
+         floorService.deleteFloor(floorId);
+         return ApiResponse.<String>builder()
+                 .data("Floor deleted successfully.")
+                 .build();
+
     }
 }

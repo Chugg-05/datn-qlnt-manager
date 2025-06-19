@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,8 +12,6 @@ import com.example.datn_qlnt_manager.dto.request.SendEmailRequest;
 import com.example.datn_qlnt_manager.dto.response.EmailResponse;
 import com.example.datn_qlnt_manager.service.EmailService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

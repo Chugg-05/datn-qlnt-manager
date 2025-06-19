@@ -3,7 +3,6 @@ package com.example.datn_qlnt_manager.service.implement;
 import com.example.datn_qlnt_manager.common.FloorStatus;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
-import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorCreationRequest;
@@ -41,11 +40,11 @@ public class FloorServiceImpl implements FloorService {
     FloorMapper floorMapper;
 
     @Override
-    public ApiResponse<FloorResponse> createFloor(FloorCreationRequest request) {
+    public FloorResponse createFloor(FloorCreationRequest request) {
 
         // Tìm tòa nhà theo ID
         Building building = buildingRepository.findById(request.getBuildingId())
-                .orElseThrow(() -> new AppException(ErrorCode.BUILDING_ID_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
         // Check trùng tên tầng trong cùng tòa nhà
         floorRepository.findByNameFloorAndBuilding_IdAndIdNot(
@@ -59,10 +58,7 @@ public class FloorServiceImpl implements FloorService {
         floor.setCreatedAt(Instant.now());
         floor.setUpdatedAt(Instant.now());
 
-        return ApiResponse.<FloorResponse>builder()
-                .message("Floor created successfully!")
-                .data(floorMapper.toResponse(floorRepository.save(floor)))
-                .build();
+        return floorMapper.toResponse(floorRepository.save(floor));
     }
 
     @Override
@@ -90,11 +86,28 @@ public class FloorServiceImpl implements FloorService {
                         .total(floorPage.getTotalElements())
                         .build())
                 .build();
-
         return PaginatedResponse.<FloorResponse>builder()
                 .data(responses)
                 .meta(meta)
                 .build();
+    }
+
+    @Override
+    public FloorResponse updateFloor(String floorId, FloorUpdateRequest request) {
+        // Lấy tầng cần cập nhật
+        Floor floor = floorRepository.findById(floorId)
+                .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+
+        // Kiểm tra tên tầng trùng trong cùng tòa nhà (trừ chính nó)
+        floorRepository.findByNameFloorAndBuilding_Id(request.getNameFloor(), floor.getBuilding().getId())
+                .ifPresent(existingFloor -> {
+                    if (!existingFloor.getId().equals(floor.getId())) {
+                        throw new AppException(ErrorCode.FLOOR_ALREADY_EXISTS);
+                    }
+                });
+        floorMapper.updateFloor(request, floor);
+        floor.setUpdatedAt(Instant.now());
+        return floorMapper.toResponse(floorRepository.save(floor));
     }
 
     @Override
@@ -106,39 +119,10 @@ public class FloorServiceImpl implements FloorService {
     }
 
     @Override
-    public ApiResponse<FloorResponse> updateFloor(String id, FloorUpdateRequest request) {
-        // Lấy tầng cần cập nhật
-        Floor floor = floorRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
-
-        // Kiểm tra tên tầng trùng trong cùng tòa nhà (trừ chính nó)
-        floorRepository.findByNameFloorAndBuilding_Id(request.getNameFloor(), floor.getBuilding().getId())
-                .ifPresent(existingFloor -> {
-                    if (!existingFloor.getId().equals(floor.getId())) {
-                        throw new AppException(ErrorCode.FLOOR_ALREADY_EXISTS);
-                    }
-                });
-
-        floorMapper.updateFloor(request, floor);
-        floor.setUpdatedAt(Instant.now());
-
-        Floor updated = floorRepository.save(floor);
-        return ApiResponse.<FloorResponse>builder()
-                .message("Floor updated successfully.")
-                .data(floorMapper.toResponse(updated))
-                .build();
-    }
-
-
-    @Override
-    public ApiResponse<Void> deleteFloor(String floorId) {
-        floorRepository.findById(floorId)
-                .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
-
+    public void deleteFloor(String floorId) {
+        if (!floorRepository.existsById(floorId)) {
+            throw new AppException(ErrorCode.FLOOR_NOT_FOUND);
+        }
         floorRepository.deleteById(floorId);
-
-        return ApiResponse.<Void>builder()
-                .message("Floor deleted successfully")
-                .build();
     }
 }
