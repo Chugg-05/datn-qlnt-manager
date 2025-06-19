@@ -47,13 +47,13 @@ public class ApplicationConfig {
     String adminPassword;
 
     @Bean
-    @ConditionalOnProperty(
+    @ConditionalOnProperty( // Kiểm tra nếu driver MySQL được sử dụng
             prefix = "spring",
             value = "datasource.driver-class-name",
             havingValue = "com.mysql.cj.jdbc.Driver")
-    ApplicationRunner applicationRunner(
+    ApplicationRunner applicationRunner( // Chỉ chạy khi sử dụng MySQL
             UserRepository userRepository, RoleRepository roleRepository, PermissionRepository permissionRepository) {
-        return args -> {
+        return args -> { // Hàm này sẽ chạy khi ứng dụng khởi động
             log.info("🔧 Starting application initialization...");
 
             // Tạo Permission nếu chưa tồn tại
@@ -63,6 +63,7 @@ public class ApplicationConfig {
                     PredefinedPermission.EDIT, "Quyền chỉnh sửa dữ liệu",
                     PredefinedPermission.DELETE, "Quyền xóa dữ liệu");
 
+            // Lặp qua các permission đã định nghĩa và lưu vào database nếu chưa tồn tại
             predefinedPermissions.forEach((name, description) -> {
                 if (!permissionRepository.existsByName(name)) {
                     permissionRepository.save(Permission.builder()
@@ -72,17 +73,18 @@ public class ApplicationConfig {
                 }
             });
 
-            // Lấy danh sách permission đã lưu để map
+            // Lấy tất cả Permission đã lưu trong database
             Map<String, Permission> permissionMap = new HashMap<>();
             permissionRepository.findAll().forEach(p -> permissionMap.put(p.getName(), p));
 
-            // Tạo Role nếu chưa tồn tại và gán permission tương ứng
+            // Tạo Role nếu chưa tồn tại
             Map<String, String> predefinedRoles = Map.of(
                     PredefinedRole.ADMIN_ROLE, "Admin role",
                     PredefinedRole.MANAGER_ROLE, "Manager role",
                     PredefinedRole.STAFF_ROLE, "Staff role",
                     PredefinedRole.USER_ROLE, "User role");
 
+            // Lặp qua các role đã định nghĩa và lưu vào database nếu chưa tồn tại
             predefinedRoles.forEach((roleName, description) -> {
                 Role role = roleRepository
                         .findByName(roleName)
@@ -91,21 +93,24 @@ public class ApplicationConfig {
                                 .description(description)
                                 .build()));
 
-                // Lấy danh sách quyền tương ứng từ enum
+                // Lấy danh sách Permission tương ứng với Role và gán vào Role
                 List<String> permissionNames = PredefinedRolePermissionMapping.getPermissionsForRole(roleName);
-                Set<Permission> assignedPermissions = new HashSet<>();
+                Set<Permission> assignedPermissions = new HashSet<>(); // Khởi tạo Set để lưu các Permission đã gán
 
+                // Lặp qua danh sách Permission và thêm vào Set nếu tồn tại trong permissionMap
                 for (String permissionName : permissionNames) {
                     Permission p = permissionMap.get(permissionName);
                     if (p != null) assignedPermissions.add(p);
                 }
 
+                // Gán danh sách Permission đã gán vào Role và lưu Role
                 role.setPermissions(assignedPermissions);
                 roleRepository.save(role);
             });
 
             Optional<User> existingAdmin = userRepository.findByEmail(adminEmail);
 
+            // Kiểm tra xem đã có user admin chưa
             if (existingAdmin.isEmpty()) {
                 Role adminRole = roleRepository
                         .findByName(PredefinedRole.ADMIN_ROLE)

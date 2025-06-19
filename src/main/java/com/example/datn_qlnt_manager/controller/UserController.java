@@ -40,7 +40,7 @@ public class UserController {
                 .build();
     }
 
-    @Operation(summary = "Cập nhật thông tin người dùng (user)")
+    @Operation(summary = "Cập nhật thông tin người dùng")
     @PatchMapping(value = "/me/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UserResponse> updateUser(
             @Valid @ModelAttribute UserUpdateRequest request,
@@ -57,10 +57,4 @@ public class UserController {
                 .build();
     }
 
-    @Operation(summary = "Xóa người dùng (manager)")
-    @DeleteMapping("/{userId}")
-    public ApiResponse<String> deleteUser(@PathVariable("userId") String userId) {
-        userService.deleteUser(userId);
-        return ApiResponse.<String>builder().message("User has been deleted!").build();
-    }
 }

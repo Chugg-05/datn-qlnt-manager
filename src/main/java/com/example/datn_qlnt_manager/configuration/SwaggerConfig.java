@@ -9,6 +9,7 @@ import io.swagger.v3.oas.models.info.Info;
 
 @Configuration
 public class SwaggerConfig {
+    // Cấu hình Swagger cho API TroHub
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
@@ -18,6 +19,7 @@ public class SwaggerConfig {
                         .description("API - Website quản lý nhà trọ"));
     }
 
+    // Tạo nhóm OpenAPI cho các public endpoint
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder().group("trohub-api").pathsToMatch("/**").build();

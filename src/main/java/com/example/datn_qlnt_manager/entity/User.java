@@ -79,23 +79,23 @@ public class User extends AbstractEntity implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+    public boolean isEnabled() {
+        return this.userStatus == UserStatus.ACTIVE;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return !this.userStatus.equals(UserStatus.LOCKED);
+        return this.userStatus != UserStatus.LOCKED;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return this.userStatus != UserStatus.EXPIRED;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
         return UserDetails.super.isCredentialsNonExpired();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.userStatus.equals(UserStatus.ACTIVE);
     }
 
     @Override

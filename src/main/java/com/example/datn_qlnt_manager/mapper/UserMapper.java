@@ -28,6 +28,6 @@ public interface UserMapper {
 
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "roles", ignore = true)
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE) // nếu thuộc tính trong request là null thì không cập nhật
     void updateUserForAdmin(UserUpdateForAdminRequest request, @MappingTarget User user);
 }

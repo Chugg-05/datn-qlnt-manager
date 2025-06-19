@@ -39,7 +39,7 @@ public class OtpServiceImpl implements OtpService {
     public void sendOtp(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
 
-        if (isOtpExist(email)) {
+        if (isOtpExist(email)) { // kiểm tra xem OTP đã được gửi chưa
             throw new AppException(ErrorCode.OTP_ALREADY_SENT);
         }
 
@@ -52,7 +52,7 @@ public class OtpServiceImpl implements OtpService {
 
     @Override
     public void verifyOtp(String email, String otpCode) {
-        boolean isValid = verify(email, otpCode);
+        boolean isValid = verify(email, otpCode); // Kiểm tra OTP có hợp lệ không
         if (!isValid) {
             log.warn("Invalid OTP attempt for email: {}", email);
             throw new AppException(ErrorCode.INVALID_OTP_CODE);
