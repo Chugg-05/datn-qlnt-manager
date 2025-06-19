@@ -130,9 +130,9 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public void deleteBuildingById(String buildingId) {
-        buildingRepository
-                .findById(buildingId)
-                .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+        if (!buildingRepository.existsById(buildingId)){
+            throw new AppException(ErrorCode.BUILDING_NOT_FOUND);
+        }
         buildingRepository.deleteById(buildingId);
     }
 }

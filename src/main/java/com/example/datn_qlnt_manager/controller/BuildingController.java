@@ -65,7 +65,7 @@ public class BuildingController {
     }
 
     @Operation(summary = "Xóa tòa nhà (update trạng thái)")
-    @DeleteMapping("/soft-delete/{buildingId}")
+    @PutMapping("/soft-delete/{buildingId}")
     public ApiResponse<String> softDeleteBuildingById(@PathVariable("buildingId") String buildingId) {
         buildingService.softDeleteBuildingById(buildingId);
         return ApiResponse.<String>builder().data("Building has been deleted!").build();
