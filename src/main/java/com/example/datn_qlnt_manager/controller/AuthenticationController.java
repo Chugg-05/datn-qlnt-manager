@@ -44,7 +44,7 @@ public class AuthenticationController {
     UserMapper userMapper;
     OtpService otpService;
 
-    @Operation(summary = "Đăng ký tài khoản cho chủ trọ")
+    @Operation(summary = "Đăng ký tài khoản")
     @PostMapping("/register")
     public ApiResponse<UserResponse> register(@Valid @RequestBody UserCreationRequest request) {
         var user = userService.createUser(request);
@@ -55,7 +55,7 @@ public class AuthenticationController {
                 .build();
     }
 
-    @Operation(summary = "Đăng nhập với google (cho chủ trọ)")
+    @Operation(summary = "Đăng nhập với google")
     @PostMapping("/login/oauth2/google/authentication")
     public ApiResponse<?> loginWithGoogle(@RequestParam("code") String code, HttpServletResponse response)
             throws ParseException, IOException, JOSEException {
@@ -89,14 +89,14 @@ public class AuthenticationController {
                 .build();
     }
 
-    @Operation(summary = "Làm mới token (gia hạn đăng nhập)")
+    @Operation(summary = "Làm mới token")
     @PostMapping("/refresh-token")
     public ApiResponse<?> refreshToken(
             @CookieValue(name = "TRO_HUB_SERVICE") String cookieValue, HttpServletResponse response)
             throws ParseException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> tokenData =
-                objectMapper.readValue(cookieValue, new TypeReference<Map<String, String>>() {});
+                objectMapper.readValue(cookieValue, new TypeReference<>() {});
 
         String refreshToken = tokenData.get("refreshToken");
 

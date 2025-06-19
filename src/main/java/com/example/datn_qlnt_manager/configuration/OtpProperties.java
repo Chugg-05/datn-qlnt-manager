@@ -17,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 @ConfigurationProperties(prefix = "otp")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OtpProperties {
+    // cấu hình các thuộc tính liên quan đến OTP
     @Min(1)
     @Max(60) // chỉ cho phép giá trị từ 1 đến 60 phút
     long expiration;

@@ -8,9 +8,12 @@ import com.cloudinary.Cloudinary;
 
 @Configuration
 public class CloudinaryConfig {
+    // Cấu hình Cloudinary để tải hình ảnh lên
     @Value("${cloudinary-url}")
     private String cloudinaryUrl;
 
+
+    // Lớp cấu hình này được sử dụng để thiết lập Cloudinary với URL được cung cấp.
     @Bean
     public Cloudinary cloudinary() {
         return new Cloudinary(cloudinaryUrl);

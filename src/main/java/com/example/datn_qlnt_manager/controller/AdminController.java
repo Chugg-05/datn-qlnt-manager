@@ -47,6 +47,15 @@ public class AdminController {
                 .build();
     }
 
+    @Operation(summary = "Lấy thông tin chi tiết người dùng")
+    @GetMapping("/{userId}")
+    public ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
+        return ApiResponse.<UserResponse>builder()
+                .message("User found!")
+                .data(userService.getUserById(userId))
+                .build();
+    }
+
     @Operation(summary = "Cập nhật thông tin người dùng")
     @PatchMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UserResponse> updateUserForAdmin(
@@ -64,10 +73,30 @@ public class AdminController {
                 .build();
     }
 
+    @Operation(summary = "Khóa người dùng (chuyển trạng thái sang LOCKED)")
+    @PutMapping("/lock/{userId}")
+    public ApiResponse<String> lockUser(@PathVariable("userId") String userId) {
+        userService.accountLockById(userId);
+        return ApiResponse.<String>builder()
+                .message("User has been locked")
+                .data("User with ID " + userId + " has been locked.")
+                .build();
+    }
+
+    @Operation(summary = "Khôi phục người dùng đã bị khóa")
+    @PutMapping("/recover/{userId}")
+    public ApiResponse<String> recoverUser(@PathVariable("userId") String userId) {
+        userService.recoverLockedUsersById(userId);
+        return ApiResponse.<String>builder()
+                .message("User has been recovered")
+                .data("User with ID " + userId + " has been recovered.")
+                .build();
+    }
+
     @Operation(summary = "Xóa người dùng")
     @DeleteMapping("/{userId}")
     public ApiResponse<String> deleteUser(@PathVariable("userId") String userId) {
-        userService.deleteUser(userId);
+        userService.deleteUserById(userId);
         return ApiResponse.<String>builder().message("User has been deleted!").build();
     }
 }

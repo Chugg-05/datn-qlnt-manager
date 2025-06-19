@@ -1,6 +1,5 @@
 package com.example.datn_qlnt_manager.service.implement;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.*;
@@ -10,10 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,7 +35,6 @@ import com.example.datn_qlnt_manager.service.RedisService;
 import com.example.datn_qlnt_manager.utils.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.JOSEException;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.AccessLevel;
@@ -77,25 +72,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${google.redirect.uri}")
     protected String REDIRECT_URI;
 
+    // Method này sẽ được gọi khi người dùng đăng nhập bằng Google OAuth2
     @Override
-    public LoginResponse authenticate(String code, HttpServletResponse response)
-            throws ParseException, IOException, JOSEException {
+    public LoginResponse authenticate(String code, HttpServletResponse response) {
+        // Tạo một MultiValueMap để chứa các tham số cần thiết cho việc trao đổi mã thông báo
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 
-        form.add("code", code);
-        form.add("client_id", CLIENT_ID);
-        form.add("client_secret", CLIENT_SECRET);
-        form.add("redirect_uri", REDIRECT_URI);
-        form.add("grant_type", GRANT_TYPE);
+        form.add("code", code); // Mã xác thực nhận được từ Google OAuth2
+        form.add("client_id", CLIENT_ID); // ID của ứng dụng đã đăng ký với Google
+        form.add("client_secret", CLIENT_SECRET); // Mật khẩu của ứng dụng đã đăng ký với Google
+        form.add("redirect_uri", REDIRECT_URI); // URL chuyển hướng đã đăng ký với Google
+        form.add("grant_type", GRANT_TYPE); // Loại yêu cầu trao đổi mã thông báo
 
+        // Gọi API của Google để trao đổi mã xác thực lấy access token và id token
         var exchangeTokenResponse = googleClient.exchangeTokenResponse(form);
+
+        // Kiểm tra xem có lỗi trong quá trình trao đổi mã xác thực không
         var claims = tokenProvider.verifyTokenIdGoogle(exchangeTokenResponse.getIdToken());
 
+        // Trích xuất thông tin người dùng từ claims
         String email = claims.get("email").toString();
         String name = claims.get("name").toString();
         String profilePicture = claims.get("picture").toString();
 
+        // Kiểm tra xem người dùng đã tồn tại trong hệ thống chưa
         if (!userRepository.existsByEmail(email)) {
+            // Nếu người dùng chưa tồn tại, tạo mới người dùng
             User user = User.builder()
                     .email(email)
                     .password(passwordEncoder.encode(UUID.randomUUID().toString()))
@@ -109,23 +111,29 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             return getLoginResponse(response, user);
         }
-
+        // Nếu người dùng đã tồn tại, lấy thông tin người dùng từ cơ sở dữ liệu
         User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-        return getLoginResponse(response, user);
+        // Cập nhật thông tin người dùng nếu cần thiết
+        return getLoginResponse(response, user); // Trả về thông tin đăng nhập đã được cập nhật
     }
 
     @Override
     public LoginResponse login(AuthenticationRequest request, HttpServletResponse response) {
         Authentication authentication;
         try {
+            // Xác thực người dùng bằng email và mật khẩu
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-            // not found account
+
         } catch (InternalAuthenticationServiceException | BadCredentialsException e) {
             throw new AppException(ErrorCode.INVALID_EMAIL_OR_PASSWORD);
+        } catch (DisabledException ex) {
+            throw new AppException(ErrorCode.USER_ALREADY_DELETED);
+        } catch (LockedException ex) {
+            throw new AppException(ErrorCode.USER_ALREADY_LOCKED);
         }
 
+        // Lấy thông tin người dùng từ Authentication
         User user = (User) authentication.getPrincipal();
 
         return getLoginResponse(response, user);
@@ -141,21 +149,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         long accessTokenExpired = tokenProvider.verifyAndExtractTokenExpired(accessToken);
         long currentTime = System.currentTimeMillis();
 
-        // con han
+        // Nếu accessTokenExpired nhỏ hơn currentTime, token đã hết hạn
         if (currentTime < accessTokenExpired) {
             try {
                 String jwtId =
-                        tokenProvider.verifyToken(accessToken).getJWTClaimsSet().getJWTID();
+                        tokenProvider.verifyToken(accessToken).getJWTClaimsSet().getJWTID(); // Lấy jwtId từ accessToken
 
-                long ttl = accessTokenExpired - currentTime;
-                redisService.save(jwtId, accessToken, ttl, TimeUnit.MILLISECONDS);
+                long ttl = accessTokenExpired - currentTime; // Tính toán thời gian còn lại của accessToken
+                redisService.save(jwtId, accessToken, ttl, TimeUnit.MILLISECONDS); // Lưu accessToken vào Redis với jwtId là key
 
                 user.setRefreshToken(null);
                 userRepository.save(user);
 
-                deleteCookie(response);
+                deleteCookie(response); // Xóa cookie chứa accessToken và refreshToken
 
-                SecurityContextHolder.clearContext();
+                SecurityContextHolder.clearContext(); // Xóa thông tin xác thực khỏi SecurityContext
             } catch (ParseException e) {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
             }
