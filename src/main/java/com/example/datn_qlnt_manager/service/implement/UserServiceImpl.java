@@ -2,10 +2,7 @@ package com.example.datn_qlnt_manager.service.implement;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import jakarta.transaction.Transactional;
 
@@ -126,17 +123,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        if (!user.getPhoneNumber().equals(request.getPhoneNumber())
-                && userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+        if (!Objects.equals(user.getPhoneNumber(), request.getPhoneNumber()) &&
+                userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
 
+
         userMapper.updateUser(request, user);
-
         user.setProfilePicture(request.getProfilePicture());
-
         user.setUpdatedAt(Instant.now());
 
         return userMapper.toUserResponse(userRepository.save(user));
@@ -146,8 +143,8 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUserForAdmin(String userId, UserUpdateForAdminRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        if (!user.getPhoneNumber().equals(request.getPhoneNumber())
-                && userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+        if (!Objects.equals(user.getPhoneNumber(), request.getPhoneNumber())
+                || userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
 
