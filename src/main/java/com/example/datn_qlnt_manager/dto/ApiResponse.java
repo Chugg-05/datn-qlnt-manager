@@ -19,5 +19,5 @@ public class ApiResponse<T> { // chuẩn hóa kiểu trả về của API
 
     String message;
     T data;
-    Meta meta;
+    Meta<?> meta;
 }

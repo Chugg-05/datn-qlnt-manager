@@ -1,25 +1,23 @@
+# config cho môi trường chung
+spring:
+  profiles:
+    active: dev
+
 server:
-  port: ${PORT}
+  port: 8080
   servlet:
     context-path: /api
 
-spring:
-  datasource:
-    url: ${DBMS_CONNECTION}
-    username: ${DBMS_USERNAME}
-    password: ${DBMS_PASSWORD}
-    driver-class-name: "com.mysql.cj.jdbc.Driver"
-  jpa:
-    hibernate:
-      ddl-auto: none
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      username: ${REDIS_USERNAME}
-      password: ${REDIS_PASSWORD}
+app:
+  name: TRO_HUB
+
+otp:
+  expiration: 5    # phút
+  resend: 120      # giây
+
+jwt:
+  valid-duration: 7200
+  refreshable-duration: 1209600
 
 feign:
   client:
@@ -27,18 +25,13 @@ feign:
       default:
         connectTimeout: 5000
         readTimeout: 5000
-        loggerLevel: full
+        loggerLevel: basic
 
-email-client:
-  url: https://api.brevo.com
+springdoc:
+  api-docs:
+    path: /v3/api-docs
 
 logging:
   level:
     org:
-      springframework: DEBUG
-      apache:
-        tomcat: DEBUG
-        catalina: DEBUG
-
-app:
-  name: TRO_HUB
+      springframework: INFO

@@ -46,6 +46,7 @@ public class RoleServiceImpl implements RoleService {
 
         role.setPermissions(new HashSet<>(permission));
         role.setCreatedAt(Instant.now());
+        role.setUpdatedAt(Instant.now());
         role = roleRepository.save(role);
 
         return roleMapper.toRoleResponse(role);
@@ -55,9 +56,9 @@ public class RoleServiceImpl implements RoleService {
     public RoleResponse updateRole(String roleId, RoleRequest request) {
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
-        //        if (roleRepository.existsByName(request.getName())) {
-        //            throw new AppException(ErrorCode.ROLE_EXISTED);
-        //        }
+        if (!role.getName().equals(request.getName()) && roleRepository.existsByName(request.getName())) {
+            throw new AppException(ErrorCode.ROLE_EXISTED);
+        }
 
         roleMapper.updateRole(request, role);
 

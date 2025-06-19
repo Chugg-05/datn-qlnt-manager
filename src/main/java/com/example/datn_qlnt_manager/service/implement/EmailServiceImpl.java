@@ -53,11 +53,14 @@ public class EmailServiceImpl implements EmailService {
             return emailClient.sendEmail(apiKey, emailRequest);
         } catch (FeignException exception) {
             log.error(
-                    "\n--- FEIGN ERROR ---\n" + "URL: {}\n"
-                            + "Status: {}\n"
-                            + "Message: {}\n"
-                            + "Response Body: {}\n"
-                            + "Headers: {}\n",
+                    """
+					--- FEIGN ERROR ---
+					URL: {}
+					Status: {}
+					Message: {}
+					Response Body: {}
+					Headers: {}
+					""",
                     exception.request().url(),
                     exception.status(),
                     exception.getMessage(),

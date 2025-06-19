@@ -17,8 +17,8 @@ public class RoomUpdateRequest {
 
     @NotNull
     String floorId;
-    @NotBlank
-    String roomId;
+//    @NotBlank
+//    String roomId;
     @NotBlank
     String roomName;
     @NotNull

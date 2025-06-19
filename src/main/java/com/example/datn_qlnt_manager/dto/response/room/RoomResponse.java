@@ -14,14 +14,14 @@ import lombok.experimental.FieldDefaults;
 public class RoomResponse {
 
     String id;
-    String maPhong;
-    String tenPhong;
-    Double dienTich;
-    Double gia;
-    Long soNguoiToiDa;
-    RoomType loaiPhong;
-    RoomStatus trangThai;
-    String moTa;
+    String roomId;
+    String roomName;
+    Double acreage;
+    Double price;
+    Long maximumPeople;
+    RoomType roomType;
+    RoomStatus status;
+    String description;
     // khi nao co FloorResponse thi dan no vao day
-    Floor tang;
+//    Floor floor;
 }

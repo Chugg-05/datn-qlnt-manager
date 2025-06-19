@@ -1,0 +1,67 @@
+# config cho môi trường thực tế
+server:
+  port: ${PORT}
+  servlet:
+    context-path: /api
+
+spring:
+  datasource:
+    url: ${DBMS_CONNECTION}
+    username: ${DBMS_USERNAME}
+    password: ${DBMS_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: none  # ẩn log http ở môi trường thật
+
+email-client:
+  url: ${EMAIL_URL}
+
+admin:
+  email: ${ADMIN_EMAIL}
+  password: ${ADMIN_PASSWORD}
+
+jwt:
+  secretKey: ${JWT_SIGNER_KEY}
+
+cloudinary-url: ${CLOUDINARY_URL}
+
+brevo:
+  api:
+    key: ${API_KEY}
+  sender:
+    name: ${SENDER_NAME}
+    email: ${SENDER_EMAIL}
+
+google:
+  client:
+    id: ${CLIENT_ID}
+    secret: ${CLIENT_SECRET}
+  redirect:
+    uri: ${REDIRECT_URI}
+
+springdoc:
+  swagger-ui:
+    enabled: false
+
+logging:
+  level:
+    org:
+      springframework: DEBUG
+      apache:
+        tomcat: DEBUG
+        catalina: DEBUG

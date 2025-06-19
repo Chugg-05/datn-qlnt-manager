@@ -1,4 +1,4 @@
-#3 LƯU Ý: Không tự ý thêm bất cứ gì vào file này (chỉ đọc).
+### LƯU Ý: Không tự ý thêm bất cứ gì vào file này (chỉ đọc).
 
 # 📦 Tên dự án: Xây dựng website quản lý nhà trọ - TroHub (BE)
 
@@ -19,7 +19,7 @@
 - 
 
 # 🧱 Quy ước tạo file mới trong dự án: tạo các thư để chứa những file không phải global
-  # Tuân thủ các quy tắc đặt tên:
+  ## Tuân thủ các quy tắc đặt tên:
     - class: Invoice
     - folder: invoice 
     - loại: 
@@ -30,6 +30,19 @@
      + tên tham số trong method: id của user = userId
      + trong repository: findByFullName()
 
+  ## Quy tắc đặt Path
+        VD: user
+            -> RequestMapping("/users")
+            -> GetMapping -- để trống (getList)
+            -> PostMapping -- để trống (create)
+            -> Put/PatMapping("/{userId}")
+            -> DeleteMapping("/{userId}")
+  ## Quy tắc đặt tên method
+        VD: user
+            -> lấy ds: getUsers
+            -> lấy user detail: getUser
+            -> thêm user: createUser(update, delete tương tự)
+
 VD: 
 ├── entity/
 │   ├── User.java
@@ -39,6 +52,19 @@ VD:
 │   │   └── Invoice.java
 │   │   └── DetailedInvoice.java
 
+### Cấu hình file application-dev.yaml nếu muốn chạy ở môi trường dev
+    1. File application-dev.example.yaml: là file mẫu KHÔNG sửa file này.
+    2. Muốn cấu hình thì tạo 1 file mới cùng cấp với file application.yaml tên là 'appication-dev.yaml'.
+    3. Copy toàn bộ nội dung từ file 'application-dev.example.yaml' sang 'appication-dev.yaml'
+        -> sửa nội dung theo local trên máy.
+    4. Muốn chạy với môi trường dev thì vào 'Edit configuration' -> xóa '-Dspring.profiles.active=prod' -> Apply -> Ok.
+    
+    ** Không bắt buộc chạy với môi trường dev. Nhưng lên chạy để có log DEBUG rõ ràng, chuyên nghiệp hơn.
+## Thêm tên và mô tả trong controller cho Swagger
+    @Tag(name = "", description = " ") -- Thêm ngoài class cùng chỗ với @ResController
+    @Operation(summary = "") -- Mô tả chức năng của API
+    
+    ** Tham khảo mẫu trong AdminController
 
 I. QUY TẮC ĐẶT TÊN NHÁNH
   1. Cấu trúc chung: <type>/<task-name>-<short-description>

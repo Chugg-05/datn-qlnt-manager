@@ -1,12 +1,16 @@
 package com.example.datn_qlnt_manager.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import com.example.datn_qlnt_manager.mapper.UserMapper;
 import com.example.datn_qlnt_manager.service.UserService;
 
@@ -17,34 +21,44 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "User", description = "API User")
 public class UserController {
     UserService userService;
     UserMapper userMapper;
 
+    @Operation(summary = "Lấy thông tin người đang đăng nhập")
     @GetMapping("/me")
-    public ApiResponse<UserDetailResponse> getMyInfo() {
+    public ApiResponse<UserResponse> getMyInfo() {
         var user = userService.getCurrentUser();
 
-        return ApiResponse.<UserDetailResponse>builder()
+        return ApiResponse.<UserResponse>builder()
                 .message("User found!")
                 .data(userMapper.toUserResponse(user))
                 .build();
     }
 
-    @PatchMapping("/me/update")
-    public ApiResponse<UserDetailResponse> updateUser(@Valid @RequestBody UserUpdateRequest request) {
+    @Operation(summary = "Cập nhật thông tin người dùng (user)")
+    @PatchMapping(value = "/me/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<UserResponse> updateUser(
+            @Valid @ModelAttribute UserUpdateRequest request,
+            @RequestParam(required = false) MultipartFile profilePictureFile) {
         var user = userService.getCurrentUser();
 
-        return ApiResponse.<UserDetailResponse>builder()
+        if (profilePictureFile != null && !profilePictureFile.isEmpty()) {
+            request.setProfilePicture(userService.uploadProfilePicture(profilePictureFile));
+        }
+
+        return ApiResponse.<UserResponse>builder()
                 .message("User updated!")
                 .data(userService.updateUser(user.getId(), request))
                 .build();
     }
 
-    @DeleteMapping("/delete/{userId}")
+    @Operation(summary = "Xóa người dùng (manager)")
+    @DeleteMapping("/{userId}")
     public ApiResponse<String> deleteUser(@PathVariable("userId") String userId) {
         userService.deleteUser(userId);
         return ApiResponse.<String>builder().message("User has been deleted!").build();

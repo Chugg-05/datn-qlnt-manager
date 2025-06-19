@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public enum ErrorCode {
+    NO_DATA(200, "No data available", HttpStatus.OK),
     INTERNAL_SERVER_ERROR(500, "Uncategorized error.", HttpStatus.INTERNAL_SERVER_ERROR),
     UPLOAD_FAILED(500, "Upload failed.", HttpStatus.INTERNAL_SERVER_ERROR),
     JSON_PROCESSING_ERROR(500, "Failed to process JSON data.", HttpStatus.INTERNAL_SERVER_ERROR),

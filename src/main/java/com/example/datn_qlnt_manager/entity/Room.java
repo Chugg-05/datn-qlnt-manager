@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
 
 import com.example.datn_qlnt_manager.common.RoomStatus;
@@ -7,8 +9,6 @@ import com.example.datn_qlnt_manager.common.RoomType;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
 
 // entity ko dung data
 @Entity
@@ -53,6 +53,4 @@ public class Room extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tang_id")
     Floor floor;
-
-
 }

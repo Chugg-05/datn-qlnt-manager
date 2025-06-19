@@ -15,6 +15,4 @@ public interface RoomMapper {
     RoomResponse toRoomResponse(Room room);
     Room toRoomCreation(RoomCreationRequest request);
     Room toRoomUpdate(RoomUpdateRequest request);
-    Room toRoomDelete(RoomDeleteRequest request);
-
 }

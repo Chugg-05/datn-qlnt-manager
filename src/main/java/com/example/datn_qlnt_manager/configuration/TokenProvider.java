@@ -7,10 +7,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -190,7 +187,7 @@ public class TokenProvider {
 
         JWK jwk = jwkSet.getKeyByKeyId(keyId); // tìm đúng public key với keyId từ token
         if (jwk == null) {
-            log.error("Không tìm thấy public key tương ứng: " + keyId);
+            log.error("Không tìm thấy public key tương ứng: {}", keyId);
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
@@ -212,7 +209,16 @@ public class TokenProvider {
             throw new AppException(ErrorCode.INVALID_ISSUER);
         }
 
-        if (!CLIENT_ID.equals(((java.util.List<?>) claims.get("aud")).get(0))) {
+        Object audClaim = claims.get("aud");
+
+        if (!(audClaim instanceof List<?> audList) || audList.isEmpty()) {
+            log.error("❌ Audience không hợp lệ.");
+            throw new AppException(ErrorCode.INVALID_AUDIENCE);
+        }
+
+        String audience = String.valueOf(audList.get(0));
+
+        if (!CLIENT_ID.equals(audience)) {
             log.error("❌ Sai audience.");
             throw new AppException(ErrorCode.INVALID_AUDIENCE);
         }

@@ -105,6 +105,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .userStatus(UserStatus.ACTIVE)
                     .build();
             user.setCreatedAt(Instant.now());
+            user.setUpdatedAt(Instant.now());
 
             return getLoginResponse(response, user);
         }

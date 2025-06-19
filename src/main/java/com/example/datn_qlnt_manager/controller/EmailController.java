@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,11 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/email")
+@RequestMapping("/emails")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Email", description = "API Email")
 public class EmailController {
     EmailService emailService;
 
+    @Operation(summary = "Gửi email")
     @PostMapping("/send")
     ApiResponse<EmailResponse> sendEmail(@RequestBody SendEmailRequest request) {
         return ApiResponse.<EmailResponse>builder()

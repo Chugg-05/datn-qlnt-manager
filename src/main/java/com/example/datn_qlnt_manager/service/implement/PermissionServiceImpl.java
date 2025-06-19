@@ -42,6 +42,7 @@ public class PermissionServiceImpl implements PermissionService {
 
         Permission permission = permissionMapper.toPermission(request);
         permission.setCreatedAt(Instant.now());
+        permission.setUpdatedAt(Instant.now());
         permission = permissionRepository.save(permission);
 
         return permissionMapper.toPermissionResponse(permission);
@@ -53,8 +54,8 @@ public class PermissionServiceImpl implements PermissionService {
                 .findById(permissionId)
                 .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_FOUND));
 
-        if (permissionRepository.existsByName(request.getName())) {
-            throw new AppException(ErrorCode.PERMISSION_EXISTED);
+        if (!permission.getName().equals(request.getName()) && permissionRepository.existsByName(request.getName())) {
+            throw new AppException(ErrorCode.ROLE_EXISTED);
         }
 
         permissionMapper.updatePermission(request, permission);
