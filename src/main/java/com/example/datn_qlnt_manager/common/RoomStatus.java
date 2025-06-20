@@ -4,13 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum RoomStatus {
-    TRONG("trong"),
-    DANG_THUE("dang_thue"),
-    DA_DAT_COC("da_dat_coc"),
-    DANG_BAO_TRI("dang_bao_tri"),
-    CHUA_HOAN_THIEN("chua_hoan_thien"),
-    TAM_KHOA("tam_khoa"),
-    HUY_HOAT_DONG("huy_hoat_dong");
+    TRONG("TRONG"),
+    DANG_THUE("DANG_THUE"),
+    DA_DAT_COC("DA_DAT_COC"),
+    DANG_BAO_TRI("DANG_BAO_TRI"),
+    CHUA_HOAN_THIEN("CHUA_HOAN_THIEN"),
+    TAM_KHOA("TAM_KHOA"),
+    HUY_HOAT_DONG("HUY_HOAT_DONG");
 
     private final String value;
 

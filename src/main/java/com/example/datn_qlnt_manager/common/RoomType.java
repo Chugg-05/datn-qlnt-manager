@@ -4,10 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum RoomType {
-    DON("don"),
-    GHEP("ghep"),
-    CAO_CAP("cao_cap"),
-    KHAC("khac"),
+    DON("DON"),
+    GHEP("GHEP"),
+    CAO_CAP("CAO_CAP"),
+    KHAC("KHAC"),
     ;
 
     private final String value;

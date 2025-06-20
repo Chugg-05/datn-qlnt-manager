@@ -106,6 +106,10 @@ public enum ErrorCode {
     BUILDING_NOT_FOUND(404, "Building not found.", HttpStatus.NOT_FOUND),
     FLOOR_NOT_FOUND(404, "floor not found.", HttpStatus.NOT_FOUND),
 
+
+    /* ROOM */
+    ROOM_NOT_FOUND(404, "Room not found", HttpStatus.NOT_FOUND),
+
     //Code: 409
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
     PHONE_NUMBER_EXISTED(409, "Phone already existed.", HttpStatus.CONFLICT),
@@ -115,6 +119,9 @@ public enum ErrorCode {
     ROLE_EXISTED(409, "Role already existed.", HttpStatus.BAD_REQUEST),
     BUILDING_CODE_EXISTED(409, "Building Code already existed.", HttpStatus.CONFLICT),
     BUILDING_NAME_EXISTED(409, "Building Name already existed.", HttpStatus.CONFLICT),
+    /* ROOM */
+    MA_PHONG_EXISTED(409, "Ma phong already existed.", HttpStatus.BAD_REQUEST),
+
     CANT_REMOVE_USER(403, "You can't remove another user.", HttpStatus.FORBIDDEN),
     ACCOUNT_HAS_BEEN_LOCKED(403, "User account is locked.", HttpStatus.FORBIDDEN),
     ;

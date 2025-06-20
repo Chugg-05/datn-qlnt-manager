@@ -1,8 +1,7 @@
 package com.example.datn_qlnt_manager.dto.request.room;
-
-
 import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.common.RoomType;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,12 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RoomCreationRequest {
+public class RoomUpdateRequest {
 
     @NotNull
     String floorId;
-    @NotBlank
-    String roomId;
+//    @NotBlank
+//    String roomId;
     @NotBlank
     String roomName;
     @NotNull

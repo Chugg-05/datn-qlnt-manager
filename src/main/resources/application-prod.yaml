@@ -61,7 +61,7 @@ springdoc:
 logging:
   level:
     org:
-      springframework: WARN
+      springframework: DEBUG
       apache:
-        tomcat: WARN
-        catalina: WARN
+        tomcat: DEBUG
+        catalina: DEBUG
