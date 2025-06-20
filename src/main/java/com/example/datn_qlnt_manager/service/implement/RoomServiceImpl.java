@@ -82,7 +82,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomResponse createRoom(RoomCreationRequest request) {
         if (roomRepository.existsByRoomId(request.getRoomId())) {
-            throw new AppException(ErrorCode.MA_PHONG_EXISTED);
+            throw new AppException(ErrorCode.ROOM_CODE_EXISTED);
         }
         Room room = roomMapper.toRoomCreation(request);
         Floor floor = floorRepository
