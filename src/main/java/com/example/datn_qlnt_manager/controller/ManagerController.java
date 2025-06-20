@@ -3,7 +3,7 @@ package com.example.datn_qlnt_manager.controller;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.UserFilter;
-import com.example.datn_qlnt_manager.dto.response.UserResponse;
+import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
 import com.example.datn_qlnt_manager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,14 +26,14 @@ public class ManagerController {
 
     @Operation(summary = "Phân trang, tìm kiếm, lọc người dùng")
     @GetMapping
-    public ApiResponse<List<UserResponse>> filterUsers(
+    public ApiResponse<List<UserDetailResponse>> filterUsers(
             @ModelAttribute UserFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
 
-        PaginatedResponse<UserResponse> result = userService.filterUsers(filter, page, size);
+        PaginatedResponse<UserDetailResponse> result = userService.filterUsers(filter, page, size);
 
-        return ApiResponse.<List<UserResponse>>builder()
+        return ApiResponse.<List<UserDetailResponse>>builder()
                 .message("Filter users successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
@@ -42,8 +42,8 @@ public class ManagerController {
 
     @Operation(summary = "Lấy thông tin chi tiết người dùng")
     @DeleteMapping("/{userId}")
-    public ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
-        return ApiResponse.<UserResponse>builder()
+    public ApiResponse<UserDetailResponse> getUser(@PathVariable("userId") String userId) {
+        return ApiResponse.<UserDetailResponse>builder()
                 .message("User found!")
                 .data(userService.getUserById(userId))
                 .build();

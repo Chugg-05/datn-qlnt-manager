@@ -3,13 +3,13 @@ package com.example.datn_qlnt_manager.controller;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.response.RoleDetailResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.request.RoleRequest;
-import com.example.datn_qlnt_manager.dto.response.RoleResponse;
 import com.example.datn_qlnt_manager.service.RoleService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,14 +30,14 @@ public class RoleController {
 
     @Operation(summary = "Phân trang, tìm kiếm, lọc vai trò (admin)")
     @GetMapping
-    public ApiResponse<List<RoleResponse>> filterUsers(
+    public ApiResponse<List<RoleDetailResponse>> filterUsers(
             @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
 
-        PaginatedResponse<RoleResponse> result = roleService.filterRoles(name, page, size);
+        PaginatedResponse<RoleDetailResponse> result = roleService.filterRoles(name, page, size);
 
-        return ApiResponse.<List<RoleResponse>>builder()
+        return ApiResponse.<List<RoleDetailResponse>>builder()
                 .message("Filter roles successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
@@ -46,10 +46,20 @@ public class RoleController {
 
     @Operation(summary = "Tạo vai trò")
     @PostMapping
-    public ApiResponse<RoleResponse> createRole(@Valid @RequestBody RoleRequest request) {
-        return ApiResponse.<RoleResponse>builder()
+    public ApiResponse<RoleDetailResponse> createRole(@Valid @RequestBody RoleRequest request) {
+        return ApiResponse.<RoleDetailResponse>builder()
                 .message("Role has been created!")
                 .data(roleService.createRole(request))
+                .build();
+    }
+
+    @Operation(summary = "Cập nhật quyền")
+    @PutMapping("/{roleId}")
+    public ApiResponse<RoleDetailResponse> updateRole(
+            @Valid @RequestBody RoleRequest request, @PathVariable("roleId") String roleId) {
+        return ApiResponse.<RoleDetailResponse>builder()
+                .message("Role updated!")
+                .data(roleService.updateRole(roleId, request))
                 .build();
     }
 
@@ -60,13 +70,4 @@ public class RoleController {
         return ApiResponse.<String>builder().data("Role has been deleted!").build();
     }
 
-    @Operation(summary = "Cập nhật quyền")
-    @PutMapping("/{roleId}")
-    public ApiResponse<RoleResponse> updateRole(
-            @Valid @RequestBody RoleRequest request, @PathVariable("roleId") String roleId) {
-        return ApiResponse.<RoleResponse>builder()
-                .message("Role updated!")
-                .data(roleService.updateRole(roleId, request))
-                .build();
-    }
 }

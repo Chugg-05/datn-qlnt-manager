@@ -16,7 +16,6 @@
 - Redis
 - Docker
 - Lombok, MapStruct, Mapper
-- 
 
 # 🧱 Quy ước tạo file mới trong dự án: tạo các thư để chứa những file không phải global
   ## Tuân thủ các quy tắc đặt tên:

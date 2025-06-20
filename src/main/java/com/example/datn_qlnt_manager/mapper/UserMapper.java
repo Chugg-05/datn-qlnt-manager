@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.mapper;
 
+import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
 import org.mapstruct.*;
 
 import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
@@ -14,8 +15,10 @@ public interface UserMapper {
     @Mapping(target = "profilePicture", ignore = true)
     User toUser(UserCreationRequest request); // chuyển đổi UserCreationRequest sang User
 
+    UserResponse toUserResponse(User user);
+
     @Mapping(source = "roles", target = "roles")
-    UserResponse toUserResponse(User user); // chuyển đổi từ  User sang UserDetailResponse
+    UserDetailResponse toUserDetailResponse(User user); // chuyển đổi từ  User sang UserDetailResponse
 
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "email", ignore = true)

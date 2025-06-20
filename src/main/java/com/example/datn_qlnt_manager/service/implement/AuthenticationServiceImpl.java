@@ -188,8 +188,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
 
         otpService.clearOtp(request.getEmail());
-
-        log.info("Password reset successfully for email: {}", request.getEmail());
     }
 
     @Override

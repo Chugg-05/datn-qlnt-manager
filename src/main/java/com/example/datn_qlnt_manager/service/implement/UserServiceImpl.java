@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
+import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -24,7 +26,6 @@ import com.example.datn_qlnt_manager.dto.filter.UserFilter;
 import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import com.example.datn_qlnt_manager.entity.Role;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
@@ -51,7 +52,7 @@ public class UserServiceImpl implements UserService {
     Cloudinary cloudinary;
 
     @Override
-    public PaginatedResponse<UserResponse> filterUsers(UserFilter filter, int page, int size) {
+    public PaginatedResponse<UserDetailResponse> filterUsers(UserFilter filter, int page, int size) {
         // tạo đối tượng phân trang
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size); // đảm bảo page luôn >= 0
 
@@ -65,9 +66,9 @@ public class UserServiceImpl implements UserService {
                 filter.getRole(),
                 pageable);
 
-        // chuyển ds user entity sang UserResponse để return
-        List<UserResponse> users = paging.getContent().stream()
-                .map(userMapper::toUserResponse) // ánh xạ từng entity
+        // chuyển ds user entity sang UserDetailResponse để return
+        List<UserDetailResponse> users = paging.getContent().stream()
+                .map(userMapper::toUserDetailResponse) // ánh xạ từng entity
                 .toList();
 
         // tạo đối tượng chứa thông tin phân trang
@@ -82,12 +83,12 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         // trả về ds data và meta
-        return PaginatedResponse.<UserResponse>builder().data(users).meta(meta).build();
+        return PaginatedResponse.<UserDetailResponse>builder().data(users).meta(meta).build();
     }
 
     @Override
     @Transactional
-    public UserResponse createUser(UserCreationRequest request) {
+    public UserDetailResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService {
         user.setCreatedAt(Instant.now());
         user.setUpdatedAt(Instant.now());
 
-        return userMapper.toUserResponse(userRepository.save(user));
+        return userMapper.toUserDetailResponse(userRepository.save(user));
     }
 
     @Override
@@ -140,7 +141,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse updateUserForAdmin(String userId, UserUpdateForAdminRequest request) {
+    public UserDetailResponse updateUserForAdmin(String userId, UserUpdateForAdminRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         if (!Objects.equals(user.getPhoneNumber(), request.getPhoneNumber())
@@ -160,7 +161,7 @@ public class UserServiceImpl implements UserService {
 
         user.setUpdatedAt(Instant.now());
 
-        return userMapper.toUserResponse(userRepository.save(user));
+        return userMapper.toUserDetailResponse(userRepository.save(user));
     }
 
     @Override
@@ -255,9 +256,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserById(String userId) {
+    public UserDetailResponse getUserById(String userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        return userMapper.toUserResponse(user);
+        return userMapper.toUserDetailResponse(user);
     }
 
     @Override

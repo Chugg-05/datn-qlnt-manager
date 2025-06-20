@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.service;
 
+import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -12,7 +13,7 @@ import com.example.datn_qlnt_manager.entity.User;
 
 public interface UserService {
 
-    UserResponse createUser(UserCreationRequest request);
+    UserDetailResponse createUser(UserCreationRequest request);
 
     void softDeleteUserById(String userId);
 
@@ -32,11 +33,11 @@ public interface UserService {
 
     String uploadProfilePicture(MultipartFile file);
 
-    UserResponse getUserById(String userId);
+    UserDetailResponse getUserById(String userId);
 
-    PaginatedResponse<UserResponse> filterUsers(UserFilter filter, int page, int size);
+    PaginatedResponse<UserDetailResponse> filterUsers(UserFilter filter, int page, int size);
 
     User findById(String id);
 
-    UserResponse updateUserForAdmin(String userId, UserUpdateForAdminRequest request);
+    UserDetailResponse updateUserForAdmin(String userId, UserUpdateForAdminRequest request);
 }
