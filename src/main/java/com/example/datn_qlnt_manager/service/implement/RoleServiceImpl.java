@@ -7,13 +7,13 @@ import java.util.List;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.response.RoleDetailResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.dto.request.RoleRequest;
-import com.example.datn_qlnt_manager.dto.response.RoleResponse;
 import com.example.datn_qlnt_manager.entity.Role;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
@@ -37,13 +37,13 @@ public class RoleServiceImpl implements RoleService {
     PermissionRepository permissionRepository;
 
     @Override
-    public PaginatedResponse<RoleResponse> filterRoles(String name, int page, int size) {
+    public PaginatedResponse<RoleDetailResponse> filterRoles(String name, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
         Page<Role> paging = roleRepository.filterRolesPaging(name, pageable);
 
-        List<RoleResponse> roles = paging.getContent().stream()
-                .map(roleMapper::toRoleResponse)
+        List<RoleDetailResponse> roles = paging.getContent().stream()
+                .map(roleMapper::toRoleDetailResponse)
                 .toList();
 
         Meta<?> meta = Meta.builder()
@@ -56,11 +56,11 @@ public class RoleServiceImpl implements RoleService {
                         .build())
                 .build();
 
-        return PaginatedResponse.<RoleResponse>builder().data(roles).meta(meta).build();
+        return PaginatedResponse.<RoleDetailResponse>builder().data(roles).meta(meta).build();
     }
 
     @Override
-    public RoleResponse createRole(RoleRequest request) {
+    public RoleDetailResponse createRole(RoleRequest request) {
         if (roleRepository.existsByName(request.getName())) {
             throw new AppException(ErrorCode.ROLE_EXISTED);
         }
@@ -73,11 +73,11 @@ public class RoleServiceImpl implements RoleService {
         role.setUpdatedAt(Instant.now());
         role = roleRepository.save(role);
 
-        return roleMapper.toRoleResponse(role);
+        return roleMapper.toRoleDetailResponse(role);
     }
 
     @Override
-    public RoleResponse updateRole(String roleId, RoleRequest request) {
+    public RoleDetailResponse updateRole(String roleId, RoleRequest request) {
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
         if (!role.getName().equals(request.getName()) && roleRepository.existsByName(request.getName())) {
@@ -91,7 +91,7 @@ public class RoleServiceImpl implements RoleService {
         role.setPermissions(new HashSet<>(permissions));
         role.setUpdatedAt(Instant.now());
 
-        return roleMapper.toRoleResponse(roleRepository.save(role));
+        return roleMapper.toRoleDetailResponse(roleRepository.save(role));
     }
 
     @Override

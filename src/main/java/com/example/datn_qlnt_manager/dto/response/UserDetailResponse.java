@@ -1,22 +1,21 @@
 package com.example.datn_qlnt_manager.dto.response;
 
+import com.example.datn_qlnt_manager.common.Gender;
+import com.example.datn_qlnt_manager.common.UserStatus;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Set;
-
-import com.example.datn_qlnt_manager.common.Gender;
-import com.example.datn_qlnt_manager.common.UserStatus;
-
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponse implements Serializable {
+public class UserDetailResponse implements Serializable {
     String fullName;
     Gender gender;
     LocalDate dob;
@@ -26,4 +25,5 @@ public class UserResponse implements Serializable {
     UserStatus userStatus;
     Instant createdAt;
     Instant updatedAt;
+    Set<RoleResponse> roles;
 }

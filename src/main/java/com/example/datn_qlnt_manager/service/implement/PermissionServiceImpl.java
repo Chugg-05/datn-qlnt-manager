@@ -6,13 +6,13 @@ import java.util.List;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.response.PermissionDetailResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.dto.request.PermissionRequest;
-import com.example.datn_qlnt_manager.dto.response.PermissionResponse;
 import com.example.datn_qlnt_manager.entity.Permission;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
@@ -34,13 +34,13 @@ public class PermissionServiceImpl implements PermissionService {
     PermissionRepository permissionRepository;
 
     @Override
-    public PaginatedResponse<PermissionResponse> filterPermissions(String name, int page, int size) {
+    public PaginatedResponse<PermissionDetailResponse> filterPermissions(String name, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
         Page<Permission> paging = permissionRepository.filterPermissionsPaging(name, pageable);
 
-        List<PermissionResponse> permissions = paging.getContent().stream()
-                .map(permissionMapper::toPermissionResponse)
+        List<PermissionDetailResponse> permissions = paging.getContent().stream()
+                .map(permissionMapper::toPermissionDetailResponse)
                 .toList();
 
         Meta<?> meta = Meta.builder()
@@ -53,11 +53,11 @@ public class PermissionServiceImpl implements PermissionService {
                         .build())
                 .build();
 
-        return PaginatedResponse.<PermissionResponse>builder().data(permissions).meta(meta).build();
+        return PaginatedResponse.<PermissionDetailResponse>builder().data(permissions).meta(meta).build();
     }
 
     @Override
-    public PermissionResponse createPermission(PermissionRequest request) {
+    public PermissionDetailResponse createPermission(PermissionRequest request) {
         if (permissionRepository.existsByName(request.getName())) {
             throw new AppException(ErrorCode.PERMISSION_EXISTED);
         }
@@ -67,11 +67,11 @@ public class PermissionServiceImpl implements PermissionService {
         permission.setUpdatedAt(Instant.now());
         permission = permissionRepository.save(permission);
 
-        return permissionMapper.toPermissionResponse(permission);
+        return permissionMapper.toPermissionDetailResponse(permission);
     }
 
     @Override
-    public PermissionResponse updatePermission(String permissionId, PermissionRequest request) {
+    public PermissionDetailResponse updatePermission(String permissionId, PermissionRequest request) {
         Permission permission = permissionRepository
                 .findById(permissionId)
                 .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_FOUND));
@@ -83,7 +83,7 @@ public class PermissionServiceImpl implements PermissionService {
         permissionMapper.updatePermission(request, permission);
         permission.setUpdatedAt(Instant.now());
 
-        return permissionMapper.toPermissionResponse(permissionRepository.save(permission));
+        return permissionMapper.toPermissionDetailResponse(permissionRepository.save(permission));
     }
 
     @Override

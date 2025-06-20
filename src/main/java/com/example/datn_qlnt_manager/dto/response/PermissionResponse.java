@@ -11,7 +11,5 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PermissionResponse implements Serializable {
-    String id;
     String name;
-    String description;
 }

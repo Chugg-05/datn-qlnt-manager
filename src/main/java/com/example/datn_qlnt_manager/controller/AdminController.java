@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -14,7 +15,6 @@ import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.UserFilter;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
-import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import com.example.datn_qlnt_manager.service.UserService;
 
 import lombok.AccessLevel;
@@ -33,14 +33,14 @@ public class AdminController {
 
     @Operation(summary = "Phân trang, tìm kiếm, lọc người dùng")
     @GetMapping
-    public ApiResponse<List<UserResponse>> filterUsers(
+    public ApiResponse<List<UserDetailResponse>> filterUsers(
             @ModelAttribute UserFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
 
-        PaginatedResponse<UserResponse> result = userService.filterUsers(filter, page, size);
+        PaginatedResponse<UserDetailResponse> result = userService.filterUsers(filter, page, size);
 
-        return ApiResponse.<List<UserResponse>>builder()
+        return ApiResponse.<List<UserDetailResponse>>builder()
                 .message("Filter users successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
@@ -49,8 +49,8 @@ public class AdminController {
 
     @Operation(summary = "Lấy thông tin chi tiết người dùng")
     @GetMapping("/{userId}")
-    public ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
-        return ApiResponse.<UserResponse>builder()
+    public ApiResponse<UserDetailResponse> getUser(@PathVariable("userId") String userId) {
+        return ApiResponse.<UserDetailResponse>builder()
                 .message("User found!")
                 .data(userService.getUserById(userId))
                 .build();
@@ -58,7 +58,7 @@ public class AdminController {
 
     @Operation(summary = "Cập nhật thông tin người dùng")
     @PatchMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<UserResponse> updateUserForAdmin(
+    public ApiResponse<UserDetailResponse> updateUserForAdmin(
             @PathVariable("userId") String userId,
             @Valid @ModelAttribute UserUpdateForAdminRequest request,
             @RequestParam(name = "profilePictureFile", required = false) MultipartFile profilePictureFile) {
@@ -67,7 +67,7 @@ public class AdminController {
             request.setProfilePicture(userService.uploadProfilePicture(profilePictureFile));
         }
 
-        return ApiResponse.<UserResponse>builder()
+        return ApiResponse.<UserDetailResponse>builder()
                 .message("User updated!")
                 .data(userService.updateUserForAdmin(userId, request))
                 .build();

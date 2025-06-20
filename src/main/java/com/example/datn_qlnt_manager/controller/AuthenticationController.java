@@ -46,10 +46,10 @@ public class AuthenticationController {
 
     @Operation(summary = "Đăng ký tài khoản")
     @PostMapping("/register")
-    public ApiResponse<UserResponse> register(@Valid @RequestBody UserCreationRequest request) {
+    public ApiResponse<UserDetailResponse> register(@Valid @RequestBody UserCreationRequest request) {
         var user = userService.createUser(request);
 
-        return ApiResponse.<UserResponse>builder()
+        return ApiResponse.<UserDetailResponse>builder()
                 .message("User registered!")
                 .data(user)
                 .build();
@@ -63,7 +63,7 @@ public class AuthenticationController {
 
         return ApiResponse.builder()
                 .message("Login with google successful!")
-                .data(userMapper.toUserResponse(userService.findById(loginResponse.getUserId())))
+                .data(userMapper.toUserDetailResponse(userService.findById(loginResponse.getUserId())))
                 .meta(Meta.<LoginResponse>builder().tokenInfo(loginResponse).build())
                 .build();
     }
@@ -75,7 +75,7 @@ public class AuthenticationController {
         LoginResponse loginResponse = authenticationService.login(request, response);
 
         User user = userService.findUserWithRolesAndPermissionsById(loginResponse.getUserId());
-        UserResponse userResponse = userMapper.toUserResponse(user);
+        UserDetailResponse userDetailResponse = userMapper.toUserDetailResponse(user);
 
         loginResponse.setUserId(null);
 
@@ -85,7 +85,7 @@ public class AuthenticationController {
         return ApiResponse.builder()
                 .message("Login successful!")
                 .meta(meta)
-                .data(userResponse)
+                .data(userDetailResponse)
                 .build();
     }
 
