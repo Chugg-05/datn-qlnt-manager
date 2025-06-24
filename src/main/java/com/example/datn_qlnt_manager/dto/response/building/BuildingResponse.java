@@ -6,6 +6,8 @@ import com.example.datn_qlnt_manager.common.BuildingType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,4 +24,6 @@ public class BuildingResponse {
     BuildingType buildingType;
     BuildingStatus status;
     String description;
+    Instant createdAt;
+    Instant updatedAt;
 }

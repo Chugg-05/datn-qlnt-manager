@@ -1,10 +1,10 @@
 package com.example.datn_qlnt_manager.mapper;
 
+import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import com.example.datn_qlnt_manager.dto.request.building.BuildingCreateRequest;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
 import com.example.datn_qlnt_manager.entity.Building;
@@ -13,7 +13,7 @@ import com.example.datn_qlnt_manager.entity.Building;
 public interface BuildingMapper {
 
     @Mapping(target = "status", ignore = true)
-    Building toBuilding(BuildingCreateRequest request);
+    Building toBuilding(BuildingCreationRequest request);
 
     @Mapping(source = "user.fullName", target = "fullName")
     BuildingResponse toBuildingResponse(Building building);
