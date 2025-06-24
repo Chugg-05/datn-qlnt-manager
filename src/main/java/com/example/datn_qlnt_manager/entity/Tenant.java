@@ -7,7 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -17,11 +17,11 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "khach_thue")
+@Table(name = "khach_thue", indexes = @Index(name = "idx_ma_khach_thue", columnList = "ma_khach_thue"))
 public class Tenant extends AbstractEntity {
 
-        @OneToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id", nullable = true)
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "user_id", nullable = false)
         User user;
 
         @Column(name = "ma_khach_thue", nullable = false, unique = true)
@@ -36,16 +36,16 @@ public class Tenant extends AbstractEntity {
 
         @Column(name = "ngay_sinh", nullable = false)
         @Temporal(TemporalType.DATE)
-        Date dob;
+        LocalDate dob;
 
-        @Column(name = "so_cmnd", nullable = false)
-        String identityCardNumber;
+        @Column(name = "email", nullable = false, unique = true)
+        String email;
 
         @Column(name = "dien_thoai", nullable = false, unique = true)
         String phoneNumber;
 
-        @Column(name = "email", nullable = false, unique = true)
-        String email;
+        @Column(name = "so_cmnd", nullable = false)
+        String identityCardNumber;
 
         @Column(name = "dia_chi", nullable = false)
         String address;
