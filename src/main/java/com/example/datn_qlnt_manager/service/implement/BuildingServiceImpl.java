@@ -1,11 +1,17 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
+import com.example.datn_qlnt_manager.dto.response.building.BuildingCountResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.common.BuildingStatus;
@@ -13,7 +19,7 @@ import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.BuildingFilter;
-import com.example.datn_qlnt_manager.dto.request.building.BuildingCreateRequest;
+import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
 import com.example.datn_qlnt_manager.entity.Building;
@@ -41,16 +47,15 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public PaginatedResponse<BuildingResponse> filterBuildings(BuildingFilter filter, int page, int size) {
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
         var user = userService.getCurrentUser();
         filter.setUserId(user.getId());
 
         Page<Building> paging = buildingRepository.filterBuildingPaging(
                 filter.getUserId(),
-                filter.getBuildingCode(),
-                filter.getBuildingName(),
-                filter.getAddress(),
+                filter.getQuery(),
                 filter.getStatus(),
+                filter.getBuildingType(),
                 pageable);
 
         List<BuildingResponse> buildings = paging.getContent().stream()
@@ -73,21 +78,23 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public BuildingResponse createBuilding(BuildingCreateRequest request) {
+    public BuildingResponse createBuilding(BuildingCreationRequest request) {
+        var user = userService.getCurrentUser();
+        String code = generateSecureCode("TOA");
+
         if (buildingRepository.existsByBuildingCode(request.getBuildingCode())) {
             throw new AppException(ErrorCode.BUILDING_CODE_EXISTED);
         }
-        if (buildingRepository.existsByBuildingNameAndUserId(request.getBuildingName(), request.getUserId())) {
+        if (buildingRepository.existsByBuildingNameAndUserId(request.getBuildingName(), user.getId())) {
             throw new AppException(ErrorCode.BUILDING_NAME_EXISTED);
         }
         if (request.getActualNumberOfFloors() < request.getNumberOfFloorsForRent()) {
             throw new AppException(ErrorCode.INVALID_FLOORS_NUMBER_FOR_RENT);
         }
 
-        var user = userService.getCurrentUser();
-
         Building building = buildingMapper.toBuilding(request);
         building.setUser(user);
+        building.setBuildingCode(code);
         building.setStatus(BuildingStatus.HOAT_DONG);
         building.setCreatedAt(Instant.now());
         building.setUpdatedAt(Instant.now());
@@ -134,5 +141,51 @@ public class BuildingServiceImpl implements BuildingService {
             throw new AppException(ErrorCode.BUILDING_NOT_FOUND);
         }
         buildingRepository.deleteById(buildingId);
+    }
+
+    @Override
+    public BuildingCountResponse countBuildingByStatus(){
+        var user = userService.getCurrentUser();
+        return buildingRepository.getBuildingStatsByUser(user.getId());
+    }
+
+    @Override
+    public void toggleStatus(String id) {
+        Building building = buildingRepository.findByIdAndStatusNot(id, BuildingStatus.HUY_HOAT_DONG)
+                .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+
+        if (building.getStatus() == BuildingStatus.HOAT_DONG){
+            building.setStatus(BuildingStatus.TAM_KHOA);
+            building.setUpdatedAt(Instant.now());
+        } else if (building.getStatus() == BuildingStatus.TAM_KHOA){
+            building.setStatus(BuildingStatus.HOAT_DONG);
+            building.setUpdatedAt(Instant.now());
+        } else {
+            throw new IllegalStateException("Cannot toggle status for deleted building");
+        }
+        buildingRepository.save(building);
+    }
+
+    //mã tự sinh
+    public static String generateSecureCode(String prefix) {
+        String raw = LocalDateTime.now().toString() + UUID.randomUUID();
+        String hash = sha256(raw).substring(0, 8).toUpperCase();
+        return prefix + "_" + hash;
+    }
+
+    private static String sha256(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedHash = digest.digest(input.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : encodedHash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 not supported");
+        }
     }
 }

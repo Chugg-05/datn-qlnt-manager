@@ -2,6 +2,8 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingCountResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.BuildingFilter;
-import com.example.datn_qlnt_manager.dto.request.building.BuildingCreateRequest;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
 import com.example.datn_qlnt_manager.service.BuildingService;
@@ -45,9 +46,18 @@ public class BuildingController {
                 .build();
     }
 
+    @Operation(summary = "Đếm tòa nhà theo trạng thái")
+    @GetMapping("/count")
+    public ApiResponse<BuildingCountResponse> countBuildingByStatus (){
+        return ApiResponse.<BuildingCountResponse>builder()
+                .message("Count building success!")
+                .data(buildingService.countBuildingByStatus())
+                .build();
+    }
+
     @Operation(summary = "Thêm tòa nhà")
     @PostMapping
-    public ApiResponse<BuildingResponse> createBuilding(@Valid @RequestBody BuildingCreateRequest request) {
+    public ApiResponse<BuildingResponse> createBuilding(@Valid @RequestBody BuildingCreationRequest request) {
         return ApiResponse.<BuildingResponse>builder()
                 .message("Building has been created!")
                 .data(buildingService.createBuilding(request))
@@ -61,6 +71,15 @@ public class BuildingController {
         return ApiResponse.<BuildingResponse>builder()
                 .message("Building updated!")
                 .data(buildingService.updateBuilding(buildingId, request))
+                .build();
+    }
+
+    @Operation(summary = "Cập nhật trạng thái: hoạt động <-> tạm ngưng")
+    @PutMapping("/toggle-status/{id}")
+    public ApiResponse<String> toggleStatus (@PathVariable("id") String id){
+        buildingService.toggleStatus(id);
+        return ApiResponse.<String>builder()
+                .message("Status update successful!")
                 .build();
     }
 
