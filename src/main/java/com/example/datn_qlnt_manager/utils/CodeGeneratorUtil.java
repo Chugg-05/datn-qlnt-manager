@@ -1,9 +1,13 @@
 package com.example.datn_qlnt_manager.utils;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class CodeGeneratorUtil {
@@ -60,4 +64,26 @@ public class CodeGeneratorUtil {
                 : String.format("%-2s", word).replace(' ', 'X');
     }
 
+    //mã tự sinh
+    public static String generateSecureCode(String prefix) {
+        String raw = LocalDateTime.now().toString() + UUID.randomUUID();
+        String hash = sha256(raw).substring(0, 8).toUpperCase();
+        return prefix + "_" + hash;
+    }
+
+    public static String sha256(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedHash = digest.digest(input.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : encodedHash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 not supported");
+        }
+    }
 }
