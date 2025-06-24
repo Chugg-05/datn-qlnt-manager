@@ -113,6 +113,10 @@ public enum ErrorCode {
     FLOOR_NOT_FOUND(404, "floor not found.", HttpStatus.NOT_FOUND),
     ROOM_NOT_FOUND(404, "Room not found", HttpStatus.NOT_FOUND),
     TENANT_NOT_FOUND(404, "Tenant not found", HttpStatus.NOT_FOUND),
+    ASSET_TYPE_NAME_INVALID(404, "Asset type can not be blank.", HttpStatus.NOT_FOUND),
+    ASSET_GROUP_INVALID(404, "Asset group must not be null.", HttpStatus.NOT_FOUND),
+    DESCRIPTION_INVALID(404, "Description asset type can not be blank.", HttpStatus.NOT_FOUND),
+    ASSSET_TYPE_NOT_FOUND(404, "Asset type not found", HttpStatus.NOT_FOUND),
 
 
     //Code: 409
@@ -126,6 +130,7 @@ public enum ErrorCode {
     BUILDING_NAME_EXISTED(409, "Building Name already existed.", HttpStatus.CONFLICT),
     ROOM_CODE_EXISTED(409, "Ma phong already existed.", HttpStatus.BAD_REQUEST),
     ID_NUMBER_EXISTED(409, "ID card number already existed.", HttpStatus.CONFLICT),
+    ASSET_TYPE_EXISTED(409, "Asset Type already existed.", HttpStatus.BAD_REQUEST),
     ;
 
     final int code;

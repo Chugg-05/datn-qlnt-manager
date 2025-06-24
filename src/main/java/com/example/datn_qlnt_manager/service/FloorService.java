@@ -26,4 +26,6 @@ public interface FloorService {
 
     // xóa luôn
     void deleteFloor(String floorId);
+
+
 }

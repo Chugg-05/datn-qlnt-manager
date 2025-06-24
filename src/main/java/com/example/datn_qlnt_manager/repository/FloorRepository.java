@@ -16,8 +16,8 @@ import com.example.datn_qlnt_manager.entity.Floor;
 @Repository
 public interface FloorRepository extends JpaRepository<Floor, String> {
 
-    // hiển thị, lọc, tìm kiếm
-    @Query("""
+// hiển thị, lọc, tìm kiếm
+@Query("""
     SELECT f FROM Floor f
      JOIN f.building b
     WHERE (:buildingId IS NULL OR b.id = :buildingId)
@@ -25,16 +25,17 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
       AND (:nameFloor IS NULL OR f.nameFloor LIKE CONCAT('%', :nameFloor, '%'))
       AND (:maxRoom IS NULL OR f.maximumRoom =: maxRoom)
 """)
-    Page<Floor> filterFloorsPaging(
-            @Param("buildingId") String buildingId,
-            @Param("status") FloorStatus status,
-            @Param("nameFloor") String nameFloor,
-            @Param("maxRoom") Integer maxRoom,
-            Pageable pageable
-    );
+Page<Floor> filterFloorsPaging(
+        @Param("buildingId") String buildingId,
+        @Param("status") FloorStatus status,
+        @Param("nameFloor") String nameFloor,
+        @Param("maxRoom") Integer maxRoom,
+        Pageable pageable
+);
 
-    Optional<Floor> findByNameFloorAndBuilding_Id(String nameFloor, String buildingId);
+Optional<Floor> findByNameFloorAndBuilding_Id(String nameFloor, String buildingId);
 
-    Optional<Floor> findByNameFloorAndBuilding_IdAndIdNot(String nameFloor, String buildingId, String excludedId);
+Optional<Floor> findByNameFloorAndBuilding_IdAndIdNot(String nameFloor, String buildingId, String excludedId);
+
 
 }
