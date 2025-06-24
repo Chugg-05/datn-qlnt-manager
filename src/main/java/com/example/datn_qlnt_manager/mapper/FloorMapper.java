@@ -17,6 +17,8 @@ public interface FloorMapper {
 
     @Mapping(target = "buildingId", source = "building.id")
     @Mapping(target = "buildingName", source = "building.buildingName")
+    @Mapping(source = "createdAt", target = "createdAt")
+    @Mapping(source = "updatedAt", target = "updatedAt")
     FloorResponse toResponse(Floor floor);
 
     @Mapping(target = "building", ignore = true)
