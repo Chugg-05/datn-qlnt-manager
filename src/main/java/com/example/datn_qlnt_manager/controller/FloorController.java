@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -85,5 +86,12 @@ public class FloorController {
                  .build();
 
     }
-
+    @Operation(summary = "Thống kê (tổng tầng, trạng thái: HOAT_DONG, KHONG_SU_DUNG)")
+    @GetMapping("/floor-count")
+    public ApiResponse<FloorCountResponse>countFloorsByBuildingId(@RequestParam String buildingId) {
+        return ApiResponse.<FloorCountResponse>builder()
+                .message("Floor count fetched successfully")
+                .data(floorService.getFloorCountByBuildingId(buildingId))
+                .build();
+    }
 }

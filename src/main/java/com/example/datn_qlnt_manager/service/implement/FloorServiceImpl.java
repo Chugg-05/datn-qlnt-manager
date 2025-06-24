@@ -7,6 +7,7 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Floor;
@@ -125,6 +126,9 @@ public class FloorServiceImpl implements FloorService {
         }
         floorRepository.deleteById(floorId);
     }
-
+    @Override
+    public FloorCountResponse getFloorCountByBuildingId(String buildingId) {
+        return floorRepository.countFloorsByBuildingId(buildingId);
+    }
 
 }

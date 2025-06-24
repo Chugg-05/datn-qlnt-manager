@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.example.datn_qlnt_manager.common.FloorStatus;
 
+import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,5 +38,16 @@ Optional<Floor> findByNameFloorAndBuilding_Id(String nameFloor, String buildingI
 
 Optional<Floor> findByNameFloorAndBuilding_IdAndIdNot(String nameFloor, String buildingId, String excludedId);
 
-
+    // thông kê
+    @Query("""
+    SELECT new com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse(
+        :buildingId,
+        COUNT(f.id),
+        SUM(CASE WHEN f.status = 'HOAT_DONG' THEN 1 ELSE 0 END),
+        SUM(CASE WHEN f.status = 'KHONG_SU_DUNG' THEN 1 ELSE 0 END)
+    )
+    FROM Floor f
+    WHERE f.building.id = :buildingId
+""")
+    FloorCountResponse countFloorsByBuildingId(@Param("buildingId") String buildingId);
 }
