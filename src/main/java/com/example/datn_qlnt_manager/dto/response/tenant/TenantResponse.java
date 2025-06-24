@@ -7,27 +7,24 @@ import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TenantCreationResponse implements Serializable {
-        String id;
-        String userId;
+public class TenantResponse implements Serializable {
         String customerCode;
         String fullName;
         Gender gender;
-        Date dob;
-        String identityCardNumber;
-        String phoneNumber;
+        LocalDate dob;
         String email;
+        String phoneNumber;
+        String identityCardNumber;
         String address;
         TenantStatus tenantStatus;
         Boolean isRepresentative;
-        Boolean hasAccount;
         Instant createdAt;
         Instant updatedAt;
 }

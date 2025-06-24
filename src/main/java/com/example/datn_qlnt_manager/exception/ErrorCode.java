@@ -95,6 +95,11 @@ public enum ErrorCode {
     MAX_ROOM_AT_LEAST(400, "Maximum number of rooms must be at least 1.", HttpStatus.BAD_REQUEST),
     MAX_ROOM_SEARCH(400, "Maximum room must be >= 0.", HttpStatus.BAD_REQUEST),
 
+    INVALID_CUSTOMER_CODE_BLANK(400, "Customer code cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_ID_NUMBER_BLANK(400, "Identity card number cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_ID_NUMBER_FORMAT(400, "Incorrect ID number format.", HttpStatus.BAD_REQUEST),
+    INVALID_TENANT_STATUS_BLANK(400, "Tenant status cannot be null.", HttpStatus.BAD_REQUEST),
+
     //Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     BUILDING_ID_NOT_FOUND(404, "Building ID not found.", HttpStatus.NOT_FOUND),
@@ -107,6 +112,8 @@ public enum ErrorCode {
     BUILDING_NOT_FOUND(404, "Building not found.", HttpStatus.NOT_FOUND),
     FLOOR_NOT_FOUND(404, "floor not found.", HttpStatus.NOT_FOUND),
     ROOM_NOT_FOUND(404, "Room not found", HttpStatus.NOT_FOUND),
+    TENANT_NOT_FOUND(404, "Tenant not found", HttpStatus.NOT_FOUND),
+
 
     //Code: 409
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
@@ -118,6 +125,7 @@ public enum ErrorCode {
     BUILDING_CODE_EXISTED(409, "Building Code already existed.", HttpStatus.CONFLICT),
     BUILDING_NAME_EXISTED(409, "Building Name already existed.", HttpStatus.CONFLICT),
     ROOM_CODE_EXISTED(409, "Ma phong already existed.", HttpStatus.BAD_REQUEST),
+    ID_NUMBER_EXISTED(409, "ID card number already existed.", HttpStatus.CONFLICT),
     ;
 
     final int code;
