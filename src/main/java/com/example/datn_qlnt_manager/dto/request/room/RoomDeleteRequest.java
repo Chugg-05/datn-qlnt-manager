@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.dto.request.room;
 
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -12,10 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+
 public class RoomDeleteRequest {
     @NotNull
     String floorId;
 
     @NotBlank
-    String roomId;
+    String roomCode;
+
 }

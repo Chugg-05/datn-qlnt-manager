@@ -21,7 +21,7 @@ public class RoomCreationRequest {
     String floorId;
 
     @NotBlank
-    String roomId;
+    String roomCode;
 
     @NotBlank
     String roomName;

@@ -13,8 +13,7 @@ import lombok.experimental.FieldDefaults;
 public class RoomResponse {
 
     String id;
-    String roomId;
-    String roomName;
+    String roomCode;
     Double acreage;
     Double price;
     Long maximumPeople;

@@ -127,6 +127,7 @@ public enum ErrorCode {
     DESCRIPTION_INVALID(404, "Description asset type can not be blank.", HttpStatus.NOT_FOUND),
     ASSSET_TYPE_NOT_FOUND(404, "Asset type not found", HttpStatus.NOT_FOUND),
     VEHICLE_NOT_FOUND(404, "Vehicle not found.", HttpStatus.NOT_FOUND),
+    METER_NOT_FOUND(404, "Meter not found.", HttpStatus.NOT_FOUND),
 
     // Code: 409
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),

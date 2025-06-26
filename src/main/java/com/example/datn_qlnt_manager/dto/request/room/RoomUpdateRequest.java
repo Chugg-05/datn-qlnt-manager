@@ -19,11 +19,8 @@ public class RoomUpdateRequest {
 
     @NotNull
     String floorId;
-    //    @NotBlank
-    //    String roomId;
-    @NotBlank
-    String roomName;
-
+//    @NotBlank
+//    String roomCode;
     @NotNull
     Double acreage;
 

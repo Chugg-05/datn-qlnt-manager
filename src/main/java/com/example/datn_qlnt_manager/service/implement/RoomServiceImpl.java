@@ -3,6 +3,15 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.RoomStatus;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
+import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
+import com.example.datn_qlnt_manager.entity.Floor;
+import com.example.datn_qlnt_manager.exception.AppException;
+import com.example.datn_qlnt_manager.exception.ErrorCode;
+import com.example.datn_qlnt_manager.repository.FloorRepository;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -13,18 +22,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
-import com.example.datn_qlnt_manager.common.RoomStatus;
-import com.example.datn_qlnt_manager.dto.PaginatedResponse;
-import com.example.datn_qlnt_manager.dto.request.filter.RoomFilter;
-import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
-import com.example.datn_qlnt_manager.entity.Floor;
 import com.example.datn_qlnt_manager.entity.Room;
-import com.example.datn_qlnt_manager.exception.AppException;
-import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.RoomMapper;
-import com.example.datn_qlnt_manager.repository.FloorRepository;
 import com.example.datn_qlnt_manager.repository.RoomRepository;
 import com.example.datn_qlnt_manager.service.RoomService;
 
@@ -74,7 +74,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomResponse createRoom(RoomCreationRequest request) {
-        if (roomRepository.existsByRoomId(request.getRoomId())) {
+        if (roomRepository.existsByRoomId(request.getRoomCode())) {
             throw new AppException(ErrorCode.ROOM_CODE_EXISTED);
         }
         Room room = roomMapper.toRoomCreation(request);
@@ -103,13 +103,14 @@ public class RoomServiceImpl implements RoomService {
 
         room.setId(existingRoom.getId());
 
-        room.setRoomId(existingRoom.getRoomId());
+        room.setRoomCode(existingRoom.getRoomCode());
         room.setFloor(floor);
         room.setCreatedAt(existingRoom.getCreatedAt());
         room.setUpdatedAt(Instant.now());
 
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }
+
 
     @Override
     public Void deleteRoom(String roomId) {

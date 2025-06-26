@@ -24,10 +24,7 @@ public class Room extends AbstractEntity {
     // sua ten theo tieng anh nha
 
     @Column(name = "ma_phong", nullable = false, unique = true, length = 20)
-    String roomId;
-
-    @Column(name = "ten_phong", nullable = false)
-    String roomName;
+    String roomCode;
 
     @Column(name = "dien_tich", nullable = false, precision = 3, scale = 2)
     BigDecimal acreage;
