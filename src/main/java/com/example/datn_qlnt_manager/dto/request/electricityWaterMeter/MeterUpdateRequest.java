@@ -17,7 +17,7 @@ import java.time.LocalDate;
 public class MeterUpdateRequest {
 
     @NotBlank(message = "Room ID must not be blank")
-    private String roomId;
+    private String roomCode;
 
     private String serviceId;
 
@@ -27,8 +27,8 @@ public class MeterUpdateRequest {
     @NotBlank(message = "Meter name must not be blank")
     private String meterName;
 
-    @NotBlank(message = "Meter ID (physical code) must not be blank")
-    private String meterId;
+    @NotBlank(message = "Meter code must not be blank")
+    private String meterCode;
 
     private LocalDate manufactureDate;
 

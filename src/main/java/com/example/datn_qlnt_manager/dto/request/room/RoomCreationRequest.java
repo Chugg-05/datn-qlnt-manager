@@ -23,9 +23,6 @@ public class RoomCreationRequest {
     @NotBlank
     String roomCode;
 
-    @NotBlank
-    String roomName;
-
     @NotNull
     Double acreage;
 
