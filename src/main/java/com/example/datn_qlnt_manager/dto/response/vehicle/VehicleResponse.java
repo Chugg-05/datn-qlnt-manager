@@ -1,12 +1,14 @@
 package com.example.datn_qlnt_manager.dto.response.vehicle;
 
+import java.time.Instant;
+import java.util.Date;
+
 import com.example.datn_qlnt_manager.common.VehicleStatus;
 import com.example.datn_qlnt_manager.common.VehicleType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.Instant;
-import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -2,18 +2,7 @@ package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
-import com.example.datn_qlnt_manager.common.RoomStatus;
-import com.example.datn_qlnt_manager.dto.PaginatedResponse;
-import com.example.datn_qlnt_manager.dto.request.filter.RoomFilter;
-import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.room.RoomDeleteRequest;
-import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
-import com.example.datn_qlnt_manager.entity.Floor;
-import com.example.datn_qlnt_manager.exception.AppException;
-import com.example.datn_qlnt_manager.exception.ErrorCode;
-import com.example.datn_qlnt_manager.repository.FloorRepository;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -24,9 +13,18 @@ import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
+import com.example.datn_qlnt_manager.common.RoomStatus;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.request.filter.RoomFilter;
+import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
+import com.example.datn_qlnt_manager.entity.Floor;
 import com.example.datn_qlnt_manager.entity.Room;
+import com.example.datn_qlnt_manager.exception.AppException;
+import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.RoomMapper;
+import com.example.datn_qlnt_manager.repository.FloorRepository;
 import com.example.datn_qlnt_manager.repository.RoomRepository;
 import com.example.datn_qlnt_manager.service.RoomService;
 
@@ -46,10 +44,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public PaginatedResponse<RoomResponse> filterRooms(Integer page, Integer size, RoomFilter roomFilter) {
-        Pageable pageable = PageRequest.of(
-                Math.max(0, page - 1),
-                size,
-                Sort.by(Sort.Order.desc("createdAt")));
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Order.desc("createdAt")));
 
         Page<Room> paging = roomRepository.filterRoomsPaging(
                 roomFilter.getStatus(),
@@ -59,12 +54,10 @@ public class RoomServiceImpl implements RoomService {
                 roomFilter.getMinAcreage(),
                 roomFilter.getMaximumPeople(),
                 roomFilter.getNameFloor(),
-                pageable
-        );
+                pageable);
 
-        List<RoomResponse> rooms = paging.getContent().stream()
-                .map(roomMapper::toRoomResponse)
-                .toList();
+        List<RoomResponse> rooms =
+                paging.getContent().stream().map(roomMapper::toRoomResponse).toList();
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
@@ -99,10 +92,11 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomResponse updateRoom(String roomId, RoomUpdateRequest request) {
-        Room existingRoom = roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        Room existingRoom =
+                roomRepository.findById(roomId).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
-        Floor floor = floorRepository.findById(request.getFloorId())
+        Floor floor = floorRepository
+                .findById(request.getFloorId())
                 .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
 
         Room room = roomMapper.toRoomUpdate(request);
@@ -117,11 +111,9 @@ public class RoomServiceImpl implements RoomService {
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }
 
-
     @Override
     public Void deleteRoom(String roomId) {
-        roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        roomRepository.findById(roomId).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         roomRepository.deleteById(roomId);
         return null;
@@ -129,8 +121,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomResponse updateRoomStatus(String roomId, RoomStatus status) {
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         room.setStatus(status);
         room.setUpdatedAt(Instant.now());

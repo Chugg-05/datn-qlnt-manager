@@ -1,12 +1,12 @@
 package com.example.datn_qlnt_manager.service.implement;
 
-import com.example.datn_qlnt_manager.common.UserStatus;
 import jakarta.transaction.Transactional;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.example.datn_qlnt_manager.common.UserStatus;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
@@ -22,7 +22,8 @@ import lombok.experimental.FieldDefaults;
 public class CustomUserDetailService implements UserDetailsService {
     UserRepository userRepository;
 
-    // Phương pháp này được Spring Security sử dụng để tải thông tin chi tiết người dùng theo tên người dùng (trong trường hợp này là email).
+    // Phương pháp này được Spring Security sử dụng để tải thông tin chi tiết người dùng theo tên người dùng (trong
+    // trường hợp này là email).
     @Override
     @Transactional
     public User loadUserByUsername(String email) throws UsernameNotFoundException {

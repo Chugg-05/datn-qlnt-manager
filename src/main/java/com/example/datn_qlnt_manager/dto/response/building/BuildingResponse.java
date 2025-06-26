@@ -1,12 +1,12 @@
 package com.example.datn_qlnt_manager.dto.response.building;
 
+import java.time.Instant;
+
 import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.common.BuildingType;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
 
 @Data
 @NoArgsConstructor

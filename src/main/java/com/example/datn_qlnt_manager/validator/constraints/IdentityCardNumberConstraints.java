@@ -1,10 +1,11 @@
 package com.example.datn_qlnt_manager.validator.constraints;
 
-import com.example.datn_qlnt_manager.validator.IdentityCardNumberValidator;
+import java.lang.annotation.*;
+
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.*;
+import com.example.datn_qlnt_manager.validator.IdentityCardNumberValidator;
 
 @Documented
 @Target({ElementType.FIELD})

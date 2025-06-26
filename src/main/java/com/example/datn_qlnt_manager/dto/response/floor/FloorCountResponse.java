@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FloorCountResponse {
     String buildingId;

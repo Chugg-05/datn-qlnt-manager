@@ -1,7 +1,9 @@
 package com.example.datn_qlnt_manager.entity;
 
-import com.example.datn_qlnt_manager.common.AssetGroup;
 import jakarta.persistence.*;
+
+import com.example.datn_qlnt_manager.common.AssetGroup;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,15 +14,15 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "loai_tai_san",uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"ten_loai", "nhom_loai"})
-})
-public class AssetType extends AbstractEntity{
+@Table(
+        name = "loai_tai_san",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"ten_loai", "nhom_loai"})})
+public class AssetType extends AbstractEntity {
     @Column(name = "ten_loai", nullable = false)
     String nameAssetType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "nhom_loai",nullable = false)
+    @Column(name = "nhom_loai", nullable = false)
     AssetGroup assetGroup;
 
     @Column(name = "mo_ta")

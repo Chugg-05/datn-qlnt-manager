@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    //xử lý ngoại lệ chung
+    // xử lý ngoại lệ chung
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
         log.error("Unhandled exception occurred: {}", e.getMessage(), e);

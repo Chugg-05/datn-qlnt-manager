@@ -1,19 +1,21 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.UserFilter;
 import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
 import com.example.datn_qlnt_manager.service.UserService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -68,5 +70,4 @@ public class ManagerController {
                 .data("User with ID " + userId + " has been restored.")
                 .build();
     }
-
 }

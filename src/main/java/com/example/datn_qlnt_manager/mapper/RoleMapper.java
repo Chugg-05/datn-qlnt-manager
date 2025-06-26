@@ -1,11 +1,11 @@
 package com.example.datn_qlnt_manager.mapper;
 
-import com.example.datn_qlnt_manager.dto.response.RoleDetailResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import com.example.datn_qlnt_manager.dto.request.RoleRequest;
+import com.example.datn_qlnt_manager.dto.response.RoleDetailResponse;
 import com.example.datn_qlnt_manager.entity.Role;
 
 @Mapper(componentModel = "spring")

@@ -156,7 +156,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         tokenProvider.verifyToken(accessToken).getJWTClaimsSet().getJWTID(); // Lấy jwtId từ accessToken
 
                 long ttl = accessTokenExpired - currentTime; // Tính toán thời gian còn lại của accessToken
-                redisService.save(jwtId, accessToken, ttl, TimeUnit.MILLISECONDS); // Lưu accessToken vào Redis với jwtId là key
+                redisService.save(
+                        jwtId, accessToken, ttl, TimeUnit.MILLISECONDS); // Lưu accessToken vào Redis với jwtId là key
 
                 user.setRefreshToken(null);
                 userRepository.save(user);

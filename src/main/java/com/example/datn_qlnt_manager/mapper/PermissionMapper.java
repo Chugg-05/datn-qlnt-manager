@@ -1,10 +1,10 @@
 package com.example.datn_qlnt_manager.mapper;
 
-import com.example.datn_qlnt_manager.dto.response.PermissionDetailResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
 import com.example.datn_qlnt_manager.dto.request.PermissionRequest;
+import com.example.datn_qlnt_manager.dto.response.PermissionDetailResponse;
 import com.example.datn_qlnt_manager.entity.Permission;
 
 @Mapper(componentModel = "spring")

@@ -49,6 +49,4 @@ public class Building extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY) // sửa
     @JoinColumn(name = "user_id")
     User user;
-
-
 }

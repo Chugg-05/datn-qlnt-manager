@@ -1,10 +1,10 @@
 package com.example.datn_qlnt_manager.mapper;
 
-import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
 import com.example.datn_qlnt_manager.entity.Building;

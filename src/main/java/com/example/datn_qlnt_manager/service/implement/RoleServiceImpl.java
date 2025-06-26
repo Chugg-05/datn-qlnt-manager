@@ -4,16 +4,16 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 
-import com.example.datn_qlnt_manager.common.Meta;
-import com.example.datn_qlnt_manager.common.Pagination;
-import com.example.datn_qlnt_manager.dto.PaginatedResponse;
-import com.example.datn_qlnt_manager.dto.response.RoleDetailResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.datn_qlnt_manager.common.Meta;
+import com.example.datn_qlnt_manager.common.Pagination;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.request.RoleRequest;
+import com.example.datn_qlnt_manager.dto.response.RoleDetailResponse;
 import com.example.datn_qlnt_manager.entity.Role;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
@@ -56,7 +56,10 @@ public class RoleServiceImpl implements RoleService {
                         .build())
                 .build();
 
-        return PaginatedResponse.<RoleDetailResponse>builder().data(roles).meta(meta).build();
+        return PaginatedResponse.<RoleDetailResponse>builder()
+                .data(roles)
+                .meta(meta)
+                .build();
     }
 
     @Override

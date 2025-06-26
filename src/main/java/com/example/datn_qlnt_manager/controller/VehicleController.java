@@ -1,5 +1,11 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.VehicleFilter;
@@ -8,16 +14,13 @@ import com.example.datn_qlnt_manager.dto.request.vehicle.VehicleUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleResponse;
 import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleStatisticsResponse;
 import com.example.datn_qlnt_manager.service.VehicleService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -30,11 +33,10 @@ public class VehicleController {
 
     @Operation(summary = "Phân trang, tìm kiếm, lọc phương tiện")
     @GetMapping
-    public ApiResponse<List<VehicleResponse>> filterVehicles (
+    public ApiResponse<List<VehicleResponse>> filterVehicles(
             @ModelAttribute VehicleFilter filter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-            ){
+            @RequestParam(defaultValue = "15") int size) {
         PaginatedResponse<VehicleResponse> result = vehicleService.filterVehicles(filter, page, size);
 
         return ApiResponse.<List<VehicleResponse>>builder()
@@ -46,7 +48,7 @@ public class VehicleController {
 
     @Operation(summary = "Thống kê phương tiện")
     @GetMapping("/statistics")
-    public ApiResponse<VehicleStatisticsResponse> getVehicleStatistics(){
+    public ApiResponse<VehicleStatisticsResponse> getVehicleStatistics() {
         return ApiResponse.<VehicleStatisticsResponse>builder()
                 .message("Statistics vehicle success!")
                 .data(vehicleService.getVehicleStatistics())
@@ -55,7 +57,7 @@ public class VehicleController {
 
     @Operation(summary = "Thêm phương tiện")
     @PostMapping
-    public ApiResponse<VehicleResponse> createVehicle (@Valid @RequestBody VehicleCreationRequest request){
+    public ApiResponse<VehicleResponse> createVehicle(@Valid @RequestBody VehicleCreationRequest request) {
         return ApiResponse.<VehicleResponse>builder()
                 .message("Vehicle has been created!")
                 .data(vehicleService.createVehicle(request))
@@ -64,8 +66,8 @@ public class VehicleController {
 
     @Operation(summary = "Cập nhật phương tiện")
     @PutMapping("/{vehicleId}")
-    public ApiResponse<VehicleResponse> updateVehicle (
-            @Valid @RequestBody VehicleUpdateRequest request, @PathVariable("vehicleId") String id){
+    public ApiResponse<VehicleResponse> updateVehicle(
+            @Valid @RequestBody VehicleUpdateRequest request, @PathVariable("vehicleId") String id) {
         return ApiResponse.<VehicleResponse>builder()
                 .message("Vehicle updated!")
                 .data(vehicleService.updateVehicle(id, request))
@@ -74,15 +76,19 @@ public class VehicleController {
 
     @Operation(summary = "Xóa mềm phương tiện")
     @PutMapping("/soft-delete/{vehicleId}")
-    public ApiResponse<String> softDeleteVehicleById (@PathVariable("vehicleId") String vehicleId){
+    public ApiResponse<String> softDeleteVehicleById(@PathVariable("vehicleId") String vehicleId) {
         vehicleService.softDeleteVehicleById(vehicleId);
-        return ApiResponse.<String>builder().message("Vehicle has been deleted!").build();
+        return ApiResponse.<String>builder()
+                .message("Vehicle has been deleted!")
+                .build();
     }
 
     @Operation(summary = "Xóa phương tiện")
     @DeleteMapping("/{vehicleId}")
-    public ApiResponse<String> deleteVehicleById (@PathVariable("vehicleId") String vehicleId){
+    public ApiResponse<String> deleteVehicleById(@PathVariable("vehicleId") String vehicleId) {
         vehicleService.deleteVehicleById(vehicleId);
-        return ApiResponse.<String>builder().message("Vehicle has been deleted!").build();
+        return ApiResponse.<String>builder()
+                .message("Vehicle has been deleted!")
+                .build();
     }
 }
