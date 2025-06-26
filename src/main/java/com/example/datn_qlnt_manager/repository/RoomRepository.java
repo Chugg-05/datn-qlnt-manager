@@ -36,5 +36,5 @@ public interface RoomRepository extends JpaRepository<Room, String> {
             @Param("nameFloor") String nameFloor,
             Pageable pageable);
 
-    boolean existsByRoomId(String roomId);
+    boolean existsByRoomCode(String roomCode);
 }

@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MeterDeleteRequest {
 
-    @NotBlank(message = "Meter ID must not be blank")
+    @NotBlank(message = "ID must not be blank")
     String id;
 
-    @NotBlank(message = "Room ID must not be blank")
-    String roomId;
+    @NotBlank(message = "Room code must not be blank")
+    String roomCode;
 }

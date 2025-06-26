@@ -72,7 +72,7 @@ public class MeterServiceImpl implements MeterService {
 
     @Override
     public MeterResponse createMeter(MeterCreationRequest request) {
-        if (meterRepository.existsById(request.getMeterId())) {
+        if (meterRepository.existsById(request.getMeterCode())) {
             throw new AppException(ErrorCode.ROOM_CODE_EXISTED);
         }
         Meter meter = meterMapper.toMeterCreation(request);
@@ -93,7 +93,7 @@ public class MeterServiceImpl implements MeterService {
         Meter existingMeter = meterRepository.findById(meterId)
                 .orElseThrow(() -> new AppException(ErrorCode.METER_NOT_FOUND));
 
-        Room room = roomRepository.findById(request.getRoomId())
+        Room room = roomRepository.findById(request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         Meter electricityWaterMeter = meterMapper.toMeterUpdate(request);

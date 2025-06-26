@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Builder
 public class MeterCreationRequest {
 
-    @NotBlank(message = "Room ID must not be blank")
+    @NotBlank(message = "Room code must not be blank")
     private String roomCode;
 
     private String serviceId;
@@ -27,8 +27,8 @@ public class MeterCreationRequest {
     @NotBlank(message = "Meter name must not be blank")
     private String meterName;
 
-    @NotBlank(message = "Meter ID (physical code) must not be blank")
-    private String meterId;
+    @NotBlank(message = "Meter ID must not be blank")
+    private String meterCode;
 
     private LocalDate manufactureDate;
 
