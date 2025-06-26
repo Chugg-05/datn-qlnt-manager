@@ -20,7 +20,7 @@ public interface BuildingService {
 
     void deleteBuildingById(String buildingId);
 
-    BuildingCountResponse countBuildingByStatus ();
+    BuildingCountResponse statisticsBuildingByStatus();
 
     void toggleStatus(String id);
 }

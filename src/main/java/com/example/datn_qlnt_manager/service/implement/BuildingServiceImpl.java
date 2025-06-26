@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.example.datn_qlnt_manager.dto.response.building.BuildingCountResponse;
+import com.example.datn_qlnt_manager.utils.CodeGeneratorUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.example.datn_qlnt_manager.utils.CodeGeneratorUtil.generateSecureCode;
 
 @Slf4j
 @Service
@@ -80,11 +83,8 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     public BuildingResponse createBuilding(BuildingCreationRequest request) {
         var user = userService.getCurrentUser();
-        String code = generateSecureCode("TOA");
+        String code = CodeGeneratorUtil.generateSecureCode("TOA");
 
-        if (buildingRepository.existsByBuildingCode(request.getBuildingCode())) {
-            throw new AppException(ErrorCode.BUILDING_CODE_EXISTED);
-        }
         if (buildingRepository.existsByBuildingNameAndUserId(request.getBuildingName(), user.getId())) {
             throw new AppException(ErrorCode.BUILDING_NAME_EXISTED);
         }
@@ -144,7 +144,7 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public BuildingCountResponse countBuildingByStatus(){
+    public BuildingCountResponse statisticsBuildingByStatus(){
         var user = userService.getCurrentUser();
         return buildingRepository.getBuildingStatsByUser(user.getId());
     }
@@ -164,28 +164,5 @@ public class BuildingServiceImpl implements BuildingService {
             throw new IllegalStateException("Cannot toggle status for deleted building");
         }
         buildingRepository.save(building);
-    }
-
-    //mã tự sinh
-    public static String generateSecureCode(String prefix) {
-        String raw = LocalDateTime.now().toString() + UUID.randomUUID();
-        String hash = sha256(raw).substring(0, 8).toUpperCase();
-        return prefix + "_" + hash;
-    }
-
-    private static String sha256(String input) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] encodedHash = digest.digest(input.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : encodedHash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 not supported");
-        }
     }
 }

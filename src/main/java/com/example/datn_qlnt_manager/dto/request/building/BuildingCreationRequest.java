@@ -18,9 +18,6 @@ public class BuildingCreationRequest {
 
     String userId;
 
-//    @NotBlank(message = "INVALID_BUILDING_CODE_BLANK")
-    String buildingCode;
-
     @NotBlank(message = "INVALID_BUILDING_NAME_BLANK")
     String buildingName;
 

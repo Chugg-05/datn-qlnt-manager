@@ -46,12 +46,12 @@ public class BuildingController {
                 .build();
     }
 
-    @Operation(summary = "Đếm tòa nhà theo trạng thái")
-    @GetMapping("/count")
-    public ApiResponse<BuildingCountResponse> countBuildingByStatus (){
+    @Operation(summary = "Thống kê tòa nhà theo trạng thái")
+    @GetMapping("/statistics")
+    public ApiResponse<BuildingCountResponse> statisticsBuildingByStatus(){
         return ApiResponse.<BuildingCountResponse>builder()
                 .message("Count building success!")
-                .data(buildingService.countBuildingByStatus())
+                .data(buildingService.statisticsBuildingByStatus())
                 .build();
     }
 
