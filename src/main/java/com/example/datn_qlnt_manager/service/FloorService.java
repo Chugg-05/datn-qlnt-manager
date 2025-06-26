@@ -5,6 +5,7 @@ import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
 
 import com.example.datn_qlnt_manager.dto.request.floor.FloorCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
 
 
@@ -27,5 +28,6 @@ public interface FloorService {
     // xóa luôn
     void deleteFloor(String floorId);
 
-
+    //thống kê
+    FloorCountResponse getFloorCountByBuildingId(String buildingId);
 }
