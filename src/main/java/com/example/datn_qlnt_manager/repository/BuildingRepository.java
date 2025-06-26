@@ -17,7 +17,6 @@ import java.util.Optional;
 
 @Repository
 public interface BuildingRepository extends JpaRepository<Building, String> {
-    boolean existsByBuildingCode(String buildingCode); // kiểm tra mã tòa đã tồn tại
 
     @Query(
             """
@@ -29,6 +28,7 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
 		OR (:query IS NULL OR b.address LIKE CONCAT('%', :query, '%') ))
 		AND (:status IS NULL OR  b.status = :status )
 		AND (:buildingType IS NULL OR b.buildingType = :buildingType)
+		AND b.status != 'HUY_HOAT_DONG'
 	""")
     Page<Building> filterBuildingPaging(
             @Param("userId") String userId,
