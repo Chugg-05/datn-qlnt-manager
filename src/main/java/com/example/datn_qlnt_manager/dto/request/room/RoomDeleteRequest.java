@@ -17,6 +17,6 @@ public class RoomDeleteRequest {
     @NotNull
     String floorId;
     @NotBlank
-    String roomId;
+    String roomCode;
 
 }

@@ -107,6 +107,7 @@ public enum ErrorCode {
     BUILDING_NOT_FOUND(404, "Building not found.", HttpStatus.NOT_FOUND),
     FLOOR_NOT_FOUND(404, "floor not found.", HttpStatus.NOT_FOUND),
     ROOM_NOT_FOUND(404, "Room not found", HttpStatus.NOT_FOUND),
+    METER_NOT_FOUND(404, "Meter not found", HttpStatus.NOT_FOUND),
 
     //Code: 409
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),

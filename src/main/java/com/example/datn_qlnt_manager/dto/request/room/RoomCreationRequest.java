@@ -19,9 +19,7 @@ public class RoomCreationRequest {
     @NotNull
     String floorId;
     @NotBlank
-    String roomId;
-    @NotBlank
-    String roomName;
+    String roomCode;
     @NotNull
     Double acreage;
     @NotNull

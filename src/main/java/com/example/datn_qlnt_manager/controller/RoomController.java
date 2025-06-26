@@ -1,13 +1,12 @@
 package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
-import java.util.UUID;
 
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.example.datn_qlnt_manager.common.RoomStatus;
-import com.example.datn_qlnt_manager.dto.request.filter.RoomFilter;
+import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import jakarta.validation.Valid;

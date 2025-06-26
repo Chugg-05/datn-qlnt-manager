@@ -1,4 +1,4 @@
-package com.example.datn_qlnt_manager.dto.request.filter;
+package com.example.datn_qlnt_manager.dto.filter;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

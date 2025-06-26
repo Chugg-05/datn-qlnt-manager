@@ -2,7 +2,6 @@ package com.example.datn_qlnt_manager.mapper;
 
 
 import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.room.RoomDeleteRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import org.mapstruct.Mapper;
 
