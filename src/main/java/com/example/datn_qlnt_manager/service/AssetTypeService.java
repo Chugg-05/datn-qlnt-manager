@@ -1,6 +1,5 @@
 package com.example.datn_qlnt_manager.service;
 
-
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.AssetTypeFilter;
 import com.example.datn_qlnt_manager.dto.request.assetType.AssetTypeCreationRequest;
@@ -15,5 +14,4 @@ public interface AssetTypeService {
     AssetTypeResponse updateAssetType(String assetTypeId, AssetTypeUpdateRequest request);
 
     void deleteAssetTypeById(String assetTypeId);
-
 }

@@ -1,8 +1,5 @@
 package com.example.datn_qlnt_manager.repository;
 
-import java.util.Optional;
-import java.util.UUID;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,7 +26,7 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 					AND (:maxPerson IS NULL OR r.maximumPeople <= :maxPerson)
 					AND (:nameFloor IS NULL OR f.nameFloor LIKE CONCAT('%', :nameFloor, '%'))
 					""")
-	Page<Room> filterRoomsPaging(
+    Page<Room> filterRoomsPaging(
             @Param("status") String status,
             @Param("maxPrice") Double maxPrice,
             @Param("minPrice") Double minPrice,
@@ -39,5 +36,5 @@ public interface RoomRepository extends JpaRepository<Room, String> {
             @Param("nameFloor") String nameFloor,
             Pageable pageable);
 
-	boolean existsByRoomId(String roomId);
+    boolean existsByRoomId(String roomId);
 }

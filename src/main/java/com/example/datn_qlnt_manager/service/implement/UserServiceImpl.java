@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
-import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
-import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -26,6 +24,8 @@ import com.example.datn_qlnt_manager.dto.filter.UserFilter;
 import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import com.example.datn_qlnt_manager.entity.Role;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
@@ -83,7 +83,10 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         // trả về ds data và meta
-        return PaginatedResponse.<UserDetailResponse>builder().data(users).meta(meta).build();
+        return PaginatedResponse.<UserDetailResponse>builder()
+                .data(users)
+                .meta(meta)
+                .build();
     }
 
     @Override
@@ -124,14 +127,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        if (!Objects.equals(user.getPhoneNumber(), request.getPhoneNumber()) &&
-                userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+        if (!Objects.equals(user.getPhoneNumber(), request.getPhoneNumber())
+                && userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
-
 
         userMapper.updateUser(request, user);
         user.setProfilePicture(request.getProfilePicture());
@@ -190,8 +191,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void softDeleteUserById(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         if (user.getUserStatus() == UserStatus.DELETED) {
             throw new AppException(ErrorCode.USER_ALREADY_DELETED);
@@ -205,8 +205,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void restoreUserById(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         if (user.getUserStatus() != UserStatus.DELETED) {
             throw new AppException(ErrorCode.USER_NOT_DELETED);
@@ -220,8 +219,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void accountLockById(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         if (user.getUserStatus() == UserStatus.LOCKED) {
             throw new AppException(ErrorCode.USER_ALREADY_LOCKED);
@@ -235,8 +233,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void recoverLockedUsersById(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         if (user.getUserStatus() != UserStatus.LOCKED) {
             throw new AppException(ErrorCode.USER_NOT_LOCKED);

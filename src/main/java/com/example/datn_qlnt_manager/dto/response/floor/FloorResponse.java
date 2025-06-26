@@ -1,13 +1,13 @@
 package com.example.datn_qlnt_manager.dto.response.floor;
 
+import java.time.Instant;
+
 import com.example.datn_qlnt_manager.common.FloorType;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
 
 @Getter
 @Setter
@@ -23,5 +23,4 @@ public class FloorResponse {
     String descriptionFloor;
     Instant createdAt;
     Instant updatedAt;
-
 }

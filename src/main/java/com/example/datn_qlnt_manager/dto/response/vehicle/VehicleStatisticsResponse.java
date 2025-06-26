@@ -1,9 +1,9 @@
 package com.example.datn_qlnt_manager.dto.response.vehicle;
 
+import java.util.Map;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Map;
 
 @Data
 @NoArgsConstructor

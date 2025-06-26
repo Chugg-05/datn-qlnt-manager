@@ -6,7 +6,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import com.example.datn_qlnt_manager.service.implement.GoogleJwkCacheService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +13,7 @@ import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.service.RedisService;
+import com.example.datn_qlnt_manager.service.implement.GoogleJwkCacheService;
 import com.example.datn_qlnt_manager.utils.JwtUtil;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -59,8 +59,7 @@ public class TokenProvider {
                 .jwtID(UUID.randomUUID().toString()) // tạo một unique ID cho token (jti)
                 .build();
 
-        Payload payload = new Payload(
-                jwtClaimsSet.toJSONObject()); // chuyển đổi bộ claims thành JSON và tạo payload
+        Payload payload = new Payload(jwtClaimsSet.toJSONObject()); // chuyển đổi bộ claims thành JSON và tạo payload
         JWSObject jwsObject = new JWSObject(header, payload); // tạo một JWSObject với header và payload đã tạo
 
         try {
@@ -181,11 +180,10 @@ public class TokenProvider {
             String keyId = signedJWT.getHeader().getKeyID(); // lấy keyId từ header của token
 
             // Lấy JWK tương ứng với keyId
-            JWK jwk = jwkCacheService.getJwkByKeyId(keyId)
-                    .orElseThrow(() -> {
-                        log.error("Không tìm thấy public key tương ứng: {}", keyId);
-                        return new AppException(ErrorCode.UNAUTHORIZED);
-                    });
+            JWK jwk = jwkCacheService.getJwkByKeyId(keyId).orElseThrow(() -> {
+                log.error("Không tìm thấy public key tương ứng: {}", keyId);
+                return new AppException(ErrorCode.UNAUTHORIZED);
+            });
 
             // ép kiểu JWK thành RSAPublicKey
             RSAPublicKey publicKey = jwk.toRSAKey().toRSAPublicKey();

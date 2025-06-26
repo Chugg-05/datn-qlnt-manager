@@ -1,11 +1,12 @@
 package com.example.datn_qlnt_manager.mapper;
 
+import org.mapstruct.*;
+
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantResponse;
 import com.example.datn_qlnt_manager.entity.Tenant;
-import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface TenantMapper {
@@ -27,6 +28,5 @@ public interface TenantMapper {
     @Mapping(target = "isRepresentative", ignore = true)
     @Mapping(target = "hasAccount", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateTenant(TenantUpdateRequest request,@MappingTarget Tenant tenant);
-
+    void updateTenant(TenantUpdateRequest request, @MappingTarget Tenant tenant);
 }

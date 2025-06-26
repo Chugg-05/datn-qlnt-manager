@@ -11,14 +11,11 @@ import com.example.datn_qlnt_manager.entity.Permission;
 
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, String> {
-    @Query(
-            """
+    @Query("""
 		SELECT p FROM Permission p
 		WHERE (:name IS NULL OR p.name LIKE CONCAT('%', :name, '%'))
 		""")
-    Page<Permission> filterPermissionsPaging(
-            @Param("name") String name,
-            Pageable pageable);
+    Page<Permission> filterPermissionsPaging(@Param("name") String name, Pageable pageable);
 
     boolean existsByName(String name);
 }

@@ -1,8 +1,10 @@
 package com.example.datn_qlnt_manager.dto.request.assetType;
 
-import com.example.datn_qlnt_manager.common.AssetGroup;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import com.example.datn_qlnt_manager.common.AssetGroup;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AssetTypeUpdateRequest  {
+public class AssetTypeUpdateRequest {
     @NotBlank(message = "ASSET_TYPE_NAME_INVALID")
     String nameAssetType;
 

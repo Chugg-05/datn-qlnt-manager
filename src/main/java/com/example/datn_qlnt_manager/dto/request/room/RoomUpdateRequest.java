@@ -1,9 +1,11 @@
 package com.example.datn_qlnt_manager.dto.request.room;
-import com.example.datn_qlnt_manager.common.RoomStatus;
-import com.example.datn_qlnt_manager.common.RoomType;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import com.example.datn_qlnt_manager.common.RoomStatus;
+import com.example.datn_qlnt_manager.common.RoomType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,20 +19,26 @@ public class RoomUpdateRequest {
 
     @NotNull
     String floorId;
-//    @NotBlank
-//    String roomId;
+    //    @NotBlank
+    //    String roomId;
     @NotBlank
     String roomName;
+
     @NotNull
     Double acreage;
+
     @NotNull
     Double price;
+
     @NotNull
     @Builder.Default
     Long maximumPeople = 0L;
+
     @Builder.Default
     RoomType roomType = RoomType.DON;
+
     @NotNull
     RoomStatus status;
+
     String description;
 }

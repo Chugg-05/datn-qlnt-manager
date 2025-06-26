@@ -64,12 +64,17 @@ public class SecurityConfig {
         // Cấu hình CORS để cho phép các yêu cầu từ các nguồn khác nhau.
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers(PUBLIC_ENDPOINTS) // Các endpoint công khai không yêu cầu xác thực
-                        .permitAll() // Cho phép truy cập không cần xác thực
-                        .anyRequest() // Các endpoint còn lại yêu cầu xác thực
-                        .authenticated())
-                .addFilterBefore(jwtTokenValidator, UsernamePasswordAuthenticationFilter.class) // Thêm bộ lọc xác thực JWT trước bộ lọc xác thực mặc định
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(new JwtAuthenticationEntryPoint())) // Xử lý ngoại lệ xác thực JWT
+                .authorizeHttpRequests(
+                        auth -> auth.requestMatchers(PUBLIC_ENDPOINTS) // Các endpoint công khai không yêu cầu xác thực
+                                .permitAll() // Cho phép truy cập không cần xác thực
+                                .anyRequest() // Các endpoint còn lại yêu cầu xác thực
+                                .authenticated())
+                .addFilterBefore(
+                        jwtTokenValidator,
+                        UsernamePasswordAuthenticationFilter
+                                .class) // Thêm bộ lọc xác thực JWT trước bộ lọc xác thực mặc định
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(
+                        new JwtAuthenticationEntryPoint())) // Xử lý ngoại lệ xác thực JWT
                 .csrf(AbstractHttpConfigurer::disable); // Vô hiệu hóa CSRF vì chúng ta sử dụng JWT cho xác thực
 
         // Trả về SecurityFilterChain đã cấu hình

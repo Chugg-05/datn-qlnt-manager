@@ -1,13 +1,16 @@
 package com.example.datn_qlnt_manager.entity;
 
-import com.example.datn_qlnt_manager.common.VehicleStatus;
-import com.example.datn_qlnt_manager.common.VehicleType;
+import java.util.Date;
+
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import com.example.datn_qlnt_manager.common.VehicleStatus;
+import com.example.datn_qlnt_manager.common.VehicleType;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -40,9 +43,4 @@ public class Vehicle extends AbstractEntity {
 
     @Column(name = "mo_ta")
     String describe;
-
-
-
-
-
 }

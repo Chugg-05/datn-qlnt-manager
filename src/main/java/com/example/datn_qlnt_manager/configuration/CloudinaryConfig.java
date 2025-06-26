@@ -12,7 +12,6 @@ public class CloudinaryConfig {
     @Value("${cloudinary-url}")
     private String cloudinaryUrl;
 
-
     // Lớp cấu hình này được sử dụng để thiết lập Cloudinary với URL được cung cấp.
     @Bean
     public Cloudinary cloudinary() {

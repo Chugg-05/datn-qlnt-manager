@@ -17,5 +17,4 @@ public class RoomFilter {
     Double minAcreage;
     Integer maximumPeople;
     String nameFloor;
-
 }

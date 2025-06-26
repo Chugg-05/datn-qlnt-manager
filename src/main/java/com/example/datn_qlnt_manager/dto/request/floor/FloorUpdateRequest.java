@@ -1,10 +1,12 @@
 package com.example.datn_qlnt_manager.dto.request.floor;
 
-import com.example.datn_qlnt_manager.common.FloorStatus;
-import com.example.datn_qlnt_manager.common.FloorType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import com.example.datn_qlnt_manager.common.FloorStatus;
+import com.example.datn_qlnt_manager.common.FloorType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -22,10 +24,10 @@ public class FloorUpdateRequest {
     @Min(value = 1, message = "MAX_ROOM_AT_LEAST")
     Integer maximumRoom;
 
-    @NotNull(message ="FLOOR_TYPE_INVALID")
+    @NotNull(message = "FLOOR_TYPE_INVALID")
     FloorType floorType;
 
-    @NotNull(message ="STATUS_TYPE_INVALID")
+    @NotNull(message = "STATUS_TYPE_INVALID")
     FloorStatus status;
 
     String description;

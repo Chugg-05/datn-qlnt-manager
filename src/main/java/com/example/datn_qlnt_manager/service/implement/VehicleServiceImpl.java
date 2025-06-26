@@ -1,5 +1,16 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.common.VehicleStatus;
@@ -19,20 +30,11 @@ import com.example.datn_qlnt_manager.repository.UserRepository;
 import com.example.datn_qlnt_manager.repository.VehicleRepository;
 import com.example.datn_qlnt_manager.service.UserService;
 import com.example.datn_qlnt_manager.service.VehicleService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -46,9 +48,8 @@ public class VehicleServiceImpl implements VehicleService {
     UserRepository userRepository;
     UserService userService;
 
-
     @Override
-    public PaginatedResponse<VehicleResponse> filterVehicles(VehicleFilter filter, int page, int size){
+    public PaginatedResponse<VehicleResponse> filterVehicles(VehicleFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
         var user = userService.getCurrentUser();
 
@@ -62,12 +63,7 @@ public class VehicleServiceImpl implements VehicleService {
         }
 
         Page<Vehicle> paging = vehicleRepository.filterVehiclePaging(
-                filter.getUserId(),
-                filter.getTenantId(),
-                filter.getVehicleType(),
-                filter.getLicensePlate(),
-                pageable
-        );
+                filter.getUserId(), filter.getTenantId(), filter.getVehicleType(), filter.getLicensePlate(), pageable);
 
         List<VehicleResponse> vehicles = paging.getContent().stream()
                 .map(vehicleMapper::toVehicleResponse)
@@ -90,11 +86,13 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public VehicleResponse createVehicle(VehicleCreationRequest request){
-        if (request.getLicensePlate() != null && vehicleRepository.existsByLicensePlate(request.getLicensePlate())){
+    public VehicleResponse createVehicle(VehicleCreationRequest request) {
+        if (request.getLicensePlate() != null && vehicleRepository.existsByLicensePlate(request.getLicensePlate())) {
             throw new AppException(ErrorCode.LICENSE_PLATE_EXISTED);
         }
-        Tenant tenant = tenantRepository.findById(request.getTenantId()).orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
+        Tenant tenant = tenantRepository
+                .findById(request.getTenantId())
+                .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
         Vehicle vehicle = vehicleMapper.toVehicle(request);
         vehicle.setTenant(tenant);
         vehicle.setCreatedAt(Instant.now());
@@ -103,9 +101,9 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public VehicleResponse updateVehicle(String vehicleId, VehicleUpdateRequest request){
-        Vehicle vehicle = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
+    public VehicleResponse updateVehicle(String vehicleId, VehicleUpdateRequest request) {
+        Vehicle vehicle =
+                vehicleRepository.findById(vehicleId).orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
 
         vehicleMapper.updateVehicle(vehicle, request);
         vehicle.setUpdatedAt(Instant.now());
@@ -114,8 +112,8 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public void softDeleteVehicleById(String vehicleId) {
-        Vehicle vehicle = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
+        Vehicle vehicle =
+                vehicleRepository.findById(vehicleId).orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
 
         vehicle.setVehicleStatus(VehicleStatus.KHONG_SU_DUNG);
         vehicleMapper.toVehicleResponse(vehicleRepository.save(vehicle));
@@ -123,7 +121,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public void deleteVehicleById(String vehicleId) {
-        if (!vehicleRepository.existsById(vehicleId)){
+        if (!vehicleRepository.existsById(vehicleId)) {
             throw new AppException(ErrorCode.VEHICLE_NOT_FOUND);
         }
         vehicleRepository.deleteById(vehicleId);

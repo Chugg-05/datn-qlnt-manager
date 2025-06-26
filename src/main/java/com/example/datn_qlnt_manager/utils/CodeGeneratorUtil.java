@@ -27,9 +27,7 @@ public class CodeGeneratorUtil {
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
         // Loại bỏ các ký tự không phải chữ cái, số và khoảng trắng
-        return pattern.matcher(normalized)
-                .replaceAll("")
-                .replaceAll("[^\\p{L}\\p{Nd}\\s]", "");
+        return pattern.matcher(normalized).replaceAll("").replaceAll("[^\\p{L}\\p{Nd}\\s]", "");
     }
 
     public static String generatePrefixFromName(String name) {
@@ -62,7 +60,8 @@ public class CodeGeneratorUtil {
 
         // Nếu chỉ có 1 từ, lấy 2 ký tự đầu tiên (nếu có)
         String word = validWords.getFirst();
-        return word.length() >= 2 ? word.substring(0, 2)
+        return word.length() >= 2
+                ? word.substring(0, 2)
                 : String.format("%-2s", word).replace(' ', 'X');
     }
 
@@ -73,7 +72,6 @@ public class CodeGeneratorUtil {
 
         String cleanedName = removeVietnameseDiacritics(name).toUpperCase().trim();
         return cleanedName.isEmpty() ? "X" : String.valueOf(cleanedName.charAt(0));
-
     }
 
     public static Integer extractFloorNumber(String tenTang) {
@@ -87,7 +85,7 @@ public class CodeGeneratorUtil {
         return null;
     }
 
-    //mã tự sinh
+    // mã tự sinh
     public static String generateSecureCode(String prefix) {
         String raw = LocalDateTime.now().toString() + UUID.randomUUID();
         String hash = sha256(raw).substring(0, 8).toUpperCase();

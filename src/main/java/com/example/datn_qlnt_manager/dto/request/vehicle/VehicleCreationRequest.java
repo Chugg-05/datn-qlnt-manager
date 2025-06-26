@@ -1,15 +1,18 @@
 package com.example.datn_qlnt_manager.dto.request.vehicle;
 
-import com.example.datn_qlnt_manager.common.VehicleStatus;
-import com.example.datn_qlnt_manager.common.VehicleType;
+import java.util.Date;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
+
+import com.example.datn_qlnt_manager.common.VehicleStatus;
+import com.example.datn_qlnt_manager.common.VehicleType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,18 +21,20 @@ import java.util.Date;
 public class VehicleCreationRequest {
     @NotBlank(message = "INVALID_TENANT_ID_BLANK")
     String tenantId;
+
     @NotNull(message = "INVALID_VEHICLE_TYPE_BLANK")
     VehicleType vehicleType;
+
     @NotBlank(message = "INVALID_LICENSE_PLATE_BLANK")
-    @Pattern(
-            regexp = "^[0-9]{2}[A-Z]{1,2}[0-9]?-[0-9]{4,5}$",
-            message = "INVALID_LICENSE_PLATE"
-    )
+    @Pattern(regexp = "^[0-9]{2}[A-Z]{1,2}[0-9]?-[0-9]{4,5}$", message = "INVALID_LICENSE_PLATE")
     String licensePlate;
+
     @NotNull(message = "INVALID_VEHICLE_STATUS_BLANK")
     VehicleStatus vehicleStatus;
+
     @NotNull(message = "INVALID_REGISTRATION_DATE_BLANK")
     @PastOrPresent(message = "INVALID_REGISTRATION_DATE")
     Date registrationDate;
+
     String describe;
 }

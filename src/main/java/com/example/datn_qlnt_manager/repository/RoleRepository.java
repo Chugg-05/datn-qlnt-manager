@@ -13,14 +13,11 @@ import com.example.datn_qlnt_manager.entity.Role;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, String> {
-    @Query(
-            """
+    @Query("""
 		SELECT r FROM Role r
 		WHERE (:name IS NULL OR r.name LIKE CONCAT('%', :name, '%'))
 		""")
-    Page<Role> filterRolesPaging(
-            @Param("name") String name,
-            Pageable pageable);
+    Page<Role> filterRolesPaging(@Param("name") String name, Pageable pageable);
 
     boolean existsByName(String name);
 

@@ -1,5 +1,13 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.time.Instant;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.common.TenantStatus;
@@ -18,17 +26,11 @@ import com.example.datn_qlnt_manager.repository.BuildingRepository;
 import com.example.datn_qlnt_manager.repository.TenantRepository;
 import com.example.datn_qlnt_manager.service.TenantService;
 import com.example.datn_qlnt_manager.service.UserService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -57,12 +59,10 @@ public class TenantServiceImpl implements TenantService {
                 filter.getAddress(),
                 filter.getGender(),
                 filter.getTenantStatus(),
-                pageable
-        );
+                pageable);
 
-        List<TenantResponse> tenants = paging.getContent().stream()
-                .map(tenantMapper::toTenantResponse)
-                .toList();
+        List<TenantResponse> tenants =
+                paging.getContent().stream().map(tenantMapper::toTenantResponse).toList();
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
@@ -82,11 +82,11 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public TenantResponse createTenant(TenantCreationRequest request) {
-        if(tenantRepository.existsByEmail(request.getEmail())) {
+        if (tenantRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
 
-        if(tenantRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+        if (tenantRepository.existsByPhoneNumber(request.getPhoneNumber())) {
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
 
@@ -98,7 +98,8 @@ public class TenantServiceImpl implements TenantService {
 
         User user = userService.getCurrentUser();
 
-        Building building = buildingRepository.findByUserId(user.getId())
+        Building building = buildingRepository
+                .findByUserId(user.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
         String customerCode = codeGeneratorService.generateTenantCode(building);
@@ -116,18 +117,20 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public TenantResponse updateTenant(String tenantId, TenantUpdateRequest request) {
-        Tenant tenant = tenantRepository.findById(tenantId)
-                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+        Tenant tenant =
+                tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
 
         if (!tenant.getEmail().equals(request.getEmail()) && tenantRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
 
-        if (!tenant.getPhoneNumber().equals(request.getPhoneNumber()) && tenantRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+        if (!tenant.getPhoneNumber().equals(request.getPhoneNumber())
+                && tenantRepository.existsByPhoneNumber(request.getPhoneNumber())) {
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
 
-        if (!tenant.getIdentityCardNumber().equals(request.getIdentityCardNumber()) && tenantRepository.existsByIdentityCardNumber(request.getIdentityCardNumber())) {
+        if (!tenant.getIdentityCardNumber().equals(request.getIdentityCardNumber())
+                && tenantRepository.existsByIdentityCardNumber(request.getIdentityCardNumber())) {
             throw new AppException(ErrorCode.ID_NUMBER_EXISTED);
         }
 
@@ -139,8 +142,8 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public TenantResponse getTenantById(String tenantId) {
-        Tenant tenant = tenantRepository.findById(tenantId)
-                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+        Tenant tenant =
+                tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
         return tenantMapper.toTenantResponse(tenant);
     }
 

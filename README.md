@@ -72,7 +72,7 @@ I. QUY TẮC ĐẶT TÊN NHÁNH
       + fix: Sửa lỗi --VD: fix/user
       + refactor: Cải tiến code không đổi Logic --VD: refactor/user
       + hotfix: sửa lỗi khẩn cấp --VD: hotfix/user
-      + chore: Việc phụ trợ(Cấu hình, buld, CI, CD) --VD: chore/user
+      + chore: Việc phụ trợ(Cấu hình, build, CI, CD) --VD: chore/user
       + docs: Cập nhật tài liệu --VD: docs/readme
 
 II. QUY TẮC ĐẶT TÊN COMMIT

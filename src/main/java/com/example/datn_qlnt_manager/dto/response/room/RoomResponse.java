@@ -2,7 +2,6 @@ package com.example.datn_qlnt_manager.dto.response.room;
 
 import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.common.RoomType;
-import com.example.datn_qlnt_manager.entity.Floor;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -23,5 +22,5 @@ public class RoomResponse {
     RoomStatus status;
     String description;
     // khi nao co FloorResponse thi dan no vao day
-//    Floor floor;
+    //    Floor floor;
 }
