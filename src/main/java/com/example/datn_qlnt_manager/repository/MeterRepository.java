@@ -13,7 +13,7 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
     @Query("""
                SELECT m
                FROM Meter m
-               INNER JOIN Room r ON m.roomCode = r.id
+               INNER JOIN Room r ON m.roomCode = r.roomCode
                WHERE (:meterType IS NULL OR m.meterType = :meterType)
             """)
     Page<Meter> filterMetersPaging(
