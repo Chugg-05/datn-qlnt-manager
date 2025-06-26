@@ -57,4 +57,5 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
 
 	Optional<Building> findByIdAndStatusNot(String id, BuildingStatus status);
 
+	Optional<Building> findByUserId(String userId);
 }

@@ -8,11 +8,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CodeGeneratorUtil {
 
     public static final Set<String> IGNORED_WORDS = Set.of("TOA", "BLOCK", "DAY", "KHU", "NHA");
+    private static final Pattern FLOOR_PATTERN = Pattern.compile("Tầng\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
 
     public static String removeVietnameseDiacritics(String input) {
         if (input == null) {
@@ -62,6 +64,27 @@ public class CodeGeneratorUtil {
         String word = validWords.getFirst();
         return word.length() >= 2 ? word.substring(0, 2)
                 : String.format("%-2s", word).replace(' ', 'X');
+    }
+
+    public static String getFirstCharPrefix(String name) {
+        if (name == null || name.isBlank()) {
+            return "X";
+        }
+
+        String cleanedName = removeVietnameseDiacritics(name).toUpperCase().trim();
+        return cleanedName.isEmpty() ? "X" : String.valueOf(cleanedName.charAt(0));
+
+    }
+
+    public static Integer extractFloorNumber(String tenTang) {
+        if (tenTang == null) return null;
+
+        Matcher matcher = FLOOR_PATTERN.matcher(tenTang.trim());
+
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(1));
+        }
+        return null;
     }
 
     //mã tự sinh

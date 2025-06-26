@@ -8,10 +8,13 @@ import com.example.datn_qlnt_manager.dto.filter.TenantFilter;
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantResponse;
+import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Tenant;
+import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.TenantMapper;
+import com.example.datn_qlnt_manager.repository.BuildingRepository;
 import com.example.datn_qlnt_manager.repository.TenantRepository;
 import com.example.datn_qlnt_manager.service.TenantService;
 import com.example.datn_qlnt_manager.service.UserService;
@@ -33,6 +36,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TenantServiceImpl implements TenantService {
     TenantRepository tenantRepository;
+    BuildingRepository buildingRepository;
     TenantMapper tenantMapper;
     UserService userService;
     CodeGeneratorService codeGeneratorService;
@@ -92,14 +96,18 @@ public class TenantServiceImpl implements TenantService {
 
         Tenant tenant = tenantMapper.toTenant(request);
 
-        var user = userService.getCurrentUser();
-        String customerCode = codeGeneratorService.generateCode("tenant" ,"KH");
+        User user = userService.getCurrentUser();
+
+        Building building = buildingRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+
+        String customerCode = codeGeneratorService.generateTenantCode(building);
+
         tenant.setUser(user);
         tenant.setCustomerCode(customerCode);
         tenant.setTenantStatus(TenantStatus.DANG_THUE);
         tenant.setIsRepresentative(false);
         tenant.setHasAccount(false);
-
         tenant.setCreatedAt(Instant.now());
         tenant.setUpdatedAt(Instant.now());
 
