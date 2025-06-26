@@ -9,7 +9,7 @@ import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
 
 public interface RoomService {
 
-    PaginatedResponse<RoomResponse> filterRooms( Integer page, Integer size, RoomFilter roomFilter);
+    PaginatedResponse<RoomResponse> filterRooms(Integer page, Integer size, RoomFilter roomFilter);
 
     RoomResponse createRoom(RoomCreationRequest request);
 
@@ -18,5 +18,4 @@ public interface RoomService {
     Void deleteRoom(String roomId);
 
     RoomResponse updateRoomStatus(String roomId, RoomStatus status);
-
 }

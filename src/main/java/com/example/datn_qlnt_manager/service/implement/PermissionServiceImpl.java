@@ -3,16 +3,16 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
-import com.example.datn_qlnt_manager.common.Meta;
-import com.example.datn_qlnt_manager.common.Pagination;
-import com.example.datn_qlnt_manager.dto.PaginatedResponse;
-import com.example.datn_qlnt_manager.dto.response.PermissionDetailResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.datn_qlnt_manager.common.Meta;
+import com.example.datn_qlnt_manager.common.Pagination;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.request.PermissionRequest;
+import com.example.datn_qlnt_manager.dto.response.PermissionDetailResponse;
 import com.example.datn_qlnt_manager.entity.Permission;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
@@ -53,7 +53,10 @@ public class PermissionServiceImpl implements PermissionService {
                         .build())
                 .build();
 
-        return PaginatedResponse.<PermissionDetailResponse>builder().data(permissions).meta(meta).build();
+        return PaginatedResponse.<PermissionDetailResponse>builder()
+                .data(permissions)
+                .meta(meta)
+                .build();
     }
 
     @Override

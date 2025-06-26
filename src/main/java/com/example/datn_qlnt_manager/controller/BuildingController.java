@@ -2,8 +2,6 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -11,11 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.BuildingFilter;
-import com.example.datn_qlnt_manager.dto.request.building.BuildingCreateRequest;
+import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingCountResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
 import com.example.datn_qlnt_manager.service.BuildingService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -45,9 +46,18 @@ public class BuildingController {
                 .build();
     }
 
+    @Operation(summary = "Thống kê tòa nhà theo trạng thái")
+    @GetMapping("/statistics")
+    public ApiResponse<BuildingCountResponse> statisticsBuildingByStatus() {
+        return ApiResponse.<BuildingCountResponse>builder()
+                .message("Count building success!")
+                .data(buildingService.statisticsBuildingByStatus())
+                .build();
+    }
+
     @Operation(summary = "Thêm tòa nhà")
     @PostMapping
-    public ApiResponse<BuildingResponse> createBuilding(@Valid @RequestBody BuildingCreateRequest request) {
+    public ApiResponse<BuildingResponse> createBuilding(@Valid @RequestBody BuildingCreationRequest request) {
         return ApiResponse.<BuildingResponse>builder()
                 .message("Building has been created!")
                 .data(buildingService.createBuilding(request))
@@ -64,6 +74,15 @@ public class BuildingController {
                 .build();
     }
 
+    @Operation(summary = "Cập nhật trạng thái: hoạt động <-> tạm ngưng")
+    @PutMapping("/toggle-status/{id}")
+    public ApiResponse<String> toggleStatus(@PathVariable("id") String id) {
+        buildingService.toggleStatus(id);
+        return ApiResponse.<String>builder()
+                .message("Status update successful!")
+                .build();
+    }
+
     @Operation(summary = "Xóa tòa nhà (update trạng thái)")
     @PutMapping("/soft-delete/{buildingId}")
     public ApiResponse<String> softDeleteBuildingById(@PathVariable("buildingId") String buildingId) {
@@ -73,7 +92,7 @@ public class BuildingController {
 
     @Operation(summary = "Xóa tòa nhà")
     @DeleteMapping("/{buildingId}")
-    public ApiResponse<String> deleteBuildingById (@PathVariable("buildingId") String buildingId) {
+    public ApiResponse<String> deleteBuildingById(@PathVariable("buildingId") String buildingId) {
         buildingService.deleteBuildingById(buildingId);
         return ApiResponse.<String>builder().data("Building has been deleted!").build();
     }

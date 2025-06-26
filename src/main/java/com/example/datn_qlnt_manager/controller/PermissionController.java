@@ -2,14 +2,14 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.PaginatedResponse;
-import com.example.datn_qlnt_manager.dto.response.PermissionDetailResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.request.PermissionRequest;
+import com.example.datn_qlnt_manager.dto.response.PermissionDetailResponse;
 import com.example.datn_qlnt_manager.service.PermissionService;
 
 import io.swagger.v3.oas.annotations.Operation;

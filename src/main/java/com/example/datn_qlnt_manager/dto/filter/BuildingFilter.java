@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.dto.filter;
 
 import com.example.datn_qlnt_manager.common.BuildingStatus;
+import com.example.datn_qlnt_manager.common.BuildingType;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -12,8 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BuildingFilter {
     String userId;
-    String buildingCode;
-    String buildingName;
-    String address;
+    String query;
     BuildingStatus status;
+    BuildingType buildingType;
 }

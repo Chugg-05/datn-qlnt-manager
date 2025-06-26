@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.dto.response.floor;
 
+import java.time.Instant;
+
 import com.example.datn_qlnt_manager.common.FloorType;
 
 import lombok.AccessLevel;
@@ -19,4 +21,6 @@ public class FloorResponse {
     String buildingId;
     String buildingName;
     String descriptionFloor;
+    Instant createdAt;
+    Instant updatedAt;
 }

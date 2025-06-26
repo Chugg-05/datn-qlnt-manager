@@ -2,20 +2,21 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.PaginatedResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import com.example.datn_qlnt_manager.common.RoomStatus;
-import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
-import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.*;
 
+import com.example.datn_qlnt_manager.common.RoomStatus;
+import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
 import com.example.datn_qlnt_manager.service.RoomService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -55,8 +56,7 @@ public class RoomController {
 
     @PutMapping("/update/{id}")
     public ApiResponse<RoomResponse> updateRoom(
-            @PathVariable("id") String roomId,
-            @RequestBody @Valid RoomUpdateRequest request) {
+            @PathVariable("id") String roomId, @RequestBody @Valid RoomUpdateRequest request) {
         return ApiResponse.<RoomResponse>builder()
                 .data(roomService.updateRoom(roomId, request))
                 .message("Update room success")
@@ -75,8 +75,7 @@ public class RoomController {
 
     @PutMapping("/update-status/{id}")
     public ApiResponse<RoomResponse> updateRoomStatus(
-            @PathVariable("id") String roomId,
-            @RequestParam RoomStatus status) {
+            @PathVariable("id") String roomId, @RequestParam RoomStatus status) {
         return ApiResponse.<RoomResponse>builder()
                 .data(roomService.updateRoomStatus(roomId, status))
                 .message("Update room status success")

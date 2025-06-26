@@ -9,24 +9,24 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public enum ErrorCode {
-    //Code: 500
+    // Code: 500
     INTERNAL_SERVER_ERROR(500, "Uncategorized error.", HttpStatus.INTERNAL_SERVER_ERROR),
     UPLOAD_FAILED(500, "Upload failed.", HttpStatus.INTERNAL_SERVER_ERROR),
     JSON_PROCESSING_ERROR(500, "Failed to process JSON data.", HttpStatus.INTERNAL_SERVER_ERROR),
 
-    //Code: 401
+    // Code: 401
     UNAUTHORIZED(401, "Unauthenticated: Invalid or expired JWT token.", HttpStatus.UNAUTHORIZED),
     INVALID_TOKEN_FORMAT(401, "Invalid token format.", HttpStatus.UNAUTHORIZED),
     INVALID_SIGNATURE(401, "Token signature is invalid.", HttpStatus.UNAUTHORIZED),
     EXPIRED_TOKEN(401, "Token has expired.", HttpStatus.UNAUTHORIZED),
     TOKEN_BLACKLISTED(401, "Token has been blacklisted (user logged out).", HttpStatus.UNAUTHORIZED),
 
-    //Code: 403
+    // Code: 403
     FORBIDDEN(403, "You don't have permission.", HttpStatus.FORBIDDEN),
     CANT_REMOVE_USER(403, "You can't remove another user.", HttpStatus.FORBIDDEN),
     ACCOUNT_HAS_BEEN_LOCKED(403, "User account is locked.", HttpStatus.FORBIDDEN),
 
-    //Code: 400
+    // Code: 400
     BAD_REQUEST(400, "Invalid request.", HttpStatus.BAD_REQUEST),
     CANNOT_SEND_EMAIL(400, "Cannot send email.", HttpStatus.BAD_REQUEST),
     OTP_ALREADY_SENT(400, "OTP already sent.", HttpStatus.BAD_REQUEST),
@@ -95,7 +95,21 @@ public enum ErrorCode {
     MAX_ROOM_AT_LEAST(400, "Maximum number of rooms must be at least 1.", HttpStatus.BAD_REQUEST),
     MAX_ROOM_SEARCH(400, "Maximum room must be >= 0.", HttpStatus.BAD_REQUEST),
 
-    //Code: 404
+    INVALID_CUSTOMER_CODE_BLANK(400, "Customer code cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_ID_NUMBER_BLANK(400, "Identity card number cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_ID_NUMBER_FORMAT(400, "Incorrect ID number format.", HttpStatus.BAD_REQUEST),
+    INVALID_TENANT_STATUS_BLANK(400, "Tenant status cannot be null.", HttpStatus.BAD_REQUEST),
+
+    INVALID_VEHICLE_STATUS_BLANK(400, "Vehicle status cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_VEHICLE_TYPE_BLANK(400, "Vehicle type cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_LICENSE_PLATE_BLANK(400, "License plate cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_REGISTRATION_DATE_BLANK(400, "Registration date cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_TENANT_ID_BLANK(400, "Tenant id cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_REGISTRATION_DATE(400, "Registration date cannot be in the future.", HttpStatus.BAD_REQUEST),
+    INVALID_LICENSE_PLATE(
+            400, "License plate is not in correct format (EX: 29B1-12345 or 29AN-12345).", HttpStatus.BAD_REQUEST),
+
+    // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     BUILDING_ID_NOT_FOUND(404, "Building ID not found.", HttpStatus.NOT_FOUND),
     CHAT_NOT_FOUND(404, "Chat not found.", HttpStatus.NOT_FOUND),
@@ -107,9 +121,15 @@ public enum ErrorCode {
     BUILDING_NOT_FOUND(404, "Building not found.", HttpStatus.NOT_FOUND),
     FLOOR_NOT_FOUND(404, "floor not found.", HttpStatus.NOT_FOUND),
     ROOM_NOT_FOUND(404, "Room not found", HttpStatus.NOT_FOUND),
-    METER_NOT_FOUND(404, "Meter not found", HttpStatus.NOT_FOUND),
+    TENANT_NOT_FOUND(404, "Tenant not found", HttpStatus.NOT_FOUND),
+    ASSET_TYPE_NAME_INVALID(404, "Asset type can not be blank.", HttpStatus.NOT_FOUND),
+    ASSET_GROUP_INVALID(404, "Asset group must not be null.", HttpStatus.NOT_FOUND),
+    DESCRIPTION_INVALID(404, "Description asset type can not be blank.", HttpStatus.NOT_FOUND),
+    ASSSET_TYPE_NOT_FOUND(404, "Asset type not found", HttpStatus.NOT_FOUND),
+    VEHICLE_NOT_FOUND(404, "Vehicle not found.", HttpStatus.NOT_FOUND),
+    METER_NOT_FOUND(404, "Meter not found.", HttpStatus.NOT_FOUND),
 
-    //Code: 409
+    // Code: 409
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
     PHONE_NUMBER_EXISTED(409, "Phone already existed.", HttpStatus.CONFLICT),
     FlOOR_EXISTED(409, "Floor already existed.", HttpStatus.CONFLICT),
@@ -119,6 +139,9 @@ public enum ErrorCode {
     BUILDING_CODE_EXISTED(409, "Building Code already existed.", HttpStatus.CONFLICT),
     BUILDING_NAME_EXISTED(409, "Building Name already existed.", HttpStatus.CONFLICT),
     ROOM_CODE_EXISTED(409, "Ma phong already existed.", HttpStatus.BAD_REQUEST),
+    ID_NUMBER_EXISTED(409, "ID card number already existed.", HttpStatus.CONFLICT),
+    ASSET_TYPE_EXISTED(409, "Asset Type already existed.", HttpStatus.BAD_REQUEST),
+    LICENSE_PLATE_EXISTED(409, "License plate already exists", HttpStatus.BAD_REQUEST),
     ;
 
     final int code;

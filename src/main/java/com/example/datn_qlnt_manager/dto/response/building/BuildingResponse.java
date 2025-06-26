@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.dto.response.building;
 
+import java.time.Instant;
+
 import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.common.BuildingType;
 
@@ -22,4 +24,6 @@ public class BuildingResponse {
     BuildingType buildingType;
     BuildingStatus status;
     String description;
+    Instant createdAt;
+    Instant updatedAt;
 }

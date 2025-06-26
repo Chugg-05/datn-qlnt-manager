@@ -1,25 +1,26 @@
 package com.example.datn_qlnt_manager.controller;
 
-import com.example.datn_qlnt_manager.dto.PaginatedResponse;
-import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+
 import jakarta.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
 import com.example.datn_qlnt_manager.service.FloorService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/floors")
@@ -45,9 +46,8 @@ public class FloorController {
     public ApiResponse<List<FloorResponse>> getFloors(
             @Valid @ModelAttribute FloorFilter filter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
+            @RequestParam(defaultValue = "15") int size) {
 
-    ) {
         PaginatedResponse<FloorResponse> result = floorService.filterFloors(filter, page, size);
         return ApiResponse.<List<FloorResponse>>builder()
                 .message("Floor data retrieved successfully")
@@ -68,8 +68,7 @@ public class FloorController {
     @Operation(summary = "Sửa thông tin tầng")
     @PutMapping("/{floorId}")
     public ApiResponse<FloorResponse> updateFloor(
-            @PathVariable("floorId") String floorId,
-            @Valid @RequestBody FloorUpdateRequest request) {
+            @PathVariable("floorId") String floorId, @Valid @RequestBody FloorUpdateRequest request) {
         return ApiResponse.<FloorResponse>builder()
                 .message("Floor has been updated!")
                 .data(floorService.updateFloor(floorId, request))
@@ -79,10 +78,16 @@ public class FloorController {
     @Operation(summary = "Xóa hoàn toàn")
     @DeleteMapping("/{floorId}")
     public ApiResponse<String> deleteFloor(@PathVariable("floorId") String floorId) {
-         floorService.deleteFloor(floorId);
-         return ApiResponse.<String>builder()
-                 .data("Floor deleted successfully.")
-                 .build();
+        floorService.deleteFloor(floorId);
+        return ApiResponse.<String>builder().data("Floor deleted successfully.").build();
+    }
 
+    @Operation(summary = "Thống kê (tổng tầng, trạng thái: HOAT_DONG, KHONG_SU_DUNG)")
+    @GetMapping("/floor-count")
+    public ApiResponse<FloorCountResponse> countFloorsByBuildingId(@RequestParam String buildingId) {
+        return ApiResponse.<FloorCountResponse>builder()
+                .message("Floor count fetched successfully")
+                .data(floorService.getFloorCountByBuildingId(buildingId))
+                .build();
     }
 }

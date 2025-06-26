@@ -1,9 +1,9 @@
 package com.example.datn_qlnt_manager.entity;
 
-import com.example.datn_qlnt_manager.common.FloorType;
 import jakarta.persistence.*;
 
 import com.example.datn_qlnt_manager.common.FloorStatus;
+import com.example.datn_qlnt_manager.common.FloorType;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,9 +15,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "tang",uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"toa_nha_id","ten_tang"})
-})
+@Table(
+        name = "tang",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"toa_nha_id", "ten_tang"})})
 public class Floor extends AbstractEntity {
 
     @Column(name = "ten_tang", nullable = false)

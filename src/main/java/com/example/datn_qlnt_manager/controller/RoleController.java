@@ -2,14 +2,14 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.PaginatedResponse;
-import com.example.datn_qlnt_manager.dto.response.RoleDetailResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.request.RoleRequest;
+import com.example.datn_qlnt_manager.dto.response.RoleDetailResponse;
 import com.example.datn_qlnt_manager.service.RoleService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,5 +69,4 @@ public class RoleController {
         roleService.deleteRole(roleId);
         return ApiResponse.<String>builder().data("Role has been deleted!").build();
     }
-
 }

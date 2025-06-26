@@ -1,5 +1,14 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.time.Instant;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.common.FloorStatus;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
@@ -7,18 +16,13 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Floor;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.FloorMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import com.example.datn_qlnt_manager.repository.BuildingRepository;
 import com.example.datn_qlnt_manager.repository.FloorRepository;
 import com.example.datn_qlnt_manager.service.FloorService;
@@ -26,9 +30,6 @@ import com.example.datn_qlnt_manager.service.FloorService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
-import java.util.List;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -43,15 +44,17 @@ public class FloorServiceImpl implements FloorService {
     public FloorResponse createFloor(FloorCreationRequest request) {
 
         // Tìm tòa nhà theo ID
-        Building building = buildingRepository.findById(request.getBuildingId())
+        Building building = buildingRepository
+                .findById(request.getBuildingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
         // Check trùng tên tầng trong cùng tòa nhà
-        floorRepository.findByNameFloorAndBuilding_IdAndIdNot(
-                request.getNameFloor(), building.getId(), request.getBuildingId()
-        ).ifPresent(f -> {
-            throw new AppException(ErrorCode.FLOOR_ALREADY_EXISTS);
-        });
+        floorRepository
+                .findByNameFloorAndBuilding_IdAndIdNot(
+                        request.getNameFloor(), building.getId(), request.getBuildingId())
+                .ifPresent(f -> {
+                    throw new AppException(ErrorCode.FLOOR_ALREADY_EXISTS);
+                });
 
         Floor floor = floorMapper.toFloor(request);
         floor.setBuilding(building);
@@ -63,19 +66,14 @@ public class FloorServiceImpl implements FloorService {
 
     @Override
     public PaginatedResponse<FloorResponse> filterFloors(FloorFilter filter, int page, int size) {
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by("nameFloor").descending());
+        Pageable pageable =
+                PageRequest.of(Math.max(0, page - 1), size, Sort.by("nameFloor").descending());
 
         Page<Floor> floorPage = floorRepository.filterFloorsPaging(
-                filter.getBuildingId(),
-                filter.getStatus(),
-                filter.getNameFloor(),
-                filter.getMaxRoom(),
-                pageable
-        );
+                filter.getBuildingId(), filter.getStatus(), filter.getNameFloor(), filter.getMaxRoom(), pageable);
 
-        List<FloorResponse> responses = floorPage.getContent().stream()
-                .map(floorMapper::toResponse)
-                .toList();
+        List<FloorResponse> responses =
+                floorPage.getContent().stream().map(floorMapper::toResponse).toList();
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
@@ -95,11 +93,12 @@ public class FloorServiceImpl implements FloorService {
     @Override
     public FloorResponse updateFloor(String floorId, FloorUpdateRequest request) {
         // Lấy tầng cần cập nhật
-        Floor floor = floorRepository.findById(floorId)
-                .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+        Floor floor = floorRepository.findById(floorId).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
 
         // Kiểm tra tên tầng trùng trong cùng tòa nhà (trừ chính nó)
-        floorRepository.findByNameFloorAndBuilding_Id(request.getNameFloor(), floor.getBuilding().getId())
+        floorRepository
+                .findByNameFloorAndBuilding_Id(
+                        request.getNameFloor(), floor.getBuilding().getId())
                 .ifPresent(existingFloor -> {
                     if (!existingFloor.getId().equals(floor.getId())) {
                         throw new AppException(ErrorCode.FLOOR_ALREADY_EXISTS);
@@ -112,8 +111,7 @@ public class FloorServiceImpl implements FloorService {
 
     @Override
     public void softDeleteFloorById(String floorId) { // xóa mềm
-        Floor floor = floorRepository.findById(floorId)
-                .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+        Floor floor = floorRepository.findById(floorId).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
         floor.setStatus(FloorStatus.KHONG_SU_DUNG);
         floorRepository.save(floor);
     }
@@ -124,5 +122,10 @@ public class FloorServiceImpl implements FloorService {
             throw new AppException(ErrorCode.FLOOR_NOT_FOUND);
         }
         floorRepository.deleteById(floorId);
+    }
+
+    @Override
+    public FloorCountResponse getFloorCountByBuildingId(String buildingId) {
+        return floorRepository.countFloorsByBuildingId(buildingId);
     }
 }
