@@ -1,0 +1,16 @@
+package com.example.datn_qlnt_manager.service;
+
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.request.asset.AssetCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
+
+public interface AssetService {
+    AssetResponse createAsset(AssetCreationRequest request);
+
+    void deleteAssetById(String assetId);
+
+    PaginatedResponse<AssetResponse> getAllAssets(String assetName, int page, int size);
+
+    AssetResponse updateAssetById(String assetId, AssetUpdateRequest request);
+}

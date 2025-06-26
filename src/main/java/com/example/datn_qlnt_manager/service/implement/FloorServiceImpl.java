@@ -39,6 +39,7 @@ public class FloorServiceImpl implements FloorService {
     FloorRepository floorRepository;
     BuildingRepository buildingRepository;
     FloorMapper floorMapper;
+    CodeGeneratorService codeGeneratorService;
 
     @Override
     public FloorResponse createFloor(FloorCreationRequest request) {
@@ -57,6 +58,7 @@ public class FloorServiceImpl implements FloorService {
                 });
 
         Floor floor = floorMapper.toFloor(request);
+        floor.setNameFloor(codeGeneratorService.generateFloorName(request.getBuildingId()));
         floor.setBuilding(building);
         floor.setCreatedAt(Instant.now());
         floor.setUpdatedAt(Instant.now());

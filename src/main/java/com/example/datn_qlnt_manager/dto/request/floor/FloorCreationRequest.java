@@ -16,7 +16,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FloorCreationRequest {
-    @NotBlank(message = "FLOOR_NAME_INVALID")
+
     String nameFloor;
 
     @NotNull(message = "MAX_ROOM_INVALID")
