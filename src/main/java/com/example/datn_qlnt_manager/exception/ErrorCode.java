@@ -100,6 +100,15 @@ public enum ErrorCode {
     INVALID_ID_NUMBER_FORMAT(400, "Incorrect ID number format.", HttpStatus.BAD_REQUEST),
     INVALID_TENANT_STATUS_BLANK(400, "Tenant status cannot be null.", HttpStatus.BAD_REQUEST),
 
+    INVALID_VEHICLE_STATUS_BLANK(400, "Vehicle status cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_VEHICLE_TYPE_BLANK(400, "Vehicle type cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_LICENSE_PLATE_BLANK(400, "License plate cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_REGISTRATION_DATE_BLANK(400, "Registration date cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_TENANT_ID_BLANK(400, "Tenant id cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_REGISTRATION_DATE(400, "Registration date cannot be in the future.", HttpStatus.BAD_REQUEST),
+    INVALID_LICENSE_PLATE(400, "License plate is not in correct format (EX: 29B1-12345 or 29AN-12345).", HttpStatus.BAD_REQUEST),
+
+
     //Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     BUILDING_ID_NOT_FOUND(404, "Building ID not found.", HttpStatus.NOT_FOUND),
@@ -117,6 +126,7 @@ public enum ErrorCode {
     ASSET_GROUP_INVALID(404, "Asset group must not be null.", HttpStatus.NOT_FOUND),
     DESCRIPTION_INVALID(404, "Description asset type can not be blank.", HttpStatus.NOT_FOUND),
     ASSSET_TYPE_NOT_FOUND(404, "Asset type not found", HttpStatus.NOT_FOUND),
+    VEHICLE_NOT_FOUND(404, "Vehicle not found.", HttpStatus.NOT_FOUND),
 
 
     //Code: 409
@@ -131,6 +141,8 @@ public enum ErrorCode {
     ROOM_CODE_EXISTED(409, "Ma phong already existed.", HttpStatus.BAD_REQUEST),
     ID_NUMBER_EXISTED(409, "ID card number already existed.", HttpStatus.CONFLICT),
     ASSET_TYPE_EXISTED(409, "Asset Type already existed.", HttpStatus.BAD_REQUEST),
+    LICENSE_PLATE_EXISTED(409, "License plate already exists", HttpStatus.BAD_REQUEST),
+
     ;
 
     final int code;

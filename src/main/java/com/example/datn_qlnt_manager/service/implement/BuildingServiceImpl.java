@@ -1,11 +1,8 @@
 package com.example.datn_qlnt_manager.service.implement;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 import com.example.datn_qlnt_manager.dto.response.building.BuildingCountResponse;
 import com.example.datn_qlnt_manager.utils.CodeGeneratorUtil;
@@ -36,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.example.datn_qlnt_manager.utils.CodeGeneratorUtil.generateSecureCode;
+
 
 @Slf4j
 @Service
