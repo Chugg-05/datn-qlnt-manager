@@ -126,6 +126,7 @@ public enum ErrorCode {
     ASSET_GROUP_INVALID(404, "Asset group must not be null.", HttpStatus.NOT_FOUND),
     DESCRIPTION_INVALID(404, "Description asset type can not be blank.", HttpStatus.NOT_FOUND),
     ASSSET_TYPE_NOT_FOUND(404, "Asset type not found", HttpStatus.NOT_FOUND),
+    ASSET_NOT_FOUND(404, "Asset not found", HttpStatus.NOT_FOUND),
     VEHICLE_NOT_FOUND(404, "Vehicle not found.", HttpStatus.NOT_FOUND),
     METER_NOT_FOUND(404, "Meter not found.", HttpStatus.NOT_FOUND),
 
@@ -142,6 +143,7 @@ public enum ErrorCode {
     ID_NUMBER_EXISTED(409, "ID card number already existed.", HttpStatus.CONFLICT),
     ASSET_TYPE_EXISTED(409, "Asset Type already existed.", HttpStatus.BAD_REQUEST),
     LICENSE_PLATE_EXISTED(409, "License plate already exists", HttpStatus.BAD_REQUEST),
+    DUPLICATE_ASSET_NAME(409,"Asset name already exists", HttpStatus.BAD_REQUEST),
     ;
 
     final int code;
