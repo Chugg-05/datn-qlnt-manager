@@ -77,9 +77,9 @@ public class MeterServiceImpl implements MeterService {
         }
         Meter meter = meterMapper.toMeterCreation(request);
         Room room = roomRepository
-                .findById(request.getRoomId())
+                .findById(request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-        meter.setRoomId(room.getId());
+        meter.setRoomCode(room.getId());
 
         Instant now = Instant.now();
         meter.setCreatedAt(now);
@@ -100,7 +100,7 @@ public class MeterServiceImpl implements MeterService {
 
         electricityWaterMeter.setId(existingMeter.getId());
 
-        electricityWaterMeter.setRoomId(room.getId());
+        electricityWaterMeter.setRoomCode(room.getId());
         existingMeter.setCreatedAt(existingMeter.getCreatedAt());
         electricityWaterMeter.setUpdatedAt(Instant.now());
 
