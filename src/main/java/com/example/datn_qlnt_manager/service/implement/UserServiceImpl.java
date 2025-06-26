@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
+import com.example.datn_qlnt_manager.dto.statistics.UserStatistics;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -256,6 +257,12 @@ public class UserServiceImpl implements UserService {
     public UserDetailResponse getUserById(String userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return userMapper.toUserDetailResponse(user);
+    }
+
+    @Override
+    public UserStatistics totalUsersByStatus() {
+        User user = getCurrentUser();
+        return userRepository.getTotalUsersByStatus(user.getId());
     }
 
     @Override

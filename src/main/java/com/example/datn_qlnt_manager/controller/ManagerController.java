@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.statistics.UserStatistics;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
@@ -68,6 +69,15 @@ public class ManagerController {
         return ApiResponse.<String>builder()
                 .message("User has been restored")
                 .data("User with ID " + userId + " has been restored.")
+                .build();
+    }
+
+    @Operation(summary = "Thống kê người dùng theo trạng thái")
+    @GetMapping("/statistics")
+    public ApiResponse<UserStatistics> userStatistics() {
+        return ApiResponse.<UserStatistics>builder()
+                .message("Count users success!")
+                .data(userService.totalUsersByStatus())
                 .build();
     }
 }

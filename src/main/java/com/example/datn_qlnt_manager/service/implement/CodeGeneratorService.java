@@ -25,6 +25,7 @@ public class CodeGeneratorService {
     static String REDIS_KEY_FLOOR = "floor:";
     static String REDIS_KEY_ROOM = "room:";
     static String REDIS_KEY_TENANT = "tenant:";
+    static String REDIS_KEY_BUILDING = "building:";
 
     public String generateBuildingCode(User user) {
         String prefix = CodeGeneratorUtil.generatePrefixFromName(user.getFullName());
@@ -32,7 +33,7 @@ public class CodeGeneratorService {
         do {
             String randomNum = String.format("%06d", random.nextInt(1_000_000));
             buildingCode = prefix + randomNum;
-        } while (Boolean.TRUE.equals(redisTemplate.hasKey(REDIS_KEY_PREFIX + "building:" + buildingCode)));
+        } while (Boolean.TRUE.equals(redisTemplate.hasKey(REDIS_KEY_PREFIX + REDIS_KEY_BUILDING + buildingCode)));
 
         redisTemplate.opsForValue().set(REDIS_KEY_PREFIX + "building:" + buildingCode, true);
 
