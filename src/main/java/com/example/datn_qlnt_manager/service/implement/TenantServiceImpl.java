@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -138,6 +139,13 @@ public class TenantServiceImpl implements TenantService {
         tenant.setUpdatedAt(Instant.now());
 
         return tenantMapper.toTenantResponse(tenantRepository.save(tenant));
+    }
+
+    @Override
+    public TenantStatistics totalTenantsByStatus() {
+        User user = userService.getCurrentUser();
+
+        return tenantRepository.getTotalTenantByStatus(user.getId());
     }
 
     @Override
