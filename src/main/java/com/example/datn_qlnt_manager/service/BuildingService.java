@@ -7,6 +7,8 @@ import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingCountResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
 
+import java.util.List;
+
 public interface BuildingService {
     BuildingResponse createBuilding(BuildingCreationRequest request);
 
