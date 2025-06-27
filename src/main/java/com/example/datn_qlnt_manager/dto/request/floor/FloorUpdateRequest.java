@@ -30,5 +30,5 @@ public class FloorUpdateRequest {
     @NotNull(message = "STATUS_TYPE_INVALID")
     FloorStatus status;
 
-    String description;
+    String descriptionFloor;
 }

@@ -72,7 +72,9 @@ public class FloorServiceImpl implements FloorService {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<Floor> floorPage = floorRepository.filterFloorsPaging(
-                filter.getBuildingId(), filter.getStatus(), filter.getNameFloor(), filter.getMaxRoom(), pageable);
+                filter.getBuildingId(), filter.getStatus(), filter.getFloorType(), filter.getNameFloor(),
+                filter.getMaxRoom(),
+                pageable);
 
         List<FloorResponse> responses =
                 floorPage.getContent().stream().map(floorMapper::toResponse).toList();

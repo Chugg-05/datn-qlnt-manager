@@ -2,7 +2,9 @@ package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
 import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 import org.springframework.data.domain.Page;
