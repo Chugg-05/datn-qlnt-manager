@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
+import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,6 +39,19 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
             @Param("gender") Gender gender,
             @Param("tenantStatus") TenantStatus tenantStatus,
             Pageable pageable);
+
+	@Query(
+			"""
+        SELECT COUNT(t),
+               SUM(CASE WHEN t.tenantStatus = 'DANG_THUE' THEN 1 ELSE 0 END),
+               SUM(CASE WHEN t.tenantStatus = 'DA_TRA_PHONG' THEN 1 ELSE 0 END),
+               SUM(CASE WHEN t.tenantStatus = 'TIEM_NANG' THEN 1 ELSE 0 END),
+               SUM(CASE WHEN t.tenantStatus = 'HUY_BO' THEN 1 ELSE 0 END),
+               SUM(CASE WHEN t.tenantStatus = 'KHOA' THEN 1 ELSE 0 END)
+        FROM Tenant t
+        WHERE t.user.id = :userId
+    """)
+	TenantStatistics getTotalTenantByStatus(@Param("userId") String userId);
 
     boolean existsByEmail(String email);
 

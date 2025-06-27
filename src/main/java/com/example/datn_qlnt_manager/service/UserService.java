@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.service;
 
+import com.example.datn_qlnt_manager.dto.statistics.UserStatistics;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -36,6 +37,8 @@ public interface UserService {
     UserDetailResponse getUserById(String userId);
 
     PaginatedResponse<UserDetailResponse> filterUsers(UserFilter filter, int page, int size);
+
+    UserStatistics totalUsersByStatus();
 
     User findById(String id);
 

@@ -5,6 +5,7 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
 
 public interface RoomService {
@@ -18,4 +19,8 @@ public interface RoomService {
     Void deleteRoom(String roomId);
 
     RoomResponse updateRoomStatus(String roomId, RoomStatus status);
+
+    RoomCountResponse statisticsRoomByStatus();
+
+    void toggleStatus(String id);
 }
