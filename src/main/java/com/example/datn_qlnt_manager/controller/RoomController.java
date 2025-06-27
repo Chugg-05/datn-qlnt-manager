@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,14 @@ public class RoomController {
                 .message("Filter users successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
+                .build();
+    }
+
+    @GetMapping("/statistics")
+    public ApiResponse<RoomCountResponse> statisticsRoomByStatus() {
+        return ApiResponse.<RoomCountResponse>builder()
+                .message("Count room success!")
+                .data(roomService.statisticsRoomByStatus())
                 .build();
     }
 
