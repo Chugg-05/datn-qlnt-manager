@@ -12,7 +12,7 @@ import com.example.datn_qlnt_manager.dto.filter.VehicleFilter;
 import com.example.datn_qlnt_manager.dto.request.vehicle.VehicleCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.vehicle.VehicleUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleResponse;
-import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleStatisticsResponse;
+import com.example.datn_qlnt_manager.dto.statistics.VehicleStatistics;
 import com.example.datn_qlnt_manager.service.VehicleService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,8 +48,8 @@ public class VehicleController {
 
     @Operation(summary = "Thống kê phương tiện")
     @GetMapping("/statistics")
-    public ApiResponse<VehicleStatisticsResponse> getVehicleStatistics() {
-        return ApiResponse.<VehicleStatisticsResponse>builder()
+    public ApiResponse<VehicleStatistics> getVehicleStatistics() {
+        return ApiResponse.<VehicleStatistics>builder()
                 .message("Statistics vehicle success!")
                 .data(vehicleService.getVehicleStatistics())
                 .build();

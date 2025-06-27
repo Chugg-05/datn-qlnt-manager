@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,7 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.BuildingFilter;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.building.BuildingCountResponse;
+import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
 import com.example.datn_qlnt_manager.service.BuildingService;
 
@@ -46,10 +47,19 @@ public class BuildingController {
                 .build();
     }
 
+    @Operation(summary = "hiển thị tòa nhà dạng card và hiển thị select box")
+    @GetMapping("/cards")
+    public ApiResponse<List<BuildingBasicResponse>> getBuildingCardsForCurrentUser(){
+        return ApiResponse.<List<BuildingBasicResponse>>builder()
+                .message("Display building as card successfully")
+                .data(buildingService.getBuildingBasicForCurrentUser())
+                .build();
+    }
+
     @Operation(summary = "Thống kê tòa nhà theo trạng thái")
     @GetMapping("/statistics")
-    public ApiResponse<BuildingCountResponse> statisticsBuildingByStatus() {
-        return ApiResponse.<BuildingCountResponse>builder()
+    public ApiResponse<BuildingStatistics> statisticsBuildingByStatus() {
+        return ApiResponse.<BuildingStatistics>builder()
                 .message("Count building success!")
                 .data(buildingService.statisticsBuildingByStatus())
                 .build();

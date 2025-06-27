@@ -1,4 +1,4 @@
-package com.example.datn_qlnt_manager.dto.response.building;
+package com.example.datn_qlnt_manager.dto.statistics;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BuildingCountResponse {
+public class BuildingStatistics {
     long totalBuilding;
     long activeBuilding;
     long inactiveBuilding;
