@@ -19,7 +19,7 @@ import com.example.datn_qlnt_manager.dto.filter.VehicleFilter;
 import com.example.datn_qlnt_manager.dto.request.vehicle.VehicleCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.vehicle.VehicleUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleResponse;
-import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleStatisticsResponse;
+import com.example.datn_qlnt_manager.dto.statistics.VehicleStatistics;
 import com.example.datn_qlnt_manager.entity.Tenant;
 import com.example.datn_qlnt_manager.entity.Vehicle;
 import com.example.datn_qlnt_manager.exception.AppException;
@@ -128,7 +128,7 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public VehicleStatisticsResponse getVehicleStatistics() {
+    public VehicleStatistics getVehicleStatistics() {
         var user = userService.getCurrentUser();
         long total = vehicleRepository.countAll(user.getId());
         List<Object[]> countByType = vehicleRepository.countByVehicleType(user.getId());
@@ -140,7 +140,7 @@ public class VehicleServiceImpl implements VehicleService {
             byType.put(type, count);
         }
 
-        VehicleStatisticsResponse response = new VehicleStatisticsResponse();
+        VehicleStatistics response = new VehicleStatistics();
         response.setTotal(total);
         response.setByType(byType);
         return response;

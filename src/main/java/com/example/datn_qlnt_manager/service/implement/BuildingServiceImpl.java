@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.datn_qlnt_manager.entity.User;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
+import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +20,6 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.BuildingFilter;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.building.BuildingCountResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.exception.AppException;
@@ -70,6 +71,12 @@ public class BuildingServiceImpl implements BuildingService {
                 .data(buildings)
                 .meta(meta)
                 .build();
+    }
+
+    @Override
+    public List<BuildingBasicResponse> getBuildingBasicForCurrentUser(){
+        var user = userService.getCurrentUser();
+        return buildingRepository.findAllBuildingBasicByUserId(user.getId());
     }
 
     @Override
@@ -136,7 +143,7 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public BuildingCountResponse statisticsBuildingByStatus() {
+    public BuildingStatistics statisticsBuildingByStatus() {
         var user = userService.getCurrentUser();
         return buildingRepository.getBuildingStatsByUser(user.getId());
     }

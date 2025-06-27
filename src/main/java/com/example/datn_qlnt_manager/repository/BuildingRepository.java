@@ -3,6 +3,8 @@ package com.example.datn_qlnt_manager.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
+import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.common.BuildingType;
-import com.example.datn_qlnt_manager.dto.response.building.BuildingCountResponse;
 import com.example.datn_qlnt_manager.entity.Building;
 
 @Repository
@@ -48,7 +49,25 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
 		FROM Building b
 		WHERE b.user.id = :userId
 	""")
-    BuildingCountResponse getBuildingStatsByUser(@Param("userId") String userId);
+	BuildingStatistics getBuildingStatsByUser(@Param("userId") String userId);
+
+	@Query("""
+    SELECT new com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse(
+        b.id,
+        b.buildingName,
+        b.address,
+        b.buildingType,
+        b.status,
+        COUNT(r),
+        SUM(CASE WHEN r.status = com.example.datn_qlnt_manager.common.RoomStatus.TRONG THEN 1 ELSE 0 END)
+    )
+    FROM Building b
+    LEFT JOIN Floor f ON f.building.id = b.id
+    LEFT JOIN Room r ON r.floor.id = f.id
+    WHERE b.user.id = :userId AND b.status != 'HUY_HOAT_DONG'
+    GROUP BY b.id, b.buildingName, b.address, b.buildingType, b.status
+""")
+	List<BuildingBasicResponse> findAllBuildingBasicByUserId(@Param("userId") String userId);
 
     boolean existsByBuildingNameAndUserId(String buildingName, String userId); // check trùng tên khi thêm tòa nhà
 

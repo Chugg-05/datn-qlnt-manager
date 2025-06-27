@@ -8,10 +8,12 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import com.example.datn_qlnt_manager.entity.Floor;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.repository.FloorRepository;
+import com.example.datn_qlnt_manager.service.UserService;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -41,6 +43,7 @@ public class RoomServiceImpl implements RoomService {
     RoomRepository roomRepository;
     RoomMapper roomMapper;
     FloorRepository floorRepository;
+    UserService userService;
 
     @Override
     public PaginatedResponse<RoomResponse> filterRooms(Integer page, Integer size, RoomFilter roomFilter) {
@@ -129,4 +132,29 @@ public class RoomServiceImpl implements RoomService {
 
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }
+    @Override
+    public RoomCountResponse statisticsRoomByStatus() {
+        var user = userService.getCurrentUser();
+        return roomRepository.getRoomStatsByUser(user.getId());
+    }
+
+    @Override
+    public void toggleStatus(String id) {
+        Room room = roomRepository
+                .findByIdAndStatusNot(id, RoomStatus.HUY_HOAT_DONG)
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+
+        if (room.getStatus() == RoomStatus.TRONG) {
+            room.setStatus(RoomStatus.DANG_THUE);
+            room.setUpdatedAt(Instant.now());
+        } else if (room.getStatus() == RoomStatus.DANG_THUE) {
+            room.setStatus(RoomStatus.TRONG);
+            room.setUpdatedAt(Instant.now());
+        } else {
+            throw new IllegalStateException("Cannot toggle status for reserved or deleted room");
+        }
+
+        roomRepository.save(room);
+    }
+
 }
