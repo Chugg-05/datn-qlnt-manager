@@ -141,7 +141,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void toggleStatus(String id) {
         Room room = roomRepository
-                .findByIdAndStatusNot(id, RoomStatus.HUY_HOAT_DONG)
+                .findByIdAndStatusNot(id, RoomStatus.DANG_BAO_TRI)
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         if (room.getStatus() == RoomStatus.TRONG) {
