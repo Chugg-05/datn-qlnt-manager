@@ -5,7 +5,7 @@ import com.example.datn_qlnt_manager.dto.filter.VehicleFilter;
 import com.example.datn_qlnt_manager.dto.request.vehicle.VehicleCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.vehicle.VehicleUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleResponse;
-import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleStatisticsResponse;
+import com.example.datn_qlnt_manager.dto.statistics.VehicleStatistics;
 
 public interface VehicleService {
     PaginatedResponse<VehicleResponse> filterVehicles(VehicleFilter filter, int page, int size);
@@ -18,5 +18,5 @@ public interface VehicleService {
 
     void deleteVehicleById(String vehicleId);
 
-    VehicleStatisticsResponse getVehicleStatistics();
+    VehicleStatistics getVehicleStatistics();
 }
