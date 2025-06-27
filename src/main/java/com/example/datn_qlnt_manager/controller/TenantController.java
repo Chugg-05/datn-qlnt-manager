@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -75,6 +76,16 @@ public class TenantController {
         return ApiResponse.<TenantResponse>builder()
                 .message("Tenant updated successfully")
                 .data(tenantService.updateTenant(tenantId, request))
+                .build();
+    }
+
+    @Operation(summary = "Thống kê khách hàng theo trạng thái")
+    @GetMapping("/statistics")
+    public ApiResponse<TenantStatistics> getTenantStatistics() {
+
+        return ApiResponse.<TenantStatistics>builder()
+                .message("Tenant statistics successfully")
+                .data(tenantService.totalTenantsByStatus())
                 .build();
     }
 
