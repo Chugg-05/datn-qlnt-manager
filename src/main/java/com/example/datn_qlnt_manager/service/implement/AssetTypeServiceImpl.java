@@ -53,7 +53,7 @@ public class AssetTypeServiceImpl implements AssetTypeService {
     @Override
     public PaginatedResponse<AssetTypeResponse> getAssetTypes(AssetTypeFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(
-                Math.max(0, page - 1), size, Sort.by("nameAssetType").descending());
+                Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<AssetType> assetPage =
                 assetTypeRepository.filterAssetTypesPaging(filter.getNameAssetType(), filter.getAssetGroup(), pageable);
