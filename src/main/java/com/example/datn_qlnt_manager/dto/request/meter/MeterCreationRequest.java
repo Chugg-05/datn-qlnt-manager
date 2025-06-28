@@ -1,4 +1,4 @@
-package com.example.datn_qlnt_manager.dto.request.electricityWaterMeter;
+package com.example.datn_qlnt_manager.dto.request.meter;
 
 import com.example.datn_qlnt_manager.common.MeterType;
 import jakarta.validation.constraints.NotBlank;
@@ -14,12 +14,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MeterUpdateRequest {
+public class MeterCreationRequest {
 
-    @NotBlank(message = "Room ID must not be blank")
+    @NotBlank(message = "Room code must not be blank")
     private String roomCode;
 
-    private String serviceId;
+    private String serviceCode;
 
     @NotNull(message = "Meter type must not be null")
     private MeterType meterType;
@@ -27,7 +27,7 @@ public class MeterUpdateRequest {
     @NotBlank(message = "Meter name must not be blank")
     private String meterName;
 
-    @NotBlank(message = "Meter code must not be blank")
+    @NotBlank(message = "Meter ID must not be blank")
     private String meterCode;
 
     private LocalDate manufactureDate;

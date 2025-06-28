@@ -3,11 +3,13 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.FloorStatus;
 import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Floor;
@@ -131,6 +133,14 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public void softDeleteRoomById(String id) {
+        Room room = roomRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        room.setStatus((RoomStatus.DANG_BAO_TRI) );
+        roomRepository.save(room);
+    }
+
+
+    @Override
     public RoomResponse updateRoomStatus(String roomId, RoomStatus status) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
@@ -140,9 +150,8 @@ public class RoomServiceImpl implements RoomService {
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }
     @Override
-    public RoomCountResponse statisticsRoomByStatus() {
-        var user = userService.getCurrentUser();
-        return roomRepository.getRoomStatsByUser(user.getId());
+    public RoomCountResponse statisticsRoomByStatus(String floorId) {
+        return roomRepository.getRoomStatsByFloor(floorId);
     }
 
     @Override

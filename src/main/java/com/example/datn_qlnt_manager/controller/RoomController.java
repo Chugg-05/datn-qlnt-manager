@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import jakarta.validation.Valid;
 
@@ -47,10 +48,10 @@ public class RoomController {
     }
 
     @GetMapping("/statistics")
-    public ApiResponse<RoomCountResponse> statisticsRoomByStatus() {
+    public ApiResponse<RoomCountResponse> statisticsRoomByStatus(@RequestParam String floorId) {
         return ApiResponse.<RoomCountResponse>builder()
                 .message("Count room success!")
-                .data(roomService.statisticsRoomByStatus())
+                .data(roomService.statisticsRoomByStatus(floorId))
                 .build();
     }
 
@@ -78,6 +79,15 @@ public class RoomController {
         return ApiResponse.<Void>builder()
                 .data(roomService.deleteRoom(roomId))
                 .message("Delete room success")
+                .code(200)
+                .build();
+    }
+
+    @PutMapping("/soft-delete/{id}")
+    public ApiResponse<Void> softDeleteRoom(@PathVariable("id") String id) {
+        roomService.softDeleteRoomById(id);
+        return ApiResponse.<Void>builder()
+                .message("Delete room success.")
                 .code(200)
                 .build();
     }

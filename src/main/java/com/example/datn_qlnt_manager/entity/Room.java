@@ -23,7 +23,7 @@ public class Room extends AbstractEntity {
 
     // sua ten theo tieng anh nha
 
-    @Column(name = "ma_phong", nullable = false, unique = true, length = 20)
+    @Column(name = "ma_phong", nullable = false, length = 20)
     String roomCode;
 
     @Column(name = "dien_tich", nullable = false, precision = 3, scale = 2)
