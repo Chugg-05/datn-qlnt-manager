@@ -1,7 +1,6 @@
 package com.example.datn_qlnt_manager.dto.request.floor;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import com.example.datn_qlnt_manager.common.FloorType;
@@ -16,8 +15,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FloorCreationRequest {
-
-    String nameFloor;
 
     @NotNull(message = "MAX_ROOM_INVALID")
     @Min(value = 1, message = "MAX_ROOM_AT_LEAST")

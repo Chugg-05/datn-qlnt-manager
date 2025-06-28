@@ -50,13 +50,6 @@ public class FloorServiceImpl implements FloorService {
                 .findById(request.getBuildingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
-        // Check trùng tên tầng trong cùng tòa nhà
-        floorRepository
-                .findByNameFloorAndBuilding_IdAndIdNot(
-                        request.getNameFloor(), building.getId(), request.getBuildingId())
-                .ifPresent(f -> {
-                    throw new AppException(ErrorCode.FLOOR_ALREADY_EXISTS);
-                });
 
         Floor floor = floorMapper.toFloor(request);
         floor.setNameFloor(codeGeneratorService.generateFloorName(request.getBuildingId()));

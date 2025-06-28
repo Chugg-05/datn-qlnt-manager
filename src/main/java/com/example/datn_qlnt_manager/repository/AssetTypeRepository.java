@@ -19,6 +19,8 @@ public interface AssetTypeRepository extends JpaRepository<AssetType, String> {
 	SELECT a FROM AssetType a
 	WHERE (:name IS NULL OR a.nameAssetType LIKE CONCAT('%', :name, '%'))
 	AND (:group IS NULL OR a.assetGroup = :group)
+	ORDER BY a.updatedAt DESC
+	
 """)
     Page<AssetType> filterAssetTypesPaging(
             @Param("name") String nameAssetType, @Param("group") AssetGroup assetGroup, Pageable pageable);

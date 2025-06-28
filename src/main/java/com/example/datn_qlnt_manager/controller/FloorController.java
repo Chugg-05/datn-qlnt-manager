@@ -93,7 +93,7 @@ public class FloorController {
     }
 
     @Operation(summary = "Hiển thị danh sách tầng dạng card hoặc combobox theo user và building")
-    @GetMapping("/findAll")
+    @GetMapping("/find-all")
     public ApiResponse<List<FloorBasicResponse>> getFloorsByUserAndBuilding(
             @RequestParam String userId,
             @RequestParam String buildingId) {
