@@ -20,7 +20,6 @@ public class RoomCreationRequest {
     @NotNull
     String floorId;
 
-    @NotBlank
     String roomCode;
 
     @NotNull

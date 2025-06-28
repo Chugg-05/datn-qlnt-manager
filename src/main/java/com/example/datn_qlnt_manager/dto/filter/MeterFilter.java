@@ -10,6 +10,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MeterFilter {
-    String roomId;
+    String roomCode;
     MeterType meterType;
 }

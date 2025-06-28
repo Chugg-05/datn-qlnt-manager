@@ -1,7 +1,7 @@
 package com.example.datn_qlnt_manager.mapper;
 
-import com.example.datn_qlnt_manager.dto.request.electricityWaterMeter.MeterCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.electricityWaterMeter.MeterUpdateRequest;
+import com.example.datn_qlnt_manager.dto.request.meter.MeterCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.entity.Meter;
 import org.mapstruct.Mapper;

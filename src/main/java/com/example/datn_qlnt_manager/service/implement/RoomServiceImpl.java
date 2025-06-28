@@ -3,12 +3,15 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.FloorStatus;
 import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
+import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Floor;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
@@ -44,6 +47,7 @@ public class RoomServiceImpl implements RoomService {
     RoomMapper roomMapper;
     FloorRepository floorRepository;
     UserService userService;
+    CodeGeneratorService codeGeneratorService;
 
     @Override
     public PaginatedResponse<RoomResponse> filterRooms(Integer page, Integer size, RoomFilter roomFilter) {
@@ -84,8 +88,12 @@ public class RoomServiceImpl implements RoomService {
         Floor floor = floorRepository
                 .findById(request.getFloorId())
                 .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+        Building building = floor.getBuilding();
+        if (building == null) {
+            throw new AppException(ErrorCode.BUILDING_NOT_FOUND);
+        }
         room.setFloor(floor);
-
+        room.setRoomCode(codeGeneratorService.generateRoomCode(building, floor));
         Instant now = Instant.now();
         room.setCreatedAt(now);
         room.setUpdatedAt(now);
@@ -124,6 +132,14 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public void softDeleteRoomById(String id) {
+        Room room = roomRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        room.setStatus((RoomStatus.DANG_BAO_TRI) );
+        roomRepository.save(room);
+    }
+
+
+    @Override
     public RoomResponse updateRoomStatus(String roomId, RoomStatus status) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
@@ -133,15 +149,14 @@ public class RoomServiceImpl implements RoomService {
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }
     @Override
-    public RoomCountResponse statisticsRoomByStatus() {
-        var user = userService.getCurrentUser();
-        return roomRepository.getRoomStatsByUser(user.getId());
+    public RoomCountResponse statisticsRoomByStatus(String floorId) {
+        return roomRepository.getRoomStatsByFloor(floorId);
     }
 
     @Override
     public void toggleStatus(String id) {
         Room room = roomRepository
-                .findByIdAndStatusNot(id, RoomStatus.HUY_HOAT_DONG)
+                .findByIdAndStatusNot(id, RoomStatus.DANG_BAO_TRI)
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         if (room.getStatus() == RoomStatus.TRONG) {

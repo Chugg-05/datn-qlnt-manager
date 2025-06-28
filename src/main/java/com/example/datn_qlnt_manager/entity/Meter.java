@@ -17,15 +17,15 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Meter extends AbstractEntity {
 
-    @Id
-    @Column(length = 36)
-    String id;
+//    @Id
+//    @Column(length = 36)
+//    String id;
 
     @Column(name = "phong_id", nullable = false, length = 36)
     String roomCode;
 
     @Column(name = "dich_vu_id", length = 36)
-    String serviceId;
+    String serviceCode;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "loai_cong_to", nullable = false, length = 10)
