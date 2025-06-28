@@ -81,22 +81,23 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomResponse createRoom(RoomCreationRequest request) {
-        if (roomRepository.existsByRoomCode(request.getRoomCode())) {
-            throw new AppException(ErrorCode.ROOM_CODE_EXISTED);
-        }
-        Room room = roomMapper.toRoomCreation(request);
-        Floor floor = floorRepository
-                .findById(request.getFloorId())
+        Floor floor = floorRepository.findById(request.getFloorId())
                 .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+
         Building building = floor.getBuilding();
-        if (building == null) {
-            throw new AppException(ErrorCode.BUILDING_NOT_FOUND);
+
+        int currentRoomCount = roomRepository.countByFloorId(floor.getId());
+        if (floor.getMaximumRoom() != null && currentRoomCount >= floor.getMaximumRoom()) {
+            throw new AppException(ErrorCode.FLOOR_ROOM_LIMIT_REACHED);
         }
+
+        String roomCode = codeGeneratorService.generateRoomCode(building, floor);
+
+        Room room = roomMapper.toRoomCreation(request);
         room.setFloor(floor);
-        room.setRoomCode(codeGeneratorService.generateRoomCode(building, floor));
-        Instant now = Instant.now();
-        room.setCreatedAt(now);
-        room.setUpdatedAt(now);
+        room.setRoomCode(roomCode);
+        room.setCreatedAt(Instant.now());
+        room.setUpdatedAt(Instant.now());
 
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }

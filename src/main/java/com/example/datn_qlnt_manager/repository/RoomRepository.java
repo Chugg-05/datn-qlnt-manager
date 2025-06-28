@@ -12,6 +12,7 @@ import com.example.datn_qlnt_manager.entity.Room;
 
 import io.lettuce.core.dynamic.annotation.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -55,6 +56,23 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 		""")
 	RoomCountResponse getRoomStatsByFloor(@Param("floorId") String floorId);
 
+        SELECT
+            COUNT(CASE WHEN r.status IN (
+                com.example.datn_qlnt_manager.common.RoomStatus.DANG_THUE,
+                com.example.datn_qlnt_manager.common.RoomStatus.DA_DAT_COC
+            ) THEN 1 END) AS totalInUse,
+            SUM(CASE WHEN r.status = 'DANG_THUE' THEN 1 ELSE 0 END) AS totalDangThue,
+            SUM(CASE WHEN r.status = 'DA_DAT_COC' THEN 1 ELSE 0 END) AS totalDatCoc
+        FROM Room r
+        WHERE r.floor.building.user.id = :userId
+    """)
+	RoomCountResponse getRoomStatsByUser(@Param("userId") String userId);
+
+	@Query("SELECT r.roomCode FROM Room r WHERE r.floor.building.id = :buildingId AND r.floor.id = :floorId")
+	List<String> findRoomCodesByBuildingAndFloor(@Param("buildingId") String buildingId,
+												 @Param("floorId") String floorId);
+
+	int countByFloorId(String floorId);
 
 	Optional<Room> findByIdAndStatusNot(String id, RoomStatus status);
 }

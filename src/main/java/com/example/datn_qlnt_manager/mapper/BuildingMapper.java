@@ -12,6 +12,7 @@ import com.example.datn_qlnt_manager.entity.Building;
 @Mapper(componentModel = "spring")
 public interface BuildingMapper {
 
+    @Mapping(target = "buildingCode", ignore = true)
     @Mapping(target = "status", ignore = true)
     Building toBuilding(BuildingCreationRequest request);
 

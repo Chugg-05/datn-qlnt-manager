@@ -94,6 +94,8 @@ public enum ErrorCode {
     STATUS_TYPE_INVALID(400, "Floor status must not be null.", HttpStatus.BAD_REQUEST),
     MAX_ROOM_AT_LEAST(400, "Maximum number of rooms must be at least 1.", HttpStatus.BAD_REQUEST),
     MAX_ROOM_SEARCH(400, "Maximum room must be >= 0.", HttpStatus.BAD_REQUEST),
+    MAX_ROOM_AT_MOST(400, "Each floor must not have more than 100 rooms.", HttpStatus.BAD_REQUEST),
+    FLOOR_ROOM_LIMIT_REACHED(400, "This floor is full, no new rooms can be added.", HttpStatus.BAD_REQUEST),
 
     INVALID_CUSTOMER_CODE_BLANK(400, "Customer code cannot be blank.", HttpStatus.BAD_REQUEST),
     INVALID_ID_NUMBER_BLANK(400, "Identity card number cannot be blank.", HttpStatus.BAD_REQUEST),
@@ -125,7 +127,7 @@ public enum ErrorCode {
     ASSET_TYPE_NAME_INVALID(404, "Asset type can not be blank.", HttpStatus.NOT_FOUND),
     ASSET_GROUP_INVALID(404, "Asset group must not be null.", HttpStatus.NOT_FOUND),
     DESCRIPTION_INVALID(404, "Description asset type can not be blank.", HttpStatus.NOT_FOUND),
-    ASSSET_TYPE_NOT_FOUND(404, "Asset type not found", HttpStatus.NOT_FOUND),
+    ASSET_TYPE_NOT_FOUND(404, "Asset type not found", HttpStatus.NOT_FOUND),
     ASSET_NOT_FOUND(404, "Asset not found", HttpStatus.NOT_FOUND),
     VEHICLE_NOT_FOUND(404, "Vehicle not found.", HttpStatus.NOT_FOUND),
     METER_NOT_FOUND(404, "Meter not found.", HttpStatus.NOT_FOUND),
