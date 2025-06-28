@@ -81,7 +81,7 @@ public class AssetTypeServiceImpl implements AssetTypeService {
     public AssetTypeResponse updateAssetType(String assetTypeId, AssetTypeUpdateRequest request) {
         AssetType assetType = assetTypeRepository
                 .findById(assetTypeId)
-                .orElseThrow(() -> new AppException(ErrorCode.ASSSET_TYPE_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND));
 
         assetTypeRepository
                 .findByNameAssetTypeAndAssetGroupAndIdNot(
@@ -105,7 +105,7 @@ public class AssetTypeServiceImpl implements AssetTypeService {
     @Override
     public void deleteAssetTypeById(String assetTypeId) {
         if (!assetTypeRepository.existsById(assetTypeId)) {
-            throw new AppException(ErrorCode.ASSSET_TYPE_NOT_FOUND);
+            throw new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND);
         }
         assetTypeRepository.deleteById(assetTypeId);
     }

@@ -12,6 +12,7 @@ import com.example.datn_qlnt_manager.entity.Floor;
 @Mapper(componentModel = "spring")
 public interface FloorMapper {
 
+    @Mapping(target = "nameFloor", ignore = true)
     @Mapping(target = "status", constant = "HOAT_DONG")
     Floor toFloor(FloorCreationRequest request);
 

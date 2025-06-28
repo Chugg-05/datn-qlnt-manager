@@ -71,4 +71,8 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
     List<FloorBasicResponse> findAllFloorBasicByUserIdAndBuildingId(
             @Param("userId") String userId,
             @Param("buildingId") String buildingId);
+
+    @Query("SELECT f.nameFloor FROM Floor f WHERE f.building.id = :buildingId")
+    List<String> findAllNamesByBuildingId(@Param("buildingId") String buildingId);
+
 }

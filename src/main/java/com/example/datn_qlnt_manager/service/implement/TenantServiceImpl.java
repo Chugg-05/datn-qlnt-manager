@@ -99,11 +99,7 @@ public class TenantServiceImpl implements TenantService {
 
         User user = userService.getCurrentUser();
 
-        Building building = buildingRepository
-                .findByUserId(user.getId())
-                .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
-
-        String customerCode = codeGeneratorService.generateTenantCode(building);
+        String customerCode = codeGeneratorService.generateTenantCode(user);
 
         tenant.setUser(user);
         tenant.setCustomerCode(customerCode);

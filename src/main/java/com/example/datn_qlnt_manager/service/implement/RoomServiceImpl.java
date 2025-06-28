@@ -9,6 +9,7 @@ import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
+import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Floor;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
@@ -44,6 +45,7 @@ public class RoomServiceImpl implements RoomService {
     RoomMapper roomMapper;
     FloorRepository floorRepository;
     UserService userService;
+    CodeGeneratorService codeGeneratorService;
 
     @Override
     public PaginatedResponse<RoomResponse> filterRooms(Integer page, Integer size, RoomFilter roomFilter) {
@@ -77,18 +79,23 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomResponse createRoom(RoomCreationRequest request) {
-        if (roomRepository.existsByRoomCode(request.getRoomCode())) {
-            throw new AppException(ErrorCode.ROOM_CODE_EXISTED);
-        }
-        Room room = roomMapper.toRoomCreation(request);
-        Floor floor = floorRepository
-                .findById(request.getFloorId())
+        Floor floor = floorRepository.findById(request.getFloorId())
                 .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
-        room.setFloor(floor);
 
-        Instant now = Instant.now();
-        room.setCreatedAt(now);
-        room.setUpdatedAt(now);
+        Building building = floor.getBuilding();
+
+        int currentRoomCount = roomRepository.countByFloorId(floor.getId());
+        if (floor.getMaximumRoom() != null && currentRoomCount >= floor.getMaximumRoom()) {
+            throw new AppException(ErrorCode.FLOOR_ROOM_LIMIT_REACHED);
+        }
+
+        String roomCode = codeGeneratorService.generateRoomCode(building, floor);
+
+        Room room = roomMapper.toRoomCreation(request);
+        room.setFloor(floor);
+        room.setRoomCode(roomCode);
+        room.setCreatedAt(Instant.now());
+        room.setUpdatedAt(Instant.now());
 
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }

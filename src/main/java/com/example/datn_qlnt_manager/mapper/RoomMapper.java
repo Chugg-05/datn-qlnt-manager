@@ -6,12 +6,14 @@ import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
 import com.example.datn_qlnt_manager.entity.Room;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface RoomMapper {
 
     RoomResponse toRoomResponse(Room room);
 
+    @Mapping(target = "roomCode", ignore = true)
     Room toRoomCreation(RoomCreationRequest request);
 
     Room toRoomUpdate(RoomUpdateRequest request);

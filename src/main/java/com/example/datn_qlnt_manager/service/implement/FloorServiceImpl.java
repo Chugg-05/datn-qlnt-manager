@@ -50,9 +50,10 @@ public class FloorServiceImpl implements FloorService {
                 .findById(request.getBuildingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
+        String nameFloor = codeGeneratorService.generateFloorName(building);
 
         Floor floor = floorMapper.toFloor(request);
-        floor.setNameFloor(codeGeneratorService.generateFloorName(request.getBuildingId()));
+        floor.setNameFloor(nameFloor);
         floor.setBuilding(building);
         floor.setCreatedAt(Instant.now());
         floor.setUpdatedAt(Instant.now());

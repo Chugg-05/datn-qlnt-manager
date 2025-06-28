@@ -2,9 +2,7 @@ package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
 import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 import org.springframework.data.domain.Page;
@@ -28,7 +26,6 @@ import com.example.datn_qlnt_manager.mapper.BuildingMapper;
 import com.example.datn_qlnt_manager.repository.BuildingRepository;
 import com.example.datn_qlnt_manager.service.BuildingService;
 import com.example.datn_qlnt_manager.service.UserService;
-import com.example.datn_qlnt_manager.utils.CodeGeneratorUtil;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +41,7 @@ public class BuildingServiceImpl implements BuildingService {
     BuildingRepository buildingRepository;
     BuildingMapper buildingMapper;
     UserService userService;
+    CodeGeneratorService codeGeneratorService;
 
     @Override
     public PaginatedResponse<BuildingResponse> filterBuildings(BuildingFilter filter, int page, int size) {
@@ -82,7 +80,7 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     public BuildingResponse createBuilding(BuildingCreationRequest request) {
         var user = userService.getCurrentUser();
-        String code = CodeGeneratorUtil.generateSecureCode("TOA");
+        String buildingCode = codeGeneratorService.generateBuildingCode(user);
 
         if (buildingRepository.existsByBuildingNameAndUserId(request.getBuildingName(), user.getId())) {
             throw new AppException(ErrorCode.BUILDING_NAME_EXISTED);
@@ -93,7 +91,7 @@ public class BuildingServiceImpl implements BuildingService {
 
         Building building = buildingMapper.toBuilding(request);
         building.setUser(user);
-        building.setBuildingCode(code);
+        building.setBuildingCode(buildingCode);
         building.setStatus(BuildingStatus.HOAT_DONG);
         building.setCreatedAt(Instant.now());
         building.setUpdatedAt(Instant.now());
