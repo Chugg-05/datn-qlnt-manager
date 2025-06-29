@@ -55,7 +55,7 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 			WHERE r.floor.id = :floorId
 		""")
 	RoomCountResponse getRoomStatsByFloor(@Param("floorId") String floorId);
-
+	@Query("""
         SELECT
             COUNT(CASE WHEN r.status IN (
                 com.example.datn_qlnt_manager.common.RoomStatus.DANG_THUE,

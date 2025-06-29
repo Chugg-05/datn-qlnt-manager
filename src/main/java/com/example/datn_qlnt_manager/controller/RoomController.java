@@ -2,7 +2,6 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import jakarta.validation.Valid;
 
