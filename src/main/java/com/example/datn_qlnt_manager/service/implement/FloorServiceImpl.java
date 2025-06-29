@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import org.springframework.data.domain.Page;
@@ -130,5 +131,23 @@ public class FloorServiceImpl implements FloorService {
     @Override
     public List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId) {
         return floorRepository.findAllFloorBasicByUserIdAndBuildingId(userId, buildingId);
+    }
+
+    @Override
+    public void toggleStatus(String id) {
+        Floor floor = floorRepository
+                .findByIdAndStatusNot(id, FloorStatus.KHONG_SU_DUNG)
+                .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+
+        if (floor.getStatus() == FloorStatus.HOAT_DONG) {
+            floor.setStatus(FloorStatus.TAM_KHOA);
+            floor.setUpdatedAt(Instant.now());
+        } else if (floor.getStatus() == FloorStatus.TAM_KHOA) {
+            floor.setStatus(FloorStatus.HOAT_DONG);
+            floor.setUpdatedAt(Instant.now());
+        } else {
+            throw new IllegalStateException("Cannot toggle status for deleted floor");
+        }
+        floorRepository.save(floor);
     }
 }
