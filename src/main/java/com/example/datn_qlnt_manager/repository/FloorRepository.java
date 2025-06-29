@@ -28,7 +28,7 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
             	AND (:nameFloor IS NULL OR f.nameFloor LIKE CONCAT('%', :nameFloor, '%'))
             	AND (:maxRoom IS NULL OR f.maximumRoom =: maxRoom)
                 AND (:floorType IS NULL OR f.floorType = :floorType)
-                AND f.floorType != 'KHONG_SU_DUNG'
+                AND f.status != 'KHONG_SU_DUNG'
             """)
     Page<Floor> filterFloorsPaging(@Param("buildingId") String buildingId, @Param("status") FloorStatus status,
                                    @Param("floorType") FloorType floorType, @Param("nameFloor") String nameFloor,
@@ -48,6 +48,7 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
             	)
             	FROM Floor f
             	WHERE f.building.id = :buildingId
+                AND f.status != 'KHONG_SU_DUNG'
             """)
     FloorStatistics countFloorsByBuildingId(@Param("buildingId") String buildingId);
 
@@ -75,4 +76,5 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
     @Query("SELECT f.nameFloor FROM Floor f WHERE f.building.id = :buildingId")
     List<String> findAllNamesByBuildingId(@Param("buildingId") String buildingId);
 
+    Optional<Floor> findByIdAndStatusNot(String id, FloorStatus status);
 }
