@@ -18,9 +18,12 @@ public interface RoomService {
 
     Void deleteRoom(String roomId);
 
+    void softDeleteRoomById(String id);
+
     RoomResponse updateRoomStatus(String roomId, RoomStatus status);
 
     RoomCountResponse statisticsRoomByStatus(String floorId);
 
     void toggleStatus(String id);
+
 }

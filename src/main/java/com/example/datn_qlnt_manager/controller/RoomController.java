@@ -47,7 +47,7 @@ public class RoomController {
     }
 
     @GetMapping("/statistics")
-    public ApiResponse<RoomCountResponse> statisticsRoomByStatus(String floorId) {
+    public ApiResponse<RoomCountResponse> statisticsRoomByStatus(@RequestParam String floorId) {
         return ApiResponse.<RoomCountResponse>builder()
                 .message("Count room success!")
                 .data(roomService.statisticsRoomByStatus(floorId))
@@ -78,6 +78,15 @@ public class RoomController {
         return ApiResponse.<Void>builder()
                 .data(roomService.deleteRoom(roomId))
                 .message("Delete room success")
+                .code(200)
+                .build();
+    }
+
+    @PutMapping("/soft-delete/{id}")
+    public ApiResponse<Void> softDeleteRoom(@PathVariable("id") String id) {
+        roomService.softDeleteRoomById(id);
+        return ApiResponse.<Void>builder()
+                .message("Delete room success.")
                 .code(200)
                 .build();
     }

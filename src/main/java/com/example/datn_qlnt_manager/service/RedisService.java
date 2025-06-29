@@ -10,4 +10,10 @@ public interface RedisService {
     String get(String key);
 
     void delete(String key);
+
+    long increment(String key);
+
+    boolean exists(String key);
+
+    void markAsUsed(String key);
 }

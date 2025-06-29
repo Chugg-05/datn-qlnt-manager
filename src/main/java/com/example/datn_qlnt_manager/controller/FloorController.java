@@ -2,6 +2,8 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
+import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import jakarta.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
@@ -12,7 +14,6 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
 import com.example.datn_qlnt_manager.service.FloorService;
 
@@ -34,7 +35,7 @@ public class FloorController {
 
     @Operation(summary = "Thêm tầng mới")
     @PostMapping
-    public ApiResponse<FloorResponse> createFloor(@Valid @RequestBody FloorCreationRequest request) {
+    public ApiResponse<FloorResponse>createFloor(@Valid @RequestBody FloorCreationRequest request) {
         return ApiResponse.<FloorResponse>builder()
                 .message("Floor has been created!")
                 .data(floorService.createFloor(request))
@@ -83,11 +84,24 @@ public class FloorController {
     }
 
     @Operation(summary = "Thống kê (tổng tầng, trạng thái: HOAT_DONG, KHONG_SU_DUNG)")
-    @GetMapping("/floor-count")
-    public ApiResponse<FloorCountResponse> countFloorsByBuildingId(@RequestParam String buildingId) {
-        return ApiResponse.<FloorCountResponse>builder()
+    @GetMapping("/floor-statistics")
+    public ApiResponse<FloorStatistics> countFloorsByBuildingId(@RequestParam String buildingId) {
+        return ApiResponse.<FloorStatistics>builder()
                 .message("Floor count fetched successfully")
                 .data(floorService.getFloorCountByBuildingId(buildingId))
+                .build();
+    }
+
+    @Operation(summary = "Hiển thị danh sách tầng dạng card hoặc combobox theo user và building")
+    @GetMapping("/find-all")
+    public ApiResponse<List<FloorBasicResponse>> getFloorsByUserAndBuilding(
+            @RequestParam String userId,
+            @RequestParam String buildingId) {
+
+        List<FloorBasicResponse> response = floorService.getFloorBasicByUserIdAndBuildingId(userId, buildingId);
+        return ApiResponse.<List<FloorBasicResponse>>builder()
+                .message("Display floors successfully")
+                .data(response)
                 .build();
     }
 }

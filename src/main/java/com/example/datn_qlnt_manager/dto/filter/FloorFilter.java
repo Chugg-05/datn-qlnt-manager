@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.dto.filter;
 
+import com.example.datn_qlnt_manager.common.FloorType;
 import jakarta.validation.constraints.Min;
 
 import com.example.datn_qlnt_manager.common.FloorStatus;
@@ -15,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 public class FloorFilter {
     String buildingId;
     FloorStatus status;
+    FloorType floorType;
     String nameFloor;
 
     @Min(value = 0, message = "MAX_ROOM_SEARCH")

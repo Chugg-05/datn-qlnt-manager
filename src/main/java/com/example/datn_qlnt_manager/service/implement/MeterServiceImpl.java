@@ -4,8 +4,8 @@ import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
-import com.example.datn_qlnt_manager.dto.request.electricityWaterMeter.MeterCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.electricityWaterMeter.MeterUpdateRequest;
+import com.example.datn_qlnt_manager.dto.request.meter.MeterCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.entity.Meter;
 import com.example.datn_qlnt_manager.entity.Room;
@@ -48,7 +48,7 @@ public class MeterServiceImpl implements MeterService {
                 Sort.by(Sort.Order.desc("createdAt")));
 
         Page<Meter> paging = meterRepository.filterMetersPaging(
-                meterFilter.getRoomId(),
+                meterFilter.getRoomCode(),
                 meterFilter.getMeterType(),
                 pageable
         );

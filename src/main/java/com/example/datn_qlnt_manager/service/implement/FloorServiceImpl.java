@@ -3,6 +3,8 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
+import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +18,6 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Floor;
@@ -49,16 +50,10 @@ public class FloorServiceImpl implements FloorService {
                 .findById(request.getBuildingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
-        // Check trùng tên tầng trong cùng tòa nhà
-        floorRepository
-                .findByNameFloorAndBuilding_IdAndIdNot(
-                        request.getNameFloor(), building.getId(), request.getBuildingId())
-                .ifPresent(f -> {
-                    throw new AppException(ErrorCode.FLOOR_ALREADY_EXISTS);
-                });
+        String nameFloor = codeGeneratorService.generateFloorName(building);
 
         Floor floor = floorMapper.toFloor(request);
-        floor.setNameFloor(codeGeneratorService.generateFloorName(request.getBuildingId()));
+        floor.setNameFloor(nameFloor);
         floor.setBuilding(building);
         floor.setCreatedAt(Instant.now());
         floor.setUpdatedAt(Instant.now());
@@ -68,11 +63,12 @@ public class FloorServiceImpl implements FloorService {
 
     @Override
     public PaginatedResponse<FloorResponse> filterFloors(FloorFilter filter, int page, int size) {
-        Pageable pageable =
-                PageRequest.of(Math.max(0, page - 1), size, Sort.by("nameFloor").descending());
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<Floor> floorPage = floorRepository.filterFloorsPaging(
-                filter.getBuildingId(), filter.getStatus(), filter.getNameFloor(), filter.getMaxRoom(), pageable);
+                filter.getBuildingId(), filter.getStatus(), filter.getFloorType(), filter.getNameFloor(),
+                filter.getMaxRoom(),
+                pageable);
 
         List<FloorResponse> responses =
                 floorPage.getContent().stream().map(floorMapper::toResponse).toList();
@@ -127,7 +123,12 @@ public class FloorServiceImpl implements FloorService {
     }
 
     @Override
-    public FloorCountResponse getFloorCountByBuildingId(String buildingId) {
+    public FloorStatistics getFloorCountByBuildingId(String buildingId) {
         return floorRepository.countFloorsByBuildingId(buildingId);
+    }
+
+    @Override
+    public List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId) {
+        return floorRepository.findAllFloorBasicByUserIdAndBuildingId(userId, buildingId);
     }
 }

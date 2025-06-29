@@ -53,7 +53,7 @@ public class AssetTypeServiceImpl implements AssetTypeService {
     @Override
     public PaginatedResponse<AssetTypeResponse> getAssetTypes(AssetTypeFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(
-                Math.max(0, page - 1), size, Sort.by("nameAssetType").descending());
+                Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<AssetType> assetPage =
                 assetTypeRepository.filterAssetTypesPaging(filter.getNameAssetType(), filter.getAssetGroup(), pageable);
@@ -81,7 +81,7 @@ public class AssetTypeServiceImpl implements AssetTypeService {
     public AssetTypeResponse updateAssetType(String assetTypeId, AssetTypeUpdateRequest request) {
         AssetType assetType = assetTypeRepository
                 .findById(assetTypeId)
-                .orElseThrow(() -> new AppException(ErrorCode.ASSSET_TYPE_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND));
 
         assetTypeRepository
                 .findByNameAssetTypeAndAssetGroupAndIdNot(
@@ -105,7 +105,7 @@ public class AssetTypeServiceImpl implements AssetTypeService {
     @Override
     public void deleteAssetTypeById(String assetTypeId) {
         if (!assetTypeRepository.existsById(assetTypeId)) {
-            throw new AppException(ErrorCode.ASSSET_TYPE_NOT_FOUND);
+            throw new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND);
         }
         assetTypeRepository.deleteById(assetTypeId);
     }
