@@ -8,6 +8,7 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorCountResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import com.example.datn_qlnt_manager.entity.Floor;
 import com.example.datn_qlnt_manager.exception.AppException;
@@ -132,10 +133,10 @@ public class RoomServiceImpl implements RoomService {
 
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }
+
     @Override
-    public RoomCountResponse statisticsRoomByStatus() {
-        var user = userService.getCurrentUser();
-        return roomRepository.getRoomStatsByUser(user.getId());
+    public RoomCountResponse statisticsRoomByStatus(String floorId) {
+        return roomRepository.getRoomStatsByFloor(floorId);
     }
 
     @Override

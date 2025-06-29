@@ -47,10 +47,10 @@ public class RoomController {
     }
 
     @GetMapping("/statistics")
-    public ApiResponse<RoomCountResponse> statisticsRoomByStatus() {
+    public ApiResponse<RoomCountResponse> statisticsRoomByStatus(String floorId) {
         return ApiResponse.<RoomCountResponse>builder()
                 .message("Count room success!")
-                .data(roomService.statisticsRoomByStatus())
+                .data(roomService.statisticsRoomByStatus(floorId))
                 .build();
     }
 

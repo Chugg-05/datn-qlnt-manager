@@ -56,8 +56,6 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 		""")
 	RoomCountResponse getRoomStatsByFloor(@Param("floorId") String floorId);
 
-       
-	RoomCountResponse getRoomStatsByUser(@Param("userId") String userId);
 
 	@Query("SELECT r.roomCode FROM Room r WHERE r.floor.building.id = :buildingId AND r.floor.id = :floorId")
 	List<String> findRoomCodesByBuildingAndFloor(@Param("buildingId") String buildingId,

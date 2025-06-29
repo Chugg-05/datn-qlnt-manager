@@ -20,7 +20,7 @@ public interface RoomService {
 
     RoomResponse updateRoomStatus(String roomId, RoomStatus status);
 
-    RoomCountResponse statisticsRoomByStatus();
+    RoomCountResponse statisticsRoomByStatus(String floorId);
 
     void toggleStatus(String id);
 }
