@@ -24,6 +24,6 @@ public interface RoomService {
 
     RoomCountResponse statisticsRoomByStatus(String floorId);
 
-    void toggleStatus(String id);
+//    void toggleStatus(String id);
 
 }

@@ -91,14 +91,14 @@ public class RoomController {
                 .build();
     }
 
-    @PutMapping("/update-status/{id}")
-    public ApiResponse<RoomResponse> updateRoomStatus(
-            @PathVariable("id") String roomId, @RequestParam RoomStatus status) {
-        return ApiResponse.<RoomResponse>builder()
-                .data(roomService.updateRoomStatus(roomId, status))
-                .message("Update room status success")
-                .code(200)
-                .build();
-    }
+//    @PutMapping("/update-status/{id}")
+//    public ApiResponse<RoomResponse> updateRoomStatus(
+//            @PathVariable("id") String roomId, @RequestParam RoomStatus status) {
+//        return ApiResponse.<RoomResponse>builder()
+//                .data(roomService.updateRoomStatus(roomId, status))
+//                .message("Update room status success")
+//                .code(200)
+//                .build();
+//    }
 
 }
