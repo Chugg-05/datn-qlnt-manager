@@ -79,6 +79,17 @@ public class TenantController {
                 .build();
     }
 
+    @Operation(summary = "Lấy danh sách khách hàng theo user ID")
+    @GetMapping("/all")
+    public ApiResponse<List<TenantResponse>> getAllTenants() {
+        List<TenantResponse> tenants = tenantService.getAllTenantsByUserId();
+
+        return ApiResponse.<List<TenantResponse>>builder()
+                .message("All tenants retrieved successfully")
+                .data(tenants)
+                .build();
+    }
+
     @Operation(summary = "Thống kê khách hàng theo trạng thái")
     @GetMapping("/statistics")
     public ApiResponse<TenantStatistics> getTenantStatistics() {

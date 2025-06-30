@@ -57,19 +57,25 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
 	TenantStatistics getTotalTenantByStatus(@Param("userId") String userId);
 
 	@Query("""
-    SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse(
-        t.customerCode,
-        t.fullName,
-        t.email,
-        t.phoneNumber,
-        t.isRepresentative
-    )
-    FROM Contract c
-    JOIN c.tenants t
-    WHERE c.id = :contractId
-""")
+		SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse(
+			t.customerCode,
+			t.fullName,
+			t.email,
+			t.phoneNumber,
+			t.isRepresentative
+		)
+		FROM Contract c
+		JOIN c.tenants t
+		WHERE c.id = :contractId
+	""")
 	List<TenantBasicResponse> findTenantsByContractId(@Param("contractId") String contractId);
 
+	@Query("""
+		SELECT t FROM Tenant t
+		WHERE t.user.id = :userId
+		ORDER BY t.updatedAt DESC
+	""")
+	List<Tenant> findAllTenantsByUserId(@Param("userId") String userId);
 
 	boolean existsByEmail(String email);
 

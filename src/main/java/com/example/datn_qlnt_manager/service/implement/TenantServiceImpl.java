@@ -142,6 +142,13 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
+    public List<TenantResponse> getAllTenantsByUserId() {
+        User user = userService.getCurrentUser();
+        List<Tenant> tenants = tenantRepository.findAllTenantsByUserId(user.getId());
+        return tenants.stream().map(tenantMapper::toTenantResponse).toList();
+    }
+
+    @Override
     public TenantResponse getTenantById(String tenantId) {
         Tenant tenant =
                 tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
