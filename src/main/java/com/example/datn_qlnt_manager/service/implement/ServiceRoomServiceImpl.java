@@ -50,7 +50,8 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
         Room room = roomRepository.findById(request.getRoomId()).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         com.example.datn_qlnt_manager.entity.Service service = serviceRepository.findById(request.getServiceId())
-                .orElseThrow(() -> new AppException(ErrorCode.SEVICE_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+
 
         if (serviceRoomRepository.existsByRoomIdAndServiceId(room.getId(), service.getId())) {
             throw new AppException(ErrorCode.ROOM_EXISTED_SERVICE);
@@ -65,7 +66,7 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
 
     @Override
     public ServiceRoomResponse updateServiceRoom(String serviceRoomId,ServiceRoomUpdateRequest request) {
-        ServiceRoom serviceRoom = serviceRoomRepository.findById(serviceRoomId).orElseThrow(()->new AppException(ErrorCode.SERVICEROOM_NOT_FOUND));
+        ServiceRoom serviceRoom = serviceRoomRepository.findById(serviceRoomId).orElseThrow(()->new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
 
         serviceRoomMapper.updateServiceRoom(request,serviceRoom);
         serviceRoom.setUpdatedAt(Instant.now());
@@ -75,7 +76,8 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     @Override
     public void softDeleteServiceRoom(String serviceRoomId) {
         ServiceRoom serviceRoom = serviceRoomRepository.findByIdAndServiceRoomStatusNot(serviceRoomId, ServiceRoomStatus.DA_HUY)
-                .orElseThrow(() -> new AppException(ErrorCode.SERVICEROOM_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
+
         serviceRoom.setServiceRoomStatus(ServiceRoomStatus.DA_HUY);
         serviceRoomRepository.save(serviceRoom);
     }
@@ -83,7 +85,8 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     @Override
     public void deleteServiceRoom(String serviceRoomId) {
         if (!serviceRoomRepository.existsById(serviceRoomId)){
-            throw new AppException(ErrorCode.SERVICEROOM_NOT_FOUND);
+            throw new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND);
+
         }
         serviceRoomRepository.deleteById(serviceRoomId);
     }

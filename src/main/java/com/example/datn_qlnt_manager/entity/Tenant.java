@@ -24,7 +24,7 @@ import lombok.experimental.FieldDefaults;
 public class Tenant extends AbstractEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     User user;
 
     @Column(name = "ma_khach_thue", nullable = false, unique = true)

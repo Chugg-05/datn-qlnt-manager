@@ -8,6 +8,8 @@ import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantResponse;
 import com.example.datn_qlnt_manager.entity.Tenant;
 
+import java.util.Set;
+
 @Mapper(componentModel = "spring")
 public interface TenantMapper {
     @Mapping(target = "user", ignore = true)
@@ -29,4 +31,11 @@ public interface TenantMapper {
     @Mapping(target = "hasAccount", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateTenant(TenantUpdateRequest request, @MappingTarget Tenant tenant);
+
+    default TenantResponse getRepresentative(Set<TenantResponse> tenants) {
+        return tenants.stream()
+                .filter(TenantResponse::getIsRepresentative)
+                .findFirst()
+                .orElse(null);
+    }
 }

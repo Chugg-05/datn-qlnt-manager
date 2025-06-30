@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
+import com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse;
 import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import com.example.datn_qlnt_manager.common.Gender;
 import com.example.datn_qlnt_manager.common.TenantStatus;
 import com.example.datn_qlnt_manager.entity.Tenant;
+
+import java.util.List;
 
 @Repository
 public interface TenantRepository extends JpaRepository<Tenant, String> {
@@ -53,7 +56,22 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
     """)
 	TenantStatistics getTotalTenantByStatus(@Param("userId") String userId);
 
-    boolean existsByEmail(String email);
+	@Query("""
+    SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse(
+        t.customerCode,
+        t.fullName,
+        t.email,
+        t.phoneNumber,
+        t.isRepresentative
+    )
+    FROM Contract c
+    JOIN c.tenants t
+    WHERE c.id = :contractId
+""")
+	List<TenantBasicResponse> findTenantsByContractId(@Param("contractId") String contractId);
+
+
+	boolean existsByEmail(String email);
 
     boolean existsByPhoneNumber(String phoneNumber);
 

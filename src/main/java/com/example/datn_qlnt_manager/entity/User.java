@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.entity;
 import java.time.LocalDate;
 import java.util.*;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -31,6 +32,7 @@ public class User extends AbstractEntity implements UserDetails {
     String fullName;
 
     @Column(name = "dob", nullable = false)
+    @JsonFormat(pattern = "dd-MM-yyyy")
     LocalDate dob;
 
     @Column(name = "email", nullable = false, unique = true)
