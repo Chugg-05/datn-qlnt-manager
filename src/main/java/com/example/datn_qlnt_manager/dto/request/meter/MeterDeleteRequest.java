@@ -1,4 +1,4 @@
-package com.example.datn_qlnt_manager.dto.request.electricityWaterMeter;
+package com.example.datn_qlnt_manager.dto.request.meter;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

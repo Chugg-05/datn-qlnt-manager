@@ -47,10 +47,10 @@ public class RoomController {
     }
 
     @GetMapping("/statistics")
-    public ApiResponse<RoomCountResponse> statisticsRoomByStatus() {
+    public ApiResponse<RoomCountResponse> statisticsRoomByStatus(@RequestParam String floorId) {
         return ApiResponse.<RoomCountResponse>builder()
                 .message("Count room success!")
-                .data(roomService.statisticsRoomByStatus())
+                .data(roomService.statisticsRoomByStatus(floorId))
                 .build();
     }
 
@@ -82,14 +82,23 @@ public class RoomController {
                 .build();
     }
 
-    @PutMapping("/update-status/{id}")
-    public ApiResponse<RoomResponse> updateRoomStatus(
-            @PathVariable("id") String roomId, @RequestParam RoomStatus status) {
-        return ApiResponse.<RoomResponse>builder()
-                .data(roomService.updateRoomStatus(roomId, status))
-                .message("Update room status success")
+    @PutMapping("/soft-delete/{id}")
+    public ApiResponse<Void> softDeleteRoom(@PathVariable("id") String id) {
+        roomService.softDeleteRoomById(id);
+        return ApiResponse.<Void>builder()
+                .message("Delete room success.")
                 .code(200)
                 .build();
     }
+
+//    @PutMapping("/update-status/{id}")
+//    public ApiResponse<RoomResponse> updateRoomStatus(
+//            @PathVariable("id") String roomId, @RequestParam RoomStatus status) {
+//        return ApiResponse.<RoomResponse>builder()
+//                .data(roomService.updateRoomStatus(roomId, status))
+//                .message("Update room status success")
+//                .code(200)
+//                .build();
+//    }
 
 }

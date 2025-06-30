@@ -91,6 +91,8 @@ public enum ErrorCode {
     STATUS_TYPE_INVALID(400, "Floor status must not be null.", HttpStatus.BAD_REQUEST),
     MAX_ROOM_AT_LEAST(400, "Maximum number of rooms must be at least 1.", HttpStatus.BAD_REQUEST),
     MAX_ROOM_SEARCH(400, "Maximum room must be >= 0.", HttpStatus.BAD_REQUEST),
+    MAX_ROOM_AT_MOST(400, "Each floor must not have more than 100 rooms.", HttpStatus.BAD_REQUEST),
+    FLOOR_ROOM_LIMIT_REACHED(400, "This floor is full, no new rooms can be added.", HttpStatus.BAD_REQUEST),
 
     INVALID_CUSTOMER_CODE_BLANK(400, "Customer code cannot be blank.", HttpStatus.BAD_REQUEST),
     INVALID_ID_NUMBER_BLANK(400, "Identity card number cannot be blank.", HttpStatus.BAD_REQUEST),
@@ -105,6 +107,15 @@ public enum ErrorCode {
     INVALID_REGISTRATION_DATE(400, "Registration date cannot be in the future.", HttpStatus.BAD_REQUEST),
     INVALID_LICENSE_PLATE(
             400, "License plate is not in correct format (EX: 29B1-12345 or 29AN-12345).", HttpStatus.BAD_REQUEST),
+    // Service Room Validation
+    ROOM_ID_REQUIRED(400, "Room ID is required.", HttpStatus.BAD_REQUEST),
+    SERVICE_ID_REQUIRED(400, "Service ID is required.", HttpStatus.BAD_REQUEST),
+    START_DATE_REQUIRED(400, "Start date is required.", HttpStatus.BAD_REQUEST),
+    START_DATE_MUST_BE_TODAY_OR_FUTURE(400, "Start date must be today or in the future.", HttpStatus.BAD_REQUEST),
+    TOTAL_PRICE_REQUIRED(400, "Total price is required.", HttpStatus.BAD_REQUEST),
+    TOTAL_PRICE_MUST_BE_NON_NEGATIVE(400, "Total price must be >= 0.", HttpStatus.BAD_REQUEST),
+    STATUS_REQUIRED(400, "Service room status is required.", HttpStatus.BAD_REQUEST),
+
 
     INVALID_NUMBER_OF_PEOPLE(400, "Number of people must be at least { min }.", HttpStatus.BAD_REQUEST),
     INVALID_START_DATE_BLANK(400, "Start date cannot be blank.", HttpStatus.BAD_REQUEST),
@@ -138,16 +149,14 @@ public enum ErrorCode {
     ASSET_TYPE_NAME_INVALID(404, "Asset type can not be blank.", HttpStatus.NOT_FOUND),
     ASSET_GROUP_INVALID(404, "Asset group must not be null.", HttpStatus.NOT_FOUND),
     DESCRIPTION_INVALID(404, "Description asset type can not be blank.", HttpStatus.NOT_FOUND),
-    ASSSET_TYPE_NOT_FOUND(404, "Asset type not found", HttpStatus.NOT_FOUND),
+    ASSET_TYPE_NOT_FOUND(404, "Asset type not found", HttpStatus.NOT_FOUND),
     ASSET_NOT_FOUND(404, "Asset not found", HttpStatus.NOT_FOUND),
     VEHICLE_NOT_FOUND(404, "Vehicle not found.", HttpStatus.NOT_FOUND),
     METER_NOT_FOUND(404, "Meter not found.", HttpStatus.NOT_FOUND),
-<<<<<<< Updated upstream
-=======
     SERVICE_NOT_FOUND(404, "service not found.", HttpStatus.NOT_FOUND),
     CONTRACT_NOT_FOUND(404, "Contract not found.", HttpStatus.NOT_FOUND),
->>>>>>> Stashed changes
-
+    SEVICE_NOT_FOUND(404, "service not found.", HttpStatus.NOT_FOUND),
+  
     // Code: 409
     OTP_ALREADY_SENT(409, "OTP already sent.", HttpStatus.BAD_REQUEST),
     USER_ALREADY_DELETED(409, "User has been deleted.", HttpStatus.BAD_REQUEST),
@@ -165,12 +174,13 @@ public enum ErrorCode {
     ASSET_TYPE_EXISTED(409, "Asset Type already existed.", HttpStatus.BAD_REQUEST),
     LICENSE_PLATE_EXISTED(409, "License plate already exists", HttpStatus.BAD_REQUEST),
     DUPLICATE_ASSET_NAME(409,"Asset name already exists", HttpStatus.BAD_REQUEST),
-<<<<<<< Updated upstream
-=======
+
     ROOM_EXISTED_SERVICE(409, "Room already has this service", HttpStatus.BAD_REQUEST),
     SERVICE_ROOM_NOT_FOUND(409, "Service room not found.", HttpStatus.NOT_FOUND),
     ROOM_ALREADY_HAS_CONTRACT(409,"This room is under contract.", HttpStatus.BAD_REQUEST),
->>>>>>> Stashed changes
+
+    ROOM_EXISTED_SERVICE(409, "Room already has this service", HttpStatus.BAD_REQUEST),
+    SERVICEROOM_NOT_FOUND(409, "Service room not found.", HttpStatus.NOT_FOUND),
     ;
 
     final int code;

@@ -4,11 +4,12 @@ import com.example.datn_qlnt_manager.entity.Service;
 import feign.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ServiceRepository {
+public interface ServiceRepository extends JpaRepository<Service, String> {
 
     @Query("""
             SELECT s 

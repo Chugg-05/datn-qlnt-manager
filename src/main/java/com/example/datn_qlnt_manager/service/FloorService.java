@@ -33,5 +33,5 @@ public interface FloorService {
     // hiển thị ầng theo userId và buildingId
     List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId);
 
-
+    void toggleStatus(String id);
 }

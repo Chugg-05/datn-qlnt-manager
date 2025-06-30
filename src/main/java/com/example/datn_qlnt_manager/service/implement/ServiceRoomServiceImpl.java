@@ -52,6 +52,7 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
         com.example.datn_qlnt_manager.entity.Service service = serviceRepository.findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
+
         if (serviceRoomRepository.existsByRoomIdAndServiceId(room.getId(), service.getId())) {
             throw new AppException(ErrorCode.ROOM_EXISTED_SERVICE);
         }
@@ -76,6 +77,7 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     public void softDeleteServiceRoom(String serviceRoomId) {
         ServiceRoom serviceRoom = serviceRoomRepository.findByIdAndServiceRoomStatusNot(serviceRoomId, ServiceRoomStatus.DA_HUY)
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
+
         serviceRoom.setServiceRoomStatus(ServiceRoomStatus.DA_HUY);
         serviceRoomRepository.save(serviceRoom);
     }
@@ -84,6 +86,7 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     public void deleteServiceRoom(String serviceRoomId) {
         if (!serviceRoomRepository.existsById(serviceRoomId)){
             throw new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND);
+
         }
         serviceRoomRepository.deleteById(serviceRoomId);
     }

@@ -49,7 +49,7 @@ public class AssetServiceImpl implements AssetService {
 
         // set AssetType
         AssetType assetType = assetTypeRepository.findById(request.getAssetTypeId())
-                .orElseThrow(() -> new AppException(ErrorCode.ASSSET_TYPE_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND));
         asset.setAssetType(assetType);
 
         // Xử lý theo loại tài sản thuộc về đâu
@@ -126,7 +126,7 @@ public class AssetServiceImpl implements AssetService {
 
         // set AssetType
         AssetType assetType = assetTypeRepository.findById(request.getAssetTypeId())
-                .orElseThrow(() -> new AppException(ErrorCode.ASSSET_TYPE_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND));
         asset.setAssetType(assetType);
 
         // clear id cũ - gán id liên quan khi sửa belongto

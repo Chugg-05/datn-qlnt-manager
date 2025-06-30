@@ -9,7 +9,13 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoomCountResponse {
-    Long getTotalInUse;
+    String floorId;
+    Long getTotal;
+    Long getTotalTrong;
     Long getTotalDangThue;
-    Long getTotalDatCoc;
+    Long getTotalDaDatCoc;
+    Long getTotalDangBaoTri;
+    Long getTotalChuaHoanThien;
+    Long getTotalTamKhoa;
+
 }

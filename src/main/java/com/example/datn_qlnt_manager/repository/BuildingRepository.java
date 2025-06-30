@@ -76,8 +76,4 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
 
     Optional<Building> findByIdAndStatusNot(String id, BuildingStatus status);
 
-<<<<<<< Updated upstream
-    Optional<Building> findByUserId(String userId);
-=======
->>>>>>> Stashed changes
 }
