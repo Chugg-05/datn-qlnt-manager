@@ -1,7 +1,7 @@
 package com.example.datn_qlnt_manager.dto.response.contract;
 
 import com.example.datn_qlnt_manager.common.ContractStatus;
-import com.example.datn_qlnt_manager.dto.response.tenant.TenantResponse;
+import com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -24,6 +24,6 @@ public class ContractResponse {
     BigDecimal deposit;
     ContractStatus status;
     Instant createdAt;
-    Set<TenantResponse> tenants;
+    Set<TenantBasicResponse> tenants;
 }
 
