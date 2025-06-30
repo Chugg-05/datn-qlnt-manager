@@ -110,6 +110,15 @@ public enum ErrorCode {
     INVALID_REGISTRATION_DATE(400, "Registration date cannot be in the future.", HttpStatus.BAD_REQUEST),
     INVALID_LICENSE_PLATE(
             400, "License plate is not in correct format (EX: 29B1-12345 or 29AN-12345).", HttpStatus.BAD_REQUEST),
+    // Service Room Validation
+    ROOM_ID_REQUIRED(400, "Room ID is required.", HttpStatus.BAD_REQUEST),
+    SERVICE_ID_REQUIRED(400, "Service ID is required.", HttpStatus.BAD_REQUEST),
+    START_DATE_REQUIRED(400, "Start date is required.", HttpStatus.BAD_REQUEST),
+    START_DATE_MUST_BE_TODAY_OR_FUTURE(400, "Start date must be today or in the future.", HttpStatus.BAD_REQUEST),
+    TOTAL_PRICE_REQUIRED(400, "Total price is required.", HttpStatus.BAD_REQUEST),
+    TOTAL_PRICE_MUST_BE_NON_NEGATIVE(400, "Total price must be >= 0.", HttpStatus.BAD_REQUEST),
+    STATUS_REQUIRED(400, "Service room status is required.", HttpStatus.BAD_REQUEST),
+
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
@@ -131,6 +140,7 @@ public enum ErrorCode {
     ASSET_NOT_FOUND(404, "Asset not found", HttpStatus.NOT_FOUND),
     VEHICLE_NOT_FOUND(404, "Vehicle not found.", HttpStatus.NOT_FOUND),
     METER_NOT_FOUND(404, "Meter not found.", HttpStatus.NOT_FOUND),
+    SEVICE_NOT_FOUND(404, "service not found.", HttpStatus.NOT_FOUND),
 
     // Code: 409
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
@@ -146,6 +156,8 @@ public enum ErrorCode {
     ASSET_TYPE_EXISTED(409, "Asset Type already existed.", HttpStatus.BAD_REQUEST),
     LICENSE_PLATE_EXISTED(409, "License plate already exists", HttpStatus.BAD_REQUEST),
     DUPLICATE_ASSET_NAME(409,"Asset name already exists", HttpStatus.BAD_REQUEST),
+    ROOM_EXISTED_SERVICE(409, "Room already has this service", HttpStatus.BAD_REQUEST),
+    SERVICEROOM_NOT_FOUND(409, "Service room not found.", HttpStatus.NOT_FOUND),
     ;
 
     final int code;
