@@ -21,7 +21,7 @@ public interface ContractService {
 
     ContractDetailResponse getContractDetailById(String contractId);
 
-    List<ContractResponse> getAllContractsByUserId(String userId);
+    List<ContractResponse> getAllContractsByUserId();
 
     void toggleContractStatusById(String contractId);
 

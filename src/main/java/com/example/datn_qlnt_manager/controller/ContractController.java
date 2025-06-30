@@ -79,9 +79,9 @@ public class ContractController {
     }
 
     @Operation(summary = "Lấy danh sách hợp đồng theo user ID")
-    @GetMapping("/all/{userId}")
-    public ApiResponse<List<ContractResponse>> getAllContractsByUserId(@PathVariable("userId") String userId) {
-        List<ContractResponse> contracts = contractService.getAllContractsByUserId(userId);
+    @GetMapping("/all")
+    public ApiResponse<List<ContractResponse>> getAllContractsByUserId() {
+        List<ContractResponse> contracts = contractService.getAllContractsByUserId();
         return ApiResponse.<List<ContractResponse>>builder()
                 .message("Contracts retrieved successfully")
                 .data(contracts)

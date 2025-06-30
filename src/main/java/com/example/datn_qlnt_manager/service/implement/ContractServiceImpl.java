@@ -14,6 +14,7 @@ import com.example.datn_qlnt_manager.dto.statistics.ContractStatistics;
 import com.example.datn_qlnt_manager.entity.Contract;
 import com.example.datn_qlnt_manager.entity.Room;
 import com.example.datn_qlnt_manager.entity.Tenant;
+import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.ContractMapper;
@@ -77,7 +78,6 @@ public class ContractServiceImpl implements ContractService {
                         .total(paging.getTotalElements())
                         .build())
                 .build();
-
 
         return PaginatedResponse.<ContractResponse>builder()
                 .data(contracts)
@@ -164,8 +164,9 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public List<ContractResponse> getAllContractsByUserId(String userId) {
-        List<Contract> contracts = contractRepository.findAllContractByUserId(userId);
+    public List<ContractResponse> getAllContractsByUserId() {
+        User user = userService.getCurrentUser();
+        List<Contract> contracts = contractRepository.findAllContractByUserId(user.getId());
         return contracts.stream()
                 .map(contractMapper::toContractResponse)
                 .toList();
