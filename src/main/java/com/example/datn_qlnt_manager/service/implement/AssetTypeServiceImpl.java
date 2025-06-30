@@ -3,6 +3,8 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.entity.User;
+import com.example.datn_qlnt_manager.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +36,7 @@ public class AssetTypeServiceImpl implements AssetTypeService {
 
     AssetTypeRepository assetTypeRepository;
     AssetTypeMapper assetTypeMapper;
+    UserService userService;
 
     @Override
     public AssetTypeResponse createAssetType(AssetTypeCreationRequest request) {
@@ -100,6 +103,13 @@ public class AssetTypeServiceImpl implements AssetTypeService {
         assetTypeMapper.updateAssetType(request, assetType);
         assetType.setUpdatedAt(Instant.now());
         return assetTypeMapper.toResponse(assetTypeRepository.save(assetType));
+    }
+
+    @Override
+    public List<AssetTypeResponse> getAllAssetTypesByUserId() {
+        User user = userService.getCurrentUser();
+        List<AssetType> assetTypes = assetTypeRepository.findAllLAssetTypeByUserId(user.getId());
+        return assetTypes.stream().map(assetTypeMapper::toResponse).toList();
     }
 
     @Override
