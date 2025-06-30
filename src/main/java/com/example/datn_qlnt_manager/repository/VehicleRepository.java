@@ -23,6 +23,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
 		AND (:licensePlate IS NULL OR v.licensePlate LIKE CONCAT('%', :licensePlate, '%') )
 		AND (:userId IS NULL OR t.user.id = :userId)
 		AND (:tenantId IS NULL OR t.id = :tenantId)
+		ORDER BY v.updatedAt DESC
 		""")
     Page<Vehicle> filterVehiclePaging(
             @Param("userId") String userId,

@@ -21,16 +21,17 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
 
     @Query(
             """
-		SELECT b FROM Building b
-		INNER JOIN b.user u
-		WHERE (u.id = :userId)
-		AND ((:query IS NULL OR b.buildingCode LIKE CONCAT('%', :query, '%') )
-		OR (:query IS NULL OR  b.buildingName LIKE  CONCAT('%', :query, '%') )
-		OR (:query IS NULL OR b.address LIKE CONCAT('%', :query, '%') ))
-		AND (:status IS NULL OR  b.status = :status )
-		AND (:buildingType IS NULL OR b.buildingType = :buildingType)
-		AND b.status != 'HUY_HOAT_DONG'
-	""")
+                    	SELECT b FROM Building b
+                    	INNER JOIN b.user u
+                    	WHERE (u.id = :userId)
+                    	AND ((:query IS NULL OR b.buildingCode LIKE CONCAT('%', :query, '%') )
+                    	OR (:query IS NULL OR  b.buildingName LIKE  CONCAT('%', :query, '%') )
+                    	OR (:query IS NULL OR b.address LIKE CONCAT('%', :query, '%') ))
+                    	AND (:status IS NULL OR  b.status = :status )
+                    	AND (:buildingType IS NULL OR b.buildingType = :buildingType)
+                    	AND b.status != 'HUY_HOAT_DONG'
+                    	ORDER BY b.updatedAt DESC
+                    """)
     Page<Building> filterBuildingPaging(
             @Param("userId") String userId,
             @Param("query") String query,
@@ -40,34 +41,34 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
 
     @Query(
             """
-		SELECT
-			COUNT(CASE WHEN b.status IN (
-				com.example.datn_qlnt_manager.common.BuildingStatus.HOAT_DONG,
-				com.example.datn_qlnt_manager.common.BuildingStatus.TAM_KHOA) THEN 1 END ),
-			SUM (CASE WHEN b.status = 'HOAT_DONG' THEN 1 ELSE 0 END ),
-			SUM (CASE WHEN b.status = 'TAM_KHOA' THEN 1 ELSE 0 END )
-		FROM Building b
-		WHERE b.user.id = :userId
-	""")
-	BuildingStatistics getBuildingStatsByUser(@Param("userId") String userId);
+                    	SELECT
+                    		COUNT(CASE WHEN b.status IN (
+                    			com.example.datn_qlnt_manager.common.BuildingStatus.HOAT_DONG,
+                    			com.example.datn_qlnt_manager.common.BuildingStatus.TAM_KHOA) THEN 1 END ),
+                    		SUM (CASE WHEN b.status = 'HOAT_DONG' THEN 1 ELSE 0 END ),
+                    		SUM (CASE WHEN b.status = 'TAM_KHOA' THEN 1 ELSE 0 END )
+                    	FROM Building b
+                    	WHERE b.user.id = :userId
+                    """)
+    BuildingStatistics getBuildingStatsByUser(@Param("userId") String userId);
 
-	@Query("""
-    SELECT new com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse(
-        b.id,
-        b.buildingName,
-        b.address,
-        b.buildingType,
-        b.status,
-        COUNT(r),
-        SUM(CASE WHEN r.status = com.example.datn_qlnt_manager.common.RoomStatus.TRONG THEN 1 ELSE 0 END)
-    )
-    FROM Building b
-    LEFT JOIN Floor f ON f.building.id = b.id
-    LEFT JOIN Room r ON r.floor.id = f.id
-    WHERE b.user.id = :userId AND b.status != 'HUY_HOAT_DONG'
-    GROUP BY b.id, b.buildingName, b.address, b.buildingType, b.status
-""")
-	List<BuildingBasicResponse> findAllBuildingBasicByUserId(@Param("userId") String userId);
+    @Query("""
+                SELECT new com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse(
+                    b.id,
+                    b.buildingName,
+                    b.address,
+                    b.buildingType,
+                    b.status,
+                    COUNT(r),
+                    SUM(CASE WHEN r.status = com.example.datn_qlnt_manager.common.RoomStatus.TRONG THEN 1 ELSE 0 END)
+                )
+                FROM Building b
+                LEFT JOIN Floor f ON f.building.id = b.id
+                LEFT JOIN Room r ON r.floor.id = f.id
+                WHERE b.user.id = :userId AND b.status != 'HUY_HOAT_DONG'
+                GROUP BY b.id, b.buildingName, b.address, b.buildingType, b.status
+            """)
+    List<BuildingBasicResponse> findAllBuildingBasicByUserId(@Param("userId") String userId);
 
     boolean existsByBuildingNameAndUserId(String buildingName, String userId); // check trùng tên khi thêm tòa nhà
 
