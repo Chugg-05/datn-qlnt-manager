@@ -11,6 +11,7 @@ import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Floor;
+import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.repository.FloorRepository;
@@ -121,6 +122,12 @@ public class RoomServiceImpl implements RoomService {
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }
 
+    @Override
+    public List<RoomResponse> getAllRoomsByUserId() {
+        User user = userService.getCurrentUser();
+        List<Room> rooms = roomRepository.findAllRoomsByUserId(user.getId());
+        return rooms.stream().map(roomMapper::toRoomResponse).toList();
+    }
 
     @Override
     public Void deleteRoom(String roomId) {

@@ -6,11 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.datn_qlnt_manager.entity.Room;
 
-import io.lettuce.core.dynamic.annotation.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -81,6 +81,13 @@ public interface RoomRepository extends JpaRepository<Room, String> {
         WHERE r.floor.building.user.id = :userId
     """)
 	RoomCountResponse getRoomStatsByUser(@Param("userId") String userId);
+
+	@Query("""
+		SELECT r FROM Room r
+		WHERE r.floor.building.user.id = :userId
+		ORDER BY r.updatedAt DESC
+	""")
+	List<Room> findAllRoomsByUserId(@Param("userId") String userId);
 
 	@Query("SELECT r.roomCode FROM Room r WHERE r.floor.building.id = :buildingId AND r.floor.id = :floorId")
 	List<String> findRoomCodesByBuildingAndFloor(@Param("buildingId") String buildingId,
