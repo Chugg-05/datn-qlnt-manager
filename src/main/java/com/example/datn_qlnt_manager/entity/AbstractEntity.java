@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.entity;
 import java.io.Serializable;
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -28,10 +29,12 @@ public abstract class AbstractEntity
     String id;
 
     @Column(name = "created_at")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     @CreatedDate // tự động set khi add
     Instant createdAt;
 
     @Column(name = "updated_at")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     @LastModifiedDate // tự động update thời gian khi Update
     Instant updatedAt;
 }

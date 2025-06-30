@@ -17,13 +17,11 @@ import com.example.datn_qlnt_manager.dto.filter.TenantFilter;
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantResponse;
-import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Tenant;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.TenantMapper;
-import com.example.datn_qlnt_manager.repository.BuildingRepository;
 import com.example.datn_qlnt_manager.repository.TenantRepository;
 import com.example.datn_qlnt_manager.service.TenantService;
 import com.example.datn_qlnt_manager.service.UserService;
@@ -39,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TenantServiceImpl implements TenantService {
     TenantRepository tenantRepository;
-    BuildingRepository buildingRepository;
     TenantMapper tenantMapper;
     UserService userService;
     CodeGeneratorService codeGeneratorService;

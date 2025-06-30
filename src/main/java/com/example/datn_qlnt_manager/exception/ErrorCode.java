@@ -29,14 +29,11 @@ public enum ErrorCode {
     // Code: 400
     BAD_REQUEST(400, "Invalid request.", HttpStatus.BAD_REQUEST),
     CANNOT_SEND_EMAIL(400, "Cannot send email.", HttpStatus.BAD_REQUEST),
-    OTP_ALREADY_SENT(400, "OTP already sent.", HttpStatus.BAD_REQUEST),
     EMAIL_SENDING_FAILED(400, "Email sending failed.", HttpStatus.BAD_REQUEST),
     INVALID_KEY(400, "Invalid key.", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(400, "Invalid token.", HttpStatus.BAD_REQUEST),
     USER_NOT_DELETED(400, "User not deleted.", HttpStatus.BAD_REQUEST),
     USER_NOT_LOCKED(400, "User is not locked.", HttpStatus.BAD_REQUEST),
-    USER_ALREADY_DELETED(400, "User has been deleted.", HttpStatus.BAD_REQUEST),
-    USER_ALREADY_LOCKED(400, "User has been locked.", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL_BLANK(400, "Username or email must not be blank.", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL_FORMAT(400, "Must be a valid email with domain.", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL_OR_PASSWORD(400, "Invalid email or password.", HttpStatus.BAD_REQUEST),
@@ -109,6 +106,22 @@ public enum ErrorCode {
     INVALID_LICENSE_PLATE(
             400, "License plate is not in correct format (EX: 29B1-12345 or 29AN-12345).", HttpStatus.BAD_REQUEST),
 
+    INVALID_NUMBER_OF_PEOPLE(400, "Number of people must be at least { min }.", HttpStatus.BAD_REQUEST),
+    INVALID_START_DATE_BLANK(400, "Start date cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_END_DATE_BLANK(400, "End date cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_DEPOSIT_BLANK(400, "Deposit cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_DEPOSIT(400, "Deposit must be greater than 0.", HttpStatus.BAD_REQUEST),
+    INVALID_TENANTS_BLANK(400, "Tenants cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_TENANTS(400, "At least one tenant must be selected.", HttpStatus.BAD_REQUEST),
+    INVALID_CONTRACT_STATUS_BLANK(400, "Contract status cannot be blank.", HttpStatus.BAD_REQUEST),
+    NUMBER_OF_PEOPLE_EXCEEDS_LIMIT(400, "Number of people exceeds the limit of the room.", HttpStatus.NOT_FOUND),
+    END_DATE_BEFORE_START_DATE(400, "End date cannot be before start date.", HttpStatus.NOT_FOUND),
+    TENANTS_EXCEEDS_NUMBER_OF_PEOPLE(400, "The number of tenants exceeds the number of people in the room.", HttpStatus.NOT_FOUND),
+    CANNOT_DELETE_CONTRACT(400, "This room is still under contract and cannot be deleted.", HttpStatus.NOT_FOUND),
+    CANNOT_REACTIVATE_EXPIRED_CONTRACT(400, "Expired contracts cannot be reactivated.", HttpStatus.BAD_REQUEST),
+    CANNOT_TOGGLE_CONTRACT_STATUS(400, "Cannot transfer current contract status.", HttpStatus.BAD_REQUEST),
+
+
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     BUILDING_ID_NOT_FOUND(404, "Building ID not found.", HttpStatus.NOT_FOUND),
@@ -129,8 +142,16 @@ public enum ErrorCode {
     ASSET_NOT_FOUND(404, "Asset not found", HttpStatus.NOT_FOUND),
     VEHICLE_NOT_FOUND(404, "Vehicle not found.", HttpStatus.NOT_FOUND),
     METER_NOT_FOUND(404, "Meter not found.", HttpStatus.NOT_FOUND),
+<<<<<<< Updated upstream
+=======
+    SERVICE_NOT_FOUND(404, "service not found.", HttpStatus.NOT_FOUND),
+    CONTRACT_NOT_FOUND(404, "Contract not found.", HttpStatus.NOT_FOUND),
+>>>>>>> Stashed changes
 
     // Code: 409
+    OTP_ALREADY_SENT(409, "OTP already sent.", HttpStatus.BAD_REQUEST),
+    USER_ALREADY_DELETED(409, "User has been deleted.", HttpStatus.BAD_REQUEST),
+    USER_ALREADY_LOCKED(409, "User has been locked.", HttpStatus.BAD_REQUEST),
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
     PHONE_NUMBER_EXISTED(409, "Phone already existed.", HttpStatus.CONFLICT),
     FlOOR_EXISTED(409, "Floor already existed.", HttpStatus.CONFLICT),
@@ -144,6 +165,12 @@ public enum ErrorCode {
     ASSET_TYPE_EXISTED(409, "Asset Type already existed.", HttpStatus.BAD_REQUEST),
     LICENSE_PLATE_EXISTED(409, "License plate already exists", HttpStatus.BAD_REQUEST),
     DUPLICATE_ASSET_NAME(409,"Asset name already exists", HttpStatus.BAD_REQUEST),
+<<<<<<< Updated upstream
+=======
+    ROOM_EXISTED_SERVICE(409, "Room already has this service", HttpStatus.BAD_REQUEST),
+    SERVICE_ROOM_NOT_FOUND(409, "Service room not found.", HttpStatus.NOT_FOUND),
+    ROOM_ALREADY_HAS_CONTRACT(409,"This room is under contract.", HttpStatus.BAD_REQUEST),
+>>>>>>> Stashed changes
     ;
 
     final int code;

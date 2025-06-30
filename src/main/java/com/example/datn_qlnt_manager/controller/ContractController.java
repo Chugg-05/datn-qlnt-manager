@@ -1,0 +1,133 @@
+package com.example.datn_qlnt_manager.controller;
+
+import com.example.datn_qlnt_manager.dto.ApiResponse;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.ContractFilter;
+import com.example.datn_qlnt_manager.dto.request.contract.ContractCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.contract.ContractUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.contract.ContractDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
+import com.example.datn_qlnt_manager.dto.statistics.ContractStatistics;
+import com.example.datn_qlnt_manager.service.ContractService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@Slf4j
+@RestController
+@RequestMapping("/contracts")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Contract", description = "API Contract")
+public class ContractController {
+
+    ContractService contractService;
+
+    @Operation(summary = "Lấy danh sách hợp đồng và lọc, tìm kiếm")
+    @GetMapping
+    public ApiResponse<List<ContractResponse>> filterContracts(
+            @ModelAttribute ContractFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+
+        PaginatedResponse<ContractResponse> result = contractService.filterContracts(filter, page, size);
+
+        return ApiResponse.<List<ContractResponse>>builder()
+                .message("Filter contracts successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Tạo hợp đồng")
+    @PostMapping
+    public ApiResponse<ContractResponse> createContract(@Valid @RequestBody ContractCreationRequest request) {
+
+        return ApiResponse.<ContractResponse>builder()
+                .message("Contract created successfully")
+                .data(contractService.createContract(request))
+                .build();
+    }
+
+    @Operation(summary = "Update hợp đồng")
+    @PutMapping("/{contractId}")
+    public ApiResponse<ContractResponse> updateContract(
+            @Valid @RequestBody ContractUpdateRequest request,
+            @PathVariable("contractId") String contractId) {
+
+        return ApiResponse.<ContractResponse>builder()
+                .message("Contract updated successfully")
+                .data(contractService.updateContract(contractId, request))
+                .build();
+    }
+
+    @GetMapping("/details/{contractId}")
+    public ApiResponse<ContractDetailResponse> getDetail(@PathVariable String contractId) {
+        ContractDetailResponse response = contractService.getContractDetailById(contractId);
+
+        return ApiResponse.<ContractDetailResponse>builder()
+                .message("Contract detail retrieved successfully")
+                .data(response)
+                .build();
+    }
+
+    @Operation(summary = "Lấy danh sách hợp đồng theo user ID")
+    @GetMapping("/all/{userId}")
+    public ApiResponse<List<ContractResponse>> getAllContractsByUserId(@PathVariable("userId") String userId) {
+        List<ContractResponse> contracts = contractService.getAllContractsByUserId(userId);
+        return ApiResponse.<List<ContractResponse>>builder()
+                .message("Contracts retrieved successfully")
+                .data(contracts)
+                .build();
+    }
+
+    @Operation(summary = "Chuyển đổi trạng thái hợp đồng")
+    @PutMapping("/toggle/{contractId}")
+    public ApiResponse<String> toggleContractStatus(@PathVariable("contractId") String contractId) {
+        contractService.toggleContractStatusById(contractId);
+
+        return ApiResponse.<String>builder()
+                .message("Contract status toggled successfully")
+                .data("Contract with ID " + contractId + " has been toggled.")
+                .build();
+    }
+
+    @Operation(summary = "Thống kê hợp đồng theo trạng thái")
+    @GetMapping("/statistics")
+    public ApiResponse<ContractStatistics> getContractStatistics() {
+
+        return ApiResponse.<ContractStatistics>builder()
+                .message("Contract statistics retrieved successfully")
+                .data(contractService.getContractStatisticsByUserId())
+                .build();
+    }
+
+    @Operation(summary = "Xóa mềm hợp đồng")
+    @PutMapping("/soft/{contractId}")
+    public ApiResponse<String> softDeleteContract(@PathVariable("contractId") String contractId) {
+        contractService.softDeleteContractById(contractId);
+
+        return ApiResponse.<String>builder()
+                .message("Contract soft deleted successfully")
+                .data("Contract with ID " + contractId + " has been soft deleted.")
+                .build();
+    }
+
+    @Operation(summary = "Xoá hợp đồng")
+    @DeleteMapping("/{contractId}")
+    public ApiResponse<String> deleteContract(@PathVariable("contractId") String contractId) {
+        contractService.deleteContractById(contractId);
+
+        return ApiResponse.<String>builder()
+                .message("Contract deleted successfully")
+                .data("Contract with ID " + contractId + " has been deleted.")
+                .build();
+    }
+}
