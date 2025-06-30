@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -72,6 +71,17 @@ public class RoomController {
                 .code(200)
                 .build();
     }
+
+    @Operation(summary = "Lấy ds phòng theo userId")
+    @GetMapping("/all")
+    public ApiResponse<List<RoomResponse>> getAllRooms() {
+        return ApiResponse.<List<RoomResponse>>builder()
+                .data(roomService.getAllRoomsByUserId())
+                .message("Get all rooms success")
+                .code(200)
+                .build();
+    }
+
 
     @DeleteMapping("/delete/{id}")
     public ApiResponse<Void> deleteRoom(@PathVariable("id") String roomId) {

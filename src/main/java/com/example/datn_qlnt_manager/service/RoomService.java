@@ -8,6 +8,8 @@ import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
 
+import java.util.List;
+
 public interface RoomService {
 
     PaginatedResponse<RoomResponse> filterRooms(Integer page, Integer size, RoomFilter roomFilter);
@@ -15,6 +17,8 @@ public interface RoomService {
     RoomResponse createRoom(RoomCreationRequest request);
 
     RoomResponse updateRoom(String roomId, RoomUpdateRequest request);
+
+    List<RoomResponse> getAllRoomsByUserId();
 
     Void deleteRoom(String roomId);
 
