@@ -74,14 +74,14 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 
 
 	@Query("""
-    SELECT c FROM Contract c
-    JOIN c.room r
-    JOIN r.floor f
-    JOIN f.building b
-    JOIN b.user u
-    WHERE u.id = :userId
-    ORDER BY c.updatedAt DESC
-""")
+		SELECT c FROM Contract c
+		JOIN c.room r
+		JOIN r.floor f
+		JOIN f.building b
+		JOIN b.user u
+		WHERE u.id = :userId
+		ORDER BY c.updatedAt DESC
+	""")
 	List<Contract> findAllContractByUserId(@Param("userId") String userId);
 
 	@Query(
