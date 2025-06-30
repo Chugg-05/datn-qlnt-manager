@@ -155,8 +155,7 @@ public enum ErrorCode {
     METER_NOT_FOUND(404, "Meter not found.", HttpStatus.NOT_FOUND),
     SERVICE_NOT_FOUND(404, "service not found.", HttpStatus.NOT_FOUND),
     CONTRACT_NOT_FOUND(404, "Contract not found.", HttpStatus.NOT_FOUND),
-    SEVICE_NOT_FOUND(404, "service not found.", HttpStatus.NOT_FOUND),
-  
+
     // Code: 409
     OTP_ALREADY_SENT(409, "OTP already sent.", HttpStatus.BAD_REQUEST),
     USER_ALREADY_DELETED(409, "User has been deleted.", HttpStatus.BAD_REQUEST),
@@ -174,13 +173,10 @@ public enum ErrorCode {
     ASSET_TYPE_EXISTED(409, "Asset Type already existed.", HttpStatus.BAD_REQUEST),
     LICENSE_PLATE_EXISTED(409, "License plate already exists", HttpStatus.BAD_REQUEST),
     DUPLICATE_ASSET_NAME(409,"Asset name already exists", HttpStatus.BAD_REQUEST),
-
     ROOM_EXISTED_SERVICE(409, "Room already has this service", HttpStatus.BAD_REQUEST),
     SERVICE_ROOM_NOT_FOUND(409, "Service room not found.", HttpStatus.NOT_FOUND),
     ROOM_ALREADY_HAS_CONTRACT(409,"This room is under contract.", HttpStatus.BAD_REQUEST),
 
-    ROOM_EXISTED_SERVICE(409, "Room already has this service", HttpStatus.BAD_REQUEST),
-    SERVICEROOM_NOT_FOUND(409, "Service room not found.", HttpStatus.NOT_FOUND),
     ;
 
     final int code;
