@@ -63,12 +63,11 @@ public class AssetServiceImpl implements AssetService {
                 asset.setRoom(room);
             }
             case CHUNG -> {
-                if (request.getFloorID()!= null){
+                if (request.getFloorID() != null) {
                     Floor floor = floorRepository.findById(request.getFloorID())
                             .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
                     asset.setFloor(floor);
-                }
-                else if (request.getBuildingID()!= null){
+                } else if (request.getBuildingID() != null) {
                     Building building = buildingRepository.findById(request.getBuildingID())
                             .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
                     asset.setBuilding(building);
@@ -87,7 +86,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public void deleteAssetById(String assetId) {
-        if(!assetRepository.existsById(assetId)){
+        if (!assetRepository.existsById(assetId)) {
             throw new AppException(ErrorCode.ASSET_NOT_FOUND);
         }
         assetRepository.deleteById(assetId);
@@ -95,8 +94,9 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public PaginatedResponse<AssetResponse> getAllAssets(String nameAsset, int page, int size) {
-        Pageable pageable = PageRequest.of(Math.max(0,page-1), size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Asset> assets = assetRepository.searchAssets(nameAsset, pageable);
+        var user = userService.getCurrentUser();
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+        Page<Asset> assets = assetRepository.searchAssets(nameAsset, user.getId(), pageable);
 
         List<AssetResponse> responses = assets.getContent().stream().map(assetMapper::toResponse).toList();
 

@@ -45,8 +45,8 @@ public class AssetTypeController {
     @GetMapping
     public ApiResponse<PaginatedResponse<AssetTypeResponse>> getAssetTypes(
             @Valid @ModelAttribute AssetTypeFilter filter,
-            @RequestParam(defaultValue = "1") @Min(1) int page,
-            @RequestParam(defaultValue = "15") @Min(1) int size) {
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
         return ApiResponse.<PaginatedResponse<AssetTypeResponse>>builder()
                 .message("Asset type list loaded successfully")
                 .data(assetTypeService.getAssetTypes(filter, page, size))

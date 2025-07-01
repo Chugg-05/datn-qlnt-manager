@@ -45,7 +45,7 @@ public class MeterServiceImpl implements MeterService {
         Pageable pageable = PageRequest.of(
                 Math.max(0, page - 1),
                 size,
-                Sort.by(Sort.Order.desc("createdAt")));
+                Sort.by(Sort.Order.desc("updatedAt")));
 
         Page<Meter> paging = meterRepository.filterMetersPaging(
                 meterFilter.getRoomCode(),
