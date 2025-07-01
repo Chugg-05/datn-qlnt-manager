@@ -49,7 +49,7 @@ public class BuildingController {
 
     @Operation(summary = "hiển thị tòa nhà dạng card và hiển thị select box")
     @GetMapping("/cards")
-    public ApiResponse<List<BuildingBasicResponse>> getBuildingCardsForCurrentUser(){
+    public ApiResponse<List<BuildingBasicResponse>> getBuildingCardsForCurrentUser() {
         return ApiResponse.<List<BuildingBasicResponse>>builder()
                 .message("Display building as card successfully")
                 .data(buildingService.getBuildingBasicForCurrentUser())

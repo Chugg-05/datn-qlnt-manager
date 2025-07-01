@@ -116,6 +116,14 @@ public enum ErrorCode {
     TOTAL_PRICE_MUST_BE_NON_NEGATIVE(400, "Total price must be >= 0.", HttpStatus.BAD_REQUEST),
     STATUS_REQUIRED(400, "Service room status is required.", HttpStatus.BAD_REQUEST),
 
+    INVALID_DEFAULT_SERVICE_APPLIES_TO_NULL(400, "Default Service Applies To cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_PRICES_APPLY_NULL(400, "Prices Apply cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_START_APPLYING_NULL(400, "Start Applying cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_DEFAULT_SERVICE_STATUS_NULL(400, "Default service status cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_BUILDING_ID_NULL(404, "Building ID cannot be null.", HttpStatus.NOT_FOUND),
+    INVALID_SERVICE_ID_NULL(404, "Service ID cannot be null.", HttpStatus.NOT_FOUND),
+    PRICES_APPLY_INVALID(400, "Prices Apply must be >= 0.", HttpStatus.BAD_REQUEST),
+    DUPLICATE_SERVICE(400, "Service already exist for this building and application type.", HttpStatus.BAD_REQUEST),
 
     INVALID_NUMBER_OF_PEOPLE(400, "Number of people must be at least { min }.", HttpStatus.BAD_REQUEST),
     INVALID_START_DATE_BLANK(400, "Start date cannot be blank.", HttpStatus.BAD_REQUEST),
@@ -155,6 +163,8 @@ public enum ErrorCode {
     METER_NOT_FOUND(404, "Meter not found.", HttpStatus.NOT_FOUND),
     SERVICE_NOT_FOUND(404, "service not found.", HttpStatus.NOT_FOUND),
     CONTRACT_NOT_FOUND(404, "Contract not found.", HttpStatus.NOT_FOUND),
+    DEFAULT_SERVICE_NOT_FOUND(404, "Default Service not found.", HttpStatus.NOT_FOUND),
+
 
     // Code: 409
     OTP_ALREADY_SENT(409, "OTP already sent.", HttpStatus.BAD_REQUEST),

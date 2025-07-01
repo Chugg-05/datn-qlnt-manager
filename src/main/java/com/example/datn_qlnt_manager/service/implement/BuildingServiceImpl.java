@@ -8,7 +8,6 @@ import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.common.BuildingStatus;
@@ -41,11 +40,12 @@ public class BuildingServiceImpl implements BuildingService {
     BuildingRepository buildingRepository;
     BuildingMapper buildingMapper;
     UserService userService;
-    CodeGeneratorService codeGeneratorService;
+    private final CodeGeneratorService codeGeneratorService;
+
 
     @Override
     public PaginatedResponse<BuildingResponse> filterBuildings(BuildingFilter filter, int page, int size) {
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
         filter.setUserId(user.getId());
 

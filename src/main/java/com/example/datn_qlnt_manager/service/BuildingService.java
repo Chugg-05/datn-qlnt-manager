@@ -10,7 +10,6 @@ import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 
 import java.util.List;
 
-import java.util.List;
 
 public interface BuildingService {
 
