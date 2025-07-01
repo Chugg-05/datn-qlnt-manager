@@ -12,6 +12,7 @@ import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.AssetMapper;
 import com.example.datn_qlnt_manager.repository.*;
 import com.example.datn_qlnt_manager.service.AssetService;
+import com.example.datn_qlnt_manager.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class AssetServiceImpl implements AssetService {
     BuildingRepository buildingRepository;
     FloorRepository floorRepository;
     TenantRepository tenantRepository;
+    UserService userService;
 
 
     @Override
@@ -155,5 +158,14 @@ public class AssetServiceImpl implements AssetService {
         }
         asset.setUpdatedAt(Instant.now());
         return assetMapper.toResponse(assetRepository.save(asset));
+    }
+
+    @Override
+    public List<AssetResponse> findAssetsByCurrentUser() {
+        String currentUserId = userService.getCurrentUser().getId(); // đảm bảo lấy từ token
+        List<Asset> assets = assetRepository.findAssetsByUserId(currentUserId);
+        return assets.stream()
+                .map(assetMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }
