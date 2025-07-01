@@ -17,23 +17,26 @@ import com.example.datn_qlnt_manager.entity.AssetType;
 @Repository
 public interface AssetTypeRepository extends JpaRepository<AssetType, String> {
     @Query(
-            """
-	SELECT a FROM AssetType a
-	WHERE (:name IS NULL OR a.nameAssetType LIKE CONCAT('%', :name, '%'))
-	AND (:group IS NULL OR a.assetGroup = :group)
-	ORDER BY a.updatedAt DESC
-	
-""")
+        """
+                        SELECT a FROM AssetType a
+                        INNER JOIN a.user u
+                        WHERE (:name IS NULL OR a.nameAssetType LIKE CONCAT('%', :name, '%'))
+                        AND (:group IS NULL OR a.assetGroup = :group)
+                        AND u.id = :userId
+                        ORDER BY a.updatedAt DESC
+                """)
     Page<AssetType> filterAssetTypesPaging(
-            @Param("name") String nameAssetType, @Param("group") AssetGroup assetGroup, Pageable pageable);
+            @Param("name") String nameAssetType, @Param("group") AssetGroup assetGroup, @Param("userId") String userId,
+            Pageable pageable);
 
 
     @Query("""
-		SELECT at FROM AssetType at
-		WHERE at.user.id = :userId
-		ORDER BY at.updatedAt DESC
-	""")
+            SELECT at FROM AssetType at
+            WHERE at.user.id = :userId
+            ORDER BY at.updatedAt DESC
+            """)
     List<AssetType> findAllAssetTypeByUserId(@Param("userId") String userId);
+
     // check trùng tên loại trong nhóm
     boolean existsByNameAssetTypeAndAssetGroupAndUserId(String name, AssetGroup group, String userId);
 
