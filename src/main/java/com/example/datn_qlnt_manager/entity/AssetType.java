@@ -28,7 +28,7 @@ public class AssetType extends AbstractEntity {
     @Column(name = "mo_ta")
     String discriptionAssetType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }

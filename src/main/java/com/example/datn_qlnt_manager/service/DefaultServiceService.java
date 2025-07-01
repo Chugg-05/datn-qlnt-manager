@@ -2,8 +2,8 @@ package com.example.datn_qlnt_manager.service;
 
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.DefaultServiceFilter;
-import com.example.datn_qlnt_manager.dto.request.DefaultService.DefaultServiceCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.DefaultService.DefaultServiceUpdateRequest;
+import com.example.datn_qlnt_manager.dto.request.defaultService.DefaultServiceCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.defaultService.DefaultServiceUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.defaultService.DefaultServiceResponse;
 
 public interface DefaultServiceService {

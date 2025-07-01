@@ -31,6 +31,7 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 		OR (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%') ))
 		AND (:gender IS NULL OR t.gender = :gender)
 		AND (:status IS NULL OR c.status = :status)
+		AND c.status != 'DA_HUY'
 		ORDER BY c.updatedAt DESC
 	""")
     Page<Contract> filterContractPaging(

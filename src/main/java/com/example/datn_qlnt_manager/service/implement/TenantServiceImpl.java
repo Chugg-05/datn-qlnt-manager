@@ -3,7 +3,10 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.TenantStatus;
+import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
+import com.example.datn_qlnt_manager.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
-import com.example.datn_qlnt_manager.common.TenantStatus;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.TenantFilter;
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantCreationRequest;
@@ -36,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TenantServiceImpl implements TenantService {
+    UserRepository userRepository;
     TenantRepository tenantRepository;
     TenantMapper tenantMapper;
     UserService userService;
@@ -49,12 +52,7 @@ public class TenantServiceImpl implements TenantService {
 
         Page<Tenant> paging = tenantRepository.filterTenantPaging(
                 filter.getUserId(),
-                filter.getCustomerCode(),
-                filter.getFullName(),
-                filter.getEmail(),
-                filter.getPhoneNumber(),
-                filter.getIdentityCardNumber(),
-                filter.getAddress(),
+                filter.getQuery(),
                 filter.getGender(),
                 filter.getTenantStatus(),
                 pageable);
@@ -92,17 +90,22 @@ public class TenantServiceImpl implements TenantService {
             throw new AppException(ErrorCode.ID_NUMBER_EXISTED);
         }
 
+        User owner = userRepository.findById(request.getOwnerId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        User creator = userRepository.findById(request.getCreatorId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
         Tenant tenant = tenantMapper.toTenant(request);
 
-        User user = userService.getCurrentUser();
-
-        String customerCode = codeGeneratorService.generateTenantCode(user);
-
-        tenant.setUser(user);
-        tenant.setCustomerCode(customerCode);
-        tenant.setTenantStatus(TenantStatus.DANG_THUE);
-        tenant.setIsRepresentative(false);
+        tenant.setOwner(owner);
         tenant.setHasAccount(false);
+        tenant.setUser(null);
+        tenant.setIsRepresentative(creator.getId().equals(owner.getId()));
+
+        String customerCode = codeGeneratorService.generateTenantCode(owner);
+
+        tenant.setCustomerCode(customerCode);
         tenant.setCreatedAt(Instant.now());
         tenant.setUpdatedAt(Instant.now());
 
@@ -135,7 +138,31 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public TenantStatistics totalTenantsByStatus() {
+    public TenantDetailResponse getTenantDetailById(String tenantId) {
+        return tenantRepository.findTenantDetailById(tenantId)
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+    }
+
+    @Override
+    public void toggleTenantStatusById(String tenantId) {
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+
+        if (tenant.getTenantStatus() == TenantStatus.DANG_THUE) {
+            tenant.setTenantStatus(TenantStatus.DA_TRA_PHONG);
+        } else if (tenant.getTenantStatus() == TenantStatus.DA_TRA_PHONG) {
+            tenant.setTenantStatus(TenantStatus.DANG_THUE);
+        } else {
+            throw new AppException(ErrorCode.TENANT_CANNOT_BE_TOGGLED);
+        }
+
+        tenant.setUpdatedAt(Instant.now());
+
+        tenantRepository.save(tenant);
+    }
+
+    @Override
+    public TenantStatistics getTenantStatisticsByUserId() {
         User user = userService.getCurrentUser();
 
         return tenantRepository.getTotalTenantByStatus(user.getId());
@@ -149,17 +176,29 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public TenantResponse getTenantById(String tenantId) {
-        Tenant tenant =
-                tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
-        return tenantMapper.toTenantResponse(tenant);
+    public void softDeleteTenantById(String tenantId) {
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+
+        if (tenant.getTenantStatus() != TenantStatus.DANG_THUE && tenant.getTenantStatus() != TenantStatus.DA_TRA_PHONG) {
+            throw new AppException(ErrorCode.TENANT_CANNOT_BE_DELETED);
+        }
+
+        tenant.setTenantStatus(TenantStatus.HUY_BO);
+        tenant.setUpdatedAt(Instant.now());
+
+        tenantRepository.save(tenant);
     }
 
     @Override
     public void deleteTenantById(String tenantId) {
-        if (!tenantRepository.existsById(tenantId)) {
-            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+
+        if (tenant.getTenantStatus() == TenantStatus.DANG_THUE) {
+            throw new AppException(ErrorCode.TENANT_CANNOT_BE_DELETED);
         }
+
         tenantRepository.deleteById(tenantId);
     }
 }

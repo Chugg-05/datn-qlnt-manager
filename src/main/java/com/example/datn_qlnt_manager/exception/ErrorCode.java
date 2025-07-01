@@ -98,6 +98,8 @@ public enum ErrorCode {
     INVALID_ID_NUMBER_BLANK(400, "Identity card number cannot be blank.", HttpStatus.BAD_REQUEST),
     INVALID_ID_NUMBER_FORMAT(400, "Incorrect ID number format.", HttpStatus.BAD_REQUEST),
     INVALID_TENANT_STATUS_BLANK(400, "Tenant status cannot be null.", HttpStatus.BAD_REQUEST),
+    TENANT_CANNOT_BE_DELETED(400, "This tenant cannot be deleted.", HttpStatus.BAD_REQUEST),
+    TENANT_CANNOT_BE_TOGGLED(400, "This tenant cannot be toggled.", HttpStatus.BAD_REQUEST),
 
     INVALID_VEHICLE_STATUS_BLANK(400, "Vehicle status cannot be null.", HttpStatus.BAD_REQUEST),
     INVALID_VEHICLE_TYPE_BLANK(400, "Vehicle type cannot be null.", HttpStatus.BAD_REQUEST),
@@ -139,7 +141,7 @@ public enum ErrorCode {
     CANNOT_DELETE_CONTRACT(400, "This room is still under contract and cannot be deleted.", HttpStatus.NOT_FOUND),
     CANNOT_REACTIVATE_EXPIRED_CONTRACT(400, "Expired contracts cannot be reactivated.", HttpStatus.BAD_REQUEST),
     CANNOT_TOGGLE_CONTRACT_STATUS(400, "Cannot transfer current contract status.", HttpStatus.BAD_REQUEST),
-
+    OWNER_ID_REQUIRED(400, "Owner ID is required.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),

@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.datn_qlnt_manager.entity.Tenant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,14 +29,11 @@ public interface AssetTypeRepository extends JpaRepository<AssetType, String> {
 
 
     @Query("""
-        SELECT at
-        FROM Asset a
-        JOIN a.assetType at
-        JOIN a.tenant t
-        JOIN t.user u
-        WHERE u.id = :userId
-    """)
-    List<AssetType>findAllLAssetTypeByUserId(@Param("userId") String userId);
+		SELECT at FROM AssetType at
+		WHERE at.user.id = :userId
+		ORDER BY at.updatedAt DESC
+	""")
+    List<AssetType> findAllAssetTypeByUserId(@Param("userId") String userId);
     // check trùng tên loại trong nhóm
     boolean existsByNameAssetTypeAndAssetGroupAndUserId(String name, AssetGroup group, String userId);
 

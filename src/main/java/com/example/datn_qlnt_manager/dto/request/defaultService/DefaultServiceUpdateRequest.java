@@ -1,4 +1,4 @@
-package com.example.datn_qlnt_manager.dto.request.DefaultService;
+package com.example.datn_qlnt_manager.dto.request.defaultService;
 
 import com.example.datn_qlnt_manager.common.DefaultServiceAppliesTo;
 import com.example.datn_qlnt_manager.common.DefaultServiceStatus;

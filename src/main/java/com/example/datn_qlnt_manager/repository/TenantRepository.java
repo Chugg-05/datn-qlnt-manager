@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.repository;
 
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import com.example.datn_qlnt_manager.common.TenantStatus;
 import com.example.datn_qlnt_manager.entity.Tenant;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TenantRepository extends JpaRepository<Tenant, String> {
@@ -22,23 +24,20 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
 		SELECT t FROM Tenant t
 		INNER JOIN t.user u
 		WHERE (u.id = :userId)
-		AND (:customerCode IS NULL OR t.customerCode LIKE CONCAT('%', :customerCode, '%'))
-		AND (:fullName IS NULL OR t.fullName LIKE CONCAT('%', :fullName, '%'))
-		AND (:email IS NULL OR t.email LIKE CONCAT('%', :email, '%'))
-		AND (:phoneNumber IS NULL OR t.phoneNumber LIKE CONCAT('%', :phoneNumber, '%'))
-		AND (:identityCardNumber IS NULL OR t.identityCardNumber LIKE CONCAT('%', :identityCardNumber, '%'))
-		AND (:address IS NULL OR t.address LIKE CONCAT('%', :address, '%'))
+		AND (:query IS NULL OR t.customerCode LIKE CONCAT('%', :query, '%'))
+		AND (:query IS NULL OR t.fullName LIKE CONCAT('%', :query, '%'))
+		AND (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%'))
+		AND (:query IS NULL OR t.phoneNumber LIKE CONCAT('%', :query, '%'))
+		AND (:query IS NULL OR t.identityCardNumber LIKE CONCAT('%', :query, '%'))
+		AND (:query IS NULL OR t.address LIKE CONCAT('%', :query, '%'))
 		AND (:gender IS NULL OR t.gender = :gender)
 		AND (:tenantStatus IS NULL OR t.tenantStatus = :tenantStatus)
+		AND t.tenantStatus != 'HUY_BO'
+		ORDER BY t.updatedAt DESC
 		""")
     Page<Tenant> filterTenantPaging(
             @Param("userId") String userId,
-            @Param("customerCode") String customerCode,
-            @Param("fullName") String fullName,
-            @Param("email") String email,
-            @Param("phoneNumber") String phoneNumber,
-            @Param("identityCardNumber") String identityCardNumber,
-            @Param("address") String address,
+            @Param("query") String query,
             @Param("gender") Gender gender,
             @Param("tenantStatus") TenantStatus tenantStatus,
             Pageable pageable);
@@ -69,6 +68,35 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
 		WHERE c.id = :contractId
 	""")
 	List<TenantBasicResponse> findTenantsByContractId(@Param("contractId") String contractId);
+
+	@Query("""
+        SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse(
+            t.customerCode,
+            b.buildingName,
+            r.roomCode,
+            t.fullName,
+            t.gender,
+            t.dob,
+            t.email,
+            t.phoneNumber,
+            t.identityCardNumber,
+            t.address,
+            c.contractCode,
+            c.endDate,
+            t.tenantStatus,
+            t.isRepresentative,
+            t.createdAt,
+            t.updatedAt
+        )
+        FROM Tenant t
+        LEFT JOIN t.contracts c
+        LEFT JOIN c.room r
+        LEFT JOIN r.floor f
+        LEFT JOIN f.building b
+        WHERE t.id = :tenantId
+        """)
+	Optional<TenantDetailResponse> findTenantDetailById(@Param("tenantId") String tenantId);
+
 
 	@Query("""
 		SELECT t FROM Tenant t

@@ -22,6 +22,12 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TenantCreationRequest implements Serializable {
+    @NotNull(message = "OWNER_ID_REQUIRED")
+    String ownerId;
+
+    @NotNull(message = "CREATOR_ID_REQUIRED")
+    String creatorId;
+
     @Size(min = 3, message = "INVALID_FULL_NAME")
     String fullName;
 

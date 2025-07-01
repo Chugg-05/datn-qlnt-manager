@@ -1,7 +1,7 @@
 package com.example.datn_qlnt_manager.mapper;
 
-import com.example.datn_qlnt_manager.dto.request.DefaultService.DefaultServiceCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.DefaultService.DefaultServiceUpdateRequest;
+import com.example.datn_qlnt_manager.dto.request.defaultService.DefaultServiceCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.defaultService.DefaultServiceUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.defaultService.DefaultServiceResponse;
 import com.example.datn_qlnt_manager.entity.DefaultService;
 import org.mapstruct.Mapper;
