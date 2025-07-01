@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AssetTypeResponse {
     String id;
+    String userId;
     String nameAssetType;
     AssetGroup assetGroup;
     String discriptionAssetType;

@@ -18,4 +18,6 @@ public interface AssetTypeService {
     List<AssetTypeResponse> getAllAssetTypesByUserId();
 
     void deleteAssetTypeById(String assetTypeId);
+
+    List<AssetTypeResponse> findAssetTypesByCurrentUser();
 }
