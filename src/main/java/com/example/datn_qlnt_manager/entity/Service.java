@@ -19,33 +19,30 @@ import java.math.BigDecimal;
 @Table(name = "dich_vu")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Service extends AbstractEntity {
-//    @Id
-//    @Column(length = 36)
-//    private String id;
 
     @Column(name = "ten_dich_vu", nullable = false)
-    private String name;
+    String name;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "loai_dich_vu", nullable = false)
-    private ServiceType type;
+    ServiceType type;
 
     @Column(name = "don_vi_tinh", nullable = false, length = 50)
-    private String unit;
+    String unit;
 
     @Column(name = "don_gia", nullable = false, precision = 15, scale = 2)
-    private BigDecimal price;
+    BigDecimal price;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ap_dung_theo")
-    private ServiceAppliedBy appliedBy;
+    ServiceAppliedBy appliedBy;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai", nullable = false)
-    private ServiceStatus status;
+    ServiceStatus status;
 
     @Column(name = "mo_ta", columnDefinition = "TEXT")
-    private String description;
+    String description;
 
 
 }

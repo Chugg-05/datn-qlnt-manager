@@ -186,7 +186,6 @@ public enum ErrorCode {
     ROOM_EXISTED_SERVICE(409, "Room already has this service", HttpStatus.BAD_REQUEST),
     SERVICE_ROOM_NOT_FOUND(409, "Service room not found.", HttpStatus.NOT_FOUND),
     ROOM_ALREADY_HAS_CONTRACT(409,"This room is under contract.", HttpStatus.BAD_REQUEST),
-
     ;
 
     final int code;

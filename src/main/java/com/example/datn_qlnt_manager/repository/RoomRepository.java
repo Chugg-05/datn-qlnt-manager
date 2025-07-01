@@ -1,6 +1,5 @@
 package com.example.datn_qlnt_manager.repository;
 
-import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +12,6 @@ import com.example.datn_qlnt_manager.entity.Room;
 
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, String> {
@@ -42,19 +40,8 @@ public interface RoomRepository extends JpaRepository<Room, String> {
             @Param("nameFloor") String nameFloor,
             Pageable pageable);
 
-    boolean existsByRoomCode(String roomCode);
 
-//	@Query("""
-//			SELECT
-//				COUNT(CASE WHEN r.status IN (
-//					com.example.datn_qlnt_manager.common.RoomStatus.DANG_THUE,
-//					com.example.datn_qlnt_manager.common.RoomStatus.DA_DAT_COC
-//				) THEN 1 END),
-//				SUM(CASE WHEN r.status = 'DANG_THUE' THEN 1 ELSE 0 END),
-//				SUM(CASE WHEN r.status = 'DA_DAT_COC' THEN 1 ELSE 0 END)
-//			FROM Room r
-//			WHERE r.floor.id = :floorId
-//		""")
+
 		@Query("""
 					select new com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse(
 					:floorId,
@@ -69,18 +56,7 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 					WHERE r.status!= com.example.datn_qlnt_manager.common.RoomStatus.HUY_HOAT_DONG
 				""")
 	RoomCountResponse getRoomStatsByFloor(@Param("floorId") String floorId);
-	@Query("""
-        SELECT
-            COUNT(CASE WHEN r.status IN (
-                com.example.datn_qlnt_manager.common.RoomStatus.DANG_THUE,
-                com.example.datn_qlnt_manager.common.RoomStatus.DA_DAT_COC
-            ) THEN 1 END) AS totalInUse,
-            SUM(CASE WHEN r.status = 'DANG_THUE' THEN 1 ELSE 0 END) AS totalDangThue,
-            SUM(CASE WHEN r.status = 'DA_DAT_COC' THEN 1 ELSE 0 END) AS totalDatCoc
-        FROM Room r
-        WHERE r.floor.building.user.id = :userId
-    """)
-	RoomCountResponse getRoomStatsByUser(@Param("userId") String userId);
+
 
 	@Query("""
 		SELECT r FROM Room r
@@ -94,6 +70,4 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 												 @Param("floorId") String floorId);
 
 	int countByFloorId(String floorId);
-
-	Optional<Room> findByIdAndStatusNot(String id, RoomStatus status);
 }

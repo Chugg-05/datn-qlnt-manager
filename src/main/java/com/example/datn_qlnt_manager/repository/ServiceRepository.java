@@ -20,4 +20,6 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
             @Param("name") String name,
             Pageable pageable
     );
+
+    // boolean existsByTenDichVu(String name);
 }
