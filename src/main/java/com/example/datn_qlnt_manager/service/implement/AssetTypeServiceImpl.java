@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.service.UserService;
@@ -40,13 +41,17 @@ public class AssetTypeServiceImpl implements AssetTypeService {
 
     @Override
     public AssetTypeResponse createAssetType(AssetTypeCreationRequest request) {
-        boolean exists = assetTypeRepository.existsByNameAssetTypeAndAssetGroup(
-                request.getNameAssetType(), request.getAssetGroup());
+        User currentUser = userService.getCurrentUser();
+
+        boolean exists = assetTypeRepository.existsByNameAssetTypeAndAssetGroupAndUserId(
+                request.getNameAssetType(), request.getAssetGroup(), currentUser.getId());
+
         if (exists) {
             throw new AppException(ErrorCode.ASSET_TYPE_EXISTED);
         }
 
         AssetType assetType = assetTypeMapper.toAssetType(request);
+        assetType.setUser(currentUser);
         assetType.setCreatedAt(Instant.now());
         assetType.setUpdatedAt(Instant.now());
 
@@ -118,5 +123,14 @@ public class AssetTypeServiceImpl implements AssetTypeService {
             throw new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND);
         }
         assetTypeRepository.deleteById(assetTypeId);
+    }
+
+    @Override
+    public List<AssetTypeResponse> findAssetTypesByCurrentUser() {
+        String userId = userService.getCurrentUser().getId();
+        List<AssetType> assetTypes = assetTypeRepository.findAllByUserId(userId);
+        return assetTypes.stream()
+                .map(assetTypeMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }
