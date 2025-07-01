@@ -5,6 +5,8 @@ import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInitResponse;
 import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
 import com.example.datn_qlnt_manager.entity.*;
 import com.example.datn_qlnt_manager.exception.AppException;
@@ -24,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -166,6 +167,44 @@ public class AssetServiceImpl implements AssetService {
         List<Asset> assets = assetRepository.findAssetsByUserId(currentUserId);
         return assets.stream()
                 .map(assetMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    @Override
+    public CreateAssetInitResponse getInitDataForAssetCreation() {
+        User user = userService.getCurrentUser();
+
+        List<IdAndName> assetTypes =
+                assetTypeRepository.findAllByUserId(user.getId())
+                        .stream().map(at -> new IdAndName(at.getId(),
+                                at.getNameAssetType())).toList();
+
+        List<IdAndName> rooms = roomRepository.findRoomsByUserId(user.getId())
+                .stream()
+                .map(r -> new IdAndName(r.getId(), r.getName()))
+                .toList();
+
+        List<IdAndName> buildings = buildingRepository.findAllBuildingsByUserId(user.getId())
+                .stream()
+                .map(b -> new IdAndName(b.getId(), b.getName()))
+                .toList();
+
+        List<IdAndName> floors = floorRepository.findAllFloorsByUserId(user.getId())
+                .stream()
+                .map(f -> new IdAndName(f.getId(), f.getName()))
+                .toList();
+
+//        List<IdAndName> tenants = tenantRepository.findAllTenantsByOwnerId(user.getId())
+//                .stream()
+//                .map(t -> new IdAndName(t.getId(), t.getName()))
+//                .toList();
+
+        return CreateAssetInitResponse.builder()
+                .assetTypes(assetTypes)
+                .buildings(buildings)
+                .floors(floors)
+//                .tenants(tenants)
+                .rooms(rooms)
+                .build();
     }
 }
