@@ -68,7 +68,8 @@ public class ContractController {
                 .build();
     }
 
-    @GetMapping("/details/{contractId}")
+    @Operation(summary = "Lấy chi tiết hợp đồng")
+    @GetMapping("/{contractId}")
     public ApiResponse<ContractDetailResponse> getDetail(@PathVariable String contractId) {
         ContractDetailResponse response = contractService.getContractDetailById(contractId);
 

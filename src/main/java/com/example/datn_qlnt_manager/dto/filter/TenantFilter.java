@@ -13,12 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TenantFilter {
     String userId;
-    String customerCode;
-    String fullName;
-    String email;
-    String phoneNumber;
-    String identityCardNumber;
-    String address;
+    String query;
     Gender gender;
     TenantStatus tenantStatus;
 }

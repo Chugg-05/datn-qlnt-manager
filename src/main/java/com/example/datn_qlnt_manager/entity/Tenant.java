@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.entity;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import jakarta.persistence.*;
 
@@ -26,6 +27,10 @@ public class Tenant extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "chu_nha_id", nullable = false)
+    User owner;
 
     @Column(name = "ma_khach_thue", nullable = false, unique = true)
     String customerCode;
@@ -62,4 +67,7 @@ public class Tenant extends AbstractEntity {
 
     @Column(name = "co_tai_khoan", nullable = false)
     Boolean hasAccount;
+
+    @ManyToMany(mappedBy = "tenants", fetch = FetchType.LAZY)
+    Set<Contract> contracts;
 }

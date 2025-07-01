@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
 import jakarta.validation.Valid;
 
@@ -31,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TenantController {
     TenantService tenantService;
 
-    @Operation(summary = "Phân trang, tìm kiếm, lọc người dùng")
+    @Operation(summary = "Danh sách, Phân trang, tìm kiếm, lọc khách hàng")
     @GetMapping
     public ApiResponse<List<TenantResponse>> filterTenants(
             @ModelAttribute TenantFilter filter,
@@ -44,16 +45,6 @@ public class TenantController {
                 .message("Filter tenants successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
-                .build();
-    }
-
-    @Operation(summary = "Lấy thông tin khách hàng theo ID")
-    @GetMapping("/{tenantId}")
-    public ApiResponse<TenantResponse> getTenant(@PathVariable("tenantId") String tenantId) {
-        TenantResponse tenantResponse = tenantService.getTenantById(tenantId);
-        return ApiResponse.<TenantResponse>builder()
-                .message("Tenant found successfully")
-                .data(tenantResponse)
                 .build();
     }
 
@@ -79,6 +70,15 @@ public class TenantController {
                 .build();
     }
 
+    @GetMapping("/detail/{tenantId}")
+    public ApiResponse<TenantDetailResponse> getTenantDetail(@PathVariable String tenantId) {
+        TenantDetailResponse response = tenantService.getTenantDetailById(tenantId);
+        return ApiResponse.<TenantDetailResponse>builder()
+                .message("Tenant detail found successfully")
+                .data(response)
+                .build();
+    }
+
     @Operation(summary = "Lấy danh sách khách hàng theo user ID")
     @GetMapping("/all")
     public ApiResponse<List<TenantResponse>> getAllTenants() {
@@ -96,11 +96,31 @@ public class TenantController {
 
         return ApiResponse.<TenantStatistics>builder()
                 .message("Tenant statistics successfully")
-                .data(tenantService.totalTenantsByStatus())
+                .data(tenantService.getTenantStatisticsByUserId())
                 .build();
     }
 
-    @Operation(summary = "Xoa khách hàng")
+    @Operation(summary = "Chuyển đổi trạng thái khách hàng")
+    @PutMapping("/toggle/{tenantId}")
+    public ApiResponse<String> toggleTenantStatus(@PathVariable("tenantId") String tenantId) {
+        tenantService.toggleTenantStatusById(tenantId);
+        return ApiResponse.<String>builder()
+                .message("Tenant status successfully")
+                .data("Tenant with ID " + tenantId + " status has been toggled.")
+                .build();
+    }
+
+    @Operation(summary = "Xóa mềm khách hàng")
+    @PutMapping("/soft/{tenantId}")
+    public ApiResponse<String> softDeleteTenant(@PathVariable("tenantId") String tenantId) {
+        tenantService.softDeleteTenantById(tenantId);
+        return ApiResponse.<String>builder()
+                .message("Tenant soft deleted successfully")
+                .data("Tenant with ID " + tenantId + " has been soft deleted.")
+                .build();
+    }
+
+    @Operation(summary = "Xóa khách hàng")
     @DeleteMapping("/{tenantId}")
     public ApiResponse<String> deleteTenant(@PathVariable("tenantId") String tenantId) {
         tenantService.deleteTenantById(tenantId);

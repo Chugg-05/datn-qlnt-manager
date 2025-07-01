@@ -113,7 +113,7 @@ public class AssetTypeServiceImpl implements AssetTypeService {
     @Override
     public List<AssetTypeResponse> getAllAssetTypesByUserId() {
         User user = userService.getCurrentUser();
-        List<AssetType> assetTypes = assetTypeRepository.findAllLAssetTypeByUserId(user.getId());
+        List<AssetType> assetTypes = assetTypeRepository.findAllAssetTypeByUserId(user.getId());
         return assetTypes.stream().map(assetTypeMapper::toResponse).toList();
     }
 
