@@ -45,7 +45,7 @@ public enum ErrorCode {
     INVALID_PASSWORD_LOWERCASE(400, "Password must contain at least one lowercase letter.", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD_NUMBER(400, "Password must contain at least one digit.", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD_SPECIAL_CHARACTERS(
-            400, "Password must contain at least one special character(@$!%*?&).", HttpStatus.BAD_REQUEST),
+            400, "Password must contain at least one special character(@#$%&*!).", HttpStatus.BAD_REQUEST),
     INVALID_GENDER_BLANK(400, "Gender cannot be blank.", HttpStatus.BAD_REQUEST),
     INVALID_DOB(400, "Your age must be at least {min}.", HttpStatus.BAD_REQUEST),
     INVALID_PHONE(400, "Your phone must be at least {min}.", HttpStatus.BAD_REQUEST),
@@ -142,6 +142,8 @@ public enum ErrorCode {
     CANNOT_REACTIVATE_EXPIRED_CONTRACT(400, "Expired contracts cannot be reactivated.", HttpStatus.BAD_REQUEST),
     CANNOT_TOGGLE_CONTRACT_STATUS(400, "Cannot transfer current contract status.", HttpStatus.BAD_REQUEST),
     OWNER_ID_REQUIRED(400, "Owner ID is required.", HttpStatus.BAD_REQUEST),
+    IS_REPRESENTATIVE_REQUIRED(400, "Is Representative is required.", HttpStatus.BAD_REQUEST),
+    TENANT_ALREADY_IN_CONTRACT(400, "This tenant already has a lease. Information cannot be changed.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),

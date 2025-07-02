@@ -99,5 +99,5 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 	ContractStatistics getTotalContractByStatus(@Param("userId") String userId);
 
 	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
-
+	boolean existsByTenants_Id(String tenantId);
 }

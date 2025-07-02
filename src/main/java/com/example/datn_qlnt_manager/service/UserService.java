@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.service;
 
+import com.example.datn_qlnt_manager.dto.request.tenant.TenantCreationRequest;
 import com.example.datn_qlnt_manager.dto.statistics.UserStatistics;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,8 @@ public interface UserService {
     void accountLockById(String userId);
 
     void recoverLockedUsersById(String userId);
+
+    User createUserForTenant(TenantCreationRequest request);
 
     User findUserWithRolesAndPermissionsById(String id);
 
