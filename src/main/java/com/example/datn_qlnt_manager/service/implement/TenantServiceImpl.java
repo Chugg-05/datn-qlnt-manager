@@ -6,7 +6,9 @@ import java.util.List;
 import com.example.datn_qlnt_manager.common.TenantStatus;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
+import com.example.datn_qlnt_manager.repository.ContractRepository;
 import com.example.datn_qlnt_manager.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,10 +40,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TenantServiceImpl implements TenantService {
-    UserRepository userRepository;
     TenantRepository tenantRepository;
     TenantMapper tenantMapper;
     UserService userService;
+    UserRepository userRepository;
+    ContractRepository contractRepository;
     CodeGeneratorService codeGeneratorService;
 
     @Override
@@ -76,36 +79,46 @@ public class TenantServiceImpl implements TenantService {
                 .build();
     }
 
+    @Transactional
     @Override
-    public TenantResponse createTenant(TenantCreationRequest request) {
-        if (tenantRepository.existsByEmail(request.getEmail())) {
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
-        }
+    public TenantResponse createTenantByOwner(TenantCreationRequest request) {
+        validateDuplicateTenant(request);
 
-        if (tenantRepository.existsByPhoneNumber(request.getPhoneNumber())) {
-            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
-        }
-
-        if (tenantRepository.existsByIdentityCardNumber(request.getIdentityCardNumber())) {
-            throw new AppException(ErrorCode.ID_NUMBER_EXISTED);
-        }
-
-        User owner = userRepository.findById(request.getOwnerId())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-        User creator = userRepository.findById(request.getCreatorId())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
+        User owner = userService.getCurrentUser();
         Tenant tenant = tenantMapper.toTenant(request);
-
-        tenant.setOwner(owner);
-        tenant.setHasAccount(false);
-        tenant.setUser(null);
-        tenant.setIsRepresentative(creator.getId().equals(owner.getId()));
-
         String customerCode = codeGeneratorService.generateTenantCode(owner);
 
+        tenant.setOwner(owner);
         tenant.setCustomerCode(customerCode);
+        tenant.setHasAccount(true);
+        tenant.setIsRepresentative(true);
+        tenant.setUser(userService.createUserForTenant(request));
+        tenant.setCreatedAt(Instant.now());
+        tenant.setUpdatedAt(Instant.now());
+
+        return tenantMapper.toTenantResponse(tenantRepository.save(tenant));
+    }
+
+    @Transactional
+    @Override
+    public TenantResponse createTenantByRepresentative(TenantCreationRequest request) {
+        validateDuplicateTenant(request);
+
+        User creator = userService.getCurrentUser();
+
+        Tenant representative = tenantRepository.findByUserId(creator.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+
+        User owner = representative.getOwner();
+
+        Tenant tenant = tenantMapper.toTenant(request);
+        String customerCode = codeGeneratorService.generateTenantCode(owner);
+
+        tenant.setUser(null);
+        tenant.setOwner(owner);
+        tenant.setCustomerCode(customerCode);
+        tenant.setIsRepresentative(false);
+        tenant.setHasAccount(false);
         tenant.setCreatedAt(Instant.now());
         tenant.setUpdatedAt(Instant.now());
 
@@ -117,8 +130,8 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant =
                 tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
 
-        if (!tenant.getEmail().equals(request.getEmail()) && tenantRepository.existsByEmail(request.getEmail())) {
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        if (contractRepository.existsByTenants_Id(tenantId)) {
+            throw new AppException(ErrorCode.TENANT_ALREADY_IN_CONTRACT);
         }
 
         if (!tenant.getPhoneNumber().equals(request.getPhoneNumber())
@@ -132,6 +145,17 @@ public class TenantServiceImpl implements TenantService {
         }
 
         tenantMapper.updateTenant(request, tenant);
+
+        if (tenant.getUser() != null) {
+            User user = tenant.getUser();
+            user.setFullName(request.getFullName());
+            user.setDob(request.getDob());
+            user.setGender(request.getGender());
+            user.setPhoneNumber(request.getPhoneNumber());
+            user.setUpdatedAt(Instant.now());
+            userRepository.save(user);
+        }
+
         tenant.setUpdatedAt(Instant.now());
 
         return tenantMapper.toTenantResponse(tenantRepository.save(tenant));
@@ -200,5 +224,17 @@ public class TenantServiceImpl implements TenantService {
         }
 
         tenantRepository.deleteById(tenantId);
+    }
+
+    private void validateDuplicateTenant(TenantCreationRequest request) {
+        if (tenantRepository.existsByEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
+        if (tenantRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
+        }
+        if (tenantRepository.existsByIdentityCardNumber(request.getIdentityCardNumber())) {
+            throw new AppException(ErrorCode.ID_NUMBER_EXISTED);
+        }
     }
 }

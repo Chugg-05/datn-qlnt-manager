@@ -14,7 +14,6 @@ import com.example.datn_qlnt_manager.entity.Room;
 
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, String> {
@@ -43,9 +42,8 @@ public interface RoomRepository extends JpaRepository<Room, String> {
             @Param("nameFloor") String nameFloor,
             Pageable pageable);
 
-    boolean existsByRoomCode(String roomCode);
 
-    //	@Query("""
+//	@Query("""
 //			SELECT
 //				COUNT(CASE WHEN r.status IN (
 //					com.example.datn_qlnt_manager.common.RoomStatus.DANG_THUE,
@@ -105,6 +103,4 @@ public interface RoomRepository extends JpaRepository<Room, String> {
                                                  @Param("floorId") String floorId);
 
     int countByFloorId(String floorId);
-
-    Optional<Room> findByIdAndStatusNot(String id, RoomStatus status);
 }

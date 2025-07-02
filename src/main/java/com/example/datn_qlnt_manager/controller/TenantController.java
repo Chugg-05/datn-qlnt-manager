@@ -48,13 +48,24 @@ public class TenantController {
                 .build();
     }
 
-    @Operation(summary = "Thêm khách hàng mới dành cho user")
-    @PostMapping
-    public ApiResponse<TenantResponse> createTenant(@Valid @RequestBody TenantCreationRequest request) {
-        TenantResponse response = tenantService.createTenant(request);
-
+    @Operation(summary = "Thêm khách hàng mới dành cho chủ nhà trọ")
+    @PostMapping("/owner")
+    public ApiResponse<TenantResponse> createTenantByOwner(
+            @Valid @RequestBody TenantCreationRequest request) {
+        TenantResponse response = tenantService.createTenantByOwner(request);
         return ApiResponse.<TenantResponse>builder()
-                .message("Tenant created successfully")
+                .message("Tenant created successfully by owner")
+                .data(response)
+                .build();
+    }
+
+    @Operation(summary = "Thêm khách hàng mới dành cho khach hàng đại diện")
+    @PostMapping("/representative")
+    public ApiResponse<TenantResponse> createTenantByRepresentative(
+            @Valid @RequestBody TenantCreationRequest request) {
+        TenantResponse response = tenantService.createTenantByRepresentative(request);
+        return ApiResponse.<TenantResponse>builder()
+                .message("Representative tenant created successfully")
                 .data(response)
                 .build();
     }

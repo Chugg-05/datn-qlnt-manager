@@ -9,9 +9,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserStatistics {
-    long totalUsers;
-    long totalActiveUsers;
-    long totalExpiredUsers;
-    long totalLockedUsers;
-    long totalDeletedUsers;
+    Long totalUsers;
+    Long totalActiveUsers;
+    Long totalExpiredUsers;
+    Long totalLockedUsers;
+    Long totalDeletedUsers;
 }

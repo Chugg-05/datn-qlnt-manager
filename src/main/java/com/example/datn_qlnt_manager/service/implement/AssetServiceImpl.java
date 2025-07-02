@@ -194,16 +194,16 @@ public class AssetServiceImpl implements AssetService {
                 .map(f -> new IdAndName(f.getId(), f.getName()))
                 .toList();
 
-//        List<IdAndName> tenants = tenantRepository.findAllTenantsByOwnerId(user.getId())
-//                .stream()
-//                .map(t -> new IdAndName(t.getId(), t.getName()))
-//                .toList();
+        List<IdAndName> tenants = tenantRepository.findAllTenantsByOwnerId(user.getId())
+                .stream()
+                .map(t -> new IdAndName(t.getId(), t.getName()))
+                .toList();
 
         return CreateAssetInitResponse.builder()
                 .assetTypes(assetTypes)
                 .buildings(buildings)
                 .floors(floors)
-//                .tenants(tenants)
+                .tenants(tenants)
                 .rooms(rooms)
                 .build();
     }

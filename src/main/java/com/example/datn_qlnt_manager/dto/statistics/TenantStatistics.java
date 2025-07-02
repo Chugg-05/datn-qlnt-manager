@@ -9,10 +9,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TenantStatistics {
-    long totalTenants;
-    long totalRentingTenants;
-    long totalCheckedOutTenants;
-    long totalPotentialTenants;
-    long totalCancelTenants;
-    long totalLockedTenants;
+    Long totalTenants;
+    Long totalRentingTenants;
+    Long totalCheckedOutTenants;
+    Long totalPotentialTenants;
+    Long totalCancelTenants;
+    Long totalLockedTenants;
 }

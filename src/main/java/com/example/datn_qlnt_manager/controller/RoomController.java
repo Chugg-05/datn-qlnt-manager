@@ -58,7 +58,6 @@ public class RoomController {
         return ApiResponse.<RoomResponse>builder()
                 .data(roomService.createRoom(request))
                 .message("Add room success")
-                .code(201)
                 .build();
     }
 
@@ -82,7 +81,6 @@ public class RoomController {
                 .build();
     }
 
-
     @DeleteMapping("/delete/{id}")
     public ApiResponse<Void> deleteRoom(@PathVariable("id") String roomId) {
         return ApiResponse.<Void>builder()
@@ -100,15 +98,4 @@ public class RoomController {
                 .code(200)
                 .build();
     }
-
-//    @PutMapping("/update-status/{id}")
-//    public ApiResponse<RoomResponse> updateRoomStatus(
-//            @PathVariable("id") String roomId, @RequestParam RoomStatus status) {
-//        return ApiResponse.<RoomResponse>builder()
-//                .data(roomService.updateRoomStatus(roomId, status))
-//                .message("Update room status success")
-//                .code(200)
-//                .build();
-//    }
-
 }

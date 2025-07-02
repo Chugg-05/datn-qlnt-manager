@@ -9,13 +9,12 @@ import com.example.datn_qlnt_manager.entity.Tenant;
 
 @Mapper(componentModel = "spring")
 public interface TenantMapper {
-    @Mapping(target = "user", ignore = true)
-    @Mapping(target = "owner", ignore = true)
     @Mapping(target = "customerCode", ignore = true)
     @Mapping(target = "tenantStatus", constant = "DANG_THUE")
-    @Mapping(target = "isRepresentative", constant = "false")
     @Mapping(target = "hasAccount", constant = "false")
-    @Mapping(target = "contracts", ignore = true)
+    @Mapping(target = "isRepresentative", constant = "false")
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "owner", ignore = true)
     Tenant toTenant(TenantCreationRequest request);
 
     TenantResponse toTenantResponse(Tenant tenant);
