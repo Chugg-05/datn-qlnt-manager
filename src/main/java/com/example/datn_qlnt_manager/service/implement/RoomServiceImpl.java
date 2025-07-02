@@ -50,7 +50,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public PaginatedResponse<RoomResponse> filterRooms(Integer page, Integer size, RoomFilter roomFilter) {
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Order.desc("createdAt")));
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Order.desc("updatedAt")));
 
         Page<Room> paging = roomRepository.filterRoomsPaging(
                 roomFilter.getStatus(),
@@ -142,6 +142,7 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
         room.setStatus((RoomStatus.HUY_HOAT_DONG) );
         room.setUpdatedAt(Instant.now());
+
         roomRepository.save(room);
     }
 

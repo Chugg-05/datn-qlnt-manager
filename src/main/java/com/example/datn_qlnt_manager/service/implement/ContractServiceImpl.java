@@ -164,6 +164,17 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
+    public ContractDetailResponse getContractDetailById(String contractId) {
+        ContractDetailResponse detail = contractRepository.findContractDetailById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        List<TenantBasicResponse> tenants = tenantRepository.findTenantsByContractId(contractId);
+        detail.setTenants(new HashSet<>(tenants));
+
+        return detail;
+    }
+
+    @Override
     public List<ContractResponse> getAllContractsByUserId() {
         User user = userService.getCurrentUser();
         List<Contract> contracts = contractRepository.findAllContractByUserId(user.getId());
@@ -197,17 +208,6 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public ContractDetailResponse getContractDetailById(String contractId) {
-        ContractDetailResponse detail = contractRepository.findContractDetailById(contractId)
-                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-
-        List<TenantBasicResponse> tenants = tenantRepository.findTenantsByContractId(contractId);
-        detail.setTenants(new HashSet<>(tenants));
-
-        return detail;
-    }
-
-    @Override
     public ContractStatistics getContractStatisticsByUserId() {
         var user = userService.getCurrentUser();
 
@@ -228,7 +228,6 @@ public class ContractServiceImpl implements ContractService {
 
         contractRepository.save(contract);
     }
-
 
     @Override
     public void deleteContractById(String contractId) {

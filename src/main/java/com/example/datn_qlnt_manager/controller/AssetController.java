@@ -69,4 +69,15 @@ public class AssetController {
                 .data(assetService.updateAssetById(assetId, request))
                 .build();
     }
+
+    @Operation(summary = "Hiển thị tài sản theo user đang đăng nhập")
+    @GetMapping("/find-all")
+    public ApiResponse<List<AssetResponse>> getAssetsByCurrentUser() {
+        List<AssetResponse> data = assetService.findAssetsByCurrentUser();
+        return ApiResponse.<List<AssetResponse>>builder()
+                .data(data)
+                .message("Asset has been found!")
+                .build();
+    }
+
 }

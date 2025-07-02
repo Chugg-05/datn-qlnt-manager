@@ -39,18 +39,17 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
             @Param("buildingType") BuildingType buildingType,
             Pageable pageable);
 
-    @Query(
-            """
-                    	SELECT
-                    		COUNT(CASE WHEN b.status IN (
-                    			com.example.datn_qlnt_manager.common.BuildingStatus.HOAT_DONG,
-                    			com.example.datn_qlnt_manager.common.BuildingStatus.TAM_KHOA) THEN 1 END ),
-                    		SUM (CASE WHEN b.status = 'HOAT_DONG' THEN 1 ELSE 0 END ),
-                    		SUM (CASE WHEN b.status = 'TAM_KHOA' THEN 1 ELSE 0 END )
-                    	FROM Building b
-                    	WHERE b.user.id = :userId
-                    """)
+    @Query("""
+                SELECT new com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics(
+                    COUNT(b.id),
+                    SUM(CASE WHEN b.status = 'HOAT_DONG' THEN 1 ELSE 0 END),
+                    SUM(CASE WHEN b.status = 'TAM_KHOA' THEN 1 ELSE 0 END)
+                )
+                FROM Building b
+                WHERE b.user.id = :userId AND b.status != 'HUY_HOAT_DONG'
+            """)
     BuildingStatistics getBuildingStatsByUser(@Param("userId") String userId);
+
 
     @Query("""
                 SELECT new com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse(

@@ -12,6 +12,7 @@ import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.AssetMapper;
 import com.example.datn_qlnt_manager.repository.*;
 import com.example.datn_qlnt_manager.service.AssetService;
+import com.example.datn_qlnt_manager.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class AssetServiceImpl implements AssetService {
     BuildingRepository buildingRepository;
     FloorRepository floorRepository;
     TenantRepository tenantRepository;
+    UserService userService;
 
 
     @Override
@@ -60,12 +63,11 @@ public class AssetServiceImpl implements AssetService {
                 asset.setRoom(room);
             }
             case CHUNG -> {
-                if (request.getFloorID()!= null){
+                if (request.getFloorID() != null) {
                     Floor floor = floorRepository.findById(request.getFloorID())
                             .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
                     asset.setFloor(floor);
-                }
-                else if (request.getBuildingID()!= null){
+                } else if (request.getBuildingID() != null) {
                     Building building = buildingRepository.findById(request.getBuildingID())
                             .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
                     asset.setBuilding(building);
@@ -84,7 +86,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public void deleteAssetById(String assetId) {
-        if(!assetRepository.existsById(assetId)){
+        if (!assetRepository.existsById(assetId)) {
             throw new AppException(ErrorCode.ASSET_NOT_FOUND);
         }
         assetRepository.deleteById(assetId);
@@ -92,8 +94,9 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public PaginatedResponse<AssetResponse> getAllAssets(String nameAsset, int page, int size) {
-        Pageable pageable = PageRequest.of(Math.max(0,page-1), size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Asset> assets = assetRepository.searchAssets(nameAsset, pageable);
+        var user = userService.getCurrentUser();
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+        Page<Asset> assets = assetRepository.searchAssets(nameAsset, user.getId(), pageable);
 
         List<AssetResponse> responses = assets.getContent().stream().map(assetMapper::toResponse).toList();
 
@@ -155,5 +158,14 @@ public class AssetServiceImpl implements AssetService {
         }
         asset.setUpdatedAt(Instant.now());
         return assetMapper.toResponse(assetRepository.save(asset));
+    }
+
+    @Override
+    public List<AssetResponse> findAssetsByCurrentUser() {
+        String currentUserId = userService.getCurrentUser().getId(); // đảm bảo lấy từ token
+        List<Asset> assets = assetRepository.findAssetsByUserId(currentUserId);
+        return assets.stream()
+                .map(assetMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

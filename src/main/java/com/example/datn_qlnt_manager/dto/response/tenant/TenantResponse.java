@@ -1,7 +1,6 @@
 package com.example.datn_qlnt_manager.dto.response.tenant;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDate;
 
 import com.example.datn_qlnt_manager.common.Gender;
@@ -22,10 +21,6 @@ public class TenantResponse implements Serializable {
     LocalDate dob;
     String email;
     String phoneNumber;
-    String identityCardNumber;
-    String address;
     TenantStatus tenantStatus;
     Boolean isRepresentative;
-    Instant createdAt;
-    Instant updatedAt;
 }

@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.service.UserService;
@@ -40,13 +41,17 @@ public class AssetTypeServiceImpl implements AssetTypeService {
 
     @Override
     public AssetTypeResponse createAssetType(AssetTypeCreationRequest request) {
-        boolean exists = assetTypeRepository.existsByNameAssetTypeAndAssetGroup(
-                request.getNameAssetType(), request.getAssetGroup());
+        User currentUser = userService.getCurrentUser();
+
+        boolean exists = assetTypeRepository.existsByNameAssetTypeAndAssetGroupAndUserId(
+                request.getNameAssetType(), request.getAssetGroup(), currentUser.getId());
+
         if (exists) {
             throw new AppException(ErrorCode.ASSET_TYPE_EXISTED);
         }
 
         AssetType assetType = assetTypeMapper.toAssetType(request);
+        assetType.setUser(currentUser);
         assetType.setCreatedAt(Instant.now());
         assetType.setUpdatedAt(Instant.now());
 
@@ -55,11 +60,13 @@ public class AssetTypeServiceImpl implements AssetTypeService {
 
     @Override
     public PaginatedResponse<AssetTypeResponse> getAssetTypes(AssetTypeFilter filter, int page, int size) {
+        var user = userService.getCurrentUser();
         Pageable pageable = PageRequest.of(
                 Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<AssetType> assetPage =
-                assetTypeRepository.filterAssetTypesPaging(filter.getNameAssetType(), filter.getAssetGroup(), pageable);
+                assetTypeRepository.filterAssetTypesPaging(filter.getNameAssetType(), filter.getAssetGroup(), user.getId(),
+                        pageable);
 
         List<AssetTypeResponse> responses =
                 assetPage.getContent().stream().map(assetTypeMapper::toResponse).toList();
@@ -108,7 +115,7 @@ public class AssetTypeServiceImpl implements AssetTypeService {
     @Override
     public List<AssetTypeResponse> getAllAssetTypesByUserId() {
         User user = userService.getCurrentUser();
-        List<AssetType> assetTypes = assetTypeRepository.findAllLAssetTypeByUserId(user.getId());
+        List<AssetType> assetTypes = assetTypeRepository.findAllAssetTypeByUserId(user.getId());
         return assetTypes.stream().map(assetTypeMapper::toResponse).toList();
     }
 
@@ -118,5 +125,14 @@ public class AssetTypeServiceImpl implements AssetTypeService {
             throw new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND);
         }
         assetTypeRepository.deleteById(assetTypeId);
+    }
+
+    @Override
+    public List<AssetTypeResponse> findAssetTypesByCurrentUser() {
+        String userId = userService.getCurrentUser().getId();
+        List<AssetType> assetTypes = assetTypeRepository.findAllByUserId(userId);
+        return assetTypes.stream()
+                .map(assetTypeMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

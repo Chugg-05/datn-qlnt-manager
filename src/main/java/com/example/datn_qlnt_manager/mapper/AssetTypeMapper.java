@@ -13,8 +13,10 @@ import com.example.datn_qlnt_manager.entity.AssetType;
 public interface AssetTypeMapper {
     AssetType toAssetType(AssetTypeCreationRequest request);
 
+    @Mapping(source = "user.id", target = "userId")
     AssetTypeResponse toResponse(AssetType assetType);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user", ignore = true)
     void updateAssetType(AssetTypeUpdateRequest request, @MappingTarget AssetType assetType);
 }

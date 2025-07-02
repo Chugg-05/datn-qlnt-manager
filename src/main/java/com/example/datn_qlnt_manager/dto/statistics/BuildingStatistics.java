@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BuildingStatistics {
-    long totalBuilding;
-    long activeBuilding;
-    long inactiveBuilding;
+    Long totalBuilding;
+    Long activeBuilding;
+    Long inactiveBuilding;
 }
