@@ -91,4 +91,13 @@ public class VehicleController {
                 .message("Vehicle has been deleted!")
                 .build();
     }
+
+    @Operation(summary = "Cập nhật trạng thái: hoạt động <-> tạm ngưng")
+    @PutMapping("/toggle-status/{id}")
+    public ApiResponse<String> toggleStatus(@PathVariable("id") String id) {
+        vehicleService.toggleStatus(id);
+        return ApiResponse.<String>builder()
+                .message("Status update successful!")
+                .build();
+    }
 }
