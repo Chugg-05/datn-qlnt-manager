@@ -50,9 +50,11 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public PaginatedResponse<RoomResponse> filterRooms(Integer page, Integer size, RoomFilter roomFilter) {
+        User user = userService.getCurrentUser();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Order.desc("updatedAt")));
 
         Page<Room> paging = roomRepository.filterRoomsPaging(
+                user.getId(),
                 roomFilter.getBuildingId(),
                 roomFilter.getStatus(),
                 roomFilter.getMaxPrice(),
@@ -141,7 +143,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void softDeleteRoomById(String id) {
         Room room = roomRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-        room.setStatus((RoomStatus.HUY_HOAT_DONG) );
+        room.setStatus((RoomStatus.HUY_HOAT_DONG));
         room.setUpdatedAt(Instant.now());
 
         roomRepository.save(room);
@@ -162,7 +164,6 @@ public class RoomServiceImpl implements RoomService {
     public RoomCountResponse statisticsRoomByStatus(String buildingId) {
         return roomRepository.getRoomStatsByBuilding(buildingId);
     }
-
 
 
 }
