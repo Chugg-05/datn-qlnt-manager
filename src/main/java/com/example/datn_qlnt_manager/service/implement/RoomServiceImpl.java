@@ -140,7 +140,9 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void softDeleteRoomById(String id) {
         Room room = roomRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-        room.setStatus((RoomStatus.HUY_HOAT_DONG));
+        room.setStatus((RoomStatus.HUY_HOAT_DONG) );
+        room.setUpdatedAt(Instant.now());
+
         roomRepository.save(room);
     }
 
@@ -160,26 +162,6 @@ public class RoomServiceImpl implements RoomService {
         return roomRepository.getRoomStatsByFloor(floorId);
     }
 
-//    @Override
-//    public void toggleStatus(String id) {
-//        Room room = roomRepository
-//                .findByIdAndStatusNot(id, RoomStatus.DANG_BAO_TRI)
-//                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-//
-//        if (room.getStatus() == RoomStatus.TRONG) {
-//            room.setStatus(RoomStatus.DANG_THUE);
-//            room.setUpdatedAt(Instant.now());
-//        } else if (room.getStatus() == RoomStatus.DANG_THUE) {
-//            room.setStatus(RoomStatus.TRONG);
-//            room.setUpdatedAt(Instant.now());
-//        } else if (room.getStatus() == RoomStatus.DA_DAT_COC) {
-//            room.setStatus(RoomStatus.TRONG);
-//            room.setUpdatedAt(Instant.now());
-//        } else {
-//            throw new IllegalStateException("Cannot toggle status for reserved or deleted room");
-//        }
-//
-//        roomRepository.save(room);
-//    }
+
 
 }
