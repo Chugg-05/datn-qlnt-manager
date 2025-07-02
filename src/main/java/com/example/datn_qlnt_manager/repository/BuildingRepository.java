@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
 import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 import org.springframework.data.domain.Page;
@@ -76,4 +77,10 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
 
     Optional<Building> findByIdAndStatusNot(String id, BuildingStatus status);
 
+    @Query("""
+                SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(b.id, b.buildingName)
+                FROM Building b
+                WHERE b.user.id = :userId AND b.status != com.example.datn_qlnt_manager.common.BuildingStatus.HUY_HOAT_DONG
+            """)
+    List<IdAndName> findAllBuildingsByUserId(@Param("userId") String userId);
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.datn_qlnt_manager.common.FloorType;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import org.springframework.data.domain.Page;
@@ -55,20 +56,20 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
 
     // hiển thị tầng theo userId và buildingId
     @Query("""
-    SELECT new com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse(
-        f.id,
-        f.nameFloor,
-        f.floorType,
-        f.status,
-        f.maximumRoom,
-        b.buildingName
-    )
-    FROM Floor f
-    JOIN f.building b
-    WHERE b.user.id = :userId
-      AND b.id = :buildingId
-    ORDER BY f.updatedAt DESC
-""")
+                SELECT new com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse(
+                    f.id,
+                    f.nameFloor,
+                    f.floorType,
+                    f.status,
+                    f.maximumRoom,
+                    b.buildingName
+                )
+                FROM Floor f
+                JOIN f.building b
+                WHERE b.user.id = :userId
+                  AND b.id = :buildingId
+                ORDER BY f.updatedAt DESC
+            """)
     List<FloorBasicResponse> findAllFloorBasicByUserIdAndBuildingId(
             @Param("userId") String userId,
             @Param("buildingId") String buildingId);
@@ -77,4 +78,13 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
     List<String> findAllNamesByBuildingId(@Param("buildingId") String buildingId);
 
     Optional<Floor> findByIdAndStatusNot(String id, FloorStatus status);
+
+    @Query("""
+                SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(f.id, f.nameFloor)
+                FROM Floor f
+                JOIN f.building b
+                WHERE b.user.id = :userId AND f.status != com.example.datn_qlnt_manager.common.FloorStatus.KHONG_SU_DUNG
+            """)
+    List<IdAndName> findAllFloorsByUserId(@Param("userId") String userId);
+
 }

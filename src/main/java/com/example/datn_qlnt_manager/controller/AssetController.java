@@ -4,6 +4,7 @@ import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInitResponse;
 import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
 import com.example.datn_qlnt_manager.service.AssetService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,6 +78,16 @@ public class AssetController {
         return ApiResponse.<List<AssetResponse>>builder()
                 .data(data)
                 .message("Asset has been found!")
+                .build();
+    }
+
+    @Operation(summary = "Hiển thị thông tin liên quan để thêm mới tài sản theo người đang đăng nhập")
+    @GetMapping("/init")
+    public ApiResponse<CreateAssetInitResponse> getAssetsInfoByUserId() {
+        CreateAssetInitResponse data = assetService.getInitDataForAssetCreation();
+        return ApiResponse.<CreateAssetInitResponse>builder()
+                .data(data)
+                .message("Assets has been found!")
                 .build();
     }
 
