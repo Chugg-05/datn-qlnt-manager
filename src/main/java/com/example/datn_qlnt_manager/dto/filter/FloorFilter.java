@@ -18,7 +18,6 @@ public class FloorFilter {
     FloorStatus status;
     FloorType floorType;
     String nameFloor;
-
     @Min(value = 0, message = "MAX_ROOM_SEARCH")
     Integer maxRoom;
 }

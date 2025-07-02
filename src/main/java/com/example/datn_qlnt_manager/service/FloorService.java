@@ -31,7 +31,9 @@ public interface FloorService {
     FloorStatistics getFloorCountByBuildingId(String buildingId);
 
     // hiển thị ầng theo userId và buildingId
-    List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId);
+//    List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId);
 
+    // hiển thị tầng theo building id
+    List<FloorBasicResponse> getFloorBasicByBuildingId(String buildingId);
     void toggleStatus(String id);
 }

@@ -11,7 +11,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FloorBasicResponse {
-    String floorId;
+//    String floorId;
+    String id;
     String nameFloor;
     FloorType floorType;
     FloorStatus status;

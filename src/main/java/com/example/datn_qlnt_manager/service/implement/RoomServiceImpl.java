@@ -53,6 +53,7 @@ public class RoomServiceImpl implements RoomService {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Order.desc("updatedAt")));
 
         Page<Room> paging = roomRepository.filterRoomsPaging(
+                roomFilter.getBuildingId(),
                 roomFilter.getStatus(),
                 roomFilter.getMaxPrice(),
                 roomFilter.getMinPrice(),
@@ -158,8 +159,8 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public RoomCountResponse statisticsRoomByStatus(String floorId) {
-        return roomRepository.getRoomStatsByFloor(floorId);
+    public RoomCountResponse statisticsRoomByStatus(String buildingId) {
+        return roomRepository.getRoomStatsByBuilding(buildingId);
     }
 
 

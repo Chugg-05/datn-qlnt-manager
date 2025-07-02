@@ -14,25 +14,27 @@ import com.example.datn_qlnt_manager.entity.Room;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, String> {
 
-    @Query(
-            """
-                    SELECT r
-                    FROM Room r
-                    INNER JOIN Floor f ON r.floor = f
-                    WHERE (:status IS NULL OR r.status = :status)
-                    AND (:maxPrice IS NULL OR r.price <= :maxPrice)
-                    AND (:minPrice IS NULL OR r.price >= :minPrice)
-                    AND (:maxAcreage IS NULL OR r.acreage <= :maxAcreage)
-                    AND (:minAcreage IS NULL OR r.acreage >= :minAcreage)
-                    AND (:maxPerson IS NULL OR r.maximumPeople <= :maxPerson)
-                    AND (:nameFloor IS NULL OR f.nameFloor LIKE CONCAT('%', :nameFloor, '%'))
-                    AND r.status!= com.example.datn_qlnt_manager.common.RoomStatus.HUY_HOAT_DONG
-                    """)
+    @Query("""
+        SELECT r
+        FROM Room r
+        INNER JOIN Floor f ON r.floor = f
+        WHERE (:buildingId IS NULL OR f.building.id = :buildingId)
+        AND (:status IS NULL OR r.status = :status)
+        AND (:maxPrice IS NULL OR r.price <= :maxPrice)
+        AND (:minPrice IS NULL OR r.price >= :minPrice)
+        AND (:maxAcreage IS NULL OR r.acreage <= :maxAcreage)
+        AND (:minAcreage IS NULL OR r.acreage >= :minAcreage)
+        AND (:maxPerson IS NULL OR r.maximumPeople <= :maxPerson)
+        AND (:nameFloor IS NULL OR f.nameFloor LIKE CONCAT('%', :nameFloor, '%'))
+        AND r.status != com.example.datn_qlnt_manager.common.RoomStatus.HUY_HOAT_DONG
+    """)
     Page<Room> filterRoomsPaging(
+            @Param("buildingId") String buildingId,
             @Param("status") String status,
             @Param("maxPrice") Double maxPrice,
             @Param("minPrice") Double minPrice,
@@ -54,20 +56,22 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 //			FROM Room r
 //			WHERE r.floor.id = :floorId
 //		""")
-    @Query("""
-            	select new com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse(
-            	:floorId,
-            	count (r.id) ,
-            	SUM (case when r.status = com.example.datn_qlnt_manager.common.RoomStatus.TRONG then 1 else 0 end),
-            	SUM (case when r.status = com.example.datn_qlnt_manager.common.RoomStatus.DANG_THUE then 1 else 0 end),
-            	SUM (case when r.status = com.example.datn_qlnt_manager.common.RoomStatus.DA_DAT_COC then 1 else 0 end),
-            	SUM (case when r.status = com.example.datn_qlnt_manager.common.RoomStatus.DANG_BAO_TRI then 1 else 0 end),
-            	SUM (case when r.status = com.example.datn_qlnt_manager.common.RoomStatus.CHUA_HOAN_THIEN then 1 else 0 end),
-            	SUM (case when r.status = com.example.datn_qlnt_manager.common.RoomStatus.TAM_KHOA then 1 else 0 end)
-            	) from Room r 
-            	WHERE r.status!= com.example.datn_qlnt_manager.common.RoomStatus.HUY_HOAT_DONG
-            """)
-    RoomCountResponse getRoomStatsByFloor(@Param("floorId") String floorId);
+@Query("""
+    SELECT new com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse(
+        :buildingId,
+        COUNT(r.id),
+        SUM(CASE WHEN r.status = com.example.datn_qlnt_manager.common.RoomStatus.TRONG THEN 1 ELSE 0 END),
+        SUM(CASE WHEN r.status = com.example.datn_qlnt_manager.common.RoomStatus.DANG_THUE THEN 1 ELSE 0 END),
+        SUM(CASE WHEN r.status = com.example.datn_qlnt_manager.common.RoomStatus.DA_DAT_COC THEN 1 ELSE 0 END),
+        SUM(CASE WHEN r.status = com.example.datn_qlnt_manager.common.RoomStatus.DANG_BAO_TRI THEN 1 ELSE 0 END),
+        SUM(CASE WHEN r.status = com.example.datn_qlnt_manager.common.RoomStatus.CHUA_HOAN_THIEN THEN 1 ELSE 0 END),
+        SUM(CASE WHEN r.status = com.example.datn_qlnt_manager.common.RoomStatus.TAM_KHOA THEN 1 ELSE 0 END)
+    )
+    FROM Room r
+    WHERE r.floor.building.id = :buildingId
+    AND r.status != com.example.datn_qlnt_manager.common.RoomStatus.HUY_HOAT_DONG
+""")
+RoomCountResponse getRoomStatsByBuilding(@Param("buildingId") String buildingId);
 
     @Query("""
                 SELECT

@@ -26,7 +26,7 @@ public interface RoomService {
 
     RoomResponse updateRoomStatus(String roomId, RoomStatus status);
 
-    RoomCountResponse statisticsRoomByStatus(String floorId);
+    RoomCountResponse statisticsRoomByStatus(String buildingId);
 
 
 }

@@ -55,24 +55,40 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
 
 
     // hiển thị tầng theo userId và buildingId
+//    @Query("""
+//                SELECT new com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse(
+//                    f.id,
+//                    f.nameFloor,
+//                    f.floorType,
+//                    f.status,
+//                    f.maximumRoom,
+//                    b.buildingName
+//                )
+//                FROM Floor f
+//                JOIN f.building b
+//                WHERE b.user.id = :userId
+//                  AND b.id = :buildingId
+//                ORDER BY f.updatedAt DESC
+//            """)
     @Query("""
-                SELECT new com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse(
-                    f.id,
-                    f.nameFloor,
-                    f.floorType,
-                    f.status,
-                    f.maximumRoom,
-                    b.buildingName
-                )
-                FROM Floor f
-                JOIN f.building b
-                WHERE b.user.id = :userId
-                  AND b.id = :buildingId
-                ORDER BY f.updatedAt DESC
-            """)
-    List<FloorBasicResponse> findAllFloorBasicByUserIdAndBuildingId(
-            @Param("userId") String userId,
-            @Param("buildingId") String buildingId);
+    SELECT new com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse(
+        f.id,
+        f.nameFloor,
+        f.floorType,
+        f.status,
+        f.maximumRoom,
+        b.buildingName
+    )
+    FROM Floor f
+    JOIN f.building b
+    WHERE b.id = :buildingId
+    ORDER BY f.updatedAt DESC
+""")
+    List<FloorBasicResponse> findAllFloorBasicByBuildingId(@Param("buildingId") String buildingId);
+
+//    List<FloorBasicResponse> findAllFloorBasicByUserIdAndBuildingId(
+//            @Param("userId") String userId,
+//            @Param("buildingId") String buildingId);
 
     @Query("SELECT f.nameFloor FROM Floor f WHERE f.building.id = :buildingId")
     List<String> findAllNamesByBuildingId(@Param("buildingId") String buildingId);
