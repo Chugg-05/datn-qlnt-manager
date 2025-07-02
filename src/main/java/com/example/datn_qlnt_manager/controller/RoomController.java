@@ -46,10 +46,10 @@ public class RoomController {
     }
 
     @GetMapping("/statistics")
-    public ApiResponse<RoomCountResponse> statisticsRoomByStatus(@RequestParam String floorId) {
+    public ApiResponse<RoomCountResponse> statisticsRoomByStatus(@RequestParam String buildingId) {
         return ApiResponse.<RoomCountResponse>builder()
                 .message("Count room success!")
-                .data(roomService.statisticsRoomByStatus(floorId))
+                .data(roomService.statisticsRoomByStatus(buildingId))
                 .build();
     }
 

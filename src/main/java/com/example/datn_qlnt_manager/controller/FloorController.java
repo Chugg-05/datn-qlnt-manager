@@ -92,18 +92,18 @@ public class FloorController {
                 .build();
     }
 
-    @Operation(summary = "Hiển thị danh sách tầng dạng card hoặc combobox theo user và building")
-    @GetMapping("/find-all")
-    public ApiResponse<List<FloorBasicResponse>> getFloorsByUserAndBuilding(
-            @RequestParam String userId,
-            @RequestParam String buildingId) {
-
-        List<FloorBasicResponse> response = floorService.getFloorBasicByUserIdAndBuildingId(userId, buildingId);
-        return ApiResponse.<List<FloorBasicResponse>>builder()
-                .message("Display floors successfully")
-                .data(response)
-                .build();
-    }
+//    @Operation(summary = "Hiển thị danh sách tầng dạng card hoặc combobox theo user và building")
+//    @GetMapping("/find-all")
+//    public ApiResponse<List<FloorBasicResponse>> getFloorsByUserAndBuilding(
+//            @RequestParam String userId,
+//            @RequestParam String buildingId) {
+//
+//        List<FloorBasicResponse> response = floorService.getFloorBasicByUserIdAndBuildingId(userId, buildingId);
+//        return ApiResponse.<List<FloorBasicResponse>>builder()
+//                .message("Display floors successfully")
+//                .data(response)
+//                .build();
+//    }
 
     @Operation(summary = "Cập nhật trạng thái: hoạt động <-> tạm ngưng")
     @PutMapping("/toggle-status/{id}")
@@ -113,4 +113,18 @@ public class FloorController {
                 .message("Status update successful!")
                 .build();
     }
+    @Operation(summary = "Hiển thị danh sách tầng dạng card hoặc combobox theo building")
+    @GetMapping("/find-all")
+    public ApiResponse<List<FloorBasicResponse>> getFloorsByBuilding(
+            @RequestParam String buildingId) {
+
+        // Chỉ lọc theo buildingId, không cần userId
+        List<FloorBasicResponse> response = floorService.getFloorBasicByBuildingId(buildingId);
+
+        return ApiResponse.<List<FloorBasicResponse>>builder()
+                .message("Display floors successfully")
+                .data(response)
+                .build();
+    }
+
 }

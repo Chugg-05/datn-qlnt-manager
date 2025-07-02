@@ -128,11 +128,19 @@ public class FloorServiceImpl implements FloorService {
         return floorRepository.countFloorsByBuildingId(buildingId);
     }
 
-    @Override
-    public List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId) {
-        return floorRepository.findAllFloorBasicByUserIdAndBuildingId(userId, buildingId);
-    }
+//    @Override
+//    public List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId) {
+//        return List.of();
+//    }
 
+    //    @Override
+//    public List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId) {
+//        return floorRepository.findAllFloorBasicByUserIdAndBuildingId(userId, buildingId);
+//    }
+@Override
+public List<FloorBasicResponse> getFloorBasicByBuildingId(String buildingId) {
+    return floorRepository.findAllFloorBasicByBuildingId(buildingId);
+}
     @Override
     public void toggleStatus(String id) {
         Floor floor = floorRepository
