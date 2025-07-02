@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Size;
 
 import com.example.datn_qlnt_manager.common.Gender;
 import com.example.datn_qlnt_manager.validator.constraints.DobConstraints;
-import com.example.datn_qlnt_manager.validator.constraints.EmailConstraints;
 import com.example.datn_qlnt_manager.validator.constraints.IdentityCardNumberConstraints;
 import com.example.datn_qlnt_manager.validator.constraints.PhoneNumberConstraints;
 
@@ -30,9 +29,6 @@ public class TenantUpdateRequest implements Serializable {
 
     @DobConstraints
     LocalDate dob;
-
-    @EmailConstraints
-    String email;
 
     @PhoneNumberConstraints
     String phoneNumber;

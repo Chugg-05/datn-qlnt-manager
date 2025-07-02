@@ -105,8 +105,10 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
             	ORDER BY t.updatedAt DESC
             """)
     List<Tenant> findAllTenantsByUserId(@Param("userId") String userId);
+    
+	Optional<Tenant> findByUserId(String userId);
 
-    boolean existsByEmail(String email);
+	boolean existsByEmail(String email);
 
     boolean existsByPhoneNumber(String phoneNumber);
 

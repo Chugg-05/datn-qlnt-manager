@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
+import com.example.datn_qlnt_manager.dto.request.tenant.TenantCreationRequest;
 import com.example.datn_qlnt_manager.dto.statistics.UserStatistics;
+import com.example.datn_qlnt_manager.service.EmailService;
+import com.example.datn_qlnt_manager.utils.PasswordUtil;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -51,6 +54,7 @@ public class UserServiceImpl implements UserService {
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
     Cloudinary cloudinary;
+    EmailService emailService;
 
     @Override
     public PaginatedResponse<UserDetailResponse> filterUsers(UserFilter filter, int page, int size) {
@@ -245,6 +249,48 @@ public class UserServiceImpl implements UserService {
         // Cập nhật trạng thái người dùng thành ACTIVE
         userRepository.save(user);
     }
+
+    @Override
+    public User createUserForTenant(TenantCreationRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
+
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
+        }
+
+        String rawPassword = PasswordUtil.generateRandomPassword();
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+
+        Role tenantRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+        User user = User.builder()
+                .fullName(request.getFullName())
+                .email(request.getEmail())
+                .phoneNumber(request.getPhoneNumber())
+                .dob(request.getDob())
+                .gender(request.getGender())
+                .password(encodedPassword)
+                .userStatus(UserStatus.ACTIVE)
+                .roles(Set.of(tenantRole))
+                .build();
+
+        user.setCreatedAt(Instant.now());
+        user.setCreatedAt(Instant.now());
+
+        User savedUser = userRepository.save(user);
+
+        emailService.sendAccountInfoToTenant(
+                request.getEmail(),
+                request.getFullName(),
+                rawPassword
+        );
+
+        return savedUser;
+    }
+
 
     @Override
     public User findUserWithRolesAndPermissionsById(String id) {

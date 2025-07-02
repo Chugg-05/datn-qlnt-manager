@@ -39,7 +39,7 @@ public class PasswordValidator implements ConstraintValidator<PasswordConstraint
             return false;
         }
 
-        if (!password.matches(".*[@$!%*?&].*")) {
+        if (!password.matches(".*[@#$%&*!].*")) {
             buildViolation(context, ErrorCode.INVALID_PASSWORD_SPECIAL_CHARACTERS.name());
 
             return false;

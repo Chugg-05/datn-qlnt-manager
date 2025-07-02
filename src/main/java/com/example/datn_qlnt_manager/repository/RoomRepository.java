@@ -103,6 +103,4 @@ public interface RoomRepository extends JpaRepository<Room, String> {
                                                  @Param("floorId") String floorId);
 
     int countByFloorId(String floorId);
-
-    Optional<Room> findByIdAndStatusNot(String id, RoomStatus status);
 }

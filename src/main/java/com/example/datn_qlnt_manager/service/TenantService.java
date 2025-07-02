@@ -13,7 +13,9 @@ import java.util.List;
 public interface TenantService {
     PaginatedResponse<TenantResponse> filterTenants(TenantFilter filter, int page, int size);
 
-    TenantResponse createTenant(TenantCreationRequest request);
+    TenantResponse createTenantByOwner(TenantCreationRequest request);
+
+    TenantResponse createTenantByRepresentative(TenantCreationRequest request);
 
     TenantResponse updateTenant(String tenantId, TenantUpdateRequest request);
 

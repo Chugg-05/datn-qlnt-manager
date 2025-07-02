@@ -8,8 +8,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.configuration.OtpProperties;
-import com.example.datn_qlnt_manager.dto.request.Recipient;
-import com.example.datn_qlnt_manager.dto.request.SendEmailRequest;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
@@ -45,7 +43,7 @@ public class OtpServiceImpl implements OtpService {
 
         String otp = generateOtp(email); // tạo random OTP
 
-        sendOtpEmail(user, otp);
+        emailService.sendOtpEmail(user, otp);
 
         log.info("OTP sent successfully to email: {}", email);
     }
@@ -98,28 +96,5 @@ public class OtpServiceImpl implements OtpService {
         return String.format(
                 "%06d",
                 random.nextInt(1_000_000)); // "%06d" chuỗi 6 chữ số, nếu ít hơn 6 số tự động thêm 0 và đầu cho đủ 6 số
-    }
-
-    private void sendOtpEmail(User user, String otp) {
-        String subject = "Mã xác nhận đặt lại mật khẩu";
-        String content = "<p>Xin chào " + user.getFullName() + "</p>"
-                + "<p>Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản TroHub của bạn.</p>"
-                + "<p>Mã OTP của bạn là: <b>" + otp + "</b></p>"
-                + "<p>Mã này có hiệu lực trong 5 phút.</p>"
-                + "<p>Nếu không phải bạn thực hiện, không chia sẻ cho bất cứ ai mã OTP và vui lòng bỏ qua email này.</p>";
-
-        try {
-            emailService.sendEmail(SendEmailRequest.builder()
-                    .to(Recipient.builder()
-                            .name(user.getFullName())
-                            .email(user.getEmail())
-                            .build())
-                    .subject(subject)
-                    .htmlContent(content)
-                    .build());
-        } catch (Exception e) {
-            log.error("Failed to send OTP email to: {}", user.getEmail(), e);
-            throw new AppException(ErrorCode.EMAIL_SENDING_FAILED);
-        }
     }
 }

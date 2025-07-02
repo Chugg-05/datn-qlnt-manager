@@ -11,6 +11,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class VehicleStatistics {
-    private long total;
-    private Map<String, Long> byType;
+    Long total;
+    Map<String, Long> byType;
 }
