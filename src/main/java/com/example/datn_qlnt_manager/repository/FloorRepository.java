@@ -87,4 +87,6 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
             """)
     List<IdAndName> findAllFloorsByUserId(@Param("userId") String userId);
 
+    @Query("SELECT COUNT(f) FROM Floor f WHERE f.building.id = :buildingId")
+    int countByBuildingId(@Param("buildingId") String buildingId);
 }

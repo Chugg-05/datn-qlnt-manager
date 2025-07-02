@@ -3,7 +3,6 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
-import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import org.springframework.data.domain.Page;
@@ -50,6 +49,11 @@ public class FloorServiceImpl implements FloorService {
         Building building = buildingRepository
                 .findById(request.getBuildingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+
+        int floorCount = floorRepository.countByBuildingId(building.getId());
+        if (floorCount >= building.getActualNumberOfFloors()) {
+            throw new AppException(ErrorCode.CANNOT_ADD_MORE_FLOORS);
+        }
 
         String nameFloor = codeGeneratorService.generateFloorName(building);
 
