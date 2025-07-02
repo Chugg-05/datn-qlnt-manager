@@ -6,6 +6,8 @@ import java.util.List;
 import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
+import com.example.datn_qlnt_manager.entity.User;
+import com.example.datn_qlnt_manager.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +44,7 @@ public class FloorServiceImpl implements FloorService {
     BuildingRepository buildingRepository;
     FloorMapper floorMapper;
     CodeGeneratorService codeGeneratorService;
+    UserService userService;
 
     @Override
     public FloorResponse createFloor(FloorCreationRequest request) {
@@ -64,9 +67,11 @@ public class FloorServiceImpl implements FloorService {
 
     @Override
     public PaginatedResponse<FloorResponse> filterFloors(FloorFilter filter, int page, int size) {
+        User user = userService.getCurrentUser();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<Floor> floorPage = floorRepository.filterFloorsPaging(
+                user.getId(),
                 filter.getBuildingId(), filter.getStatus(), filter.getFloorType(), filter.getNameFloor(),
                 filter.getMaxRoom(),
                 pageable);

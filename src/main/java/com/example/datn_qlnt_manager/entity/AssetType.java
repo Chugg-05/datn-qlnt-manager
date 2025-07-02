@@ -16,7 +16,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(
         name = "loai_tai_san",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"ten_loai", "nhom_loai"})})
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"ten_loai", "nhom_loai", "user_id"})})
 public class AssetType extends AbstractEntity {
     @Column(name = "ten_loai", nullable = false)
     String nameAssetType;
