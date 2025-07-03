@@ -17,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TenantDetailResponse implements Serializable {
+    String id;
     String customerCode;
     String buildingName;
     String roomCode;

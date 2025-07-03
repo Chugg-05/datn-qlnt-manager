@@ -11,6 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TenantBasicResponse implements Serializable {
+    String id;
     String customerCode;
     String fullName;
     String email;

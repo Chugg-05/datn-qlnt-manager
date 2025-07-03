@@ -51,12 +51,13 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
                                SUM(CASE WHEN t.tenantStatus = 'HUY_BO' THEN 1 ELSE 0 END),
                                SUM(CASE WHEN t.tenantStatus = 'KHOA' THEN 1 ELSE 0 END)
                         FROM Tenant t
-                        WHERE t.user.id = :userId
+                        WHERE t.owner.id = :userId
                     """)
     TenantStatistics getTotalTenantByStatus(@Param("userId") String userId);
 
     @Query("""
             	SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse(
+                    t.id,
             		t.customerCode,
             		t.fullName,
             		t.email,
@@ -71,6 +72,7 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
 
     @Query("""
             SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse(
+                t.id,
                 t.customerCode,
                 b.buildingName,
                 r.roomCode,
@@ -100,7 +102,7 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
 
     @Query("""
             	SELECT t FROM Tenant t
-            	WHERE t.user.id = :userId
+            	WHERE t.owner.id = :userId
             	ORDER BY t.updatedAt DESC
             """)
     List<Tenant> findAllTenantsByUserId(@Param("userId") String userId);
