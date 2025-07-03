@@ -12,7 +12,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TenantFilter {
-    String userId;
     String query;
     Gender gender;
     TenantStatus tenantStatus;

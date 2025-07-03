@@ -32,7 +32,7 @@ public class Tenant extends AbstractEntity {
     @JoinColumn(name = "chu_nha_id", nullable = false)
     User owner;
 
-    @Column(name = "ma_khach_thue", nullable = false, unique = true)
+    @Column(name = "ma_khach_thue", nullable = false)
     String customerCode;
 
     @Column(name = "ho_ten", nullable = false)
