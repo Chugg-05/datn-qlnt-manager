@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.example.datn_qlnt_manager.common.BuildingStatus;
+import com.example.datn_qlnt_manager.entity.Building;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -139,5 +141,23 @@ public class VehicleServiceImpl implements VehicleService {
         response.setTotal(total);
         response.setByType(byType);
         return response;
+    }
+
+    @Override
+    public void toggleStatus(String id) {
+        Vehicle vehicle = vehicleRepository
+                .findByIdAndVehicleStatusNot(id, VehicleStatus.TAM_KHOA)
+                .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
+
+        if (vehicle.getVehicleStatus() == VehicleStatus.SU_DUNG) {
+            vehicle.setVehicleStatus(VehicleStatus.TAM_KHOA);
+            vehicle.setUpdatedAt(Instant.now());
+        } else if (vehicle.getVehicleStatus() == VehicleStatus.TAM_KHOA) {
+            vehicle.setVehicleStatus(VehicleStatus.SU_DUNG);
+            vehicle.setUpdatedAt(Instant.now());
+        } else {
+            throw new IllegalStateException("Cannot toggle status for deleted vehicle");
+        }
+        vehicleRepository.save(vehicle);
     }
 }

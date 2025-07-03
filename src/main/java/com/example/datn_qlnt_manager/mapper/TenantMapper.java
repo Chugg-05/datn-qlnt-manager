@@ -17,6 +17,7 @@ public interface TenantMapper {
     @Mapping(target = "owner", ignore = true)
     Tenant toTenant(TenantCreationRequest request);
 
+    @Mapping(target = "identificationNumber", source = "identityCardNumber")
     TenantResponse toTenantResponse(Tenant tenant);
 
     @Mapping(target = "user", ignore = true)

@@ -19,4 +19,6 @@ public interface VehicleService {
     void deleteVehicleById(String vehicleId);
 
     VehicleStatistics getVehicleStatistics();
+
+    void toggleStatus(String id);
 }
