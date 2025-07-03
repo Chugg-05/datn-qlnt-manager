@@ -51,10 +51,9 @@ public class TenantServiceImpl implements TenantService {
     public PaginatedResponse<TenantResponse> filterTenants(TenantFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
-        filter.setUserId(user.getId());
 
         Page<Tenant> paging = tenantRepository.filterTenantPaging(
-                filter.getUserId(),
+                user.getId(),
                 filter.getQuery(),
                 filter.getGender(),
                 filter.getTenantStatus(),

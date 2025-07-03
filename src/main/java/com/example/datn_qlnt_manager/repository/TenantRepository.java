@@ -23,8 +23,7 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
     @Query(
             """
                     SELECT t FROM Tenant t
-                    INNER JOIN t.user u
-                    WHERE (u.id = :userId)
+                    WHERE (t.owner.id = :userId)
                     AND (:query IS NULL OR t.customerCode LIKE CONCAT('%', :query, '%'))
                     AND (:query IS NULL OR t.fullName LIKE CONCAT('%', :query, '%'))
                     AND (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%'))
