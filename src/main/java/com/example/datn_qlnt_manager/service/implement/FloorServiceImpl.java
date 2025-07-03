@@ -3,9 +3,10 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
-import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
+import com.example.datn_qlnt_manager.entity.User;
+import com.example.datn_qlnt_manager.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,7 @@ public class FloorServiceImpl implements FloorService {
     BuildingRepository buildingRepository;
     FloorMapper floorMapper;
     CodeGeneratorService codeGeneratorService;
+    UserService userService;
 
     @Override
     public FloorResponse createFloor(FloorCreationRequest request) {
@@ -50,6 +52,11 @@ public class FloorServiceImpl implements FloorService {
         Building building = buildingRepository
                 .findById(request.getBuildingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+
+        int floorCount = floorRepository.countByBuildingId(building.getId());
+        if (floorCount >= building.getActualNumberOfFloors()) {
+            throw new AppException(ErrorCode.CANNOT_ADD_MORE_FLOORS);
+        }
 
         String nameFloor = codeGeneratorService.generateFloorName(building);
 
@@ -64,9 +71,11 @@ public class FloorServiceImpl implements FloorService {
 
     @Override
     public PaginatedResponse<FloorResponse> filterFloors(FloorFilter filter, int page, int size) {
+        User user = userService.getCurrentUser();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<Floor> floorPage = floorRepository.filterFloorsPaging(
+                user.getId(),
                 filter.getBuildingId(), filter.getStatus(), filter.getFloorType(), filter.getNameFloor(),
                 filter.getMaxRoom(),
                 pageable);
@@ -128,11 +137,19 @@ public class FloorServiceImpl implements FloorService {
         return floorRepository.countFloorsByBuildingId(buildingId);
     }
 
-    @Override
-    public List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId) {
-        return floorRepository.findAllFloorBasicByUserIdAndBuildingId(userId, buildingId);
-    }
+//    @Override
+//    public List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId) {
+//        return List.of();
+//    }
 
+    //    @Override
+//    public List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId) {
+//        return floorRepository.findAllFloorBasicByUserIdAndBuildingId(userId, buildingId);
+//    }
+@Override
+public List<FloorBasicResponse> getFloorBasicByBuildingId(String buildingId) {
+    return floorRepository.findAllFloorBasicByBuildingId(buildingId);
+}
     @Override
     public void toggleStatus(String id) {
         Floor floor = floorRepository

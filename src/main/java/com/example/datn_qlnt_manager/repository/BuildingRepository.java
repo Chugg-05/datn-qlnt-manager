@@ -52,15 +52,15 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
     BuildingStatistics getBuildingStatsByUser(@Param("userId") String userId);
 
 
-    @Query("""
+    @Query(""" 
                 SELECT new com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse(
                     b.id,
                     b.buildingName,
                     b.address,
                     b.buildingType,
                     b.status,
-                    COUNT(r),
-                    SUM(CASE WHEN r.status = com.example.datn_qlnt_manager.common.RoomStatus.TRONG THEN 1 ELSE 0 END)
+                    SUM(CASE WHEN r.status = 'TRONG' THEN 1 ELSE 0 END),
+                    COUNT(r)
                 )
                 FROM Building b
                 LEFT JOIN Floor f ON f.building.id = b.id
@@ -69,6 +69,7 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
                 GROUP BY b.id, b.buildingName, b.address, b.buildingType, b.status
             """)
     List<BuildingBasicResponse> findAllBuildingBasicByUserId(@Param("userId") String userId);
+
 
     boolean existsByBuildingNameAndUserId(String buildingName, String userId); // check trùng tên khi thêm tòa nhà
 

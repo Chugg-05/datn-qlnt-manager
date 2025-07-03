@@ -30,8 +30,10 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
             	AND (:maxRoom IS NULL OR f.maximumRoom =: maxRoom)
                 AND (:floorType IS NULL OR f.floorType = :floorType)
                 AND f.status != 'KHONG_SU_DUNG'
+                AND f.building.user.id = :userId
             """)
-    Page<Floor> filterFloorsPaging(@Param("buildingId") String buildingId, @Param("status") FloorStatus status,
+    Page<Floor> filterFloorsPaging(@Param("userId") String userId, @Param("buildingId") String buildingId,
+                                   @Param("status") FloorStatus status,
                                    @Param("floorType") FloorType floorType, @Param("nameFloor") String nameFloor,
                                    @Param("maxRoom") Integer maxRoom, Pageable pageable);
 
@@ -55,6 +57,21 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
 
 
     // hiển thị tầng theo userId và buildingId
+//    @Query("""
+//                SELECT new com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse(
+//                    f.id,
+//                    f.nameFloor,
+//                    f.floorType,
+//                    f.status,
+//                    f.maximumRoom,
+//                    b.buildingName
+//                )
+//                FROM Floor f
+//                JOIN f.building b
+//                WHERE b.user.id = :userId
+//                  AND b.id = :buildingId
+//                ORDER BY f.updatedAt DESC
+//            """)
     @Query("""
                 SELECT new com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse(
                     f.id,
@@ -66,13 +83,14 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
                 )
                 FROM Floor f
                 JOIN f.building b
-                WHERE b.user.id = :userId
-                  AND b.id = :buildingId
+                WHERE b.id = :buildingId
                 ORDER BY f.updatedAt DESC
             """)
-    List<FloorBasicResponse> findAllFloorBasicByUserIdAndBuildingId(
-            @Param("userId") String userId,
-            @Param("buildingId") String buildingId);
+    List<FloorBasicResponse> findAllFloorBasicByBuildingId(@Param("buildingId") String buildingId);
+
+//    List<FloorBasicResponse> findAllFloorBasicByUserIdAndBuildingId(
+//            @Param("userId") String userId,
+//            @Param("buildingId") String buildingId);
 
     @Query("SELECT f.nameFloor FROM Floor f WHERE f.building.id = :buildingId")
     List<String> findAllNamesByBuildingId(@Param("buildingId") String buildingId);
@@ -83,8 +101,10 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
                 SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(f.id, f.nameFloor)
                 FROM Floor f
                 JOIN f.building b
-                WHERE b.user.id = :userId AND f.status != com.example.datn_qlnt_manager.common.FloorStatus.KHONG_SU_DUNG
+                WHERE b.user.id = :userId AND f.status != 'KHONG_SU_DUNG'
             """)
     List<IdAndName> findAllFloorsByUserId(@Param("userId") String userId);
 
+    @Query("SELECT COUNT(f) FROM Floor f WHERE f.building.id = :buildingId")
+    int countByBuildingId(@Param("buildingId") String buildingId);
 }

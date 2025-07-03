@@ -14,5 +14,4 @@ public class VehicleFilter {
     VehicleType vehicleType;
     String licensePlate;
     String userId;
-    String tenantId;
 }

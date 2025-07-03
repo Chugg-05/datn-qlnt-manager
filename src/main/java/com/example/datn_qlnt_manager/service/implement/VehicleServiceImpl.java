@@ -57,14 +57,10 @@ public class VehicleServiceImpl implements VehicleService {
         if (!userRepository.existsById(user.getId())) {
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
-        if (tenantRepository.existsById(user.getId())) {
-            filter.setTenantId(user.getId());
-        } else {
-            filter.setUserId(user.getId());
-        }
+        filter.setUserId(user.getId());
 
         Page<Vehicle> paging = vehicleRepository.filterVehiclePaging(
-                filter.getUserId(), filter.getTenantId(), filter.getVehicleType(), filter.getLicensePlate(), pageable);
+                filter.getUserId(), filter.getVehicleType(), filter.getLicensePlate(), pageable);
 
         List<VehicleResponse> vehicles = paging.getContent().stream()
                 .map(vehicleMapper::toVehicleResponse)
