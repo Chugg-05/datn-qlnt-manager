@@ -1,10 +1,11 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.example.datn_qlnt_manager.common.VehicleType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,6 @@ import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.VehicleMapper;
 import com.example.datn_qlnt_manager.repository.TenantRepository;
-import com.example.datn_qlnt_manager.repository.UserRepository;
 import com.example.datn_qlnt_manager.repository.VehicleRepository;
 import com.example.datn_qlnt_manager.service.UserService;
 import com.example.datn_qlnt_manager.service.VehicleService;
@@ -45,6 +45,7 @@ public class VehicleServiceImpl implements VehicleService {
     VehicleMapper vehicleMapper;
     TenantRepository tenantRepository;
     UserService userService;
+
 
     @Override
     public PaginatedResponse<VehicleResponse> getPageAndSearchAndFilterVehicleByUserId(
@@ -84,11 +85,22 @@ public class VehicleServiceImpl implements VehicleService {
         return buildPaginatedVehicleResponse(paging, page, size);
     }
 
+
+
     @Override
     public VehicleResponse createVehicle(VehicleCreationRequest request) {
         if (request.getLicensePlate() != null && vehicleRepository.existsByLicensePlate(request.getLicensePlate())) {
             throw new AppException(ErrorCode.LICENSE_PLATE_EXISTED);
         }
+
+        if ((request.getLicensePlate() == null || request.getLicensePlate().isBlank()) && request.getVehicleType() == VehicleType.XE_DAP) {
+            request.setLicensePlate(null);
+        } else {
+            if (!isValidCivilianLicensePlate(request.getLicensePlate())){
+                throw new AppException(ErrorCode.INVALID_LICENSE_PLATE);
+            }
+        }
+
         Tenant tenant = tenantRepository
                 .findById(request.getTenantId())
                 .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
@@ -126,23 +138,34 @@ public class VehicleServiceImpl implements VehicleService {
         vehicleRepository.deleteById(vehicleId);
     }
 
+    private static final Map<String, String> TYPE_MAPPING = Map.of(
+            "XE_MAY", "motorbike",
+            "OTO", "car",
+            "XE_DAP", "bicycle",
+            "KHAC", "other"
+    );
     @Override
     public VehicleStatistics getVehicleStatistics() {
         var user = userService.getCurrentUser();
         long total = vehicleRepository.countAll(user.getId());
-        List<Object[]> countByType = vehicleRepository.countByVehicleType(user.getId());
 
-        Map<String, Long> byType = new HashMap<>();
-        for (Object[] row : countByType) {
-            String type = row[0].toString();
-            Long count = (Long) row[1];
-            byType.put(type, count);
+        Map<String, Long> result = new LinkedHashMap<>();
+        for (String camelKey : TYPE_MAPPING.values()) {
+            result.put(camelKey, 0L);
         }
 
-        VehicleStatistics response = new VehicleStatistics();
-        response.setTotal(total);
-        response.setByType(byType);
-        return response;
+        List<Object[]> typeCounts = vehicleRepository.countByVehicleType(user.getId());
+        for (Object[] row : typeCounts) {
+            String dbType = row[0].toString();
+            Long count = (Long) row[1];
+
+            String camelKey = TYPE_MAPPING.get(dbType);
+            if (camelKey != null) {
+                result.put(camelKey, count);
+            }
+        }
+
+        return new VehicleStatistics(total, result);
     }
 
     @Override
@@ -186,4 +209,25 @@ public class VehicleServiceImpl implements VehicleService {
                 .build();
     }
 
+    //check biển số xe
+    private static final String LICENSE_PLATE_REGEX =
+            "^(0[1-9]|[1-9][0-9])[A-Z]{1,2}[0-9]?-?[0-9]{4,6}$";
+
+    private static final String[] INVALID_PREFIXES = {
+            "NG", "QT", "CD", "LD", "HC", "DA", "R", "TĐ", "MK", "MD", "MĐ", "XN", "TD"
+    };
+    public boolean isValidCivilianLicensePlate(String plate) {
+        if (plate == null || plate.isBlank()) {
+            throw new AppException(ErrorCode.INVALID_LICENSE_PLATE_BLANK);
+        }
+
+        String normalized = plate.trim().toUpperCase();
+
+        for (String prefix : INVALID_PREFIXES) {
+            if (normalized.startsWith(prefix)){
+                return false;
+            }
+        }
+        return normalized.matches(LICENSE_PLATE_REGEX);
+    }
 }
