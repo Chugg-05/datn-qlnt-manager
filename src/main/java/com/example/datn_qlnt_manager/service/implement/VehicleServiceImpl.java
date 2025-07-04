@@ -25,6 +25,7 @@ import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.VehicleMapper;
 import com.example.datn_qlnt_manager.repository.TenantRepository;
+import com.example.datn_qlnt_manager.repository.UserRepository;
 import com.example.datn_qlnt_manager.repository.VehicleRepository;
 import com.example.datn_qlnt_manager.service.UserService;
 import com.example.datn_qlnt_manager.service.VehicleService;

@@ -29,7 +29,7 @@ public interface RoomRepository extends JpaRepository<Room, String> {
                 AND (:minAcreage IS NULL OR r.acreage >= :minAcreage)
                 AND (:maxPerson IS NULL OR r.maximumPeople <= :maxPerson)
                 AND (:nameFloor IS NULL OR f.nameFloor LIKE CONCAT('%', :nameFloor, '%'))
-                AND r.status != 'HUY_HOAT_DONG'
+                AND r.status != com.example.datn_qlnt_manager.common.RoomStatus.HUY_HOAT_DONG
                 AND (f.building.user IS NOT NULL AND f.building.user.id = :userId)
                 ORDER BY f.updatedAt DESC
             """)
@@ -112,9 +112,10 @@ public interface RoomRepository extends JpaRepository<Room, String> {
                 SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(r.id, r.roomCode)
                 FROM Room r
                 WHERE r.floor.building.user.id = :userId
-                  AND r.status != 'HUY_HOAT_DONG'
+                 AND r.status != 'HUY_HOAT_DONG'
+                 AND r.floor.id = :floorId
             """)
-    List<IdAndName> findRoomsByUserId(@Param("userId") String userId);
+    List<IdAndName> findRoomsByUserIdAndFloorId(@Param("userId") String userId, @Param("floorId") String floorId);
 
     @Query("SELECT r.roomCode FROM Room r WHERE r.floor.building.id = :buildingId AND r.floor.id = :floorId")
     List<String> findRoomCodesByBuildingAndFloor(@Param("buildingId") String buildingId,

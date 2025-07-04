@@ -7,6 +7,8 @@ import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,6 +24,6 @@ public class RoomResponse {
     RoomStatus status;
     String description;
     FloorResponse floor;
-    // khi nao co FloorResponse thi dan no vao day
-    //    Floor floor;
+    Instant createdAt;
+    Instant updatedAt;
 }
