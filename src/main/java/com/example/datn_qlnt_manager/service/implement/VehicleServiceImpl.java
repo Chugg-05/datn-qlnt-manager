@@ -10,6 +10,7 @@ import com.example.datn_qlnt_manager.entity.Building;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.common.Meta;
@@ -51,7 +52,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public PaginatedResponse<VehicleResponse> filterVehicles(VehicleFilter filter, int page, int size) {
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
         var user = userService.getCurrentUser();
 
         if (!userRepository.existsById(user.getId())) {

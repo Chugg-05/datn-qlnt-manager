@@ -1,8 +1,8 @@
 package com.example.datn_qlnt_manager.repository;
 
-import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
+import com.example.datn_qlnt_manager.dto.response.room.RoomSelectResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -98,10 +98,12 @@ public interface RoomRepository extends JpaRepository<Room, String> {
     @Query("""
                 SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(r.id, r.roomCode)
                 FROM Room r
-                WHERE r.floor.building.user.id = :userId
+                JOIN r.floor f
+                WHERE f.building.user.id = :userId
                   AND r.status != com.example.datn_qlnt_manager.common.RoomStatus.HUY_HOAT_DONG
+                  AND f.id = :floorId
             """)
-    List<IdAndName> findRoomsByUserId(@Param("userId") String userId);
+    List<IdAndName> findRoomsByUserIdAndFloorId(@Param("userId") String userId, @Param("floorId") String floorId);
 
     @Query("SELECT r.roomCode FROM Room r WHERE r.floor.building.id = :buildingId AND r.floor.id = :floorId")
     List<String> findRoomCodesByBuildingAndFloor(@Param("buildingId") String buildingId,

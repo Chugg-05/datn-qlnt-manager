@@ -21,8 +21,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE) // khong can ghi all la private
 public class Room extends AbstractEntity {
 
-    // sua ten theo tieng anh nha
-
     @Column(name = "ma_phong", nullable = false, length = 20)
     String roomCode;
 

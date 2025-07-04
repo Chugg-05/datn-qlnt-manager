@@ -8,6 +8,10 @@ import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInitResponse;
 import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorSelectResponse;
+import com.example.datn_qlnt_manager.dto.response.room.RoomSelectResponse;
+import com.example.datn_qlnt_manager.dto.response.tenant.TenantSelectResponse;
 import com.example.datn_qlnt_manager.entity.*;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
@@ -179,32 +183,41 @@ public class AssetServiceImpl implements AssetService {
                         .stream().map(at -> new IdAndName(at.getId(),
                                 at.getNameAssetType())).toList();
 
-        List<IdAndName> rooms = roomRepository.findRoomsByUserId(user.getId())
+        List<BuildingSelectResponse> buildings = buildingRepository.findAllBuildingsByUserId(user.getId())
                 .stream()
-                .map(r -> new IdAndName(r.getId(), r.getName()))
-                .toList();
+                .map(b -> {
+                    List<FloorSelectResponse> floorSelectResponses =
+                            floorRepository.findAllFloorsByUserIdAndBuildingId(user.getId(), b.getId()).stream()
+                                    .map(f -> {
+                                        List<RoomSelectResponse> roomSelectResponses =
+                                                roomRepository.findRoomsByUserIdAndFloorId(user.getId(), f.getId())
+                                                        .stream().map(r -> {
+                                                            List<TenantSelectResponse> tenants =
+                                                                    tenantRepository.findAllTenantsByOwnerIdAndRoomId(user.getId(), r.getId()).stream().toList();
 
-        List<IdAndName> buildings = buildingRepository.findAllBuildingsByUserId(user.getId())
-                .stream()
-                .map(b -> new IdAndName(b.getId(), b.getName()))
-                .toList();
-
-        List<IdAndName> floors = floorRepository.findAllFloorsByUserId(user.getId())
-                .stream()
-                .map(f -> new IdAndName(f.getId(), f.getName()))
-                .toList();
-
-        List<IdAndName> tenants = tenantRepository.findAllTenantsByOwnerId(user.getId())
-                .stream()
-                .map(t -> new IdAndName(t.getId(), t.getName()))
+                                                            return RoomSelectResponse.builder()
+                                                                    .id(r.getId())
+                                                                    .name(r.getName())
+                                                                    .tenants(tenants)
+                                                                    .build();
+                                                        }).toList();
+                                        return FloorSelectResponse.builder()
+                                                .id(f.getId())
+                                                .name(f.getName())
+                                                .rooms(roomSelectResponses)
+                                                .build();
+                                    }).toList();
+                    return BuildingSelectResponse.builder()
+                            .id(b.getId())
+                            .name(b.getName())
+                            .floors(floorSelectResponses)
+                            .build();
+                })
                 .toList();
 
         return CreateAssetInitResponse.builder()
                 .assetTypes(assetTypes)
                 .buildings(buildings)
-                .floors(floors)
-                .tenants(tenants)
-                .rooms(rooms)
                 .build();
     }
 }
