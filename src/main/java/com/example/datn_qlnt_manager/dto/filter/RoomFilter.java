@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.dto.filter;
 
+import com.example.datn_qlnt_manager.common.RoomStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoomFilter {
-    String status;
+    RoomStatus status;
     Double maxPrice;
     Double minPrice;
     Double maxAcreage;
@@ -17,4 +18,5 @@ public class RoomFilter {
     Integer maximumPeople;
     String nameFloor;
     String buildingId;
+    String floorId;
 }

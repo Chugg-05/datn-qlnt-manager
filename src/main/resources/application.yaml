@@ -1,4 +1,4 @@
-# config cho môi trường chung
+# Cấu hình chung
 spring:
   profiles:
     active: dev
@@ -16,8 +16,8 @@ otp:
   resend: 120      # giây
 
 jwt:
-  valid-duration: 7200
-  refreshable-duration: 1209600
+  valid-duration: 7200             # 2 tiếng
+  refreshable-duration: 1209600    # 14 ngày
 
 feign:
   client:

@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.common;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 @Getter
@@ -16,5 +18,20 @@ public enum RoomStatus {
 
     RoomStatus(String value) {
         this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @JsonCreator
+    public static RoomStatus fromValue(String value) {
+        for (RoomStatus status : RoomStatus.values()) {
+            if (status.value.equalsIgnoreCase(value)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Invalid RoomStatus: " + value);
     }
 }

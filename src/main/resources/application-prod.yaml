@@ -6,9 +6,9 @@ server:
 
 spring:
   datasource:
-    url: ${DBMS_CONNECTION}
-    username: ${DBMS_USERNAME}
-    password: ${DBMS_PASSWORD}
+    url: jdbc:mysql://metro.proxy.rlwy.net:15098/railway
+    username: root
+    password: PxyBWzYShxdKhyPOPUdkPdvfHHGsosoA
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -17,10 +17,10 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      username: ${REDIS_USERNAME}
-      password: ${REDIS_PASSWORD}
+      host: nozomi.proxy.rlwy.net
+      port: 58945
+      username: default
+      password: sWwiojuVHEKkDIKzPlwoxMCPDgILUdCZ
 
 feign:
   client:
