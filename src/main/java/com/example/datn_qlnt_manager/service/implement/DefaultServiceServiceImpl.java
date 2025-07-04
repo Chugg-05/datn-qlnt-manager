@@ -46,32 +46,50 @@ public class DefaultServiceServiceImpl implements DefaultServiceService {
 
 
     @Override
-    public PaginatedResponse<DefaultServiceResponse> filterDefaultServices(DefaultServiceFilter filter, int page, int size) {
+    public PaginatedResponse<DefaultServiceResponse> getPageAndSearchAndFilterDefaultServiceByUserId(
+            DefaultServiceFilter filter,
+            int page,
+            int size
+    ) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
         var user = userService.getCurrentUser();
-        Page<DefaultService> paging = defaultServiceRepository.filterDefaultServicePaging(
-                user.getId(), filter.getBuildingId(), filter.getFloorId(), filter.getServiceId(), filter.getDefaultServiceStatus(), filter.getDefaultServiceAppliesTo(), filter.getMaxPricesApply(), filter.getMinPricesApply(), pageable
+        Page<DefaultService> paging = defaultServiceRepository.getPageAndSearchAndFilterDefaultServiceByUserId(
+                user.getId(),
+                filter.getBuildingId(),
+                filter.getFloorId(),
+                filter.getServiceId(),
+                filter.getDefaultServiceStatus(),
+                filter.getDefaultServiceAppliesTo(),
+                filter.getMaxPricesApply(),
+                filter.getMinPricesApply(),
+                pageable
         );
 
-        List<DefaultServiceResponse> defaultServices = paging.getContent().stream()
-                .map(defaultServiceMapper::toDefaultServiceResponse)
-                .toList();
+        return buildPaginatedDefaultServiceResponse(paging, page, size);
+    }
 
-        Meta<?> meta = Meta.builder()
-                .pagination(Pagination.builder()
-                        .count(paging.getNumberOfElements())
-                        .perPage(size)
-                        .currentPage(page)
-                        .totalPages(paging.getTotalPages())
-                        .total(paging.getTotalElements())
-                        .build())
-                .build();
+    @Override
+    public PaginatedResponse<DefaultServiceResponse> getDefaultServiceWithStatusCancelByUserId(
+            DefaultServiceFilter filter,
+            int page,
+            int size
+    ) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
-        return PaginatedResponse.<DefaultServiceResponse>builder()
-                .data(defaultServices)
-                .meta(meta)
-                .build();
+        var user = userService.getCurrentUser();
+        Page<DefaultService> paging = defaultServiceRepository.getDefaultServiceWithStatusCancelByUserId(
+                user.getId(),
+                filter.getBuildingId(),
+                filter.getFloorId(),
+                filter.getServiceId(),
+                filter.getDefaultServiceAppliesTo(),
+                filter.getMaxPricesApply(),
+                filter.getMinPricesApply(),
+                pageable
+        );
+
+        return buildPaginatedDefaultServiceResponse(paging, page, size);
     }
 
     @Override
@@ -121,6 +139,30 @@ public class DefaultServiceServiceImpl implements DefaultServiceService {
             throw new AppException(ErrorCode.DEFAULT_SERVICE_NOT_FOUND);
         }
         defaultServiceRepository.deleteById(defaultServiceId);
+    }
+
+
+    private PaginatedResponse<DefaultServiceResponse> buildPaginatedDefaultServiceResponse(
+            Page<DefaultService> paging, int page, int size) {
+
+        List<DefaultServiceResponse> defaultServices = paging.getContent().stream()
+                .map(defaultServiceMapper::toDefaultServiceResponse)
+                .toList();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<DefaultServiceResponse>builder()
+                .data(defaultServices)
+                .meta(meta)
+                .build();
     }
 
 }

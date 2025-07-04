@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ServiceRoomStatusStatistics {
+public class ServiceRoomStatistics {
     Long total;
     Long active;
     Long paused;

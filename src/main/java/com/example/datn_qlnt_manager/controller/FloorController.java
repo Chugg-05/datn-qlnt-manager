@@ -44,14 +44,29 @@ public class FloorController {
 
     @Operation(summary = "Hiển hị, lọc (trạng thái tầng), tìm kiếm (tên tầng, số tầng tối đa)")
     @GetMapping
-    public ApiResponse<List<FloorResponse>> getFloors(
+    public ApiResponse<List<FloorResponse>> getPageAndSearchAndFilterFloor(
             @Valid @ModelAttribute FloorFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
 
-        PaginatedResponse<FloorResponse> result = floorService.filterFloors(filter, page, size);
+        PaginatedResponse<FloorResponse> result = floorService.getPageAndSearchAndFilterFloorByUserId(filter, page, size);
         return ApiResponse.<List<FloorResponse>>builder()
                 .message("Floor data retrieved successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Hiển hị, lọc (trạng thái tầng), tìm kiếm (tên tầng, số tầng tối đa) cho tầng đã hủy")
+    @GetMapping("/cancel")
+    public ApiResponse<List<FloorResponse>> getTenantWithStatusCancel(
+            @Valid @ModelAttribute FloorFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+
+        PaginatedResponse<FloorResponse> result = floorService.getTenantWithStatusCancelByUserId(filter, page, size);
+        return ApiResponse.<List<FloorResponse>>builder()
+                .message("Floor cancel data retrieved successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -91,19 +106,6 @@ public class FloorController {
                 .data(floorService.getFloorCountByBuildingId(buildingId))
                 .build();
     }
-
-//    @Operation(summary = "Hiển thị danh sách tầng dạng card hoặc combobox theo user và building")
-//    @GetMapping("/find-all")
-//    public ApiResponse<List<FloorBasicResponse>> getFloorsByUserAndBuilding(
-//            @RequestParam String userId,
-//            @RequestParam String buildingId) {
-//
-//        List<FloorBasicResponse> response = floorService.getFloorBasicByUserIdAndBuildingId(userId, buildingId);
-//        return ApiResponse.<List<FloorBasicResponse>>builder()
-//                .message("Display floors successfully")
-//                .data(response)
-//                .build();
-//    }
 
     @Operation(summary = "Cập nhật trạng thái: hoạt động <-> tạm ngưng")
     @PutMapping("/toggle-status/{id}")

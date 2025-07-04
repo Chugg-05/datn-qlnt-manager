@@ -32,14 +32,39 @@ public class RoomController {
 
     @Operation(summary = "Phân trang, tìm kiếm, lọc phòng")
     @GetMapping
-    public ApiResponse<List<RoomResponse>> findAll(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "15") Integer size,
-            @ModelAttribute RoomFilter roomFilter) {
-        PaginatedResponse<RoomResponse> result = roomService.filterRooms(page, size, roomFilter);
+    public ApiResponse<List<RoomResponse>> getPageAndSearchAndFilterRoom(
+            @ModelAttribute RoomFilter roomFilter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        PaginatedResponse<RoomResponse> result = roomService.getPageAndSearchAndFilterRoomByUserId(
+                roomFilter,
+                page,
+                size
+        );
 
         return ApiResponse.<List<RoomResponse>>builder()
-                .message("Filter users successfully")
+                .message("Get rooms successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Phân trang, tìm kiếm, lọc phòng dã hủy")
+    @GetMapping("/cancel")
+    public ApiResponse<List<RoomResponse>> getRoomWithStatusCancel(
+            @ModelAttribute RoomFilter roomFilter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        PaginatedResponse<RoomResponse> result = roomService.getRoomWithStatusCancelByUserId(
+                roomFilter,
+                page,
+                size
+        );
+
+        return ApiResponse.<List<RoomResponse>>builder()
+                .message("Get rooms with status cancel successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -53,7 +78,7 @@ public class RoomController {
                 .build();
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public ApiResponse<RoomResponse> createRoom(@RequestBody @Valid RoomCreationRequest request) {
         return ApiResponse.<RoomResponse>builder()
                 .data(roomService.createRoom(request))

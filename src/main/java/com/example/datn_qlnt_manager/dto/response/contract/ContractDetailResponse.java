@@ -16,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContractDetailResponse {
+    String id;
     String contractCode;
     String roomCode;
     String nameManager;
@@ -37,6 +38,7 @@ public class ContractDetailResponse {
     Set<TenantBasicResponse> tenants;
 
     public ContractDetailResponse(
+            String id,
             String contractCode,
             String roomCode,
             String nameManager,

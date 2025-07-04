@@ -12,7 +12,17 @@ import java.util.List;
 
 public interface RoomService {
 
-    PaginatedResponse<RoomResponse> filterRooms(Integer page, Integer size, RoomFilter roomFilter);
+    PaginatedResponse<RoomResponse> getPageAndSearchAndFilterRoomByUserId(
+            RoomFilter roomFilter,
+            Integer page,
+            Integer size
+    );
+
+    PaginatedResponse<RoomResponse> getRoomWithStatusCancelByUserId(
+            RoomFilter roomFilter,
+            Integer page,
+            Integer size
+    );
 
     RoomResponse createRoom(RoomCreationRequest request);
 

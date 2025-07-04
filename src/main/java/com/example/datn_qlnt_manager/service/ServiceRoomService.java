@@ -5,7 +5,7 @@ import com.example.datn_qlnt_manager.dto.filter.ServiceRoomFilter;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
-import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatusStatistics;
+import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatistics;
 
 public interface ServiceRoomService {
     ServiceRoomResponse createServiceRoom(ServiceRoomCreationRequest request);
@@ -18,7 +18,7 @@ public interface ServiceRoomService {
 
     PaginatedResponse<ServiceRoomResponse> filterServiceRooms(ServiceRoomFilter filter, int page, int size);
 
-    ServiceRoomStatusStatistics getServiceRoomStatusStatistics();
+    ServiceRoomStatistics getServiceRoomStatusStatistics();
 
 
 

@@ -21,7 +21,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.common.Meta;
@@ -49,11 +48,15 @@ public class RoomServiceImpl implements RoomService {
     CodeGeneratorService codeGeneratorService;
 
     @Override
-    public PaginatedResponse<RoomResponse> filterRooms(Integer page, Integer size, RoomFilter roomFilter) {
+    public PaginatedResponse<RoomResponse> getPageAndSearchAndFilterRoomByUserId(
+            RoomFilter roomFilter,
+            Integer page,
+            Integer size
+    ) {
         User user = userService.getCurrentUser();
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Order.desc("updatedAt")));
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
-        Page<Room> paging = roomRepository.filterRoomsPaging(
+        Page<Room> paging = roomRepository.getPageAndSearchAndFilterRoomByUserId(
                 user.getId(),
                 roomFilter.getBuildingId(),
                 roomFilter.getStatus(),
@@ -65,20 +68,30 @@ public class RoomServiceImpl implements RoomService {
                 roomFilter.getNameFloor(),
                 pageable);
 
-        List<RoomResponse> rooms =
-                paging.getContent().stream().map(roomMapper::toRoomResponse).toList();
+        return  buildPaginatedRoomResponse(paging, page, size);
+    }
 
-        Meta<?> meta = Meta.builder()
-                .pagination(Pagination.builder()
-                        .count(paging.getNumberOfElements())
-                        .perPage(size)
-                        .currentPage(page)
-                        .totalPages(paging.getTotalPages())
-                        .total(paging.getTotalElements())
-                        .build())
-                .build();
+    @Override
+    public PaginatedResponse<RoomResponse> getRoomWithStatusCancelByUserId(
+            RoomFilter roomFilter,
+            Integer page,
+            Integer size
+    ) {
+        User user = userService.getCurrentUser();
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
-        return PaginatedResponse.<RoomResponse>builder().data(rooms).meta(meta).build();
+        Page<Room> paging = roomRepository.getRoomWithStatusCancelByUserId(
+                user.getId(),
+                roomFilter.getBuildingId(),
+                roomFilter.getMaxPrice(),
+                roomFilter.getMinPrice(),
+                roomFilter.getMaxAcreage(),
+                roomFilter.getMinAcreage(),
+                roomFilter.getMaximumPeople(),
+                roomFilter.getNameFloor(),
+                pageable);
+
+        return  buildPaginatedRoomResponse(paging, page, size);
     }
 
     @Override
@@ -165,5 +178,25 @@ public class RoomServiceImpl implements RoomService {
         return roomRepository.getRoomStatsByBuilding(buildingId);
     }
 
+    private PaginatedResponse<RoomResponse> buildPaginatedRoomResponse(
+            Page<Room> paging, int page, int size) {
 
+        List<RoomResponse> rooms =
+                paging.getContent().stream().map(roomMapper::toRoomResponse).toList();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<RoomResponse>builder()
+                .data(rooms)
+                .meta(meta)
+                .build();
+    }
 }

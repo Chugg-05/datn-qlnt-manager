@@ -20,22 +20,49 @@ public interface DefaultServiceRepository extends JpaRepository<DefaultService, 
         INNER JOIN ds.building b
         INNER JOIN ds.floor f
         INNER JOIN ds.service s
-        WHERE (:userId = ds.building.user.id)
+        WHERE (ds.building.user.id = :userId)
         AND (:buildingId IS NULL OR b.id = :buildingId)
         AND (:floorId IS NULL OR f.id = :floorId)
         AND (:serviceId IS NULL OR s.id = :serviceId)
         AND (:status IS NULL OR ds.defaultServiceStatus = :status)
         AND (:appliesTo IS NULL OR ds.defaultServiceAppliesTo = :appliesTo)
         AND (:maxPricesApply IS NULL OR ds.pricesApply <= :maxPricesApply)
-		AND (:minPricesApply IS NULL OR ds.pricesApply >= :minPricesApply)
+        AND (:minPricesApply IS NULL OR ds.pricesApply >= :minPricesApply)
+        AND ds.defaultServiceStatus != 'HUY_BO'
         ORDER BY ds.updatedAt DESC
-""")
-    Page<DefaultService> filterDefaultServicePaging(
+    """)
+    Page<DefaultService> getPageAndSearchAndFilterDefaultServiceByUserId(
             @Param("userId") String userId,
             @Param("buildingId") String buildingId,
             @Param("floorId") String floorId,
             @Param("serviceId") String serviceId,
             @Param("status") DefaultServiceStatus defaultServiceStatus,
+            @Param("appliesTo") DefaultServiceAppliesTo defaultServiceAppliesTo,
+            @Param("maxPricesApply") BigDecimal maxPricesApply,
+            @Param("minPricesApply") BigDecimal minPricesApply,
+            Pageable pageable
+            );
+
+    @Query("""
+        SELECT ds FROM DefaultService ds
+        INNER JOIN ds.building b
+        INNER JOIN ds.floor f
+        INNER JOIN ds.service s
+        WHERE (ds.building.user.id = :userId)
+        AND (:buildingId IS NULL OR b.id = :buildingId)
+        AND (:floorId IS NULL OR f.id = :floorId)
+        AND (:serviceId IS NULL OR s.id = :serviceId)
+        AND (:appliesTo IS NULL OR ds.defaultServiceAppliesTo = :appliesTo)
+        AND (:maxPricesApply IS NULL OR ds.pricesApply <= :maxPricesApply)
+        AND (:minPricesApply IS NULL OR ds.pricesApply >= :minPricesApply)
+        AND ds.defaultServiceStatus != 'HUY_BO'
+        ORDER BY ds.updatedAt DESC
+    """)
+    Page<DefaultService> getDefaultServiceWithStatusCancelByUserId(
+            @Param("userId") String userId,
+            @Param("buildingId") String buildingId,
+            @Param("floorId") String floorId,
+            @Param("serviceId") String serviceId,
             @Param("appliesTo") DefaultServiceAppliesTo defaultServiceAppliesTo,
             @Param("maxPricesApply") BigDecimal maxPricesApply,
             @Param("minPricesApply") BigDecimal minPricesApply,

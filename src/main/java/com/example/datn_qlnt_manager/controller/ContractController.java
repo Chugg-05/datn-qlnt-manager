@@ -32,15 +32,39 @@ public class ContractController {
 
     @Operation(summary = "Lấy danh sách hợp đồng và lọc, tìm kiếm")
     @GetMapping
-    public ApiResponse<List<ContractResponse>> filterContracts(
+    public ApiResponse<List<ContractResponse>> getPageAndSearchAndFilterContract(
             @ModelAttribute ContractFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
 
-        PaginatedResponse<ContractResponse> result = contractService.filterContracts(filter, page, size);
+        PaginatedResponse<ContractResponse> result = contractService.getPageAndSearchAndFilterTenantByUserId(
+                filter,
+                page,
+                size
+        );
 
         return ApiResponse.<List<ContractResponse>>builder()
-                .message("Filter contracts successfully")
+                .message("Get contracts successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Lấy danh sách hợp đồng và lọc, tìm kiếm với trạng thái đã hủy (status = DA_HUY)")
+    @GetMapping("/cancel")
+    public ApiResponse<List<ContractResponse>> getContractWithStatusCancel(
+            @ModelAttribute ContractFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+
+        PaginatedResponse<ContractResponse> result = contractService.getContractWithStatusCancelByUserId(
+                filter,
+                page,
+                size
+        );
+
+        return ApiResponse.<List<ContractResponse>>builder()
+                .message("Get cancelled contracts successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();

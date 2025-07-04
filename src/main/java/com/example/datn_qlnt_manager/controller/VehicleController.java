@@ -33,14 +33,37 @@ public class VehicleController {
 
     @Operation(summary = "Phân trang, tìm kiếm, lọc phương tiện")
     @GetMapping
-    public ApiResponse<List<VehicleResponse>> filterVehicles(
+    public ApiResponse<List<VehicleResponse>> getPageAndSearchAndFilterVehicle(
             @ModelAttribute VehicleFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
-        PaginatedResponse<VehicleResponse> result = vehicleService.filterVehicles(filter, page, size);
+        PaginatedResponse<VehicleResponse> result = vehicleService.getPageAndSearchAndFilterVehicleByUserId(
+                filter,
+                page,
+                size
+        );
 
         return ApiResponse.<List<VehicleResponse>>builder()
-                .message("Filter vehicle successfully")
+                .message("Get vehicle successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Phân trang, tìm kiếm, lọc phương tiện đã hủy")
+    @GetMapping("/cancel")
+    public ApiResponse<List<VehicleResponse>> getVehicleWithStatusCancel(
+            @ModelAttribute VehicleFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+        PaginatedResponse<VehicleResponse> result = vehicleService.getVehicleWithStatusCancelByUserId(
+                filter,
+                page,
+                size
+        );
+
+        return ApiResponse.<List<VehicleResponse>>builder()
+                .message("Get vehicle with status cancel successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();

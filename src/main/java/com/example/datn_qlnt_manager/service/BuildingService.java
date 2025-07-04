@@ -13,6 +13,12 @@ import java.util.List;
 
 public interface BuildingService {
 
+    PaginatedResponse<BuildingResponse> getBuildingWithStatusCancelByUserId(
+            BuildingFilter filter,
+            int page,
+            int size
+    );
+
     List<BuildingBasicResponse> getBuildingBasicForCurrentUser();
 
     BuildingResponse createBuilding(BuildingCreationRequest request);
@@ -21,7 +27,7 @@ public interface BuildingService {
 
     void softDeleteBuildingById(String buildingId);
 
-    PaginatedResponse<BuildingResponse> filterBuildings(BuildingFilter filter, int page, int size);
+    PaginatedResponse<BuildingResponse> getPageAndSearchAndFilterBuildingByUserId(BuildingFilter filter, int page, int size);
 
     void deleteBuildingById(String buildingId);
 

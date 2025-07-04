@@ -40,35 +40,44 @@ public class BuildingServiceImpl implements BuildingService {
     BuildingRepository buildingRepository;
     BuildingMapper buildingMapper;
     UserService userService;
-    private final CodeGeneratorService codeGeneratorService;
-
+    CodeGeneratorService codeGeneratorService;
 
     @Override
-    public PaginatedResponse<BuildingResponse> filterBuildings(BuildingFilter filter, int page, int size) {
+    public PaginatedResponse<BuildingResponse> getPageAndSearchAndFilterBuildingByUserId(
+            BuildingFilter filter,
+            int page,
+            int size
+    ) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
-        filter.setUserId(user.getId());
 
-        Page<Building> paging = buildingRepository.filterBuildingPaging(
-                filter.getUserId(), filter.getQuery(), filter.getStatus(), filter.getBuildingType(), pageable);
+        Page<Building> paging = buildingRepository.getPageAndSearchAndFilterBuildingByUserId(
+                user.getId(),
+                filter.getQuery(),
+                filter.getStatus(),
+                filter.getBuildingType(),
+                pageable
+        );
 
-        List<BuildingResponse> buildings = paging.getContent().stream()
-                .map(buildingMapper::toBuildingResponse)
-                .toList();
+        return buildPaginatedBuildingResponse(paging, page, size);
+    }
 
-        Meta<?> meta = Meta.builder()
-                .pagination(Pagination.builder()
-                        .count(paging.getNumberOfElements())
-                        .perPage(size)
-                        .currentPage(page)
-                        .totalPages(paging.getTotalPages())
-                        .total(paging.getTotalElements())
-                        .build())
-                .build();
-        return PaginatedResponse.<BuildingResponse>builder()
-                .data(buildings)
-                .meta(meta)
-                .build();
+    @Override
+    public PaginatedResponse<BuildingResponse> getBuildingWithStatusCancelByUserId(
+            BuildingFilter filter,
+            int page,
+            int size
+    ) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+        var user = userService.getCurrentUser();
+
+        Page<Building> paging = buildingRepository.getBuildingWithStatusCancelByUserId(
+                user.getId(),
+                filter.getQuery(),
+                filter.getBuildingType(),
+                pageable);
+
+        return buildPaginatedBuildingResponse(paging, page, size);
     }
 
     @Override
@@ -162,5 +171,29 @@ public class BuildingServiceImpl implements BuildingService {
             throw new IllegalStateException("Cannot toggle status for deleted building");
         }
         buildingRepository.save(building);
+    }
+
+    private PaginatedResponse<BuildingResponse> buildPaginatedBuildingResponse(
+            Page<Building> paging, int page, int size) {
+
+        List<BuildingResponse> buildings = paging.getContent()
+                .stream()
+                .map(buildingMapper::toBuildingResponse)
+                .toList();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<BuildingResponse>builder()
+                .data(buildings)
+                .meta(meta)
+                .build();
     }
 }

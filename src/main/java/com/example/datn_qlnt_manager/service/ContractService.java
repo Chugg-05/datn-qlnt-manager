@@ -12,7 +12,9 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 
 public interface ContractService {
-    PaginatedResponse<ContractResponse> filterContracts(ContractFilter filter, int page, int size);
+    PaginatedResponse<ContractResponse> getPageAndSearchAndFilterTenantByUserId(ContractFilter filter, int page, int size);
+
+    PaginatedResponse<ContractResponse> getContractWithStatusCancelByUserId(ContractFilter filter, int page, int size);
 
     ContractResponse updateContract(String contractId, ContractUpdateRequest request);
 

@@ -31,11 +31,16 @@ public class MeterController {
 
     @Operation(summary = "Phân trang, tìm kiếm, lọc congto")
     @GetMapping
-    public ApiResponse<List<MeterResponse>> findAll(
+    public ApiResponse<List<MeterResponse>> getPageAndSearchAndFilterMeter(
+            @ModelAttribute MeterFilter meterFilter,
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "15") Integer size,
-            @ModelAttribute MeterFilter meterFilter) {
-        PaginatedResponse<MeterResponse> result = meterService.filterMeter(page, size, meterFilter);
+            @RequestParam(defaultValue = "15") Integer size
+    ) {
+        PaginatedResponse<MeterResponse> result = meterService.getPageAndSearchAndFilterMeterByUserId(
+                meterFilter,
+                page,
+                size
+        );
 
         return ApiResponse.<List<MeterResponse>>builder()
                 .message("Filter users successfully")

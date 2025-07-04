@@ -11,7 +11,9 @@ import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
 import java.util.List;
 
 public interface TenantService {
-    PaginatedResponse<TenantResponse> filterTenants(TenantFilter filter, int page, int size);
+    PaginatedResponse<TenantResponse> getPageAndSearchAndFilterTenantByUserId(TenantFilter filter, int page, int size);
+
+    PaginatedResponse<TenantResponse> getTenantWithStatusCancelByUserId(TenantFilter filter, int page, int size);
 
     TenantResponse createTenantByOwner(TenantCreationRequest request);
 
@@ -21,11 +23,11 @@ public interface TenantService {
 
     TenantDetailResponse getTenantDetailById(String tenantId);
 
-    void toggleTenantStatusById(String tenantId);
-
     TenantStatistics getTenantStatisticsByUserId();
 
     List<TenantResponse> getAllTenantsByUserId();
+
+    void toggleTenantStatusById(String tenantId);
 
     void softDeleteTenantById(String tenantId);
 

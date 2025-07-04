@@ -22,7 +22,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -41,11 +40,8 @@ public class MeterServiceImpl implements MeterService {
 
 
     @Override
-    public PaginatedResponse<MeterResponse> filterMeter(Integer page, Integer size, MeterFilter meterFilter) {
-        Pageable pageable = PageRequest.of(
-                Math.max(0, page - 1),
-                size,
-                Sort.by(Sort.Order.desc("updatedAt")));
+    public PaginatedResponse<MeterResponse> getPageAndSearchAndFilterMeterByUserId(MeterFilter meterFilter, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
         Page<Meter> paging = meterRepository.filterMetersPaging(
                 meterFilter.getRoomCode(),

@@ -29,15 +29,31 @@ public class DefaultServiceController {
 
     @Operation(summary = "Phân trang, lọc dịch vụ mặc định")
     @GetMapping
-    public ApiResponse<List<DefaultServiceResponse>> filterDefaultServices (
+    public ApiResponse<List<DefaultServiceResponse>> getPageAndSearchAndFilterDefaultService (
             @ModelAttribute DefaultServiceFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size
             ){
-        PaginatedResponse<DefaultServiceResponse> result = defaultServiceService.filterDefaultServices(filter, page, size);
+        PaginatedResponse<DefaultServiceResponse> result = defaultServiceService.getPageAndSearchAndFilterDefaultServiceByUserId(filter, page, size);
 
         return ApiResponse.<List<DefaultServiceResponse>>builder()
                 .message("Filter default service successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Phân trang, lọc dịch vụ mặc định với trạng thái hủy bỏ(status = HUY_BO)")
+    @GetMapping("/cancel")
+    public ApiResponse<List<DefaultServiceResponse>> getDefaultServiceWithStatusCancel (
+            @ModelAttribute DefaultServiceFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size
+            ){
+        PaginatedResponse<DefaultServiceResponse> result = defaultServiceService.getDefaultServiceWithStatusCancelByUserId(filter, page, size);
+
+        return ApiResponse.<List<DefaultServiceResponse>>builder()
+                .message("Filter default service with status cancel successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();

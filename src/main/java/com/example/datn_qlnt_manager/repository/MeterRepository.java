@@ -15,12 +15,10 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
                FROM Meter m
                INNER JOIN Room r ON m.roomCode = r.roomCode
                WHERE (:meterType IS NULL OR m.meterType = :meterType)
+               ORDER BY m.updatedAt DESC
             """)
     Page<Meter> filterMetersPaging(
             @Param("roomCode") String roomCode,
             @Param("meterType") MeterType meterType,
             Pageable pageable);
-
-    boolean existsById(String id);
-
 }

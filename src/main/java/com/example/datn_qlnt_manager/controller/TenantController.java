@@ -34,15 +34,31 @@ public class TenantController {
 
     @Operation(summary = "Danh sách, Phân trang, tìm kiếm, lọc khách hàng")
     @GetMapping
-    public ApiResponse<List<TenantResponse>> filterTenants(
+    public ApiResponse<List<TenantResponse>> getPageAndSearchAndFilterTenant(
             @ModelAttribute TenantFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
 
-        PaginatedResponse<TenantResponse> result = tenantService.filterTenants(filter, page, size);
+        PaginatedResponse<TenantResponse> result = tenantService.getPageAndSearchAndFilterTenantByUserId(filter, page, size);
 
         return ApiResponse.<List<TenantResponse>>builder()
-                .message("Filter tenants successfully")
+                .message("Get tenants successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Danh sách, Phân trang, tìm kiếm, lọc khách hàng đã hủy (status = HUY_BO)")
+    @GetMapping("/cancel")
+    public ApiResponse<List<TenantResponse>> getTenantWithStatusCancel(
+            @ModelAttribute TenantFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+
+        PaginatedResponse<TenantResponse> result = tenantService.getTenantWithStatusCancelByUserId(filter, page, size);
+
+        return ApiResponse.<List<TenantResponse>>builder()
+                .message("Get canceled tenants successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
