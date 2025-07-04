@@ -45,15 +45,18 @@ public class MeterServiceImpl implements MeterService {
         Pageable pageable = PageRequest.of(
                 Math.max(0, page - 1),
                 size,
-                Sort.by(Sort.Order.desc("updatedAt")));
+                Sort.by(Sort.Order.desc("updatedAt"))
+        );
 
         Page<Meter> paging = meterRepository.filterMetersPaging(
+                meterFilter.getBuildingId(),
                 meterFilter.getRoomCode(),
                 meterFilter.getMeterType(),
+                meterFilter.getKeyword(), // thêm keyword vào
                 pageable
         );
 
-        List<MeterResponse> meter = paging.getContent().stream()
+        List<MeterResponse> meterList = paging.getContent().stream()
                 .map(meterMapper::toMeterResponse)
                 .toList();
 
@@ -67,8 +70,12 @@ public class MeterServiceImpl implements MeterService {
                         .build())
                 .build();
 
-        return PaginatedResponse.<MeterResponse>builder().data(meter).meta(meta).build();
+        return PaginatedResponse.<MeterResponse>builder()
+                .data(meterList)
+                .meta(meta)
+                .build();
     }
+
 
     @Override
     public MeterResponse createMeter(MeterCreationRequest request) {
@@ -77,7 +84,7 @@ public class MeterServiceImpl implements MeterService {
         }
         Meter meter = meterMapper.toMeterCreation(request);
         Room room = roomRepository
-                .findById(request.getRoomCode())
+                .findByRoomCode(request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
         meter.setRoomCode(room.getId());
 

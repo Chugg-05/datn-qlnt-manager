@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.service;
 
+import com.example.datn_qlnt_manager.common.MeterType;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterCreationRequest;

@@ -159,6 +159,7 @@ public enum ErrorCode {
     FLOOR_NOT_FOUND(404, "floor not found.", HttpStatus.NOT_FOUND),
     ROOM_NOT_FOUND(404, "Room not found", HttpStatus.NOT_FOUND),
     TENANT_NOT_FOUND(404, "Tenant not found", HttpStatus.NOT_FOUND),
+    METER_READING_NOT_FOUND(404, "Meter reading not found", HttpStatus.NOT_FOUND),
     ASSET_TYPE_NAME_INVALID(404, "Asset type can not be blank.", HttpStatus.NOT_FOUND),
     ASSET_GROUP_INVALID(404, "Asset group must not be null.", HttpStatus.NOT_FOUND),
     DESCRIPTION_INVALID(404, "Description asset type can not be blank.", HttpStatus.NOT_FOUND),

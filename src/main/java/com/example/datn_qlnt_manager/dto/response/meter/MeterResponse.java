@@ -19,7 +19,7 @@ public class MeterResponse {
     String serviceCode;
     MeterType meterType;
     String meterName;
-    String meterId;
+    String meterCode;
     LocalDate manufactureDate;
     Integer initialIndex;
     String description;

@@ -47,17 +47,6 @@ public interface RoomRepository extends JpaRepository<Room, String> {
             Pageable pageable);
 
 
-    //	@Query("""
-//			SELECT
-//				COUNT(CASE WHEN r.status IN (
-//					com.example.datn_qlnt_manager.common.RoomStatus.DANG_THUE,
-//					com.example.datn_qlnt_manager.common.RoomStatus.DA_DAT_COC
-//				) THEN 1 END),
-//				SUM(CASE WHEN r.status = 'DANG_THUE' THEN 1 ELSE 0 END),
-//				SUM(CASE WHEN r.status = 'DA_DAT_COC' THEN 1 ELSE 0 END)
-//			FROM Room r
-//			WHERE r.floor.id = :floorId
-//		""")
     @Query("""
                 SELECT new com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse(
                     :buildingId,
@@ -108,4 +97,7 @@ public interface RoomRepository extends JpaRepository<Room, String> {
                                                  @Param("floorId") String floorId);
 
     int countByFloorId(String floorId);
+
+    Optional<Room> findByRoomCode(String roomCode);
+
 }

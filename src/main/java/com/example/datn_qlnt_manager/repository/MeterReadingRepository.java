@@ -1,0 +1,34 @@
+package com.example.datn_qlnt_manager.repository;
+
+import com.example.datn_qlnt_manager.common.MeterType;
+import com.example.datn_qlnt_manager.entity.MeterReading;
+import feign.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface MeterReadingRepository extends JpaRepository<MeterReading, String> {
+    @Query("""
+    SELECT m
+    FROM MeterReading m
+    JOIN Meter mt ON m.meterCode = mt.meterCode
+    JOIN Room r ON mt.roomCode = r.roomCode
+    JOIN Floor f ON r.floor.id = f.id
+    JOIN Building b ON f.building.id = b.id
+    WHERE (:buildingId IS NULL OR b.id = :buildingId)
+      AND (:roomCode IS NULL OR r.roomCode = :roomCode)
+      AND (:meterType IS NULL OR mt.meterType = :meterType)
+      AND (:month IS NULL OR m.month = :month)
+""")
+    Page<MeterReading> filterMeterReadings(
+            @Param("buildingId") String buildingId,
+            @Param("roomCode") String roomCode,
+            @Param("meterType") MeterType meterType,
+            @Param("month") Integer month,
+            Pageable pageable
+    );
+
+}
