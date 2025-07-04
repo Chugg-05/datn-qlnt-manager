@@ -8,7 +8,7 @@ import com.example.datn_qlnt_manager.dto.filter.ServiceRoomFilter;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
-import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatusStatistics;
+import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatistics;
 import com.example.datn_qlnt_manager.entity.Room;
 import com.example.datn_qlnt_manager.entity.ServiceRoom;
 import com.example.datn_qlnt_manager.entity.User;
@@ -126,7 +126,7 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     }
 
     @Override
-    public ServiceRoomStatusStatistics getServiceRoomStatusStatistics() {
+    public ServiceRoomStatistics getServiceRoomStatusStatistics() {
         User user = userService.getCurrentUser();
         return serviceRoomRepository.countByStatus(user.getId());
     }

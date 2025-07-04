@@ -1,7 +1,7 @@
 package com.example.datn_qlnt_manager.repository;
 
 import com.example.datn_qlnt_manager.common.ServiceRoomStatus;
-import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatusStatistics;
+import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatistics;
 import com.example.datn_qlnt_manager.entity.ServiceRoom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,5 +51,5 @@ public interface ServiceRoomRepository extends JpaRepository<ServiceRoom, String
     FROM ServiceRoom sr
     WHERE sr.room.floor.building.user.id = :userId
 """)
-    ServiceRoomStatusStatistics countByStatus(@Param("userId") String userId);
+    ServiceRoomStatistics countByStatus(@Param("userId") String userId);
 }

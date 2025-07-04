@@ -48,34 +48,32 @@ public class TenantServiceImpl implements TenantService {
     CodeGeneratorService codeGeneratorService;
 
     @Override
-    public PaginatedResponse<TenantResponse> filterTenants(TenantFilter filter, int page, int size) {
+    public PaginatedResponse<TenantResponse> getPageAndSearchAndFilterTenantByUserId(TenantFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
 
-        Page<Tenant> paging = tenantRepository.filterTenantPaging(
+        Page<Tenant> paging = tenantRepository.getPageAndSearchAndFilterTenantByUserId(
                 user.getId(),
                 filter.getQuery(),
                 filter.getGender(),
                 filter.getTenantStatus(),
                 pageable);
 
-        List<TenantResponse> tenants =
-                paging.getContent().stream().map(tenantMapper::toTenantResponse).toList();
+        return buildPaginatedTenantResponse(paging, page, size);
+    }
 
-        Meta<?> meta = Meta.builder()
-                .pagination(Pagination.builder()
-                        .count(paging.getNumberOfElements())
-                        .perPage(size)
-                        .currentPage(page)
-                        .totalPages(paging.getTotalPages())
-                        .total(paging.getTotalElements())
-                        .build())
-                .build();
+    @Override
+    public PaginatedResponse<TenantResponse> getTenantWithStatusCancelByUserId(TenantFilter filter, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+        var user = userService.getCurrentUser();
 
-        return PaginatedResponse.<TenantResponse>builder()
-                .data(tenants)
-                .meta(meta)
-                .build();
+        Page<Tenant> paging = tenantRepository.getTenantWithStatusCancelByUserId(
+                user.getId(),
+                filter.getQuery(),
+                filter.getGender(),
+                pageable);
+
+        return buildPaginatedTenantResponse(paging, page, size);
     }
 
     @Transactional
@@ -235,5 +233,29 @@ public class TenantServiceImpl implements TenantService {
         if (tenantRepository.existsByIdentityCardNumber(request.getIdentityCardNumber())) {
             throw new AppException(ErrorCode.ID_NUMBER_EXISTED);
         }
+    }
+
+    private PaginatedResponse<TenantResponse> buildPaginatedTenantResponse(
+            Page<Tenant> paging, int page, int size) {
+
+        List<TenantResponse> tenants = paging.getContent()
+                .stream()
+                .map(tenantMapper::toTenantResponse)
+                .toList();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<TenantResponse>builder()
+                .data(tenants)
+                .meta(meta)
+                .build();
     }
 }

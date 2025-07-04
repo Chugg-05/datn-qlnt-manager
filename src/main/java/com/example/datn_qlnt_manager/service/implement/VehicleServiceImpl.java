@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.example.datn_qlnt_manager.common.BuildingStatus;
-import com.example.datn_qlnt_manager.entity.Building;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +25,6 @@ import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.VehicleMapper;
 import com.example.datn_qlnt_manager.repository.TenantRepository;
-import com.example.datn_qlnt_manager.repository.UserRepository;
 import com.example.datn_qlnt_manager.repository.VehicleRepository;
 import com.example.datn_qlnt_manager.service.UserService;
 import com.example.datn_qlnt_manager.service.VehicleService;
@@ -46,40 +43,44 @@ public class VehicleServiceImpl implements VehicleService {
     VehicleRepository vehicleRepository;
     VehicleMapper vehicleMapper;
     TenantRepository tenantRepository;
-    UserRepository userRepository;
     UserService userService;
 
     @Override
-    public PaginatedResponse<VehicleResponse> filterVehicles(VehicleFilter filter, int page, int size) {
+    public PaginatedResponse<VehicleResponse> getPageAndSearchAndFilterVehicleByUserId(
+            VehicleFilter filter,
+            int page,
+            int size
+    ) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
 
-        if (!userRepository.existsById(user.getId())) {
-            throw new AppException(ErrorCode.USER_NOT_FOUND);
-        }
-        filter.setUserId(user.getId());
+        Page<Vehicle> paging = vehicleRepository.getPageAndSearchAndFilterVehicleByUserId(
+                user.getId(),
+                filter.getVehicleType(),
+                filter.getLicensePlate(),
+                pageable
+        );
 
-        Page<Vehicle> paging = vehicleRepository.filterVehiclePaging(
-                filter.getUserId(), filter.getVehicleType(), filter.getLicensePlate(), pageable);
+        return buildPaginatedVehicleResponse(paging, page, size);
+    }
 
-        List<VehicleResponse> vehicles = paging.getContent().stream()
-                .map(vehicleMapper::toVehicleResponse)
-                .toList();
+    @Override
+    public PaginatedResponse<VehicleResponse> getVehicleWithStatusCancelByUserId(
+            VehicleFilter filter,
+            int page,
+            int size
+    ) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+        var user = userService.getCurrentUser();
 
-        Meta<?> meta = Meta.builder()
-                .pagination(Pagination.builder()
-                        .count(paging.getNumberOfElements())
-                        .perPage(size)
-                        .currentPage(page)
-                        .totalPages(paging.getTotalPages())
-                        .total(paging.getTotalElements())
-                        .build())
-                .build();
+        Page<Vehicle> paging = vehicleRepository.getVehicleWithStatusCancelByUserId(
+                user.getId(),
+                filter.getVehicleType(),
+                filter.getLicensePlate(),
+                pageable
+        );
 
-        return PaginatedResponse.<VehicleResponse>builder()
-                .data(vehicles)
-                .meta(meta)
-                .build();
+        return buildPaginatedVehicleResponse(paging, page, size);
     }
 
     @Override
@@ -160,4 +161,28 @@ public class VehicleServiceImpl implements VehicleService {
         }
         vehicleRepository.save(vehicle);
     }
+
+    private PaginatedResponse<VehicleResponse> buildPaginatedVehicleResponse(
+            Page<Vehicle> paging, int page, int size) {
+
+        List<VehicleResponse> vehicles = paging.getContent().stream()
+                .map(vehicleMapper::toVehicleResponse)
+                .toList();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<VehicleResponse>builder()
+                .data(vehicles)
+                .meta(meta)
+                .build();
+    }
+
 }

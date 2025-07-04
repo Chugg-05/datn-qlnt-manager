@@ -12,7 +12,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BuildingFilter {
-    String userId;
     String query;
     BuildingStatus status;
     BuildingType buildingType;

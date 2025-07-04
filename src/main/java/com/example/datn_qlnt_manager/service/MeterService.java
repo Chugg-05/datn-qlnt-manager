@@ -7,7 +7,8 @@ import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 
 public interface MeterService {
-    PaginatedResponse<MeterResponse> filterMeter(Integer page, Integer size, MeterFilter meterFilter);
+
+    PaginatedResponse<MeterResponse> getPageAndSearchAndFilterMeterByUserId(MeterFilter meterFilter, int page, int size);
 
     MeterResponse createMeter(MeterCreationRequest request);
 

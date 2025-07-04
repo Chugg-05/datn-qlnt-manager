@@ -34,14 +34,36 @@ public class BuildingController {
 
     @Operation(summary = "Phân trang, tìm kiếm, lọc tòa nhà")
     @GetMapping
-    public ApiResponse<List<BuildingResponse>> filterBuildings(
+    public ApiResponse<List<BuildingResponse>> getPageAndSearchAndFilterBuilding(
             @ModelAttribute BuildingFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
-        PaginatedResponse<BuildingResponse> result = buildingService.filterBuildings(filter, page, size);
+        PaginatedResponse<BuildingResponse> result = buildingService.getPageAndSearchAndFilterBuildingByUserId(
+                filter,
+                page,
+                size
+        );
 
         return ApiResponse.<List<BuildingResponse>>builder()
-                .message("Filter build successfully")
+                .message("Get building successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Phân trang, tìm kiếm, lọc tòa nhà đã hủy hoạt động (status = HUY_HOAT_DONG)")
+    @GetMapping("/cancel")
+    public ApiResponse<List<BuildingResponse>> getBuildingWithStatusCancel(
+            @ModelAttribute BuildingFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+        PaginatedResponse<BuildingResponse> result = buildingService.getBuildingWithStatusCancelByUserId(
+                filter,
+                page,
+                size);
+
+        return ApiResponse.<List<BuildingResponse>>builder()
+                .message("Get cancelled buildings successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();

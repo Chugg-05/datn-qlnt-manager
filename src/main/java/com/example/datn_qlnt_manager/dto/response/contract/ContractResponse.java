@@ -16,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContractResponse {
+    String id;
     String contractCode;
     String roomCode;
     Integer numberOfPeople;
