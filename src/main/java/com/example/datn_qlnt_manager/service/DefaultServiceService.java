@@ -7,7 +7,16 @@ import com.example.datn_qlnt_manager.dto.request.defaultService.DefaultServiceUp
 import com.example.datn_qlnt_manager.dto.response.defaultService.DefaultServiceResponse;
 
 public interface DefaultServiceService {
-    PaginatedResponse<DefaultServiceResponse> filterDefaultServices (DefaultServiceFilter filter, int page, int size);
+    PaginatedResponse<DefaultServiceResponse> getPageAndSearchAndFilterDefaultServiceByUserId (
+            DefaultServiceFilter filter,
+            int page,
+            int size);
+
+    PaginatedResponse<DefaultServiceResponse> getDefaultServiceWithStatusCancelByUserId(
+            DefaultServiceFilter filter,
+            int page,
+            int size
+    );
 
     DefaultServiceResponse createDefaultService(DefaultServiceCreationRequest request);
 

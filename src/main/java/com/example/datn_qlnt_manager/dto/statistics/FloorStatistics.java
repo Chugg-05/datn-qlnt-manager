@@ -15,4 +15,5 @@ public class FloorStatistics {
     Long totalFloors;
     Long activeFloors;
     Long inactiveFloors;
+    Long totalCancelledFloors;
 }

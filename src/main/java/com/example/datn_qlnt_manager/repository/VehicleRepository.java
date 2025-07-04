@@ -19,18 +19,35 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
 
     @Query(
             """
-		SELECT v FROM Vehicle v
-		INNER JOIN v.tenant t
-		WHERE (:vehicleType IS NULL OR v.vehicleType = :vehicleType)
-		AND (:licensePlate IS NULL OR v.licensePlate LIKE CONCAT('%', :licensePlate, '%') )
-		AND (:userId IS NULL OR t.owner.id = :userId)
-		AND v.vehicleStatus != com.example.datn_qlnt_manager.common.VehicleStatus.KHONG_SU_DUNG
-		""")
-    Page<Vehicle> filterVehiclePaging(
+                    SELECT v FROM Vehicle v
+                    INNER JOIN v.tenant t
+                    WHERE (:vehicleType IS NULL OR v.vehicleType = :vehicleType)
+                    AND (:licensePlate IS NULL OR v.licensePlate LIKE CONCAT('%', :licensePlate, '%') )
+                    AND (:userId IS NULL OR t.owner.id = :userId)
+                    AND v.vehicleStatus != 'KHONG_SU_DUNG'
+                    ORDER BY v.updatedAt DESC
+                    """)
+    Page<Vehicle> getPageAndSearchAndFilterVehicleByUserId(
             @Param("userId") String userId,
             @Param("vehicleType") VehicleType vehicleType,
             @Param("licensePlate") String licensePlate,
             Pageable pageable);
+
+	@Query(
+			"""
+        SELECT v FROM Vehicle v
+        INNER JOIN v.tenant t
+        WHERE (:vehicleType IS NULL OR v.vehicleType = :vehicleType)
+        AND (:licensePlate IS NULL OR v.licensePlate LIKE CONCAT('%', :licensePlate, '%') )
+        AND (:userId IS NULL OR t.owner.id = :userId)
+        AND v.vehicleStatus = 'KHONG_SU_DUNG'
+        ORDER BY v.updatedAt DESC
+        """)
+	Page<Vehicle> getVehicleWithStatusCancelByUserId(
+			@Param("userId") String userId,
+			@Param("vehicleType") VehicleType vehicleType,
+			@Param("licensePlate") String licensePlate,
+			Pageable pageable);
 
     boolean existsByLicensePlate(String licensePlate); // check trùng biển số xe
 

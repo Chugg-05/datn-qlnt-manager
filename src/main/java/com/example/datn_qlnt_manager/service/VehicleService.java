@@ -8,7 +8,13 @@ import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleResponse;
 import com.example.datn_qlnt_manager.dto.statistics.VehicleStatistics;
 
 public interface VehicleService {
-    PaginatedResponse<VehicleResponse> filterVehicles(VehicleFilter filter, int page, int size);
+    PaginatedResponse<VehicleResponse> getPageAndSearchAndFilterVehicleByUserId(VehicleFilter filter, int page, int size);
+
+    PaginatedResponse<VehicleResponse> getVehicleWithStatusCancelByUserId(
+            VehicleFilter filter,
+            int page,
+            int size
+    );
 
     VehicleResponse createVehicle(VehicleCreationRequest request);
 

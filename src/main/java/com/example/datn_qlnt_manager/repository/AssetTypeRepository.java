@@ -3,7 +3,6 @@ package com.example.datn_qlnt_manager.repository;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.datn_qlnt_manager.entity.Tenant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,16 +18,16 @@ public interface AssetTypeRepository extends JpaRepository<AssetType, String> {
     @Query(
         """
                         SELECT a FROM AssetType a
-                        INNER JOIN a.user u
-                        WHERE (:name IS NULL OR a.nameAssetType LIKE CONCAT('%', :name, '%'))
+                        WHERE a.user.id = :userId
+                        AND (:name IS NULL OR a.nameAssetType LIKE CONCAT('%', :name, '%'))
                         AND (:group IS NULL OR a.assetGroup = :group)
-                        AND u.id = :userId
                         ORDER BY a.updatedAt DESC
                 """)
-    Page<AssetType> filterAssetTypesPaging(
-            @Param("name") String nameAssetType, @Param("group") AssetGroup assetGroup, @Param("userId") String userId,
+    Page<AssetType> getPageAndSearchAndFilterAssetTypeByUserId(
+            @Param("name") String nameAssetType,
+            @Param("group") AssetGroup assetGroup,
+            @Param("userId") String userId,
             Pageable pageable);
-
 
     @Query("""
             SELECT at FROM AssetType at

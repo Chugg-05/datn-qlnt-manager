@@ -10,7 +10,6 @@ import com.example.datn_qlnt_manager.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.common.FloorStatus;
@@ -70,32 +69,46 @@ public class FloorServiceImpl implements FloorService {
     }
 
     @Override
-    public PaginatedResponse<FloorResponse> filterFloors(FloorFilter filter, int page, int size) {
+    public PaginatedResponse<FloorResponse> getPageAndSearchAndFilterFloorByUserId(
+            FloorFilter filter,
+            int page,
+            int size
+    ) {
         User user = userService.getCurrentUser();
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
-        Page<Floor> floorPage = floorRepository.filterFloorsPaging(
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+
+        Page<Floor> paging = floorRepository.getPageAndSearchAndFilterFloorByUserId(
                 user.getId(),
-                filter.getBuildingId(), filter.getStatus(), filter.getFloorType(), filter.getNameFloor(),
+                filter.getBuildingId(),
+                filter.getStatus(),
+                filter.getFloorType(),
+                filter.getNameFloor(),
                 filter.getMaxRoom(),
                 pageable);
 
-        List<FloorResponse> responses =
-                floorPage.getContent().stream().map(floorMapper::toResponse).toList();
+        return buildPaginatedFloorResponse(paging, page, size);
+    }
 
-        Meta<?> meta = Meta.builder()
-                .pagination(Pagination.builder()
-                        .count(floorPage.getNumberOfElements())
-                        .perPage(size)
-                        .currentPage(page)
-                        .totalPages(floorPage.getTotalPages())
-                        .total(floorPage.getTotalElements())
-                        .build())
-                .build();
-        return PaginatedResponse.<FloorResponse>builder()
-                .data(responses)
-                .meta(meta)
-                .build();
+    @Override
+    public PaginatedResponse<FloorResponse> getTenantWithStatusCancelByUserId(
+            FloorFilter filter,
+            int page,
+            int size
+    ) {
+        User user = userService.getCurrentUser();
+
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+
+        Page<Floor> paging = floorRepository.getFloorWithStatusCancelByUserId(
+                user.getId(),
+                filter.getBuildingId(),
+                filter.getFloorType(),
+                filter.getNameFloor(),
+                filter.getMaxRoom(),
+                pageable);
+
+        return buildPaginatedFloorResponse(paging, page, size);
     }
 
     @Override
@@ -137,15 +150,6 @@ public class FloorServiceImpl implements FloorService {
         return floorRepository.countFloorsByBuildingId(buildingId);
     }
 
-//    @Override
-//    public List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId) {
-//        return List.of();
-//    }
-
-    //    @Override
-//    public List<FloorBasicResponse> getFloorBasicByUserIdAndBuildingId(String userId, String buildingId) {
-//        return floorRepository.findAllFloorBasicByUserIdAndBuildingId(userId, buildingId);
-//    }
 @Override
 public List<FloorBasicResponse> getFloorBasicByBuildingId(String buildingId) {
     return floorRepository.findAllFloorBasicByBuildingId(buildingId);
@@ -166,5 +170,27 @@ public List<FloorBasicResponse> getFloorBasicByBuildingId(String buildingId) {
             throw new IllegalStateException("Cannot toggle status for deleted floor");
         }
         floorRepository.save(floor);
+    }
+
+    private PaginatedResponse<FloorResponse> buildPaginatedFloorResponse(
+            Page<Floor> paging, int page, int size) {
+
+        List<FloorResponse> floors =
+                paging.getContent().stream().map(floorMapper::toResponse).toList();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<FloorResponse>builder()
+                .data(floors)
+                .meta(meta)
+                .build();
     }
 }

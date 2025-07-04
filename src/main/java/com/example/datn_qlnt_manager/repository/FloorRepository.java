@@ -31,15 +31,39 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
                 AND (:floorType IS NULL OR f.floorType = :floorType)
                 AND f.status != 'KHONG_SU_DUNG'
                 AND f.building.user.id = :userId
+                ORDER BY f.updatedAt DESC
             """)
-    Page<Floor> filterFloorsPaging(@Param("userId") String userId, @Param("buildingId") String buildingId,
-                                   @Param("status") FloorStatus status,
-                                   @Param("floorType") FloorType floorType, @Param("nameFloor") String nameFloor,
-                                   @Param("maxRoom") Integer maxRoom, Pageable pageable);
+    Page<Floor> getPageAndSearchAndFilterFloorByUserId(
+            @Param("userId") String userId,
+            @Param("buildingId") String buildingId,
+            @Param("status") FloorStatus status,
+            @Param("floorType") FloorType floorType,
+            @Param("nameFloor") String nameFloor,
+            @Param("maxRoom") Integer maxRoom,
+            Pageable pageable
+    );
+
+    @Query("""
+            	SELECT f FROM Floor f
+            	JOIN f.building b
+            	WHERE (:buildingId IS NULL OR b.id = :buildingId)
+            	AND (:nameFloor IS NULL OR f.nameFloor LIKE CONCAT('%', :nameFloor, '%'))
+            	AND (:maxRoom IS NULL OR f.maximumRoom =: maxRoom)
+                AND (:floorType IS NULL OR f.floorType = :floorType)
+                AND f.status = 'KHONG_SU_DUNG'
+                AND f.building.user.id = :userId
+                ORDER BY f.updatedAt DESC
+            """)
+    Page<Floor> getFloorWithStatusCancelByUserId(
+            @Param("userId") String userId,
+            @Param("buildingId") String buildingId,
+            @Param("floorType") FloorType floorType,
+            @Param("nameFloor") String nameFloor,
+            @Param("maxRoom") Integer maxRoom,
+            Pageable pageable
+    );
 
     Optional<Floor> findByNameFloorAndBuilding_Id(String nameFloor, String buildingId);
-
-    Optional<Floor> findByNameFloorAndBuilding_IdAndIdNot(String nameFloor, String buildingId, String excludedId);
 
     // thông kê
     @Query("""
@@ -47,31 +71,14 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
             		:buildingId,
             		COUNT(f.id),
             		SUM(CASE WHEN f.status = 'HOAT_DONG' THEN 1 ELSE 0 END),
-            		SUM(CASE WHEN f.status = 'TAM_KHOA' THEN 1 ELSE 0 END)
+            		SUM(CASE WHEN f.status = 'TAM_KHOA' THEN 1 ELSE 0 END),
+            		SUM(CASE WHEN f.status = 'KHONG_SU_DUNG' THEN 1 ELSE 0 END)
             	)
             	FROM Floor f
             	WHERE f.building.id = :buildingId
-                AND f.status != 'KHONG_SU_DUNG'
             """)
     FloorStatistics countFloorsByBuildingId(@Param("buildingId") String buildingId);
 
-
-    // hiển thị tầng theo userId và buildingId
-//    @Query("""
-//                SELECT new com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse(
-//                    f.id,
-//                    f.nameFloor,
-//                    f.floorType,
-//                    f.status,
-//                    f.maximumRoom,
-//                    b.buildingName
-//                )
-//                FROM Floor f
-//                JOIN f.building b
-//                WHERE b.user.id = :userId
-//                  AND b.id = :buildingId
-//                ORDER BY f.updatedAt DESC
-//            """)
     @Query("""
                 SELECT new com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse(
                     f.id,
@@ -87,10 +94,6 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
                 ORDER BY f.updatedAt DESC
             """)
     List<FloorBasicResponse> findAllFloorBasicByBuildingId(@Param("buildingId") String buildingId);
-
-//    List<FloorBasicResponse> findAllFloorBasicByUserIdAndBuildingId(
-//            @Param("userId") String userId,
-//            @Param("buildingId") String buildingId);
 
     @Query("SELECT f.nameFloor FROM Floor f WHERE f.building.id = :buildingId")
     List<String> findAllNamesByBuildingId(@Param("buildingId") String buildingId);

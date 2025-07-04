@@ -36,11 +36,31 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
                     AND t.tenantStatus != 'HUY_BO'
                     ORDER BY t.updatedAt DESC
                     """)
-    Page<Tenant> filterTenantPaging(
+    Page<Tenant> getPageAndSearchAndFilterTenantByUserId(
             @Param("userId") String userId,
             @Param("query") String query,
             @Param("gender") Gender gender,
             @Param("tenantStatus") TenantStatus tenantStatus,
+            Pageable pageable);
+
+    @Query(
+            """
+                    SELECT t FROM Tenant t
+                    WHERE (t.owner.id = :userId)
+                    AND (:query IS NULL OR t.customerCode LIKE CONCAT('%', :query, '%'))
+                    AND (:query IS NULL OR t.fullName LIKE CONCAT('%', :query, '%'))
+                    AND (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%'))
+                    AND (:query IS NULL OR t.phoneNumber LIKE CONCAT('%', :query, '%'))
+                    AND (:query IS NULL OR t.identityCardNumber LIKE CONCAT('%', :query, '%'))
+                    AND (:query IS NULL OR t.address LIKE CONCAT('%', :query, '%'))
+                    AND (:gender IS NULL OR t.gender = :gender)
+                    AND t.tenantStatus = 'HUY_BO'
+                    ORDER BY t.updatedAt DESC
+                    """)
+    Page<Tenant> getTenantWithStatusCancelByUserId(
+            @Param("userId") String userId,
+            @Param("query") String query,
+            @Param("gender") Gender gender,
             Pageable pageable);
 
     @Query(

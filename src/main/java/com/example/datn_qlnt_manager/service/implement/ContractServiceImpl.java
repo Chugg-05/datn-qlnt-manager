@@ -52,37 +52,39 @@ public class ContractServiceImpl implements ContractService {
     UserService userService;
 
     @Override
-    public PaginatedResponse<ContractResponse> filterContracts(ContractFilter filter, int page, int size) {
+    public PaginatedResponse<ContractResponse> getPageAndSearchAndFilterTenantByUserId
+            (ContractFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
-        filter.setUserId(user.getId());
 
-        Page<Contract> paging = contractRepository.filterContractPaging(
-                filter.getUserId(),
+        Page<Contract> paging = contractRepository.getPageAndSearchAndFilterContractByUserId(
+                user.getId(),
                 filter.getQuery(),
                 filter.getGender(),
                 filter.getStatus(),
                 pageable
         );
 
-        List<ContractResponse> contracts = paging.getContent().stream()
-                .map(contractMapper::toContractResponse)
-                .toList();
+        return buildPaginatedContractResponse(paging, page, size);
+    }
 
-        Meta<?> meta = Meta.builder()
-                .pagination(Pagination.builder()
-                        .count(paging.getNumberOfElements())
-                        .perPage(size)
-                        .currentPage(page)
-                        .totalPages(paging.getTotalPages())
-                        .total(paging.getTotalElements())
-                        .build())
-                .build();
+    @Override
+    public PaginatedResponse<ContractResponse> getContractWithStatusCancelByUserId(
+            ContractFilter filter,
+            int page,
+            int size
+    ) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+        var user = userService.getCurrentUser();
 
-        return PaginatedResponse.<ContractResponse>builder()
-                .data(contracts)
-                .meta(meta)
-                .build();
+        Page<Contract> paging = contractRepository.getContractWithStatusCancelByUserId(
+                user.getId(),
+                filter.getQuery(),
+                filter.getGender(),
+                pageable
+        );
+
+        return buildPaginatedContractResponse(paging, page, size);
     }
 
     @Transactional
@@ -241,4 +243,27 @@ public class ContractServiceImpl implements ContractService {
         contractRepository.delete(contract);
     }
 
+    private PaginatedResponse<ContractResponse> buildPaginatedContractResponse(
+            Page<Contract> paging, int page, int size) {
+
+        List<ContractResponse> contracts = paging.getContent()
+                .stream()
+                .map(contractMapper::toContractResponse)
+                .toList();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<ContractResponse>builder()
+                .data(contracts)
+                .meta(meta)
+                .build();
+    }
 }

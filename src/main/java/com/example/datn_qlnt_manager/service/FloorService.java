@@ -16,7 +16,13 @@ public interface FloorService {
     FloorResponse createFloor(FloorCreationRequest request);
 
     // hiển thị, lọc, tìm kiếm
-    PaginatedResponse<FloorResponse> filterFloors(FloorFilter filter, int page, int size);
+    PaginatedResponse<FloorResponse> getPageAndSearchAndFilterFloorByUserId(FloorFilter filter, int page, int size);
+
+    PaginatedResponse<FloorResponse> getTenantWithStatusCancelByUserId(
+            FloorFilter filter,
+            int page,
+            int size
+    );
 
     // sửa
     FloorResponse updateFloor(String id, FloorUpdateRequest request);

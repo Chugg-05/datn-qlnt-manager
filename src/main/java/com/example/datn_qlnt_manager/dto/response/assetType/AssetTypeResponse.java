@@ -17,7 +17,7 @@ public class AssetTypeResponse {
     String userId;
     String nameAssetType;
     AssetGroup assetGroup;
-    String discriptionAssetType;
+    String descriptionAssetType;
     Instant createdAt;
     Instant updatedAt;
 }

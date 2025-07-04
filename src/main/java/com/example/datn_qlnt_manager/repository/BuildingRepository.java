@@ -23,8 +23,7 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
     @Query(
             """
                     	SELECT b FROM Building b
-                    	INNER JOIN b.user u
-                    	WHERE (u.id = :userId)
+                    	WHERE (b.user.id = :userId)
                     	AND ((:query IS NULL OR b.buildingCode LIKE CONCAT('%', :query, '%') )
                     	OR (:query IS NULL OR  b.buildingName LIKE  CONCAT('%', :query, '%') )
                     	OR (:query IS NULL OR b.address LIKE CONCAT('%', :query, '%') ))
@@ -33,10 +32,27 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
                     	AND b.status != 'HUY_HOAT_DONG'
                     	ORDER BY b.updatedAt DESC
                     """)
-    Page<Building> filterBuildingPaging(
+    Page<Building> getPageAndSearchAndFilterBuildingByUserId(
             @Param("userId") String userId,
             @Param("query") String query,
             @Param("status") BuildingStatus status,
+            @Param("buildingType") BuildingType buildingType,
+            Pageable pageable);
+
+    @Query(
+            """
+                    	SELECT b FROM Building b
+                    	WHERE (b.user.id = :userId)
+                    	AND ((:query IS NULL OR b.buildingCode LIKE CONCAT('%', :query, '%') )
+                    	OR (:query IS NULL OR  b.buildingName LIKE  CONCAT('%', :query, '%') )
+                    	OR (:query IS NULL OR b.address LIKE CONCAT('%', :query, '%') ))
+                    	AND (:buildingType IS NULL OR b.buildingType = :buildingType)
+                    	AND b.status = 'HUY_HOAT_DONG'
+                    	ORDER BY b.updatedAt DESC
+                    """)
+    Page<Building> getBuildingWithStatusCancelByUserId(
+            @Param("userId") String userId,
+            @Param("query") String query,
             @Param("buildingType") BuildingType buildingType,
             Pageable pageable);
 
