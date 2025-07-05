@@ -170,6 +170,17 @@ public enum ErrorCode {
     CONTRACT_NOT_FOUND(404, "Contract not found.", HttpStatus.NOT_FOUND),
     DEFAULT_SERVICE_NOT_FOUND(404, "Default Service not found.", HttpStatus.NOT_FOUND),
 
+    // feedback
+    FEED_BACK_NOT_FOUND(404, "Feed back not found.", HttpStatus.NOT_FOUND),
+    CONTENT_NOT_FOUND(404, "Content must not be blank.", HttpStatus.BAD_REQUEST),
+    RATING_NOT_FOUND(404, "Rating must not be null.", HttpStatus.BAD_REQUEST),
+    RATING_TOO_LOW(404, "Rating must be at least 1.", HttpStatus.BAD_REQUEST),
+    RATING_TOO_HIGH(404, "Rating must not exceed 5.", HttpStatus.BAD_REQUEST),
+    FEED_BACK_STATUS_NOT_FOUND(404, "Feedback status must not be null.", HttpStatus.BAD_REQUEST),
+    FEED_BACK_TYPE_NOT_FOUND(404, "Feedback status must not be null.", HttpStatus.BAD_REQUEST),
+    FEED_BACK_DUPLICATED(404,"Feedback was duplicated", HttpStatus.BAD_REQUEST),
+    NOTE_NOT_FOUND(404, "Note not found.", HttpStatus.NOT_FOUND),
+
 
     // Code: 409
     OTP_ALREADY_SENT(409, "OTP already sent.", HttpStatus.BAD_REQUEST),
