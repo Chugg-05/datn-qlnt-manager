@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import com.example.datn_qlnt_manager.common.AssetBeLongTo;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -98,12 +99,15 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public PaginatedResponse<AssetResponse> getAllAssets(String nameAsset, int page, int size) {
-        var user = userService.getCurrentUser();
+    public PaginatedResponse<AssetResponse> getAllAssets(String nameAsset, AssetBeLongTo assetBeLongTo, int page, int size) {
+        var user = userService.getCurrentUser(); // Lấy user đang đăng nhập
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
-        Page<Asset> assets = assetRepository.searchAssets(nameAsset, user.getId(), pageable);
 
-        List<AssetResponse> responses = assets.getContent().stream().map(assetMapper::toResponse).toList();
+        Page<Asset> assets = assetRepository.searchAssets(nameAsset, assetBeLongTo, user.getId(), pageable);
+
+        List<AssetResponse> responses = assets.getContent().stream()
+                .map(assetMapper::toResponse)
+                .toList();
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
