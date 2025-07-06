@@ -11,7 +11,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContractFilter {
-    String userId;
     String query;
     Gender gender;
     ContractStatus status;

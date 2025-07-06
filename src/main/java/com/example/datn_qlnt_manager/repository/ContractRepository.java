@@ -34,16 +34,38 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 		AND c.status != 'DA_HUY'
 		ORDER BY c.updatedAt DESC
 	""")
-    Page<Contract> filterContractPaging(
+    Page<Contract> getPageAndSearchAndFilterContractByUserId(
             @Param("userId") String userId,
             @Param("query") String query,
             @Param("gender") Gender gender,
             @Param("status") ContractStatus status,
             Pageable pageable);
 
+	@Query(
+            """
+		SELECT c FROM Contract c
+		INNER JOIN c.tenants t
+		WHERE (c.room.floor.building.user.id = :userId)
+		AND ((:query IS NULL OR c.contractCode LIKE CONCAT('%', :query, '%') )
+		OR (:query IS NULL OR  c.room.roomCode LIKE  CONCAT('%', :query, '%') )
+		OR (:query IS NULL OR  t.fullName LIKE  CONCAT('%', :query, '%') )
+		OR (:query IS NULL OR  t.phoneNumber LIKE  CONCAT('%', :query, '%') )
+		OR (:query IS NULL OR  t.identityCardNumber LIKE  CONCAT('%', :query, '%') )
+		OR (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%') ))
+		AND (:gender IS NULL OR t.gender = :gender)
+		AND c.status = 'DA_HUY'
+		ORDER BY c.updatedAt DESC
+	""")
+    Page<Contract> getContractWithStatusCancelByUserId(
+            @Param("userId") String userId,
+            @Param("query") String query,
+            @Param("gender") Gender gender,
+            Pageable pageable);
+
 
 	@Query("""
     SELECT new com.example.datn_qlnt_manager.dto.response.contract.ContractDetailResponse(
+    	c.id,
         c.contractCode,
         r.roomCode,
         owner.fullName,

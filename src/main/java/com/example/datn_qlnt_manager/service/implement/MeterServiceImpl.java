@@ -41,7 +41,7 @@ public class MeterServiceImpl implements MeterService {
 
 
     @Override
-    public PaginatedResponse<MeterResponse> filterMeter(Integer page, Integer size, MeterFilter meterFilter) {
+    public PaginatedResponse<MeterResponse> getPageAndSearchAndFilterMeterByUserId(MeterFilter meterFilter, int page, int size) {
         Pageable pageable = PageRequest.of(
                 Math.max(0, page - 1),
                 size,

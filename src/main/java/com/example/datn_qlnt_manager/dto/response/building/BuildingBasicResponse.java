@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BuildingBasicResponse {
-    String buildingId;
+    String id;
     String buildingName;
     String address;
     BuildingType buildingType;

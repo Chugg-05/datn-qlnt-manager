@@ -11,7 +11,7 @@ import java.util.List;
 public interface AssetTypeService {
     AssetTypeResponse createAssetType(AssetTypeCreationRequest request);
 
-    PaginatedResponse<AssetTypeResponse> getAssetTypes(AssetTypeFilter filter, int page, int size);
+    PaginatedResponse<AssetTypeResponse> getPageAndSearchAndFilterAssetTypeByUserId(AssetTypeFilter filter, int page, int size);
 
     AssetTypeResponse updateAssetType(String assetTypeId, AssetTypeUpdateRequest request);
 

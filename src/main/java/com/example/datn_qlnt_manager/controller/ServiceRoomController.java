@@ -6,7 +6,7 @@ import com.example.datn_qlnt_manager.dto.filter.ServiceRoomFilter;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
-import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatusStatistics;
+import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatistics;
 import com.example.datn_qlnt_manager.service.ServiceRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -81,8 +81,8 @@ public class ServiceRoomController {
 
     @Operation(summary = "Thống kê dịch vụ phòng theo trạng thái (theo người dùng hiện tại)")
     @GetMapping("/statistics")
-    public ApiResponse<ServiceRoomStatusStatistics> getStatisticsByStatus() {
-        return ApiResponse.<ServiceRoomStatusStatistics>builder()
+    public ApiResponse<ServiceRoomStatistics> getStatisticsByStatus() {
+        return ApiResponse.<ServiceRoomStatistics>builder()
                 .message("Statistics fetched successfully")
                 .data(serviceRoomService.getServiceRoomStatusStatistics())
                 .build();

@@ -16,8 +16,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BuildingCreationRequest {
 
-    String userId;
-
     @NotBlank(message = "INVALID_BUILDING_NAME_BLANK")
     String buildingName;
 

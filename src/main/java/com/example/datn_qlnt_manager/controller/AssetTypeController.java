@@ -1,7 +1,6 @@
 package com.example.datn_qlnt_manager.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -43,13 +42,13 @@ public class AssetTypeController {
 
     @Operation(summary = "Hiển thị danh sách loại tài sản có phân trang, lọc (nhóm), tìm kiếm (tên)")
     @GetMapping
-    public ApiResponse<PaginatedResponse<AssetTypeResponse>> getAssetTypes(
+    public ApiResponse<PaginatedResponse<AssetTypeResponse>> getPageAndSearchAndFilterAssetType(
             @Valid @ModelAttribute AssetTypeFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
         return ApiResponse.<PaginatedResponse<AssetTypeResponse>>builder()
                 .message("Asset type list loaded successfully")
-                .data(assetTypeService.getAssetTypes(filter, page, size))
+                .data(assetTypeService.getPageAndSearchAndFilterAssetTypeByUserId(filter, page, size))
                 .build();
     }
 
