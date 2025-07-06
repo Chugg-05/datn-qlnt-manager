@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.controller;
 
+import com.example.datn_qlnt_manager.common.AssetBeLongTo;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetCreationRequest;
@@ -47,17 +48,17 @@ public class AssetController {
                 .build();
     }
 
-    @Operation(summary = "Hiển thị danh sách tài sản, Tìm kiếm (tên tài sản)")
+    @Operation(summary = "Hiển thị danh sách tài sản theo user đang đăng nhập, có tìm kiếm & lọc")
     @GetMapping
-    public ApiResponse<List<AssetResponse>> getAllAssets(
+    public ApiResponse<PaginatedResponse<AssetResponse>> getAllAssets(
             @RequestParam(required = false) String nameAsset,
+            @RequestParam(required = false) AssetBeLongTo assetBeLongTo,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size
-    ){
-        PaginatedResponse<AssetResponse> result = assetService.getAllAssets(nameAsset, page, size);
-        return ApiResponse.<List<AssetResponse>>builder()
-                .data(result.getData())
-                .meta(result.getMeta())
+    ) {
+        return ApiResponse.<PaginatedResponse<AssetResponse>>builder()
+                .data(assetService.getAllAssets(nameAsset, assetBeLongTo, page, size))
+                .message("Asset has been found!")
                 .build();
     }
     @Operation(summary = "Sửa tài sản")
