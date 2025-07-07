@@ -12,17 +12,17 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MeterReadingRepository extends JpaRepository<MeterReading, String> {
     @Query("""
-    SELECT m
-    FROM MeterReading m
-    JOIN Meter mt ON m.meterCode = mt.meterCode
-    JOIN Room r ON mt.roomCode = r.roomCode
-    JOIN Floor f ON r.floor.id = f.id
-    JOIN Building b ON f.building.id = b.id
-    WHERE (:buildingId IS NULL OR b.id = :buildingId)
-      AND (:roomCode IS NULL OR r.roomCode = :roomCode)
-      AND (:meterType IS NULL OR mt.meterType = :meterType)
-      AND (:month IS NULL OR m.month = :month)
-""")
+                SELECT mr
+                FROM MeterReading mr
+                JOIN mr.meter m
+                JOIN m.room r
+                JOIN r.floor f
+                JOIN f.building b
+                WHERE (:buildingId IS NULL OR b.id = :buildingId)
+                  AND (:roomCode IS NULL OR r.roomCode = :roomCode)
+                  AND (:meterType IS NULL OR m.meterType = :meterType)
+                  AND (:month IS NULL OR mr.month = :month)
+            """)
     Page<MeterReading> filterMeterReadings(
             @Param("buildingId") String buildingId,
             @Param("roomCode") String roomCode,
@@ -30,5 +30,6 @@ public interface MeterReadingRepository extends JpaRepository<MeterReading, Stri
             @Param("month") Integer month,
             Pageable pageable
     );
+
 
 }

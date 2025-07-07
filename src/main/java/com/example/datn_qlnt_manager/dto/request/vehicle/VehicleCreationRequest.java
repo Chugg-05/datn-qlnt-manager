@@ -25,8 +25,6 @@ public class VehicleCreationRequest {
     @NotNull(message = "INVALID_VEHICLE_TYPE_BLANK")
     VehicleType vehicleType;
 
-    @NotBlank(message = "INVALID_LICENSE_PLATE_BLANK")
-    @Pattern(regexp = "^[0-9]{2}[A-Z]{1,2}[0-9]?-[0-9]{4,5}$", message = "INVALID_LICENSE_PLATE")
     String licensePlate;
 
     @NotNull(message = "INVALID_VEHICLE_STATUS_BLANK")

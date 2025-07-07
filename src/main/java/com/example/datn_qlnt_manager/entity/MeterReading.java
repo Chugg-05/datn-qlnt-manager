@@ -15,8 +15,9 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MeterReading extends AbstractEntity{
 
-    @Column(name = "cong_to_id", nullable = false, length = 36)
-    String meterCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cong_to_id", nullable = false)
+    Meter meter;
 
     @Column(name = "chi_so_cu", nullable = false)
     Integer previousIndex;

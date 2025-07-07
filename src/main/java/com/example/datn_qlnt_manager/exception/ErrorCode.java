@@ -146,6 +146,13 @@ public enum ErrorCode {
     TENANT_ALREADY_IN_CONTRACT(400, "This tenant already has a lease. Information cannot be changed.", HttpStatus.BAD_REQUEST),
     CANNOT_ADD_MORE_FLOORS(400, "Cannot add more floors than building's real number of floors.", HttpStatus.BAD_REQUEST),
 
+    INVALID_TITLE_BLANK(400, "Title cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_JOB_PRIORITY_LEVEL_NULL(400, "Job priority level cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_JOB_STATUS_NULL(400, "Job status cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_COMPLETION_DEADLINE_NULL(400, "Completion deadline cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_JOB_OBJECT_TYPE_NULL(400, "Job object type cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_COMPLETION_DEADLINE_PAST(400, "The deadline cannot be in the past.", HttpStatus.BAD_REQUEST),
+
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     BUILDING_ID_NOT_FOUND(404, "Building ID not found.", HttpStatus.NOT_FOUND),
@@ -170,6 +177,18 @@ public enum ErrorCode {
     SERVICE_NOT_FOUND(404, "service not found.", HttpStatus.NOT_FOUND),
     CONTRACT_NOT_FOUND(404, "Contract not found.", HttpStatus.NOT_FOUND),
     DEFAULT_SERVICE_NOT_FOUND(404, "Default Service not found.", HttpStatus.NOT_FOUND),
+    JOB_NOT_FOUND(404, "Job not found.", HttpStatus.NOT_FOUND),
+
+    // feedback
+    FEED_BACK_NOT_FOUND(404, "Feed back not found.", HttpStatus.NOT_FOUND),
+    CONTENT_NOT_FOUND(404, "Content must not be blank.", HttpStatus.BAD_REQUEST),
+    RATING_NOT_FOUND(404, "Rating must not be null.", HttpStatus.BAD_REQUEST),
+    RATING_TOO_LOW(404, "Rating must be at least 1.", HttpStatus.BAD_REQUEST),
+    RATING_TOO_HIGH(404, "Rating must not exceed 5.", HttpStatus.BAD_REQUEST),
+    FEED_BACK_STATUS_NOT_FOUND(404, "Feedback status must not be null.", HttpStatus.BAD_REQUEST),
+    FEED_BACK_TYPE_NOT_FOUND(404, "Feedback status must not be null.", HttpStatus.BAD_REQUEST),
+    FEED_BACK_DUPLICATED(404,"Feedback was duplicated", HttpStatus.BAD_REQUEST),
+    NOTE_NOT_FOUND(404, "Note not found.", HttpStatus.NOT_FOUND),
 
 
     // Code: 409

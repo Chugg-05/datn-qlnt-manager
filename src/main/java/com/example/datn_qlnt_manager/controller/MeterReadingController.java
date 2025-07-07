@@ -2,6 +2,8 @@ package com.example.datn_qlnt_manager.controller;
 
 import com.example.datn_qlnt_manager.common.MeterType;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.MeterReadingFilter;
 import com.example.datn_qlnt_manager.dto.request.meterReading.MeterReadingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.meterReading.MeterReadingUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.meterReading.MeterReadingResponse;
@@ -15,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/meter-reading")
 @RequiredArgsConstructor
@@ -25,15 +29,17 @@ public class MeterReadingController {
     MeterReadingService meterReadingService;
 
     @GetMapping
-    public ApiResponse<Page<MeterReadingResponse>> filterMeterReadings(
-            @RequestParam(required = false) String buildingId,
-            @RequestParam(required = false) String roomCode,
-            @RequestParam(required = false) MeterType meterType,
-            @RequestParam(required = false) Integer month,
-            Pageable pageable
+    public ApiResponse<List<MeterReadingResponse>> filterMeterReadings(
+            @ModelAttribute MeterReadingFilter meterReadingFilter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size
     ) {
-        return ApiResponse.<Page<MeterReadingResponse>>builder()
-                .data(meterReadingService.filterMeterReadings(buildingId, roomCode, meterType, month, pageable))
+        PaginatedResponse<MeterReadingResponse> result = meterReadingService
+                .getPageAndSearchAndFilterMeterReadingByUserId(meterReadingFilter, page, size);
+
+        return ApiResponse.<List<MeterReadingResponse>>builder()
+                .data(result.getData())
+                .meta(result.getMeta())
                 .message("Filter meter readings success")
                 .code(200)
                 .build();

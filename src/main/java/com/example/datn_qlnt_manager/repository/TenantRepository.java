@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.repository;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.tenant.TenantSelectResponse;
 import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -126,10 +127,10 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
             	ORDER BY t.updatedAt DESC
             """)
     List<Tenant> findAllTenantsByUserId(@Param("userId") String userId);
-    
-	Optional<Tenant> findByUserId(String userId);
 
-	boolean existsByEmail(String email);
+    Optional<Tenant> findByUserId(String userId);
+
+    boolean existsByEmail(String email);
 
     boolean existsByPhoneNumber(String phoneNumber);
 
@@ -138,7 +139,11 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
     @Query("""
                 SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(t.id, t.fullName)
                 FROM Tenant t
+                JOIN t.contracts c
                 WHERE t.owner.id = :userId
+                  AND t.isRepresentative = true
+                  AND c.room IS NOT NULL AND c.room.id = :roomId
+                  AND t.tenantStatus != 'HUY_BO'
             """)
-    List<IdAndName> findAllTenantsByOwnerId(@Param("userId") String userId);
+    List<TenantSelectResponse> findAllTenantsByOwnerIdAndRoomId(@Param("userId") String userId, @Param("roomId") String roomId );
 }

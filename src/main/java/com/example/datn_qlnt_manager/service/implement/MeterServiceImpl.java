@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import com.example.datn_qlnt_manager.common.Meta;
+import com.example.datn_qlnt_manager.common.MeterType;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
@@ -42,21 +43,16 @@ public class MeterServiceImpl implements MeterService {
 
     @Override
     public PaginatedResponse<MeterResponse> getPageAndSearchAndFilterMeterByUserId(MeterFilter meterFilter, int page, int size) {
-        Pageable pageable = PageRequest.of(
-                Math.max(0, page - 1),
-                size,
-                Sort.by(Sort.Order.desc("updatedAt"))
-        );
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
         Page<Meter> paging = meterRepository.filterMetersPaging(
                 meterFilter.getBuildingId(),
                 meterFilter.getRoomCode(),
                 meterFilter.getMeterType(),
-                meterFilter.getKeyword(), // thêm keyword vào
                 pageable
         );
 
-        List<MeterResponse> meterList = paging.getContent().stream()
+        List<MeterResponse> meterResponses = paging.getContent().stream()
                 .map(meterMapper::toMeterResponse)
                 .toList();
 
@@ -71,10 +67,11 @@ public class MeterServiceImpl implements MeterService {
                 .build();
 
         return PaginatedResponse.<MeterResponse>builder()
-                .data(meterList)
+                .data(meterResponses)
                 .meta(meta)
                 .build();
     }
+
 
 
     @Override
@@ -84,9 +81,10 @@ public class MeterServiceImpl implements MeterService {
         }
         Meter meter = meterMapper.toMeterCreation(request);
         Room room = roomRepository
-                .findByRoomCode(request.getRoomCode())
+                .findById(request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-        meter.setRoomCode(room.getId());
+        meter.setRoom(room);
+
 
         Instant now = Instant.now();
         meter.setCreatedAt(now);
@@ -103,15 +101,15 @@ public class MeterServiceImpl implements MeterService {
         Room room = roomRepository.findById(request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
-        Meter electricityWaterMeter = meterMapper.toMeterUpdate(request);
+        Meter meter = meterMapper.toMeterUpdate(request);
 
-        electricityWaterMeter.setId(existingMeter.getId());
+        meter.setId(existingMeter.getId());
 
-        electricityWaterMeter.setRoomCode(room.getId());
+        meter.setRoom(room);
         existingMeter.setCreatedAt(existingMeter.getCreatedAt());
-        electricityWaterMeter.setUpdatedAt(Instant.now());
+        meter.setUpdatedAt(Instant.now());
 
-        return meterMapper.toMeterResponse(meterRepository.save(electricityWaterMeter));
+        return meterMapper.toMeterResponse(meterRepository.save(meter));
     }
 
     @Override

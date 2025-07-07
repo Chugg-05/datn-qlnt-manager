@@ -17,15 +17,13 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Meter extends AbstractEntity {
 
-//    @Id
-//    @Column(length = 36)
-//    String id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "phong_id", nullable = false)
+    Room room;
 
-    @Column(name = "phong_id", nullable = false, length = 36)
-    String roomCode;
-
-    @Column(name = "dich_vu_id", length = 36)
-    String serviceCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dich_vu_id")
+    Service service;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "loai_cong_to", nullable = false, length = 10)

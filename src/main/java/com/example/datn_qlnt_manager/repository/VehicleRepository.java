@@ -19,14 +19,14 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
 
     @Query(
             """
-		SELECT v FROM Vehicle v
-		INNER JOIN v.tenant t
-		WHERE (:vehicleType IS NULL OR v.vehicleType = :vehicleType)
-		AND (:licensePlate IS NULL OR v.licensePlate LIKE CONCAT('%', :licensePlate, '%') )
-		AND (:userId IS NULL OR t.owner.id = :userId)
-		AND v.vehicleStatus != 'KHONG_SU_DUNG'
-		ORDER BY v.updatedAt DESC
-		""")
+                    SELECT v FROM Vehicle v
+                    INNER JOIN v.tenant t
+                    WHERE (:vehicleType IS NULL OR v.vehicleType = :vehicleType)
+                    AND (:licensePlate IS NULL OR v.licensePlate LIKE CONCAT('%', :licensePlate, '%') )
+                    AND (:userId IS NULL OR t.owner.id = :userId)
+                    AND v.vehicleStatus != 'KHONG_SU_DUNG'
+                    ORDER BY v.updatedAt DESC
+                    """)
     Page<Vehicle> getPageAndSearchAndFilterVehicleByUserId(
             @Param("userId") String userId,
             @Param("vehicleType") VehicleType vehicleType,
@@ -51,10 +51,10 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
 
     boolean existsByLicensePlate(String licensePlate); // check trùng biển số xe
 
-    @Query("SELECT COUNT(v) FROM Vehicle v WHERE v.tenant.owner.id = :userId")
+    @Query("SELECT COUNT(v) FROM Vehicle v WHERE v.tenant.user.id = :userId")
     long countAll(@Param("userId") String userId);
 
-    @Query("SELECT v.vehicleType, COUNT(v) FROM Vehicle v WHERE v.tenant.owner.id = :userId GROUP BY v.vehicleType")
+    @Query("SELECT v.vehicleType, COUNT(v) FROM Vehicle v WHERE v.tenant.user.id = :userId GROUP BY v.vehicleType")
     List<Object[]> countByVehicleType(@Param("userId") String userId);
 
 	Optional<Vehicle> findByIdAndVehicleStatusNot(String id, VehicleStatus vehicleStatus);
