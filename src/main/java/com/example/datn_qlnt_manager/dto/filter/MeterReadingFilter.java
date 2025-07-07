@@ -4,14 +4,17 @@ import com.example.datn_qlnt_manager.common.MeterType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MeterFilter {
+public class MeterReadingFilter {
     String buildingId;
     String roomCode;
     MeterType meterType;
-    String keyword;
+    Integer month;
+    Integer year;
+
 }

@@ -13,6 +13,7 @@ import com.example.datn_qlnt_manager.entity.Room;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, String> {
@@ -122,4 +123,7 @@ public interface RoomRepository extends JpaRepository<Room, String> {
                                                  @Param("floorId") String floorId);
 
     int countByFloorId(String floorId);
+
+    Optional<Room> findByRoomCode(String roomCode);
+
 }

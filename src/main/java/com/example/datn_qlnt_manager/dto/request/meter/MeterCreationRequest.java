@@ -3,17 +3,17 @@ package com.example.datn_qlnt_manager.dto.request.meter;
 import com.example.datn_qlnt_manager.common.MeterType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MeterCreationRequest {
 
     @NotBlank(message = "Room code must not be blank")
