@@ -29,7 +29,7 @@ import java.util.List;
 public class MeterController {
     MeterService meterService;
 
-    @Operation(summary = "Phân trang, tìm kiếm, lọc congto")
+    @Operation(summary = "Phân trang, lọc công tơ theo tòa, phòng, loại công tơ, mã/tên")
     @GetMapping
     public ApiResponse<List<MeterResponse>> getPageAndSearchAndFilterMeter(
             @ModelAttribute MeterFilter meterFilter,
@@ -43,7 +43,7 @@ public class MeterController {
         );
 
         return ApiResponse.<List<MeterResponse>>builder()
-                .message("Filter users successfully")
+                .message("Filter meters successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();

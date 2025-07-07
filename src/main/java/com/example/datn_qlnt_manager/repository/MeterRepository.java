@@ -7,18 +7,28 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface MeterRepository extends JpaRepository<Meter, String> {
 
     @Query("""
-               SELECT m
-               FROM Meter m
-               INNER JOIN Room r ON m.roomCode = r.roomCode
-               WHERE (:meterType IS NULL OR m.meterType = :meterType)
-               ORDER BY m.updatedAt DESC
+                SELECT m
+                FROM Meter m
+                JOIN m.room r
+                JOIN r.floor f
+                JOIN f.building b
+                WHERE (:buildingId IS NULL OR b.id = :buildingId)
+                  AND (:roomCode IS NULL OR r.roomCode = :roomCode)
+                  AND (:meterType IS NULL OR m.meterType = :meterType)
+                ORDER BY m.updatedAt DESC
             """)
     Page<Meter> filterMetersPaging(
+            @Param("buildingId") String buildingId,
             @Param("roomCode") String roomCode,
             @Param("meterType") MeterType meterType,
-            Pageable pageable);
+            Pageable pageable
+    );
+
+
 }
