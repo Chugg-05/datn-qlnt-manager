@@ -103,7 +103,7 @@ public class VehicleServiceImpl implements VehicleService {
 
         Tenant tenant = tenantRepository
                 .findById(request.getTenantId())
-                .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
         Vehicle vehicle = vehicleMapper.toVehicle(request);
         vehicle.setTenant(tenant);
         vehicle.setCreatedAt(Instant.now());
