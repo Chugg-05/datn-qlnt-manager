@@ -36,7 +36,7 @@ public class ServiceCreationRequest {
 
     String description;
 
-    @NotNull
-    String userId;
+//    @NotNull
+//    String userId;
 
 }

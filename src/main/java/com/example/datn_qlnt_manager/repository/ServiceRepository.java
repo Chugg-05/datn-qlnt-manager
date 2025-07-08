@@ -1,9 +1,11 @@
 package com.example.datn_qlnt_manager.repository;
 
+import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.common.ServiceAppliedBy;
 import com.example.datn_qlnt_manager.common.ServiceStatus;
 import com.example.datn_qlnt_manager.common.ServiceType;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
+import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Service;
 import feign.Param;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Repository
 public interface ServiceRepository extends JpaRepository<Service, String> {
@@ -49,6 +52,6 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
             """)
     ServiceCountResponse getServiceStats();
 
-
+    Optional<Service> findByIdAndStatusNot(String id, ServiceStatus status);
     // boolean existsByTenDichVu(String name);
 }

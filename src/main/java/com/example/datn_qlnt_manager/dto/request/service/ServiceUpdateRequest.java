@@ -35,6 +35,6 @@ public class ServiceUpdateRequest {
 
     String description;
 
-    @NotNull
-    String usedId;
+//    @NotNull
+//    String usedId;
 }

@@ -92,10 +92,9 @@ public class ServiceController {
 
     @PutMapping("/toggle-status/{id}")
     public ApiResponse<ServiceResponse> toggleServiceStatus(
-            @PathVariable("id") String serviceId,
-            @RequestParam("status") ServiceStatus status) {
+            @PathVariable("id") String serviceId) {
 
-        ServiceResponse response = serviceService.toggleServiceStatus(serviceId, status);
+        ServiceResponse response = serviceService.toggleServiceStatus(serviceId);
 
         return ApiResponse.<ServiceResponse>builder()
                 .message("Cập nhật trạng thái dịch vụ thành công")

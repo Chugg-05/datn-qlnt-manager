@@ -20,7 +20,7 @@ public interface ServiceService {
 
     void softDeleteServiceById(String id);
 
-    ServiceResponse toggleServiceStatus(String serviceId, ServiceStatus status);
+    ServiceResponse toggleServiceStatus(String serviceId);
 
     ServiceCountResponse statisticsServiceByStatus();
 
