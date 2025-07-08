@@ -34,4 +34,7 @@ public class ServiceUpdateRequest {
     ServiceStatus status;
 
     String description;
+
+    @NotNull
+    String usedId;
 }

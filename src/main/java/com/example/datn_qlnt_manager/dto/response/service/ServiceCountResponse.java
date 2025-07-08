@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ServiceCountResponse {
-    Long getTotal;
-    Long getTotalHoatDong;
-    Long getTotalTamKhoa;
+    Long getTotal = 0L;
+    Long getTotalHoatDong = 0L;
+    Long getTotalKhongHoatDong = 0L;
 }

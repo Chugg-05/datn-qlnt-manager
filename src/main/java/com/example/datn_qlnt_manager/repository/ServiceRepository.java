@@ -43,7 +43,7 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
                 SELECT new com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse(
                     COUNT(s.id),
                     SUM(CASE WHEN s.status = 'HOAT_DONG' THEN 1 ELSE 0 END),
-                    SUM(CASE WHEN s.status = 'TAM_KHOA' THEN 1 ELSE 0 END)
+                    SUM(CASE WHEN s.status = 'KHONG_SU_DUNG' THEN 1 ELSE 0 END)
                 )
                 FROM Service s
             """)
