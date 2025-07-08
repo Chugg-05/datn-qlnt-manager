@@ -131,4 +131,22 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
         return serviceRoomRepository.countByStatus(user.getId());
     }
 
+    @Override
+    public void toggleServiceRoomStatus(String id) {
+        ServiceRoom serviceRoom = serviceRoomRepository
+                .findByIdAndServiceRoomStatusNot(id, ServiceRoomStatus.DA_HUY)
+                .orElseThrow(() -> new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
+
+        if (serviceRoom.getServiceRoomStatus() == ServiceRoomStatus.DANG_SU_DUNG) {
+            serviceRoom.setServiceRoomStatus(ServiceRoomStatus.TAM_DUNG);
+            serviceRoom.setUpdatedAt(Instant.now());
+        } else if (serviceRoom.getServiceRoomStatus() == ServiceRoomStatus.TAM_DUNG) {
+            serviceRoom.setServiceRoomStatus(ServiceRoomStatus.DANG_SU_DUNG);
+            serviceRoom.setUpdatedAt(Instant.now());
+        } else {
+            throw new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND);
+        }
+        serviceRoomRepository.save(serviceRoom);
+    }
+
 }

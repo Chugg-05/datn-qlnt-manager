@@ -21,5 +21,5 @@ public interface ServiceRoomService {
     ServiceRoomStatistics getServiceRoomStatusStatistics();
 
 
-
+    void toggleServiceRoomStatus(String id);
 }

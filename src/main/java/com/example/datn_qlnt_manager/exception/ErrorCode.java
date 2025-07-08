@@ -154,6 +154,7 @@ public enum ErrorCode {
     INVALID_JOB_OBJECT_TYPE_NULL(400, "Job object type cannot be null.", HttpStatus.BAD_REQUEST),
     INVALID_COMPLETION_DEADLINE_PAST(400, "The deadline cannot be in the past.", HttpStatus.BAD_REQUEST),
 
+
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     BUILDING_ID_NOT_FOUND(404, "Building ID not found.", HttpStatus.NOT_FOUND),

@@ -87,4 +87,13 @@ public class ServiceRoomController {
                 .data(serviceRoomService.getServiceRoomStatusStatistics())
                 .build();
     }
+
+    @Operation(summary = "Cập nhật trạng thái: dang su dung <-> tam dung")
+    @PutMapping("/toggle-status/{serviceRoomId}")
+    public ApiResponse<String> toggleServiceRoomStatus (@PathVariable("serviceRoomId") String serviceRoomId) {
+        serviceRoomService.toggleServiceRoomStatus(serviceRoomId);
+        return ApiResponse.<String>builder()
+                .message("Service room status update successful!")
+                .build();
+    }
 }
