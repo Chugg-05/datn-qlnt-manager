@@ -4,6 +4,7 @@ import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.common.ServiceAppliedBy;
 import com.example.datn_qlnt_manager.common.ServiceStatus;
 import com.example.datn_qlnt_manager.common.ServiceType;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Service;
@@ -63,5 +64,15 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
     Optional<Service> findByIdAndStatusNot(String id, ServiceStatus status);
 
     List<Service> user(User user);
+
+    @Query("""
+            SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(
+            s.id,
+            CONCAT(s.name,' - ',CAST(s.price as string), ' VNĐ')
+            )
+            FROM Service s
+            WHERE s.user.id = :userId AND s.status != 'KHONG_SU_DUNG'
+            """)
+    List<IdAndName> findAllByUserId(String userId);
     // boolean existsByTenDichVu(String name);
 }

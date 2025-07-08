@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.common.DefaultServiceStatus;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
@@ -7,10 +8,20 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.DefaultServiceFilter;
 import com.example.datn_qlnt_manager.dto.request.defaultService.DefaultServiceCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.defaultService.DefaultServiceUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
+import com.example.datn_qlnt_manager.dto.response.building.DefaultServiceBuildingSelectResponse;
+import com.example.datn_qlnt_manager.dto.response.defaultService.DefaultServiceInitResponse;
 import com.example.datn_qlnt_manager.dto.response.defaultService.DefaultServiceResponse;
+import com.example.datn_qlnt_manager.dto.response.floor.DefaultServiceFloorSelectResponse;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorSelectResponse;
+import com.example.datn_qlnt_manager.dto.response.room.RoomSelectResponse;
+import com.example.datn_qlnt_manager.dto.response.tenant.TenantSelectResponse;
+import com.example.datn_qlnt_manager.dto.statistics.DefaultServiceStatistics;
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.DefaultService;
 import com.example.datn_qlnt_manager.entity.Floor;
+import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.DefaultServiceMapper;
@@ -31,6 +42,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -111,7 +123,7 @@ public class DefaultServiceServiceImpl implements DefaultServiceService {
 
 
         DefaultService defaultService = defaultServiceMapper.toDefaultService(request);
-        if (request.getPricesApply() == null){
+        if (request.getPricesApply() == null) {
             defaultService.setPricesApply(service.getPrice());
         }
         defaultService.setService(service);
@@ -141,6 +153,65 @@ public class DefaultServiceServiceImpl implements DefaultServiceService {
         defaultServiceRepository.deleteById(defaultServiceId);
     }
 
+    @Override
+    public DefaultServiceInitResponse initDefaultService() {
+        User user = userService.getCurrentUser();
+
+        List<IdAndName> services = serviceRepository.findAllByUserId(user.getId()).stream().toList();
+
+        List<DefaultServiceBuildingSelectResponse> buildings = buildingRepository.findAllBuildingsByUserId(user.getId())
+                .stream()
+                .map(b -> {
+                    List<DefaultServiceFloorSelectResponse> floorSelectResponses =
+                            floorRepository.findAllFloorsByUserIdAndBuildingId(user.getId(), b.getId()).stream()
+                                    .map(f -> new DefaultServiceFloorSelectResponse(f.getId(), f.getName()))
+                                    .toList();
+                    return DefaultServiceBuildingSelectResponse.builder()
+                            .id(b.getId())
+                            .name(b.getName())
+                            .floors(floorSelectResponses)
+                            .build();
+                })
+                .toList();
+
+        return DefaultServiceInitResponse.builder()
+                .services(services)
+                .buildings(buildings)
+                .build();
+    }
+
+    @Override
+    public void softDeleteDefaultServiceById(String defaultServiceId) {
+        DefaultService defaultService = defaultServiceRepository
+                .findById(defaultServiceId)
+                .orElseThrow(() -> new AppException(ErrorCode.DEFAULT_SERVICE_NOT_FOUND));
+        defaultService.setDefaultServiceStatus(DefaultServiceStatus.HUY_BO);
+        defaultService.setUpdatedAt(Instant.now());
+        defaultServiceRepository.save(defaultService);
+    }
+
+    @Override
+    public void toggleStatus(String defaultServiceId) {
+        DefaultService defaultService = defaultServiceRepository
+                .findByIdAndDefaultServiceStatusNot(defaultServiceId, DefaultServiceStatus.HUY_BO)
+                .orElseThrow(() -> new AppException(ErrorCode.DEFAULT_SERVICE_NOT_FOUND));
+
+        if (defaultService.getDefaultServiceStatus() == DefaultServiceStatus.HOAT_DONG) {
+            defaultService.setDefaultServiceStatus(DefaultServiceStatus.TAM_DUNG);
+        } else if (defaultService.getDefaultServiceStatus() == DefaultServiceStatus.TAM_DUNG) {
+            defaultService.setDefaultServiceStatus(DefaultServiceStatus.HOAT_DONG);
+        } else {
+            throw new IllegalStateException("Cannot toggle status for deleted default service");
+        }
+        defaultService.setUpdatedAt(Instant.now());
+        defaultServiceRepository.save(defaultService);
+    }
+
+    @Override
+    public DefaultServiceStatistics statisticsDefaultServiceByStatus() {
+        User user = userService.getCurrentUser();
+        return defaultServiceRepository.statisticsDefaultServiceByStatusWhereUserId(user.getId());
+    }
 
     private PaginatedResponse<DefaultServiceResponse> buildPaginatedDefaultServiceResponse(
             Page<DefaultService> paging, int page, int size) {
