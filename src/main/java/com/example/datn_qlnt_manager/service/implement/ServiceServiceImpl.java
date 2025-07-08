@@ -42,6 +42,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     ServiceRepository serviceRepository;
     ServiceMapper serviceMapper;
+    UserRepository userRepository;
     UserService userService;
 
 
@@ -51,7 +52,6 @@ public class ServiceServiceImpl implements ServiceService {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Order.desc("updatedAt")));
 
         Page<Service> paging = serviceRepository.filterServicesPaging(
-                user.getId(),
                 filter.getQuery(),
                 filter.getServiceType(),
                 filter.getMinPrice(),

@@ -66,6 +66,7 @@ public class RoomServiceImpl implements RoomService {
                 roomFilter.getMinAcreage(),
                 roomFilter.getMaximumPeople(),
                 roomFilter.getNameFloor(),
+                roomFilter.getFloorId(),
                 pageable);
 
         return  buildPaginatedRoomResponse(paging, page, size);
