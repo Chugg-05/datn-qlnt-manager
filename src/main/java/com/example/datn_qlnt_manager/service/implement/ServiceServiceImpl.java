@@ -48,6 +48,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public PaginatedResponse<ServiceResponse> getPageAndSearchAndFilterService(ServiceFilter filter, int page, int size) {
+        User user = userService.getCurrentUser();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Order.desc("updatedAt")));
 
         Page<Service> paging = serviceRepository.filterServicesPaging(
@@ -105,6 +106,7 @@ public class ServiceServiceImpl implements ServiceService {
         Service updated = serviceMapper.toServiceUpdate(request);
         updated.setId(existing.getId());
         updated.setCreatedAt(existing.getCreatedAt());
+        updated.setUser(existing.getUser());
         updated.setUpdatedAt(Instant.now());
 
         return serviceMapper.toServiceResponse(serviceRepository.save(updated));
@@ -146,7 +148,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public ServiceCountResponse statisticsServiceByStatus() {
-        return serviceRepository.getServiceStats();
+        return serviceRepository.getServiceStats(userService.getCurrentUser().getId());
     }
 
 }

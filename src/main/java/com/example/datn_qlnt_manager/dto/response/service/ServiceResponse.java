@@ -9,6 +9,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Data
 @Getter
@@ -27,4 +28,6 @@ public class ServiceResponse {
     ServiceStatus status;
     String description;
     UserResponse user;
+    Instant createdAt;
+    Instant updatedAt;
 }
