@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
+import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import org.springframework.data.domain.Page;
@@ -32,18 +33,20 @@ public interface RoomRepository extends JpaRepository<Room, String> {
                 AND (:nameFloor IS NULL OR f.nameFloor LIKE CONCAT('%', :nameFloor, '%'))
                 AND r.status != com.example.datn_qlnt_manager.common.RoomStatus.HUY_HOAT_DONG
                 AND (f.building.user IS NOT NULL AND f.building.user.id = :userId)
+                AND (:floorId IS NULL OR r.floor.id = :floorId)
                 ORDER BY f.updatedAt DESC
             """)
     Page<Room> getPageAndSearchAndFilterRoomByUserId(
             @Param("userId") String userId,
             @Param("buildingId") String buildingId,
-            @Param("status") String status,
+            @Param("status") RoomStatus status,
             @Param("maxPrice") Double maxPrice,
             @Param("minPrice") Double minPrice,
             @Param("maxAcreage") Double maxAcreage,
             @Param("minAcreage") Double minAcreage,
             @Param("maxPerson") Integer maxPerson,
             @Param("nameFloor") String nameFloor,
+            @Param("floorId") String floorId ,
             Pageable pageable);
 
     @Query("""

@@ -1,9 +1,9 @@
 package com.example.datn_qlnt_manager.service.implement;
 
-import com.example.datn_qlnt_manager.common.AssetBeLongTo;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.AssetFilter;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
@@ -99,28 +99,36 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public PaginatedResponse<AssetResponse> getAllAssets(String nameAsset, AssetBeLongTo assetBeLongTo, int page, int size) {
-        var user = userService.getCurrentUser(); // Lấy user đang đăng nhập
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+    public PaginatedResponse<AssetResponse> getPageAndSearchAndFilterAssetByUserId(AssetFilter filter, int page, int size) {
+        User currentUser = userService.getCurrentUser();
 
-        Page<Asset> assets = assetRepository.searchAssets(nameAsset, assetBeLongTo, user.getId(), pageable);
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by("updatedAt").descending());
 
-        List<AssetResponse> responses = assets.getContent().stream()
+        Page<Asset> pageAsset = assetRepository.findAllByFilterAndUserId(
+                filter.getNameAsset(),
+                filter.getAssetBeLongTo(),
+                filter.getAssetStatus(),
+                currentUser.getId(),
+                pageable
+        );
+
+        List<AssetResponse> assetResponses = pageAsset.getContent()
+                .stream()
                 .map(assetMapper::toResponse)
                 .toList();
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
-                        .count(assets.getNumberOfElements())
+                        .count(pageAsset.getNumberOfElements())
                         .perPage(size)
                         .currentPage(page)
-                        .totalPages(assets.getTotalPages())
-                        .total(assets.getTotalElements())
+                        .totalPages(pageAsset.getTotalPages())
+                        .total(pageAsset.getTotalElements())
                         .build())
                 .build();
 
         return PaginatedResponse.<AssetResponse>builder()
-                .data(responses)
+                .data(assetResponses)
                 .meta(meta)
                 .build();
     }

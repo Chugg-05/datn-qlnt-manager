@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.controller;
 import com.example.datn_qlnt_manager.common.AssetBeLongTo;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.AssetFilter;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInitResponse;
@@ -48,19 +49,20 @@ public class AssetController {
                 .build();
     }
 
-    @Operation(summary = "Hiển thị danh sách tài sản theo user đang đăng nhập, có tìm kiếm & lọc")
+
+    @Operation(summary = "Hiển thị danh sách tài sản có phân trang, lọc, tìm kiếm")
     @GetMapping
-    public ApiResponse<PaginatedResponse<AssetResponse>> getAllAssets(
-            @RequestParam(required = false) String nameAsset,
-            @RequestParam(required = false) AssetBeLongTo assetBeLongTo,
+    public ApiResponse<PaginatedResponse<AssetResponse>> getPageAndSearchAndFilterAsset(
+            @Valid @ModelAttribute AssetFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size
     ) {
         return ApiResponse.<PaginatedResponse<AssetResponse>>builder()
-                .data(assetService.getAllAssets(nameAsset, assetBeLongTo, page, size))
-                .message("Asset has been found!")
+                .message("Asset list loaded successfully")
+                .data(assetService.getPageAndSearchAndFilterAssetByUserId(filter, page, size))
                 .build();
     }
+
     @Operation(summary = "Sửa tài sản")
     @PutMapping("/{assetId}")
     public ApiResponse<AssetResponse> updateAsset(
