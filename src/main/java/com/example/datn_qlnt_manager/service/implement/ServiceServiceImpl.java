@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import com.example.datn_qlnt_manager.dto.filter.ServiceFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,18 +38,22 @@ public class ServiceServiceImpl implements ServiceService {
     ServiceMapper serviceMapper;
 
     @Override
-    public PaginatedResponse<ServiceResponse> filterService(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(
-                Math.max(0, page - 1),
-                size,
-                Sort.by(Sort.Order.desc("createdAt")));
+    public PaginatedResponse<ServiceResponse> getPageAndSearchAndFilterService(ServiceFilter filter, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Order.desc("updatedAt")));
 
-        Page<Service> paging = serviceRepository.filterServicePaging(null, pageable);
+        Page<Service> paging = serviceRepository.filterServicesPaging(
+                filter.getQuery(),
+                filter.getServiceType(),
+                filter.getMinPrice(),
+                filter.getMaxPrice(),
+                filter.getServiceStatus(),
+                filter.getServiceAppliedBy(),
+                pageable
+        );
 
-        List<ServiceResponse> services = paging.getContent().stream()
+        List<ServiceResponse> serviceResponses = paging.getContent().stream()
                 .map(serviceMapper::toServiceResponse)
                 .toList();
-
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
@@ -61,10 +66,11 @@ public class ServiceServiceImpl implements ServiceService {
                 .build();
 
         return PaginatedResponse.<ServiceResponse>builder()
-                .data(services)
+                .data(serviceResponses)
                 .meta(meta)
                 .build();
     }
+
 
     @Override
     public ServiceResponse createService(ServiceCreationRequest request) {
