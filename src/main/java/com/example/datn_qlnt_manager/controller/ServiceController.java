@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.ServiceFilter;
 import com.example.datn_qlnt_manager.dto.request.service.ServiceCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceResponse;
@@ -26,11 +27,12 @@ public class ServiceController {
 
     @Operation(summary = "Phân trang danh sách dịch vụ")
     @GetMapping
-    public ApiResponse<List<ServiceResponse>> findAllServices(
+    public ApiResponse<List<ServiceResponse>> getPageAndSearchAndFilterServices(
+            @ModelAttribute ServiceFilter serviceFilter,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "15") Integer size) {
 
-        PaginatedResponse<ServiceResponse> result = serviceService.filterService(page, size);
+        PaginatedResponse<ServiceResponse> result = serviceService.getPageAndSearchAndFilterService(serviceFilter, page, size);
 
         return ApiResponse.<List<ServiceResponse>>builder()
                 .message("Lấy danh sách dịch vụ thành công")
@@ -39,7 +41,8 @@ public class ServiceController {
                 .build();
     }
 
-    @PostMapping("/add")
+
+    @PostMapping
     public ApiResponse<ServiceResponse> createService(@RequestBody @Valid ServiceCreationRequest request) {
         return ApiResponse.<ServiceResponse>builder()
                 .data(serviceService.createService(request))
