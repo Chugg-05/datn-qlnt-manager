@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.repository;
 import com.example.datn_qlnt_manager.common.ServiceAppliedBy;
 import com.example.datn_qlnt_manager.common.ServiceStatus;
 import com.example.datn_qlnt_manager.common.ServiceType;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
 import com.example.datn_qlnt_manager.entity.Service;
 import feign.Param;
 import org.springframework.data.domain.Page;
@@ -16,10 +17,12 @@ import java.math.BigDecimal;
 @Repository
 public interface ServiceRepository extends JpaRepository<Service, String> {
 
+
     @Query("""
                 SELECT s
                 FROM Service s
-                WHERE (:query IS NULL OR s.name LIKE %:query%)
+                WHERE (:query IS NULL OR s.name LIKE LOWER(CONCAT('%', :query, '%')))
+                  AND (:query IS NULL OR s.unit LIKE LOWER(CONCAT('%', :query, '%')))
                   AND (:serviceType IS NULL OR s.type = :serviceType)
                   AND (:minPrice IS NULL OR s.price >= :minPrice)
                   AND (:maxPrice IS NULL OR s.price <= :maxPrice)
@@ -35,6 +38,16 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
             @Param("serviceAppliedBy") ServiceAppliedBy serviceAppliedBy,
             Pageable pageable
     );
+
+    @Query("""
+                SELECT new com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse(
+                    COUNT(s.id),
+                    SUM(CASE WHEN s.status = 'HOAT_DONG' THEN 1 ELSE 0 END),
+                    SUM(CASE WHEN s.status = 'TAM_KHOA' THEN 1 ELSE 0 END)
+                )
+                FROM Service s
+            """)
+    ServiceCountResponse getServiceStats();
 
 
     // boolean existsByTenDichVu(String name);

@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import com.example.datn_qlnt_manager.dto.filter.ServiceFilter;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -112,5 +113,20 @@ public class ServiceServiceImpl implements ServiceService {
         serviceRepository.save(service);
     }
 
+    @Override
+    public ServiceResponse toggleServiceStatus(String serviceId, ServiceStatus status) {
+        Service service = serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+
+        service.setStatus(status);
+        service.setUpdatedAt(Instant.now());
+
+        return serviceMapper.toServiceResponse(serviceRepository.save(service));
+    }
+
+    @Override
+    public ServiceCountResponse statisticsServiceByStatus() {
+        return serviceRepository.getServiceStats();
+    }
 
 }
