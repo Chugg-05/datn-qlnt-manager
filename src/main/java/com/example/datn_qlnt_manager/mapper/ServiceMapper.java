@@ -9,6 +9,8 @@ import org.mapstruct.Mapping;
 
 @Mapper
 public interface ServiceMapper {
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "updatedAt", source = "updatedAt")
     ServiceResponse toServiceResponse(Service service);
 
  //   @Mapping(target = "", ignore = true)
