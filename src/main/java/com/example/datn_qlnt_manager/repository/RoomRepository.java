@@ -93,19 +93,6 @@ public interface RoomRepository extends JpaRepository<Room, String> {
     RoomCountResponse getRoomStatsByBuilding(@Param("buildingId") String buildingId);
 
     @Query("""
-                SELECT
-                    COUNT(CASE WHEN r.status IN (
-                        com.example.datn_qlnt_manager.common.RoomStatus.DANG_THUE,
-                        com.example.datn_qlnt_manager.common.RoomStatus.DA_DAT_COC
-                    ) THEN 1 END) AS totalInUse,
-                    SUM(CASE WHEN r.status = 'DANG_THUE' THEN 1 ELSE 0 END) AS totalDangThue,
-                    SUM(CASE WHEN r.status = 'DA_DAT_COC' THEN 1 ELSE 0 END) AS totalDatCoc
-                FROM Room r
-                WHERE r.floor.building.user.id = :userId
-            """)
-    RoomCountResponse getRoomStatsByUser(@Param("userId") String userId);
-
-    @Query("""
             	SELECT r FROM Room r
             	WHERE r.floor.building.user.id = :userId
             	ORDER BY r.updatedAt DESC
@@ -127,6 +114,5 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 
     int countByFloorId(String floorId);
 
-    Optional<Room> findByRoomCode(String roomCode);
 
 }

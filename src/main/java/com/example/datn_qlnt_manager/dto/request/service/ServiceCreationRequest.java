@@ -35,4 +35,8 @@ public class ServiceCreationRequest {
     ServiceStatus status;
 
     String description;
+
+//    @NotNull
+//    String userId;
+
 }

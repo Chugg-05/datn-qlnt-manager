@@ -3,17 +3,19 @@ package com.example.datn_qlnt_manager.dto.response.service;
 import com.example.datn_qlnt_manager.common.ServiceAppliedBy;
 import com.example.datn_qlnt_manager.common.ServiceStatus;
 import com.example.datn_qlnt_manager.common.ServiceType;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.datn_qlnt_manager.dto.response.UserResponse;
+import com.example.datn_qlnt_manager.entity.User;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
 @Data
-@AllArgsConstructor
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ServiceResponse {
     String id;
@@ -24,4 +26,5 @@ public class ServiceResponse {
     ServiceAppliedBy appliedBy;
     ServiceStatus status;
     String description;
+    UserResponse user;
 }

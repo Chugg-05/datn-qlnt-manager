@@ -1,9 +1,13 @@
 package com.example.datn_qlnt_manager.controller;
 
+import com.example.datn_qlnt_manager.common.ServiceStatus;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.ServiceFilter;
 import com.example.datn_qlnt_manager.dto.request.service.ServiceCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceResponse;
 import com.example.datn_qlnt_manager.service.ServiceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,11 +30,12 @@ public class ServiceController {
 
     @Operation(summary = "Phân trang danh sách dịch vụ")
     @GetMapping
-    public ApiResponse<List<ServiceResponse>> findAllServices(
+    public ApiResponse<List<ServiceResponse>> getPageAndSearchAndFilterServices(
+            @ModelAttribute ServiceFilter serviceFilter,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "15") Integer size) {
 
-        PaginatedResponse<ServiceResponse> result = serviceService.filterService(page, size);
+        PaginatedResponse<ServiceResponse> result = serviceService.getPageAndSearchAndFilterService(serviceFilter, page, size);
 
         return ApiResponse.<List<ServiceResponse>>builder()
                 .message("Lấy danh sách dịch vụ thành công")
@@ -39,7 +44,8 @@ public class ServiceController {
                 .build();
     }
 
-    @PostMapping("/add")
+
+    @PostMapping
     public ApiResponse<ServiceResponse> createService(@RequestBody @Valid ServiceCreationRequest request) {
         return ApiResponse.<ServiceResponse>builder()
                 .data(serviceService.createService(request))
@@ -72,6 +78,27 @@ public class ServiceController {
         serviceService.softDeleteServiceById(id);
         return ApiResponse.<Void>builder()
                 .message("Soft delete service success.")
+                .code(200)
+                .build();
+    }
+
+    @GetMapping("/statistics")
+    public ApiResponse<ServiceCountResponse> statisticsServiceByStatus() {
+        return ApiResponse.<ServiceCountResponse>builder()
+                .message("Count service success!")
+                .data(serviceService.statisticsServiceByStatus())
+                .build();
+    }
+
+    @PutMapping("/toggle-status/{id}")
+    public ApiResponse<ServiceResponse> toggleServiceStatus(
+            @PathVariable("id") String serviceId) {
+
+        ServiceResponse response = serviceService.toggleServiceStatus(serviceId);
+
+        return ApiResponse.<ServiceResponse>builder()
+                .message("Cập nhật trạng thái dịch vụ thành công")
+                .data(response)
                 .code(200)
                 .build();
     }

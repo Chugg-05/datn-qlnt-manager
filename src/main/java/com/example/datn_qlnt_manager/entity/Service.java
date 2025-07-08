@@ -44,5 +44,8 @@ public class Service extends AbstractEntity {
     @Column(name = "mo_ta", columnDefinition = "TEXT")
     String description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    User user;
 
 }
