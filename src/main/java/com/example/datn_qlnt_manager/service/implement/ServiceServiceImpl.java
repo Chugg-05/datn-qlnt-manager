@@ -1,9 +1,7 @@
 package com.example.datn_qlnt_manager.service.implement;
 
-import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.dto.filter.ServiceFilter;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
-import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.repository.UserRepository;
 import com.example.datn_qlnt_manager.service.UserService;
@@ -52,6 +50,7 @@ public class ServiceServiceImpl implements ServiceService {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Order.desc("updatedAt")));
 
         Page<Service> paging = serviceRepository.filterServicesPaging(
+                user.getId(),
                 filter.getQuery(),
                 filter.getServiceType(),
                 filter.getMinPrice(),
