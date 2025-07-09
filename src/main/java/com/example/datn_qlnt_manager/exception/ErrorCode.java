@@ -195,6 +195,7 @@ public enum ErrorCode {
     FEED_BACK_TYPE_NOT_FOUND(404, "Feedback status must not be null.", HttpStatus.BAD_REQUEST),
     FEED_BACK_DUPLICATED(404,"Feedback was duplicated", HttpStatus.BAD_REQUEST),
     NOTE_NOT_FOUND(404, "Note not found.", HttpStatus.NOT_FOUND),
+    ASSET_STATUS_NOT_FOUND(404, "Asset status not found.", HttpStatus.NOT_FOUND),
 
 
     // Code: 409
