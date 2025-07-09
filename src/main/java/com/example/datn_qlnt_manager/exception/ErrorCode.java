@@ -144,6 +144,7 @@ public enum ErrorCode {
     OWNER_ID_REQUIRED(400, "Owner ID is required.", HttpStatus.BAD_REQUEST),
     IS_REPRESENTATIVE_REQUIRED(400, "Is Representative is required.", HttpStatus.BAD_REQUEST),
     TENANT_ALREADY_IN_CONTRACT(400, "This tenant already has a lease. Information cannot be changed.", HttpStatus.BAD_REQUEST),
+    TENANT_HAS_NO_CONTRACT(400, "Tenant has no contract", HttpStatus.BAD_REQUEST),
     CANNOT_ADD_MORE_FLOORS(400, "Cannot add more floors than building's real number of floors.", HttpStatus.BAD_REQUEST),
     CANNOT_TOGGLE_SERVICE_STATUS(400, "Cannot toggle status for deleted service.", HttpStatus.BAD_REQUEST),
 

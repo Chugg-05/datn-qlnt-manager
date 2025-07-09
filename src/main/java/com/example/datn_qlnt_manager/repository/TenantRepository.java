@@ -137,7 +137,7 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
     boolean existsByIdentityCardNumber(String identityCardNumber);
 
     @Query("""
-                SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(t.id, t.fullName)
+                SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantSelectResponse(t.id, t.fullName)
                 FROM Tenant t
                 JOIN t.contracts c
                 WHERE t.owner.id = :userId
