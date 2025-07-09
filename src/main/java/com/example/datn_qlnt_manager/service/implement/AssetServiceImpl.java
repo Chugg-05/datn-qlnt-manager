@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import com.example.datn_qlnt_manager.common.AssetBeLongTo;
+import com.example.datn_qlnt_manager.common.ContractStatus;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -30,7 +32,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -62,31 +64,11 @@ public class AssetServiceImpl implements AssetService {
         asset.setAssetType(assetType);
 
         // Xử lý theo loại tài sản thuộc về đâu
-        switch (request.getAssetBeLongTo()) {
-            case PHONG -> {
-                Room room = roomRepository.findById(request.getRoomID())
-                        .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-                asset.setRoom(room);
-            }
-            case CHUNG -> {
-                if (request.getFloorID() != null) {
-                    Floor floor = floorRepository.findById(request.getFloorID())
-                            .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
-                    asset.setFloor(floor);
-                } else if (request.getBuildingID() != null) {
-                    Building building = buildingRepository.findById(request.getBuildingID())
-                            .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
-                    asset.setBuilding(building);
-                }
-            }
-            case CA_NHAN -> {
-                Tenant tenant = tenantRepository.findById(request.getTenantId())
-                        .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
-                asset.setTenant(tenant);
-            }
-        }
+        addOrUpdateAsset(asset, request.getAssetBeLongTo(), request.getRoomID(), request.getFloorID(), request.getBuildingID(), request.getTenantId());
+
         asset.setCreatedAt(Instant.now());
         asset.setUpdatedAt(Instant.now());
+
         return assetMapper.toResponse(assetRepository.save(asset));
     }
 
@@ -99,7 +81,8 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public PaginatedResponse<AssetResponse> getPageAndSearchAndFilterAssetByUserId(AssetFilter filter, int page, int size) {
+    public PaginatedResponse<AssetResponse> getPageAndSearchAndFilterAssetByUserId(AssetFilter filter, int page,
+                                                                                   int size) {
         User currentUser = userService.getCurrentUser();
 
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by("updatedAt").descending());
@@ -155,26 +138,73 @@ public class AssetServiceImpl implements AssetService {
         asset.setFloor(null);
         asset.setTenant(null);
 
-        switch (request.getAssetBeLongTo()) {
-            case PHONG -> {
-                Room room = roomRepository.findById(request.getRoomID())
-                        .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-                asset.setRoom(room);
-            }
-            case CHUNG -> {
-                if (request.getFloorID() != null) {
-                    asset.setFloor(floorRepository.findById(request.getFloorID())
-                            .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND)));
-                } else if (request.getBuildingID() != null) {
-                    asset.setBuilding(buildingRepository.findById(request.getBuildingID())
-                            .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND)));
-                }
-            }
-            case CA_NHAN -> asset.setTenant(tenantRepository.findById(request.getTenantId())
-                    .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND)));
-        }
+        addOrUpdateAsset(asset, request.getAssetBeLongTo(), request.getRoomID(), request.getFloorID(), request.getBuildingID(), request.getTenantId());
+
         asset.setUpdatedAt(Instant.now());
         return assetMapper.toResponse(assetRepository.save(asset));
+    }
+
+    private void addOrUpdateAsset(Asset asset, AssetBeLongTo assetBeLongTo, String roomID, String floorID, String buildingID, String tenantId) {
+        switch (assetBeLongTo) {
+            case PHONG -> {
+                Room room = roomRepository.findById(roomID)
+                        .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+                setRoom(asset, room);
+            }
+
+            case CHUNG -> {
+                if (floorID != null) {
+                    Floor floor = floorRepository.findById(floorID)
+                            .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+                    asset.setFloor(floor);
+
+                    Building building = floor.getBuilding();
+                    if (building != null) {
+                        asset.setBuilding(building);
+                    }
+                } else if (buildingID != null) {
+                    Building building = buildingRepository.findById(buildingID)
+                            .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+                    asset.setBuilding(building);
+                }
+            }
+
+            case CA_NHAN -> {
+                Tenant tenant = tenantRepository.findById(tenantId)
+                        .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+                asset.setTenant(tenant);
+
+                Contract latestValidContract = tenant.getContracts().stream()
+                        .filter(contract -> contract.getStatus() == ContractStatus.HIEU_LUC
+                                || contract.getStatus() == ContractStatus.SAP_HET_HAN)
+                        .max(Comparator.comparing(Contract::getStartDate))
+                        .orElse(null);
+
+                if (latestValidContract != null) {
+                    Room room = latestValidContract.getRoom();
+                    if (room != null) {
+                        setRoom(asset, room);
+                    }
+                } else {
+                    throw new AppException(ErrorCode.TENANT_HAS_NO_CONTRACT);
+                }
+            }
+
+        }
+    }
+
+    private void setRoom(Asset asset, Room room) {
+        asset.setRoom(room);
+
+        Floor floor = room.getFloor();
+        if (floor != null) {
+            asset.setFloor(floor);
+
+            Building building = floor.getBuilding();
+            if (building != null) {
+                asset.setBuilding(building);
+            }
+        }
     }
 
     @Override
