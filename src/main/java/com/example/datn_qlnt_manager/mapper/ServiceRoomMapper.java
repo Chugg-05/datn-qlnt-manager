@@ -11,9 +11,7 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface ServiceRoomMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "usageCode", ignore = true)
     @Mapping(target = "serviceRoomStatus",constant = "DANG_SU_DUNG")
-    @Mapping(source = "request.descriptionServiceRoom", target = "descriptionServiceRoom")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "room", source = "room")
@@ -27,5 +25,5 @@ public interface ServiceRoomMapper {
     ServiceRoomResponse toResponse(ServiceRoom serviceRoom);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateServiceRoom(ServiceRoomUpdateRequest request, @MappingTarget ServiceRoom serviceRoom);
+    void updateServiceRoom(ServiceRoomUpdateRequest request, @MappingTarget ServiceRoom serviceRoom );
 }
