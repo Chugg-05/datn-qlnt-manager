@@ -16,14 +16,14 @@ import java.math.BigDecimal;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "chi_tiet_hoa_don")
-public class InvoiceDetails extends AbstractEntity{
+public class InvoiceDetail extends AbstractEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hoa_don_id", nullable = false)
     Invoice invoice;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dich_vu_id", nullable = false)
-    Service service;
+    @JoinColumn(name = "dich_vu_phong_id", nullable = false)
+    ServiceRoom serviceRoom;
 
     @Column(name = "so_luong", nullable = false)
     Integer quantity;

@@ -10,6 +10,7 @@ import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomUpdateRe
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
 import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatistics;
 import com.example.datn_qlnt_manager.entity.Room;
+import com.example.datn_qlnt_manager.entity.Service;
 import com.example.datn_qlnt_manager.entity.ServiceRoom;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
@@ -27,13 +28,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
+@org.springframework.stereotype.Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ServiceRoomServiceImpl implements ServiceRoomService {
@@ -49,7 +49,7 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     public ServiceRoomResponse createServiceRoom(ServiceRoomCreationRequest request) {
         Room room = roomRepository.findById(request.getRoomId()).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
-        com.example.datn_qlnt_manager.entity.Service service = serviceRepository.findById(request.getServiceId())
+        Service service = serviceRepository.findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
 

@@ -58,6 +58,7 @@ public class ContractDetailResponse {
             Instant createdAt,
             Instant updatedAt
     ) {
+        this.id = id;
         this.contractCode = contractCode;
         this.roomCode = roomCode;
         this.nameManager = nameManager;

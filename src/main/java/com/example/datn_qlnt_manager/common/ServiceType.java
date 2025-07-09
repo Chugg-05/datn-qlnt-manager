@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum ServiceType {
     CO_DINH("CO_DINH"),
     TINH_THEO_SO("TINH_THEO_SO"),
+    TIEN_PHONG("TIEN_PHONG"),
     ;
 
     private final String value;

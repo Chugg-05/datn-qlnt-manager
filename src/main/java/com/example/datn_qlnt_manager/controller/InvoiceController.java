@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.controller;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.InvoiceFilter;
+import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceDetailsResponse;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceResponse;
 import com.example.datn_qlnt_manager.service.InvoiceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +32,7 @@ public class InvoiceController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size
     ) {
-        PaginatedResponse<InvoiceResponse> result = invoiceService.getPageAndSearchAndFilter(filter, page, size);
+        PaginatedResponse<InvoiceResponse> result = invoiceService.getPageAndSearchAndFilterByUserId(filter, page, size);
 
         return ApiResponse.<List<InvoiceResponse>>builder()
                 .message("Get invoices successfully")
@@ -39,4 +40,34 @@ public class InvoiceController {
                 .meta(result.getMeta())
                 .build();
     }
+
+    @Operation(summary = "Danh sách, Phân trang, tìm kiếm, lọc hóa đơn đã hủy")
+    @GetMapping("/cancel")
+    public ApiResponse<List<InvoiceResponse>> getInvoiceWithStatusCancel(
+            @ModelAttribute InvoiceFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        PaginatedResponse<InvoiceResponse> result = invoiceService.getInvoiceWithStatusCancelByUserId(filter, page, size);
+
+        return ApiResponse.<List<InvoiceResponse>>builder()
+                .message("Get canceled invoices successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Xem chi tiết hóa đơn")
+    @GetMapping("/{invoiceId}")
+    public ApiResponse<InvoiceDetailsResponse> getInvoiceDetails(
+            @PathVariable("invoiceId") String invoiceId
+    ) {
+        InvoiceDetailsResponse response = invoiceService.getInvoiceDetails(invoiceId);
+
+        return ApiResponse.<InvoiceDetailsResponse>builder()
+                .message("Get invoice details successfully")
+                .data(response)
+                .build();
+    }
+
 }

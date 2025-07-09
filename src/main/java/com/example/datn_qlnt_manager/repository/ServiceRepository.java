@@ -1,12 +1,10 @@
 package com.example.datn_qlnt_manager.repository;
 
-import com.example.datn_qlnt_manager.common.BuildingStatus;
 import com.example.datn_qlnt_manager.common.ServiceAppliedBy;
 import com.example.datn_qlnt_manager.common.ServiceStatus;
 import com.example.datn_qlnt_manager.common.ServiceType;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
-import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Service;
 import com.example.datn_qlnt_manager.entity.User;
 import feign.Param;
@@ -18,12 +16,10 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
-
 import java.util.Optional;
 
 @Repository
 public interface ServiceRepository extends JpaRepository<Service, String> {
-
 
     @Query("""
                 SELECT s
@@ -74,7 +70,14 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
             FROM Service s
             WHERE s.user.id = :userId AND s.status != 'KHONG_SU_DUNG'
             """)
-    List<IdAndName> findAllByUserId(String userId);
+    List<IdAndName> findAllByUserId(String userId);@Query("""
+            SELECT s
+            FROM Service s
+            WHERE (:name IS NULL OR s.name LIKE CONCAT('%', :name, '%'))
+            """)
+    Page<Service> filterServicePaging(
+            @Param("name") String name,
+            Pageable pageable
+    );
 
-    // boolean existsByTenDichVu(String name);
 }
