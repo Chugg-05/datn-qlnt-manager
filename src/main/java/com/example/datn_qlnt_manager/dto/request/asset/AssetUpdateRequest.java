@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.dto.request.asset;
 
 import com.example.datn_qlnt_manager.common.AssetBeLongTo;
+import com.example.datn_qlnt_manager.common.AssetStatus;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,9 @@ public class AssetUpdateRequest {
     String assetTypeId;
     @NotNull(message = "ASSET_BELONG_TO_REQUIRED")
     AssetBeLongTo assetBeLongTo;
+
+    @NotNull(message = "ASSET_STATUS_NOT_FOUND")
+    AssetStatus assetStatus;
 
     String roomID;
     String buildingID;
