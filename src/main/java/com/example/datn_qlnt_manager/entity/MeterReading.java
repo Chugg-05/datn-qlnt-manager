@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "chi_so_dien_nuoc")
+@Table(name = "chi_so")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MeterReading extends AbstractEntity{
 

@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface MeterRepository extends JpaRepository<Meter, String> {
 
@@ -31,4 +33,10 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
     );
 
 
+    @Query("""
+        SELECT m FROM Meter m
+        JOIN FETCH m.service s
+        WHERE m.room.id = :roomId
+    """)
+    List<Meter> findByRoomId(@Param("roomId") String roomId);
 }

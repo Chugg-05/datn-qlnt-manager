@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "cong_to_dien_nuoc")
+@Table(name = "cong_to")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Meter extends AbstractEntity {
 

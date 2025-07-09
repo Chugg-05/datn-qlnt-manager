@@ -11,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -52,4 +54,16 @@ public interface ServiceRoomRepository extends JpaRepository<ServiceRoom, String
     WHERE sr.room.floor.building.user.id = :userId
 """)
     ServiceRoomStatistics countByStatus(@Param("userId") String userId);
+
+    @Query("""
+        SELECT sr FROM ServiceRoom sr
+        JOIN FETCH sr.service s
+        WHERE sr.room.id = :roomId
+        AND sr.startDate <= :startOfMonth
+        AND sr.serviceRoomStatus = 'DANG_SU_DUNG'
+    """)
+    List<ServiceRoom> findActiveByRoomIdAndMonth(
+            @Param("roomId") String roomId,
+            @Param("startOfMonth") LocalDate startOfMonth
+    );
 }

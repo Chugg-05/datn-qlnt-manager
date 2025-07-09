@@ -1,35 +1,30 @@
-package com.example.datn_qlnt_manager.dto.response.invoice;
+package com.example.datn_qlnt_manager.dto.projection;
 
 import com.example.datn_qlnt_manager.common.InvoiceStatus;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
 
-@Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class InvoiceDetailsResponse {
+@NoArgsConstructor
+@Data
+public class InvoiceDetailView {
     String invoiceId;
     String invoiceCode;
-    String buildingName;
-    String roomCode;
-    String tenantName;
-    String tenantPhone;
     Integer month;
     Integer year;
     LocalDate paymentDueDate;
     InvoiceStatus invoiceStatus;
-    List<InvoiceItemResponse> items;
     BigDecimal totalAmount;
     String note;
     Instant createdAt;
     Instant updatedAt;
+
+    String buildingName;
+    String roomCode;
+
+    String tenantName;
+    String tenantPhone;
 }
-
-

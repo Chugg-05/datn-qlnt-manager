@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface MeterReadingRepository extends JpaRepository<MeterReading, String> {
     @Query("""
@@ -31,5 +33,16 @@ public interface MeterReadingRepository extends JpaRepository<MeterReading, Stri
             Pageable pageable
     );
 
+    @Query("""
+        SELECT mr FROM MeterReading mr
+        WHERE mr.meter.id = :meterId
+        AND mr.month = :month
+        AND mr.year = :year
+    """)
+    Optional<MeterReading> findByMeterIdAndMonthAndYear(
+            @Param("meterId") String meterId,
+            @Param("month") Integer month,
+            @Param("year") Integer year
+    );
 
 }

@@ -26,7 +26,7 @@ public class ServiceRoom extends AbstractEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dich_vu_id", nullable = false)
-     Service service;
+    Service service;
 
     @Column(name = "ma_su_dung", nullable = false)
      String usageCode;
