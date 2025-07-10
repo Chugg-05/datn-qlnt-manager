@@ -7,6 +7,8 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ServiceRoomFilter;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.CreateRoomServiceInitResponse;
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
 import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatistics;
 import com.example.datn_qlnt_manager.entity.Room;
@@ -47,7 +49,8 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
 
     @Override
     public ServiceRoomResponse createServiceRoom(ServiceRoomCreationRequest request) {
-        Room room = roomRepository.findById(request.getRoomId()).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        Room room =
+                roomRepository.findById(request.getRoomId()).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         Service service = serviceRepository.findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
@@ -65,17 +68,19 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     }
 
     @Override
-    public ServiceRoomResponse updateServiceRoom(String serviceRoomId,ServiceRoomUpdateRequest request) {
-        ServiceRoom serviceRoom = serviceRoomRepository.findById(serviceRoomId).orElseThrow(()->new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
+    public ServiceRoomResponse updateServiceRoom(String serviceRoomId, ServiceRoomUpdateRequest request) {
+        ServiceRoom serviceRoom =
+                serviceRoomRepository.findById(serviceRoomId).orElseThrow(() -> new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
 
-        serviceRoomMapper.updateServiceRoom(request,serviceRoom);
+        serviceRoomMapper.updateServiceRoom(request, serviceRoom);
         serviceRoom.setUpdatedAt(Instant.now());
         return serviceRoomMapper.toResponse(serviceRoomRepository.save(serviceRoom));
     }
 
     @Override
     public void softDeleteServiceRoom(String serviceRoomId) {
-        ServiceRoom serviceRoom = serviceRoomRepository.findByIdAndServiceRoomStatusNot(serviceRoomId, ServiceRoomStatus.DA_HUY)
+        ServiceRoom serviceRoom = serviceRoomRepository.findByIdAndServiceRoomStatusNot(serviceRoomId,
+                        ServiceRoomStatus.DA_HUY)
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
 
         serviceRoom.setServiceRoomStatus(ServiceRoomStatus.DA_HUY);
@@ -84,7 +89,7 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
 
     @Override
     public void deleteServiceRoom(String serviceRoomId) {
-        if (!serviceRoomRepository.existsById(serviceRoomId)){
+        if (!serviceRoomRepository.existsById(serviceRoomId)) {
             throw new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND);
 
         }
@@ -147,6 +152,14 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
             throw new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND);
         }
         serviceRoomRepository.save(serviceRoom);
+    }
+
+    @Override
+    public CreateRoomServiceInitResponse getServiceRoomInfoByUserId() {
+        return CreateRoomServiceInitResponse.builder()
+                .rooms(roomRepository.getServiceRoomInfoByUserId(userService.getCurrentUser().getId()))
+                .services(serviceRepository.findAllByUserId(userService.getCurrentUser().getId()))
+                .build();
     }
 
 }

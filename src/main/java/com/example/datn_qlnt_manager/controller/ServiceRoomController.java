@@ -5,6 +5,8 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ServiceRoomFilter;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.CreateRoomServiceInitResponse;
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
 import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatistics;
 import com.example.datn_qlnt_manager.service.ServiceRoomService;
@@ -96,4 +98,15 @@ public class ServiceRoomController {
                 .message("Service room status update successful!")
                 .build();
     }
+
+    @Operation(summary = "Hiển thị thông tin liên quan để thêm mới và cập nhật tài sản phòng theo người đang đăng nhập")
+    @GetMapping("/init")
+    public ApiResponse<CreateRoomServiceInitResponse> getServiceRoomInfoByUserId() {
+        CreateRoomServiceInitResponse data = serviceRoomService.getServiceRoomInfoByUserId();
+        return ApiResponse.<CreateRoomServiceInitResponse>builder()
+                .data(data)
+                .message("Assets has been found!")
+                .build();
+    }
+
 }
