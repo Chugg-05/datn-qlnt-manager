@@ -70,7 +70,9 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
             FROM Service s
             WHERE s.user.id = :userId AND s.status != 'KHONG_SU_DUNG'
             """)
-    List<IdAndName> findAllByUserId(String userId);@Query("""
+    List<IdAndName> findAllByUserId(String userId);
+
+    @Query("""
             SELECT s
             FROM Service s
             WHERE (:name IS NULL OR s.name LIKE CONCAT('%', :name, '%'))

@@ -9,5 +9,4 @@ public class ServiceRoomStatistics {
     Long total;
     Long active;
     Long paused;
-    Long canceled;
 }

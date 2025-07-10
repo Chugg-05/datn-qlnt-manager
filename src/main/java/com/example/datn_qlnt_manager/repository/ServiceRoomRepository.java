@@ -32,7 +32,8 @@ public interface ServiceRoomRepository extends JpaRepository<ServiceRoom, String
     )
     AND (:minPrice IS NULL OR sr.totalPrice >= :minPrice)
     AND (:maxPrice IS NULL OR sr.totalPrice <= :maxPrice)
-    AND (:status IS NULL OR sr.descriptionServiceRoom = :status)
+    AND (:status IS NULL OR sr.serviceRoomStatus = :status)
+    AND sr.serviceRoomStatus != 'DA_HUY'
 """)
     Page<ServiceRoom> filterServiceRoomsPaging(
             @Param("userId") String userId,
@@ -48,8 +49,7 @@ public interface ServiceRoomRepository extends JpaRepository<ServiceRoom, String
     SELECT
         COUNT(sr),
         SUM(CASE WHEN sr.serviceRoomStatus = 'DANG_SU_DUNG' THEN 1 ELSE 0 END),
-        SUM(CASE WHEN sr.serviceRoomStatus = 'TAM_DUNG' THEN 1 ELSE 0 END),
-        SUM(CASE WHEN sr.serviceRoomStatus = 'DA_HUY' THEN 1 ELSE 0 END)
+        SUM(CASE WHEN sr.serviceRoomStatus = 'TAM_DUNG' THEN 1 ELSE 0 END)
     FROM ServiceRoom sr
     WHERE sr.room.floor.building.user.id = :userId
 """)

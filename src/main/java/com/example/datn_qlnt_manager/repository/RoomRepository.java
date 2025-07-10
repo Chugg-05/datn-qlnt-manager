@@ -46,7 +46,7 @@ public interface RoomRepository extends JpaRepository<Room, String> {
             @Param("minAcreage") Double minAcreage,
             @Param("maxPerson") Integer maxPerson,
             @Param("nameFloor") String nameFloor,
-            @Param("floorId") String floorId ,
+            @Param("floorId") String floorId,
             Pageable pageable);
 
     @Query("""
@@ -114,5 +114,21 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 
     int countByFloorId(String floorId);
 
-
+    @Query("""
+                SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(
+                    r.id,
+                    CONCAT(
+                        COALESCE(r.roomCode, ''),
+                        ' - ',
+                        COALESCE(f.nameFloor, ''),
+                        ' - ',
+                        COALESCE(b.buildingName, '')
+                    )
+                )
+                FROM Room r
+                LEFT JOIN r.floor f
+                LEFT JOIN f.building b
+                WHERE r.status != 'HUY_HOAT_DONG' AND b.user.id = :userId
+            """)
+    List<IdAndName> getServiceRoomInfoByUserId(@Param("userId") String userId);
 }
