@@ -16,24 +16,24 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MeterUpdateRequest {
 
-    @NotBlank(message = "Room code must not be blank")
-    private String roomCode;
+    String roomId;
 
-    private String serviceCode;
+    String serviceId;
 
-    @NotNull(message = "Meter type must not be null")
-    private MeterType meterType;
+    @NotNull(message = "METER_TYPE_NOT_FOUND")
+    MeterType meterType;
 
-    @NotBlank(message = "Meter name must not be blank")
-    private String meterName;
+    @NotBlank(message = "METER_NAME_REQUIRED")
+    String meterName;
 
-    @NotBlank(message = "Meter code must not be blank")
-    private String meterCode;
+    @NotBlank(message = "METER_CODE_NOT_FOUND")
+    String meterCode;
 
-    private LocalDate manufactureDate;
+    @NotNull(message = "MANU_FACTURE_DATE_NOT_FOUND")
+    LocalDate manufactureDate;
 
-    @NotNull(message = "Initial index must not be null")
-    private Integer initialIndex;
+    @NotNull(message = "INITIAL_INDEX_REQUIRED")
+    Integer initialIndex;
 
-    private String description;
+    String descriptionMeter;
 }

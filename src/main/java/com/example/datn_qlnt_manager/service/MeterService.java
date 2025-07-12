@@ -12,8 +12,8 @@ public interface MeterService {
 
     MeterResponse createMeter(MeterCreationRequest request);
 
-    MeterResponse updateMeter(String id, MeterUpdateRequest request);
+    MeterResponse updateMeter(String meterId, MeterUpdateRequest request);
 
-    Void deleteMeter(String id);
+    void deleteMeter(String meterId);
 
 }

@@ -14,21 +14,33 @@ import java.util.List;
 @Repository
 public interface MeterRepository extends JpaRepository<Meter, String> {
 
+    boolean existsByMeterCode(String meterCode);
+
     @Query("""
-                SELECT m
-                FROM Meter m
-                JOIN m.room r
-                JOIN r.floor f
-                JOIN f.building b
-                WHERE (:buildingId IS NULL OR b.id = :buildingId)
-                  AND (:roomCode IS NULL OR r.roomCode = :roomCode)
-                  AND (:meterType IS NULL OR m.meterType = :meterType)
-                ORDER BY m.updatedAt DESC
-            """)
-    Page<Meter> filterMetersPaging(
+    SELECT m
+    FROM Meter m
+    JOIN m.room r
+    JOIN r.floor f
+    JOIN f.building b
+    JOIN b.user u
+    WHERE u.id = :userId
+      AND (:buildingId IS NULL OR b.id = :buildingId)
+      AND (:roomCode IS NULL OR r.roomCode = :roomCode)
+      AND (:meterType IS NULL OR m.meterType = :meterType)
+      AND (
+        :query IS NULL OR
+        LOWER(m.meterCode) LIKE LOWER(CONCAT('%', :query, '%')) OR
+        LOWER(m.meterName) LIKE LOWER(CONCAT('%', :query, '%')) OR
+        LOWER(m.descriptionMeter) LIKE LOWER(CONCAT('%', :query, '%'))
+      )
+    ORDER BY m.updatedAt DESC
+""")
+    Page<Meter> findByUserIdWithFilter(
+            @Param("userId") String userId,
             @Param("buildingId") String buildingId,
             @Param("roomCode") String roomCode,
             @Param("meterType") MeterType meterType,
+            @Param("query") String query,
             Pageable pageable
     );
 

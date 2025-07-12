@@ -19,61 +19,50 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/meters")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Meter", description = "API Meter")
 public class MeterController {
+
     MeterService meterService;
 
     @Operation(summary = "Phân trang, lọc công tơ theo tòa, phòng, loại công tơ, mã/tên")
     @GetMapping
-    public ApiResponse<List<MeterResponse>> getPageAndSearchAndFilterMeter(
-            @ModelAttribute MeterFilter meterFilter,
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "15") Integer size
+    public ApiResponse<PaginatedResponse<MeterResponse>> getMyMeters(
+            @Valid @ModelAttribute MeterFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size
     ) {
-        PaginatedResponse<MeterResponse> result = meterService.getPageAndSearchAndFilterMeterByUserId(
-                meterFilter,
-                page,
-                size
-        );
-
-        return ApiResponse.<List<MeterResponse>>builder()
-                .message("Filter meters successfully")
-                .data(result.getData())
-                .meta(result.getMeta())
+        return ApiResponse.<PaginatedResponse<MeterResponse>>builder()
+                .data(meterService.getPageAndSearchAndFilterMeterByUserId(filter, page, size))
+                .message("Get my meter list successfully")
                 .build();
     }
-    @PostMapping("/add")
+    @PostMapping
     public ApiResponse<MeterResponse> createMeter(@RequestBody @Valid MeterCreationRequest request) {
         return ApiResponse.<MeterResponse>builder()
                 .data(meterService.createMeter(request))
                 .message("Add meter success")
-                .code(201)
                 .build();
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{meterId}")
     public ApiResponse<MeterResponse> updateMeter(
-            @PathVariable("id") String meterId,
+            @PathVariable("meterId") String meterId,
             @RequestBody @Valid MeterUpdateRequest request) {
         return ApiResponse.<MeterResponse>builder()
                 .data(meterService.updateMeter(meterId, request))
                 .message("Update meter success")
-                .code(200)
                 .build();
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ApiResponse<Void> deleteRoom(@PathVariable("id") String meterId) {
-        return ApiResponse.<Void>builder()
-                .data(meterService.deleteMeter(meterId))
+    @DeleteMapping("/{meterId}")
+    public ApiResponse<String> deleteRoom(@PathVariable("meterId") String meterId) {
+        meterService.deleteMeter(meterId);
+        return ApiResponse.<String>builder()
                 .message("Delete meter success")
-                .code(200)
                 .build();
     }
 }
