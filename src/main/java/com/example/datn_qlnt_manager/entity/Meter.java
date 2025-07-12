@@ -13,7 +13,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "cong_to")
+@Table(
+        name = "cong_to",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"ma_cong_to","phong_id"})}
+)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Meter extends AbstractEntity {
 
@@ -26,13 +29,13 @@ public class Meter extends AbstractEntity {
     Service service;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "loai_cong_to", nullable = false, length = 10)
+    @Column(name = "loai_cong_to", nullable = false)
     MeterType meterType;
 
-    @Column(name = "ten_cong_to", nullable = false, length = 100)
+    @Column(name = "ten_cong_to", nullable = false)
     String meterName;
 
-    @Column(name = "ma_cong_to", nullable = false, length = 50, unique = true)
+    @Column(name = "ma_cong_to", nullable = false)
     String meterCode;
 
     @Column(name = "ngay_san_xuat")
@@ -41,7 +44,7 @@ public class Meter extends AbstractEntity {
     @Column(name = "chi_so_dau", nullable = false)
     Integer initialIndex;
 
-    @Column(name = "mo_ta", columnDefinition = "TEXT")
-    String description;
+    @Column(name = "mo_ta")
+    String descriptionMeter;
 
 }

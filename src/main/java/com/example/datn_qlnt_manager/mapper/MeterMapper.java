@@ -5,10 +5,18 @@ import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.entity.Meter;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface MeterMapper {
-    MeterResponse toMeterResponse (Meter meter);
     Meter toMeterCreation (MeterCreationRequest meter) ;
-    Meter toMeterUpdate (MeterUpdateRequest meter) ;
+
+    @Mapping(source = "room.id", target = "roomId")
+    @Mapping(source = "room.roomCode", target = "roomCode")
+    @Mapping(source = "service.id", target = "serviceId")
+    @Mapping(source = "service.name", target = "name")
+    MeterResponse toMeterResponse (Meter meter);
+
+    void toMeterUpdate (@MappingTarget Meter meter, MeterUpdateRequest request) ;
 }

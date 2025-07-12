@@ -182,6 +182,13 @@ public enum ErrorCode {
     CONTRACT_NOT_FOUND(404, "Contract not found.", HttpStatus.NOT_FOUND),
     DEFAULT_SERVICE_NOT_FOUND(404, "Default Service not found.", HttpStatus.NOT_FOUND),
     JOB_NOT_FOUND(404, "Job not found.", HttpStatus.NOT_FOUND),
+    METER_TYPE_NOT_FOUND(404, "Meter type not found.", HttpStatus.NOT_FOUND),
+    METER_NAME_REQUIRED(404, "Meter name not found.", HttpStatus.NOT_FOUND),
+    INITIAL_INDEX_REQUIRED(404, "INITIAL INDEX not found.", HttpStatus.NOT_FOUND),
+    METER_CODE_NOT_FOUND(404, "Meter code not found.", HttpStatus.NOT_FOUND),
+    MANU_FACTURE_DATE_NOT_FOUND(404, "Manu facture date not found.", HttpStatus.NOT_FOUND),
+    METER_CODE_EXISTED(404, "Meter code exited.", HttpStatus.NOT_FOUND),
+
 
     INVOICE_NOT_FOUND(404, "Invoice not found.", HttpStatus.NOT_FOUND),
 

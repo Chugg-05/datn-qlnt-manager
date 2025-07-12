@@ -13,5 +13,5 @@ public class MeterFilter {
     String buildingId;
     String roomCode;
     MeterType meterType;
-    String keyword;
+    String query;
 }
