@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,22 +17,26 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MeterReadingCreationRequest {
 
-    @NotBlank(message = "Meter code must not be blank")
-    String meterCode;
+    @NotBlank(message = "METER_NOT_FOUND")
+    String meterId;
 
-    @NotNull(message = "Old index must not be null")
+    @NotNull(message = "OLD_INDEX_NOT_FOUND")
     Integer oldIndex;
 
-    @NotNull(message = "New index must not be null")
+    @NotNull(message = "NEW_INDEX_NOT_FOUND")
     Integer newIndex;
 
-    @NotNull(message = "Month must not be null")
-    @Min(value = 1)
-    @Max(value = 12)
+    @NotNull(message = "MONTH_NOT_FOUND")
+    @Min(value = 1, message = "MONTH_GREATER")
+    @Max(value = 12,message = "MONTH_LESS")
     Integer month;
 
-    @NotNull(message = "Year must not be null")
+    @NotNull(message = "YEAR_NOT_FOUND")
+    @Min(value = 1,message = "YEAR_GREATER")
     Integer year;
 
-    String description;
+    @NotNull(message = "READING_DATE_NOT_FOUND")
+    LocalDate readingDate;
+
+    String descriptionMeterReading;
 }

@@ -16,18 +16,21 @@ import java.util.Optional;
 @Repository
 public interface MeterReadingRepository extends JpaRepository<MeterReading, String> {
     @Query("""
-                SELECT mr
-                FROM MeterReading mr
-                JOIN mr.meter m
-                JOIN m.room r
-                JOIN r.floor f
-                JOIN f.building b
-                WHERE (:buildingId IS NULL OR b.id = :buildingId)
-                  AND (:roomCode IS NULL OR r.roomCode = :roomCode)
-                  AND (:meterType IS NULL OR m.meterType = :meterType)
-                  AND (:month IS NULL OR mr.month = :month)
-            """)
+    SELECT mr FROM MeterReading mr
+    JOIN mr.meter m
+    JOIN m.room r
+    JOIN r.floor f
+    JOIN f.building b
+    JOIN b.user u
+    WHERE u.id = :userId
+      AND (:buildingId IS NULL OR b.id = :buildingId)
+      AND (:roomCode IS NULL OR r.roomCode = :roomCode)
+      AND (:meterType IS NULL OR m.meterType = :meterType)
+      AND (:month IS NULL OR mr.month = :month)
+    ORDER BY mr.updatedAt DESC
+""")
     Page<MeterReading> filterMeterReadings(
+            @Param("userId") String userId,
             @Param("buildingId") String buildingId,
             @Param("roomCode") String roomCode,
             @Param("meterType") MeterType meterType,

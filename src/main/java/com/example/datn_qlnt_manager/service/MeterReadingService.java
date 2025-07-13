@@ -16,7 +16,7 @@ public interface MeterReadingService {
 
     MeterReadingResponse updateMeterReading(String id, MeterReadingUpdateRequest request);
 
-    void deleteMeterReading(String id);
+    void deleteMeterReading(String meterReadingId);
 
-    MeterReadingResponse getMeterReadingById(String id);
+    MeterReadingResponse getMeterReadingById(String meterReadingId);
 }

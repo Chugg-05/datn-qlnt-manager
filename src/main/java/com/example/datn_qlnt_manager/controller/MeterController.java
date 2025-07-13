@@ -43,6 +43,8 @@ public class MeterController {
                 .message("Get my meter list successfully")
                 .build();
     }
+
+    @Operation(summary = "Thêm công tơ")
     @PostMapping
     public ApiResponse<MeterResponse> createMeter(@RequestBody @Valid MeterCreationRequest request) {
         return ApiResponse.<MeterResponse>builder()
@@ -51,6 +53,7 @@ public class MeterController {
                 .build();
     }
 
+    @Operation(summary = "Sửa công tơ")
     @PutMapping("/{meterId}")
     public ApiResponse<MeterResponse> updateMeter(
             @PathVariable("meterId") String meterId,
@@ -61,6 +64,7 @@ public class MeterController {
                 .build();
     }
 
+    @Operation(summary = "Xóa công tơ")
     @DeleteMapping("/{meterId}")
     public ApiResponse<String> deleteRoom(@PathVariable("meterId") String meterId) {
         meterService.deleteMeter(meterId);
