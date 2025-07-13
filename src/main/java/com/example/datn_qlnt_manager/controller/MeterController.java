@@ -5,6 +5,7 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.service.MeterService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/meters")
@@ -65,4 +68,14 @@ public class MeterController {
                 .message("Delete meter success")
                 .build();
     }
+
+    @GetMapping("/monthly-stats/{meterCode}")
+    public ApiResponse<List<MeterReadingMonthlyStatsResponse>> getMonthlyStats(@PathVariable String meterCode) {
+        return ApiResponse.<List<MeterReadingMonthlyStatsResponse>>builder()
+                .message("Thống kê chỉ số từng tháng thành công")
+                .data(meterService.getMonthlyStats(meterCode))
+                .build();
+    }
+
+
 }

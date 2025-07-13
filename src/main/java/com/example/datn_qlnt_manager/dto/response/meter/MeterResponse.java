@@ -15,13 +15,10 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MeterResponse {
     String id;
-
     String roomId;
     String roomCode;
-
     String serviceId;
     String name;
-
     MeterType meterType;
     String meterName;
     String meterCode;

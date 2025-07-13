@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.repository;
 
 import com.example.datn_qlnt_manager.common.MeterType;
+import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
 import com.example.datn_qlnt_manager.entity.Meter;
 import feign.Param;
 import org.springframework.data.domain.Page;
@@ -17,24 +18,24 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
     boolean existsByMeterCode(String meterCode);
 
     @Query("""
-    SELECT m
-    FROM Meter m
-    JOIN m.room r
-    JOIN r.floor f
-    JOIN f.building b
-    JOIN b.user u
-    WHERE u.id = :userId
-      AND (:buildingId IS NULL OR b.id = :buildingId)
-      AND (:roomCode IS NULL OR r.roomCode = :roomCode)
-      AND (:meterType IS NULL OR m.meterType = :meterType)
-      AND (
-        :query IS NULL OR
-        LOWER(m.meterCode) LIKE LOWER(CONCAT('%', :query, '%')) OR
-        LOWER(m.meterName) LIKE LOWER(CONCAT('%', :query, '%')) OR
-        LOWER(m.descriptionMeter) LIKE LOWER(CONCAT('%', :query, '%'))
-      )
-    ORDER BY m.updatedAt DESC
-""")
+                SELECT m
+                FROM Meter m
+                JOIN m.room r
+                JOIN r.floor f
+                JOIN f.building b
+                JOIN b.user u
+                WHERE u.id = :userId
+                  AND (:buildingId IS NULL OR b.id = :buildingId)
+                  AND (:roomCode IS NULL OR r.roomCode = :roomCode)
+                  AND (:meterType IS NULL OR m.meterType = :meterType)
+                  AND (
+                    :query IS NULL OR
+                    LOWER(m.meterCode) LIKE LOWER(CONCAT('%', :query, '%')) OR
+                    LOWER(m.meterName) LIKE LOWER(CONCAT('%', :query, '%')) OR
+                    LOWER(m.descriptionMeter) LIKE LOWER(CONCAT('%', :query, '%'))
+                  )
+                ORDER BY m.updatedAt DESC
+            """)
     Page<Meter> findByUserIdWithFilter(
             @Param("userId") String userId,
             @Param("buildingId") String buildingId,
@@ -46,9 +47,12 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
 
 
     @Query("""
-        SELECT m FROM Meter m
-        JOIN FETCH m.service s
-        WHERE m.room.id = :roomId
-    """)
+                SELECT m FROM Meter m
+                JOIN FETCH m.service s
+                WHERE m.room.id = :roomId
+            """)
     List<Meter> findByRoomId(@Param("roomId") String roomId);
+
+
+
 }
