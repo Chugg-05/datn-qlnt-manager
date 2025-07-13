@@ -6,14 +6,20 @@ import com.example.datn_qlnt_manager.dto.response.meterReading.MeterReadingRespo
 import com.example.datn_qlnt_manager.entity.MeterReading;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface MeterReadingMapper {
 
-    MeterReadingResponse toResponse(MeterReading meterReading);
-
 //    @Mapping(target = "id", ignore = true)
+
     MeterReading toMeterReadingCreation(MeterReadingCreationRequest request);
 
-    MeterReading toMeterReadingUpdate(MeterReadingUpdateRequest request);
+    @Mapping(target = "meterId", source = "meter.id")
+    @Mapping(target = "meterCode", source = "meter.meterCode")
+    @Mapping(target = "meterName", source = "meter.meterName")
+    @Mapping(target = "meterType", source = "meter.meterType")
+    MeterReadingResponse toResponse(MeterReading meterReading);
+
+    void toMeterReadingUpdate(@MappingTarget MeterReading meterReading, MeterReadingUpdateRequest request);
 }

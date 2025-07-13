@@ -188,8 +188,14 @@ public enum ErrorCode {
     METER_CODE_NOT_FOUND(404, "Meter code not found.", HttpStatus.NOT_FOUND),
     MANU_FACTURE_DATE_NOT_FOUND(404, "Manu facture date not found.", HttpStatus.NOT_FOUND),
     METER_CODE_EXISTED(404, "Meter code exited.", HttpStatus.NOT_FOUND),
-
-
+    OLD_INDEX_NOT_FOUND(404, "Old index not found.", HttpStatus.NOT_FOUND),
+    NEW_INDEX_NOT_FOUND(404, "New index not found.", HttpStatus.NOT_FOUND),
+    MONTH_NOT_FOUND(404, "Month not found.", HttpStatus.NOT_FOUND),
+    MONTH_GREATER(404, "Month must be greater than 1.", HttpStatus.NOT_FOUND),
+    MONTH_LESS(404, "Month must be less than 12.", HttpStatus.NOT_FOUND),
+    YEAR_NOT_FOUND(404, "Year not found.", HttpStatus.NOT_FOUND),
+    YEAR_GREATER(404, "Yeah must be greater than 1.", HttpStatus.NOT_FOUND),
+    READING_DATE_NOT_FOUND(404, "Reading date not found.", HttpStatus.NOT_FOUND),
     INVOICE_NOT_FOUND(404, "Invoice not found.", HttpStatus.NOT_FOUND),
 
     // feedback
@@ -203,6 +209,15 @@ public enum ErrorCode {
     FEED_BACK_DUPLICATED(404,"Feedback was duplicated", HttpStatus.BAD_REQUEST),
     NOTE_NOT_FOUND(404, "Note not found.", HttpStatus.NOT_FOUND),
     ASSET_STATUS_NOT_FOUND(404, "Asset status not found.", HttpStatus.NOT_FOUND),
+
+    // notification
+    NOTIFICATION_TITLE_REQUIRED(404,"Title must not be blank", HttpStatus.NOT_FOUND),
+    NOTIFICATION_CONTENT_REQUIRED(404,"Content must not be blank", HttpStatus.NOT_FOUND),
+    NOTIFICATION_TYPE_REQUIRED(404,"Notification type is required", HttpStatus.NOT_FOUND),
+    SEND_TO_ALL_REQUIRED(404,"SendToAll must not be null", HttpStatus.NOT_FOUND),
+    NOTIFICATION_USERS_REQUIRED(404,"Notification users must not be null", HttpStatus.NOT_FOUND),
+    NOTIFICATION_NOT_FOUND(404,"Notification must not be null", HttpStatus.NOT_FOUND),
+    NOTIFICATION_NOT_ASSIGNED(404,"Notification not assigned to this user",HttpStatus.NOT_FOUND),
 
 
     // Code: 409
@@ -225,6 +240,7 @@ public enum ErrorCode {
     ROOM_EXISTED_SERVICE(409, "Room already has this service", HttpStatus.BAD_REQUEST),
     SERVICE_ROOM_NOT_FOUND(409, "Service room not found.", HttpStatus.NOT_FOUND),
     ROOM_ALREADY_HAS_CONTRACT(409,"This room is under contract.", HttpStatus.BAD_REQUEST),
+    NEW_INDEX_LESS_THAN_OLD(409,"New number must be less than old number",HttpStatus.BAD_REQUEST)
     ;
 
     final int code;

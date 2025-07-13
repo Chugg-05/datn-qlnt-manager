@@ -3,7 +3,8 @@ package com.example.datn_qlnt_manager.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import java.time.LocalDateTime;
+
+import java.time.LocalDate;
 
 @Entity
 @Setter
@@ -20,12 +21,12 @@ public class MeterReading extends AbstractEntity{
     Meter meter;
 
     @Column(name = "chi_so_cu", nullable = false)
-    Integer previousIndex;
+    Integer oldIndex;
 
     @Column(name = "chi_so_moi", nullable = false)
-    Integer currentIndex;
+    Integer newIndex;
 
-    @Column(name = "so_luong", nullable = false)
+    @Column(name = "so_luong", insertable = false, updatable = false)
     Integer quantity;
 
     @Column(name = "thang", nullable = false)
@@ -35,10 +36,10 @@ public class MeterReading extends AbstractEntity{
     Integer year;
 
     @Column(name = "ngay_doc")
-    LocalDateTime readingDate;
+    LocalDate readingDate;
 
     @Column(name = "mo_ta", columnDefinition = "TEXT")
-    String description;
+    String descriptionMeterReading;
 
 
 }

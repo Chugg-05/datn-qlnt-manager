@@ -1,7 +1,6 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import com.example.datn_qlnt_manager.common.Meta;
-import com.example.datn_qlnt_manager.common.MeterType;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterReadingFilter;
@@ -16,6 +15,7 @@ import com.example.datn_qlnt_manager.mapper.MeterReadingMapper;
 import com.example.datn_qlnt_manager.repository.MeterReadingRepository;
 import com.example.datn_qlnt_manager.repository.MeterRepository;
 import com.example.datn_qlnt_manager.service.MeterReadingService;
+import com.example.datn_qlnt_manager.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +23,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -33,17 +34,22 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MeterReadingServiceImpl implements MeterReadingService {
+
     MeterReadingRepository meterReadingRepository;
     MeterRepository meterRepository;
     MeterReadingMapper meterReadingMapper;
+    UserService userService;
 
     @Override
     public PaginatedResponse<MeterReadingResponse> getPageAndSearchAndFilterMeterReadingByUserId(
             MeterReadingFilter meterReadingFilter, int page, int size) {
 
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+        String currentUserId = userService.getCurrentUser().getId();
 
-        Page<MeterReading> paging = meterReadingRepository.filterMeterReadings(
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+
+        Page<MeterReading> pageResult = meterReadingRepository.filterMeterReadings(
+                currentUserId,
                 meterReadingFilter.getBuildingId(),
                 meterReadingFilter.getRoomCode(),
                 meterReadingFilter.getMeterType(),
@@ -51,22 +57,22 @@ public class MeterReadingServiceImpl implements MeterReadingService {
                 pageable
         );
 
-        List<MeterReadingResponse> responses = paging.getContent().stream()
+        List<MeterReadingResponse> data = pageResult.getContent().stream()
                 .map(meterReadingMapper::toResponse)
                 .toList();
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
-                        .count(paging.getNumberOfElements())
+                        .count(pageResult.getNumberOfElements())
                         .perPage(size)
                         .currentPage(page)
-                        .totalPages(paging.getTotalPages())
-                        .total(paging.getTotalElements())
+                        .totalPages(pageResult.getTotalPages())
+                        .total(pageResult.getTotalElements())
                         .build())
                 .build();
 
         return PaginatedResponse.<MeterReadingResponse>builder()
-                .data(responses)
+                .data(data)
                 .meta(meta)
                 .build();
     }
@@ -74,45 +80,50 @@ public class MeterReadingServiceImpl implements MeterReadingService {
 
     @Override
     public MeterReadingResponse createMeterReading(MeterReadingCreationRequest request) {
-        Meter meter = meterRepository.findById(request.getMeterCode())
+        Meter meter = meterRepository.findById(request.getMeterId())
                 .orElseThrow(() -> new AppException(ErrorCode.METER_NOT_FOUND));
+
+        if (request.getNewIndex() < request.getOldIndex()) {
+            throw new AppException(ErrorCode.NEW_INDEX_LESS_THAN_OLD);
+        }
 
         MeterReading meterReading = meterReadingMapper.toMeterReadingCreation(request);
         meterReading.setMeter(meter);
+        meterReading.setQuantity(request.getNewIndex() - request.getOldIndex());
+        meterReading.setReadingDate(request.getReadingDate());
         meterReading.setCreatedAt(Instant.now());
         meterReading.setUpdatedAt(Instant.now());
 
-        return meterReadingMapper.toResponse(meterReadingRepository.save(meterReading));
+        meterReadingRepository.save(meterReading);
+        return meterReadingMapper.toResponse(meterReading);
     }
 
     @Override
-    public MeterReadingResponse updateMeterReading(String id, MeterReadingUpdateRequest request) {
-        MeterReading existing = meterReadingRepository.findById(id)
+    public MeterReadingResponse updateMeterReading(String meterReadingId, MeterReadingUpdateRequest request) {
+        MeterReading meterReading = meterReadingRepository.findById(meterReadingId)
                 .orElseThrow(() -> new AppException(ErrorCode.METER_READING_NOT_FOUND));
 
-        Meter meter = meterRepository.findById(request.getMeterCode())
-                .orElseThrow(() -> new AppException(ErrorCode.METER_NOT_FOUND));
-
-        MeterReading meterReading = meterReadingMapper.toMeterReadingUpdate(request);
-        meterReading.setId(existing.getId());
-        meterReading.setMeter(meter);
-        meterReading.setCreatedAt(existing.getCreatedAt());
+        if (request.getNewIndex() < request.getOldIndex()) {
+            throw new AppException(ErrorCode.NEW_INDEX_LESS_THAN_OLD);
+        }
+        meterReadingMapper.toMeterReadingUpdate(meterReading, request);
+        meterReading.setQuantity(request.getNewIndex() - request.getOldIndex());
         meterReading.setUpdatedAt(Instant.now());
 
         return meterReadingMapper.toResponse(meterReadingRepository.save(meterReading));
     }
 
     @Override
-    public void deleteMeterReading(String id) {
-        if (!meterReadingRepository.existsById(id)) {
+    public void deleteMeterReading(String meterReadingId) {
+        if (!meterReadingRepository.existsById(meterReadingId)) {
             throw new AppException(ErrorCode.METER_READING_NOT_FOUND);
         }
-        meterReadingRepository.deleteById(id);
+        meterReadingRepository.deleteById(meterReadingId);
     }
 
     @Override
-    public MeterReadingResponse getMeterReadingById(String id) {
-        return meterReadingRepository.findById(id)
+    public MeterReadingResponse getMeterReadingById(String meterReadingId) {
+        return meterReadingRepository.findById(meterReadingId)
                 .map(meterReadingMapper::toResponse)
                 .orElseThrow(() -> new AppException(ErrorCode.METER_READING_NOT_FOUND));
     }

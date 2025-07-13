@@ -15,6 +15,5 @@ public class MeterReadingFilter {
     String roomCode;
     MeterType meterType;
     Integer month;
-    Integer year;
 
 }

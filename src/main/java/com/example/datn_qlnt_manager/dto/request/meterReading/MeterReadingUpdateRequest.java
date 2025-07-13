@@ -2,10 +2,11 @@ package com.example.datn_qlnt_manager.dto.request.meterReading;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -15,22 +16,23 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MeterReadingUpdateRequest {
 
-    @NotBlank(message = "Meter code must not be blank")
-    String meterCode;
+    @NotNull(message = "OLD_INDEX_NOT_FOUND")
+    Integer oldIndex;
 
-    @NotNull(message = "Old index must not be null")
-    private Integer oldIndex;
+    @NotNull(message = "NEW_INDEX_NOT_FOUND")
+    Integer newIndex;
 
-    @NotNull(message = "New index must not be null")
-    private Integer newIndex;
+    @NotNull(message = "MONTH_NOT_FOUND")
+    @Min(value = 1, message = "MONTH_GREATER")
+    @Max(value = 12,message = "MONTH_LESS")
+    Integer month;
 
-    @NotNull(message = "Month must not be null")
-    @Min(value = 1)
-    @Max(value = 12)
-    private Integer month;
+    @NotNull(message = "YEAR_NOT_FOUND")
+    @Min(value = 1,message = "YEAR_GREATER")
+    Integer year;
 
-    @NotNull(message = "Year must not be null")
-    private Integer year;
+    @NotNull(message = "READING_DATE_NOT_FOUND")
+    LocalDate readingDate;
 
-    private String description;
+    String descriptionMeterReading;
 }
