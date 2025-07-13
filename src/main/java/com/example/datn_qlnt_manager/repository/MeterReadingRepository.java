@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.repository;
 
 import com.example.datn_qlnt_manager.common.MeterType;
+import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
 import com.example.datn_qlnt_manager.entity.MeterReading;
 import feign.Param;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -44,5 +46,21 @@ public interface MeterReadingRepository extends JpaRepository<MeterReading, Stri
             @Param("month") Integer month,
             @Param("year") Integer year
     );
+
+    @Query("""
+                SELECT new com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse(
+                    m.meterCode,
+                    mr.month,
+                    mr.year,
+                    mr.previousIndex,
+                    mr.currentIndex,
+                    mr.quantity
+                )
+                FROM MeterReading mr
+                JOIN mr.meter m
+                WHERE (:roomCode IS NULL OR m.room.roomCode = :roomCode)
+                ORDER BY mr.year DESC, mr.month DESC
+            """)
+    List<MeterReadingMonthlyStatsResponse> getMonthlyStats(@Param("roomCode") String roomCode);
 
 }

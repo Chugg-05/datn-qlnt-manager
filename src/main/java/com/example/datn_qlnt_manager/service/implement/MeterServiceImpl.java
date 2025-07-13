@@ -6,12 +6,14 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.entity.Meter;
 import com.example.datn_qlnt_manager.entity.Room;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.MeterMapper;
+import com.example.datn_qlnt_manager.repository.MeterReadingRepository;
 import com.example.datn_qlnt_manager.repository.MeterRepository;
 import com.example.datn_qlnt_manager.repository.RoomRepository;
 import com.example.datn_qlnt_manager.repository.ServiceRepository;
@@ -38,6 +40,7 @@ import java.util.List;
 public class MeterServiceImpl implements MeterService {
 
     MeterRepository meterRepository;
+    MeterReadingRepository meterReadingRepository;
     MeterMapper meterMapper;
     RoomRepository roomRepository;
     ServiceRepository serviceRepository;
@@ -134,4 +137,11 @@ public class MeterServiceImpl implements MeterService {
         }
         meterRepository.deleteById(meterId);
     }
+
+    @Override
+    public List<MeterReadingMonthlyStatsResponse> getMonthlyStats(String meterCode) {
+        return meterReadingRepository.getMonthlyStats(meterCode);
+    }
+
+
 }
