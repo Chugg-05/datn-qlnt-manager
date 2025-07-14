@@ -131,4 +131,16 @@ public interface RoomRepository extends JpaRepository<Room, String> {
                 WHERE r.status != 'HUY_HOAT_DONG' AND b.user.id = :userId
             """)
     List<IdAndName> getServiceRoomInfoByUserId(@Param("userId") String userId);
+
+    @Query("""
+                SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(
+                    r.id,
+                    CONCAT(r.roomCode, ' - ', f.nameFloor, ' - ', b.buildingName)
+                )
+                FROM Room r
+                LEFT JOIN r.floor f
+                LEFT JOIN f.building b
+                WHERE r.status != 'HUY_HOAT_DONG' AND b.user.id = :userId
+            """)
+    List<IdAndName> getRoomInfoByUserId(@Param("userId") String userId);
 }

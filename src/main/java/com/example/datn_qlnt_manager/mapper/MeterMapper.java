@@ -15,7 +15,9 @@ public interface MeterMapper {
     @Mapping(source = "room.id", target = "roomId")
     @Mapping(source = "room.roomCode", target = "roomCode")
     @Mapping(source = "service.id", target = "serviceId")
-    @Mapping(source = "service.name", target = "name")
+    @Mapping(source = "service.name", target = "serviceName")
+    @Mapping(source = "createdAt", target = "updatedAt")
+    @Mapping(source = "updatedAt", target = "createdAt")
     MeterResponse toMeterResponse (Meter meter);
 
     void toMeterUpdate (@MappingTarget Meter meter, MeterUpdateRequest request) ;

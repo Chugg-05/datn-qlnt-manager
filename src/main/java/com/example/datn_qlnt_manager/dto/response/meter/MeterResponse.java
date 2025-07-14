@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 @Data
@@ -18,11 +19,13 @@ public class MeterResponse {
     String roomId;
     String roomCode;
     String serviceId;
-    String name;
+    String serviceName;
     MeterType meterType;
     String meterName;
     String meterCode;
     LocalDate manufactureDate;
     Integer initialIndex;
     String descriptionMeter;
+    Instant createdAt;
+    Instant updatedAt;
 }

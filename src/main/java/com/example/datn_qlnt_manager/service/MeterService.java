@@ -2,8 +2,10 @@ package com.example.datn_qlnt_manager.service;
 
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
+import com.example.datn_qlnt_manager.dto.filter.MeterInitFilterResponse;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.meter.CreateMeterInitResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 
@@ -19,6 +21,9 @@ public interface MeterService {
 
     void deleteMeter(String meterId);
 
-    List<MeterReadingMonthlyStatsResponse> getMonthlyStats(String roomCode);
+    List<MeterReadingMonthlyStatsResponse> getMonthlyStats(String roomId);
 
+    CreateMeterInitResponse getMeterInfoByUserId();
+
+    MeterInitFilterResponse getMeterFilterByUserId();
 }

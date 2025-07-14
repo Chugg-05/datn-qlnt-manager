@@ -1,17 +1,17 @@
 package com.example.datn_qlnt_manager.dto.filter;
 
-import com.example.datn_qlnt_manager.common.MeterType;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MeterFilter {
-    String buildingId;
-    String roomId;
-    MeterType meterType;
-    String query;
+public class MeterInitFilterResponse {
+
+    List<IdAndName> rooms;
 }

@@ -4,8 +4,10 @@ import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
+import com.example.datn_qlnt_manager.dto.filter.MeterInitFilterResponse;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.meter.CreateMeterInitResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.entity.Meter;
@@ -13,11 +15,9 @@ import com.example.datn_qlnt_manager.entity.Room;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.MeterMapper;
-import com.example.datn_qlnt_manager.repository.MeterReadingRepository;
-import com.example.datn_qlnt_manager.repository.MeterRepository;
-import com.example.datn_qlnt_manager.repository.RoomRepository;
-import com.example.datn_qlnt_manager.repository.ServiceRepository;
+import com.example.datn_qlnt_manager.repository.*;
 import com.example.datn_qlnt_manager.service.MeterService;
+import com.example.datn_qlnt_manager.service.RoomService;
 import com.example.datn_qlnt_manager.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -45,18 +45,19 @@ public class MeterServiceImpl implements MeterService {
     RoomRepository roomRepository;
     ServiceRepository serviceRepository;
     UserService userService;
-
+    private final BuildingRepository buildingRepository;
 
     @Override
-    public PaginatedResponse<MeterResponse> getPageAndSearchAndFilterMeterByUserId(MeterFilter meterFilter, int page, int size) {
+    public PaginatedResponse<MeterResponse> getPageAndSearchAndFilterMeterByUserId(MeterFilter meterFilter, int page,
+                                                                                   int size) {
         String currentUserId = userService.getCurrentUser().getId();
 
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
-        Page<Meter> pageResult = meterRepository.findByUserIdWithFilter(
+        Page<MeterResponse> pageResult = meterRepository.findByUserIdWithFilter(
                 currentUserId,
                 meterFilter.getBuildingId(),
-                meterFilter.getRoomCode(),
+                meterFilter.getRoomId(),
                 meterFilter.getMeterType(),
                 meterFilter.getQuery(),
                 pageable
@@ -72,14 +73,13 @@ public class MeterServiceImpl implements MeterService {
                         .build())
                 .build();
 
-        List<MeterResponse> responseList = pageResult.map(meterMapper::toMeterResponse).getContent();
+        List<MeterResponse> responseList = pageResult.getContent();
 
         return PaginatedResponse.<MeterResponse>builder()
                 .data(responseList)
                 .meta(meta)
                 .build();
     }
-
 
 
     @Override
@@ -139,9 +139,22 @@ public class MeterServiceImpl implements MeterService {
     }
 
     @Override
-    public List<MeterReadingMonthlyStatsResponse> getMonthlyStats(String meterCode) {
-        return meterReadingRepository.getMonthlyStats(meterCode);
+    public List<MeterReadingMonthlyStatsResponse> getMonthlyStats(String roomId) {
+        return meterReadingRepository.getMonthlyStats(roomId, userService.getCurrentUser().getId());
     }
 
+    @Override
+    public CreateMeterInitResponse getMeterInfoByUserId() {
+        return CreateMeterInitResponse.builder()
+                .rooms(roomRepository.getServiceRoomInfoByUserId(userService.getCurrentUser().getId()))
+                .services(serviceRepository.getServiceInfoByUserId(userService.getCurrentUser().getId()))
+                .build();
+    }
 
+    @Override
+    public MeterInitFilterResponse getMeterFilterByUserId() {
+        return MeterInitFilterResponse.builder()
+                .rooms(roomRepository.getRoomInfoByUserId(userService.getCurrentUser().getId()))
+                .build();
+    }
 }

@@ -3,8 +3,10 @@ package com.example.datn_qlnt_manager.controller;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
+import com.example.datn_qlnt_manager.dto.filter.MeterInitFilterResponse;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.meter.CreateMeterInitResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.service.MeterService;
@@ -73,13 +75,31 @@ public class MeterController {
                 .build();
     }
 
-    @GetMapping("/monthly-stats/{meterCode}")
-    public ApiResponse<List<MeterReadingMonthlyStatsResponse>> getMonthlyStats(@PathVariable String meterCode) {
+    @GetMapping("/monthly-stats")
+    public ApiResponse<List<MeterReadingMonthlyStatsResponse>> getMonthlyStats(@RequestParam(required = false) String roomId) {
         return ApiResponse.<List<MeterReadingMonthlyStatsResponse>>builder()
                 .message("Thống kê chỉ số từng tháng thành công")
-                .data(meterService.getMonthlyStats(meterCode))
+                .data(meterService.getMonthlyStats(roomId))
                 .build();
     }
 
+    @Operation(summary = "Hiển thị thông tin liên quan để thêm mới và cập nhật công tơ theo người đang đăng nhập")
+    @GetMapping("/init")
+    public ApiResponse<CreateMeterInitResponse> getMeterInfoByUserId() {
+        CreateMeterInitResponse data = meterService.getMeterInfoByUserId();
+        return ApiResponse.<CreateMeterInitResponse>builder()
+                .data(data)
+                .message("Assets has been found!")
+                .build();
+    }
 
+    @Operation(summary = "Hiển thị thông tin liên quan để lọc và tìm kiếm theo người đang đăng nhập")
+    @GetMapping("/init-filter")
+    public ApiResponse<MeterInitFilterResponse> getMeterFilterByUserId() {
+        MeterInitFilterResponse data = meterService.getMeterFilterByUserId();
+        return ApiResponse.<MeterInitFilterResponse>builder()
+                .data(data)
+                .message("Assets has been found!")
+                .build();
+    }
 }
