@@ -82,4 +82,14 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
             Pageable pageable
     );
 
+    @Query("""
+            SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(
+                s.id,
+                s.name
+            )
+            FROM Service s
+            WHERE s.user.id = :userId AND s.status != 'KHONG_SU_DUNG'
+            """)
+    List<IdAndName> getServiceInfoByUserId(@Param("userId") String userId);
+
 }

@@ -55,15 +55,15 @@ public interface MeterReadingRepository extends JpaRepository<MeterReading, Stri
                     m.meterCode,
                     mr.month,
                     mr.year,
-                    mr.previousIndex,
-                    mr.currentIndex,
+                    mr.oldIndex,
+                    mr.newIndex,
                     mr.quantity
                 )
                 FROM MeterReading mr
                 JOIN mr.meter m
-                WHERE (:roomCode IS NULL OR m.room.roomCode = :roomCode)
+                WHERE (:roomId IS NULL OR m.room.id = :roomId)
                 ORDER BY mr.year DESC, mr.month DESC
             """)
-    List<MeterReadingMonthlyStatsResponse> getMonthlyStats(@Param("roomCode") String roomCode);
+    List<MeterReadingMonthlyStatsResponse> getMonthlyStats(@Param("roomId") String roomId, @Param("userId") String userId);
 
 }
