@@ -72,7 +72,7 @@ public class MeterReadingController {
                 .build();
     }
 
-    @Operation(summary = "Xem danh sách chỉ số từng công tơ")
+    @Operation(summary = "Xem chi tiết chỉ số công tơ")
     @GetMapping("/{meterReadingId}")
     public ApiResponse<MeterReadingResponse> getById(@PathVariable String meterReadingId) {
         return ApiResponse.<MeterReadingResponse>builder()
