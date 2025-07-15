@@ -23,7 +23,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -46,7 +45,7 @@ public class MeterReadingServiceImpl implements MeterReadingService {
 
         String currentUserId = userService.getCurrentUser().getId();
 
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
         Page<MeterReading> pageResult = meterReadingRepository.filterMeterReadings(
                 currentUserId,
@@ -57,24 +56,7 @@ public class MeterReadingServiceImpl implements MeterReadingService {
                 pageable
         );
 
-        List<MeterReadingResponse> data = pageResult.getContent().stream()
-                .map(meterReadingMapper::toResponse)
-                .toList();
-
-        Meta<?> meta = Meta.builder()
-                .pagination(Pagination.builder()
-                        .count(pageResult.getNumberOfElements())
-                        .perPage(size)
-                        .currentPage(page)
-                        .totalPages(pageResult.getTotalPages())
-                        .total(pageResult.getTotalElements())
-                        .build())
-                .build();
-
-        return PaginatedResponse.<MeterReadingResponse>builder()
-                .data(data)
-                .meta(meta)
-                .build();
+        return buildPaginatedMeterReadingResponse(pageResult, page, size);
     }
 
 
@@ -128,4 +110,26 @@ public class MeterReadingServiceImpl implements MeterReadingService {
                 .orElseThrow(() -> new AppException(ErrorCode.METER_READING_NOT_FOUND));
     }
 
+    private PaginatedResponse<MeterReadingResponse> buildPaginatedMeterReadingResponse(
+            Page<MeterReading> pageResult, int page, int size) {
+
+        List<MeterReadingResponse> data = pageResult.getContent().stream()
+                .map(meterReadingMapper::toResponse)
+                .toList();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(pageResult.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(pageResult.getTotalPages())
+                        .total(pageResult.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<MeterReadingResponse>builder()
+                .data(data)
+                .meta(meta)
+                .build();
+    }
 }

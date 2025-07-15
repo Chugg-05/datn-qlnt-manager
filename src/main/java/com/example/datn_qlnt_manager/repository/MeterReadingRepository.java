@@ -55,8 +55,8 @@ public interface MeterReadingRepository extends JpaRepository<MeterReading, Stri
                     m.meterCode,
                     mr.month,
                     mr.year,
-                    mr.previousIndex,
-                    mr.currentIndex,
+                    mr.oldIndex,
+                    mr.newIndex,
                     mr.quantity
                 )
                 FROM MeterReading mr
