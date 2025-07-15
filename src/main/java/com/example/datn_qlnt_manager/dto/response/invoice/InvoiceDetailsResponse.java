@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.dto.response.invoice;
 
 import com.example.datn_qlnt_manager.common.InvoiceStatus;
+import com.example.datn_qlnt_manager.common.InvoiceType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -25,6 +26,7 @@ public class InvoiceDetailsResponse {
     Integer year;
     LocalDate paymentDueDate;
     InvoiceStatus invoiceStatus;
+    InvoiceType invoiceType;
     List<InvoiceItemResponse> items;
     BigDecimal totalAmount;
     String note;

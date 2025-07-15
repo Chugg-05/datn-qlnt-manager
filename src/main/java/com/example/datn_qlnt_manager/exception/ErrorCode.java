@@ -156,6 +156,27 @@ public enum ErrorCode {
     INVALID_COMPLETION_DEADLINE_PAST(400, "The deadline cannot be in the past.", HttpStatus.BAD_REQUEST),
     INVALID_SERVICE_APPLIES(400, "Unable to determine service application type.", HttpStatus.BAD_REQUEST),
 
+    INVOICE_CREATION_FAILED(400, "Invoice creation failed.", HttpStatus.BAD_REQUEST),
+    INVOICE_ALREADY_EXISTS(400, "Invoice already exists for this month and year.", HttpStatus.BAD_REQUEST),
+    CONTRACT_NOT_ACTIVE(400, "Contract expired.", HttpStatus.BAD_REQUEST),
+    INVALID_SERVICE_TYPE(400, "Invalid service type.", HttpStatus.BAD_REQUEST),
+    METER_TYPE_NOT_FOUND(400, "Meter type not found.", HttpStatus.BAD_REQUEST),
+    DUPLICATE_INVOICE_DETAIL(400, "Duplicate invoice detail for the same service type.", HttpStatus.BAD_REQUEST),
+    INVALID_METER_READING(400, "Invalid meter reading. New number cannot be less than old number.", HttpStatus.BAD_REQUEST),
+    INVALID_COMPENSATION_DATA(400, "Invalid compensation data.", HttpStatus.UNAUTHORIZED),
+    INVOICE_ITEM_TYPE_NOT_NULL(400, "Invoice item type must not be null.", HttpStatus.BAD_REQUEST),
+    INVALID_NEW_INDEX_MIN(400, "The new index must be greater than {min}.", HttpStatus.BAD_REQUEST),
+    INVALID_QUANTITY_MIN(400, "The quantity must be greater than {min}.", HttpStatus.BAD_REQUEST),
+    INVALID_UNIT_PRICE_MIN(400, "The unit price must be greater than {min}.", HttpStatus.BAD_REQUEST),
+    CANNOT_DELETE_ROOM_CHARGE(400, "This room charge cannot be deleted.", HttpStatus.BAD_REQUEST),
+    NOT_LAST_MONTH_OF_CONTRACT(400, "This is not the last month of the contract.", HttpStatus.BAD_REQUEST),
+    MISSING_MAIN_INVOICE(400, "Main invoice is required for this operation.", HttpStatus.BAD_REQUEST),
+    DUPLICATE_END_INVOICE(400, "An end invoice already exists for this contract.", HttpStatus.BAD_REQUEST),
+    INVOICE_ALREADY_CANCELLED(400, "This invoice has already been cancelled.", HttpStatus.BAD_REQUEST),
+    INVALID_INVOICE_STATUS(400, "Invalid invoice status.", HttpStatus.BAD_REQUEST),
+    INVOICE_NOT_EDITABLE(400, "This invoice cannot be edited.", HttpStatus.BAD_REQUEST),
+    INVALID_PAYMENT_DUE_DATE(400, "Payment due date must be in the future.", HttpStatus.BAD_REQUEST),
+    INVOICE_CAN_NOT_BE_DELETED(400, "This invoice cannot be deleted.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
@@ -182,7 +203,6 @@ public enum ErrorCode {
     CONTRACT_NOT_FOUND(404, "Contract not found.", HttpStatus.NOT_FOUND),
     DEFAULT_SERVICE_NOT_FOUND(404, "Default Service not found.", HttpStatus.NOT_FOUND),
     JOB_NOT_FOUND(404, "Job not found.", HttpStatus.NOT_FOUND),
-    METER_TYPE_NOT_FOUND(404, "Meter type not found.", HttpStatus.NOT_FOUND),
     METER_NAME_REQUIRED(404, "Meter name not found.", HttpStatus.NOT_FOUND),
     INITIAL_INDEX_REQUIRED(404, "INITIAL INDEX not found.", HttpStatus.NOT_FOUND),
     METER_CODE_NOT_FOUND(404, "Meter code not found.", HttpStatus.NOT_FOUND),
@@ -219,6 +239,7 @@ public enum ErrorCode {
     NOTIFICATION_NOT_FOUND(404,"Notification must not be null", HttpStatus.NOT_FOUND),
     NOTIFICATION_NOT_ASSIGNED(404,"Notification not assigned to this user",HttpStatus.NOT_FOUND),
 
+    INVOICE_DETAIL_NOT_FOUND(404, "Invoice detail not found.", HttpStatus.NOT_FOUND),
 
     // Code: 409
     OTP_ALREADY_SENT(409, "OTP already sent.", HttpStatus.BAD_REQUEST),

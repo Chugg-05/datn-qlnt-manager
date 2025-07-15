@@ -1,8 +1,9 @@
 package com.example.datn_qlnt_manager.repository;
 
 import com.example.datn_qlnt_manager.common.InvoiceStatus;
+import com.example.datn_qlnt_manager.common.InvoiceType;
 import com.example.datn_qlnt_manager.dto.projection.InvoiceDetailView;
-import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceItemResponse;
+import com.example.datn_qlnt_manager.dto.statistics.InvoiceStatistics;
 import com.example.datn_qlnt_manager.entity.Invoice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,9 +41,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
         AND (:floor IS NULL OR f.id = :floor)
         AND (:month IS NULL OR i.month = :month)
         AND (:year IS NULL OR i.year = :year)
-        AND (:minGrandTotal IS NULL OR i.grandTotal >= :minGrandTotal)
-        AND (:maxGrandTotal IS NULL OR i.grandTotal <= :maxGrandTotal)
+        AND (:minTotalAmount IS NULL OR i.totalAmount >= :minTotalAmount)
+        AND (:maxTotalAmount IS NULL OR i.totalAmount <= :maxTotalAmount)
         AND (:invoiceStatus IS NULL OR i.invoiceStatus = :invoiceStatus)
+        AND (:invoiceType IS NULL OR i.invoiceType = :invoiceType)
         AND i.invoiceStatus != 'HUY'
         ORDER BY i.updatedAt DESC
     """)
@@ -53,9 +55,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
             @Param("floor") String floor,
             @Param("month") Integer month,
             @Param("year") Integer year,
-            @Param("minGrandTotal") BigDecimal minGrandTotal,
-            @Param("maxGrandTotal") BigDecimal maxGrandTotal,
+            @Param("minTotalAmount") BigDecimal minTotalAmount,
+            @Param("maxTotalAmount") BigDecimal maxTotalAmount,
             @Param("invoiceStatus") InvoiceStatus invoiceStatus,
+            @Param("invoiceType") InvoiceType invoiceType,
             Pageable pageable
     );
 
@@ -82,8 +85,9 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
         AND (:floor IS NULL OR f.id = :floor)
         AND (:month IS NULL OR i.month = :month)
         AND (:year IS NULL OR i.year = :year)
-        AND (:minGrandTotal IS NULL OR i.grandTotal >= :minGrandTotal)
-        AND (:maxGrandTotal IS NULL OR i.grandTotal <= :maxGrandTotal)
+        AND (:minTotalAmount IS NULL OR i.totalAmount >= :minTotalAmount)
+        AND (:maxTotalAmount IS NULL OR i.totalAmount <= :maxTotalAmount)
+        AND (:invoiceType IS NULL OR i.invoiceType = :invoiceType)
         AND i.invoiceStatus = 'HUY'
         ORDER BY i.updatedAt DESC
     """)
@@ -94,8 +98,9 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
             @Param("floor") String floor,
             @Param("month") Integer month,
             @Param("year") Integer year,
-            @Param("minGrandTotal") BigDecimal minGrandTotal,
-            @Param("maxGrandTotal") BigDecimal maxGrandTotal,
+            @Param("minTotalAmount") BigDecimal minTotalAmount,
+            @Param("maxTotalAmount") BigDecimal maxTotalAmount,
+            @Param("invoiceType") InvoiceType invoiceType,
             Pageable pageable
     );
 
@@ -107,7 +112,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
             i.year,
             i.paymentDueDate,
             i.invoiceStatus,
-            i.grandTotal,
+            i.invoiceType,
+            i.totalAmount,
             i.note,
             i.createdAt,
             i.updatedAt,
@@ -127,4 +133,31 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
     """)
     Optional<InvoiceDetailView> getInvoiceDetailById(@Param("invoiceId") String invoiceId);
 
+    @Query(
+            """
+                SELECT COUNT(i),
+                       SUM(CASE WHEN i.invoiceStatus = 'CHUA_THANH_TOAN' THEN 1 ELSE 0 END),
+                       SUM(CASE WHEN i.invoiceStatus = 'DA_THANH_TOAN' THEN 1 ELSE 0 END),
+                       SUM(CASE WHEN i.invoiceStatus = 'QUA_HAN' THEN 1 ELSE 0 END),
+                       SUM(CASE WHEN i.invoiceStatus = 'HUY' THEN 1 ELSE 0 END)
+                FROM Invoice i
+                WHERE i.contract.room.floor.building.user.id = :userId
+            """)
+    InvoiceStatistics getTotalInvoiceByStatus(@Param("userId") String userId);
+
+    @Query("""
+            	SELECT i FROM Invoice i
+            	WHERE i.contract.room.floor.building.user.id = :userId
+            	ORDER BY i.updatedAt DESC
+            """)
+    List<Invoice> findAllInvoicesByUserId(@Param("userId") String userId);
+
+    boolean existsByContractIdAndMonthAndYearAndInvoiceType(
+            String contractId,
+            int month,
+            int year,
+            InvoiceType invoiceType
+    );
+
+    boolean existsByContractIdAndMonthAndYear(String contractId, Integer month, Integer year);
 }
