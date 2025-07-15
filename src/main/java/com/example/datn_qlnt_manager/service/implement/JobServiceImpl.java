@@ -41,6 +41,7 @@ public class JobServiceImpl implements JobService {
     JobMapper jobMapper;
     BuildingRepository buildingRepository;
     UserService userService;
+    CodeGeneratorService codeGeneratorService;
 
     @Override
     public PaginatedResponse<JobResponse> getPageAndSearchAndFilterJobByUserId(
@@ -76,8 +77,13 @@ public class JobServiceImpl implements JobService {
 
         Building building = buildingRepository.findById(request.getBuildingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+
+        String jobCode = codeGeneratorService.generateJobCode(building);
+
         Job job = jobMapper.toJob(request);
+
         job.setBuilding(building);
+        job.setJobCode(jobCode);
         job.setJobStatus(JobStatus.MOI);
         job.setCreatedAt(Instant.now());
         job.setUpdatedAt(Instant.now());

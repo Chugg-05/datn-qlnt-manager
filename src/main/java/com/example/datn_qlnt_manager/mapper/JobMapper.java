@@ -11,6 +11,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface JobMapper {
 
+    @Mapping(target = "jobCode", ignore = true)
     @Mapping(target = "jobStatus", ignore = true)
     Job toJob (JobCreationRequest request);
 
