@@ -14,7 +14,7 @@ public class MeterReadingMonthlyStatsResponse {
      String meterCode;
      Integer month;
      Integer year;
-     Integer previousIndex;
-     Integer currentIndex;
+     Integer oldIndex;
+     Integer newIndex;
      Integer quantity;
 }

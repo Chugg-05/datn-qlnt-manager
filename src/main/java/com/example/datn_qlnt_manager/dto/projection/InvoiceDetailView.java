@@ -1,15 +1,16 @@
 package com.example.datn_qlnt_manager.dto.projection;
 
 import com.example.datn_qlnt_manager.common.InvoiceStatus;
+import com.example.datn_qlnt_manager.common.InvoiceType;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class InvoiceDetailView {
     String invoiceId;
     String invoiceCode;
@@ -17,6 +18,7 @@ public class InvoiceDetailView {
     Integer year;
     LocalDate paymentDueDate;
     InvoiceStatus invoiceStatus;
+    InvoiceType invoiceType;
     BigDecimal totalAmount;
     String note;
     Instant createdAt;

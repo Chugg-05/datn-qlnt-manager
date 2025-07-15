@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvoiceItemResponse {
+    String id;
     String serviceName;
     ServiceType serviceType;
     Integer oldIndex;        // optional

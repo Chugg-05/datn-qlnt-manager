@@ -21,6 +21,7 @@ public class CodeGeneratorService {
     TenantCodeStrategy tenantCodeStrategy;
     ContractCodeStrategy contractCodeStrategy;
     ServiceRoomCodeStrategy serviceRoomCodeStrategy;
+    InvoiceCodeStrategy invoiceCodeStrategy;
 
     public String generateBuildingCode(User user) {
         return buildingCodeStrategy.generate(user);
@@ -44,5 +45,9 @@ public class CodeGeneratorService {
 
     public String generateServiceRoomCode(Room room) {
         return serviceRoomCodeStrategy.generate(room);
+    }
+
+    public String generateInvoiceCode(Room room, int month, int year) {
+        return invoiceCodeStrategy.generate(room, month, year);
     }
 }

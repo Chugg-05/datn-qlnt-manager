@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.dto.filter;
 
 import com.example.datn_qlnt_manager.common.InvoiceStatus;
+import com.example.datn_qlnt_manager.common.InvoiceType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,7 +18,8 @@ public class InvoiceFilter {
     String floor;
     Integer month;
     Integer year;
-    BigDecimal minGrantTotal;
-    BigDecimal maxGrantTotal;
+    BigDecimal minTotalAmount;
+    BigDecimal maxTotalAmount;
     InvoiceStatus invoiceStatus;
+    InvoiceType invoiceType;
 }

@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.entity;
 
 import com.example.datn_qlnt_manager.common.InvoiceStatus;
+import com.example.datn_qlnt_manager.common.InvoiceType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,6 +9,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,7 +30,7 @@ public class Invoice extends AbstractEntity {
     String invoiceCode;
 
     @Column(name = "tong_tien", nullable = false)
-    BigDecimal grandTotal;
+    BigDecimal totalAmount;
 
     @Column(name = "thang", nullable = false)
     Integer month;
@@ -42,6 +45,13 @@ public class Invoice extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     InvoiceStatus invoiceStatus;
 
+    @Column(name = "loai_hoa_don", nullable = false)
+    @Enumerated(EnumType.STRING)
+    InvoiceType invoiceType;
+
     @Column(name = "ghi_chu")
     String note;
+
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InvoiceDetail> details = new ArrayList<>();
 }

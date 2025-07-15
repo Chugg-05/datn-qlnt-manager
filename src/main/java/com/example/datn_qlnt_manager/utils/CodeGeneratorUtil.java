@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.utils;
 
 import lombok.experimental.UtilityClass;
 
+import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
@@ -82,5 +83,13 @@ public class CodeGeneratorUtil {
             return Integer.parseInt(matcher.group(1));
         }
         return null;
+    }
+
+    public String generateInvoiceCode(String roomCode, int month, int year) {
+        String prefix = "HD";
+        String yy = String.format("%02d", year % 100);
+        String mm = String.format("%02d", month);
+        String randomNumber = String.format("%04d", new SecureRandom().nextInt(10_000));
+        return prefix + roomCode + yy + mm + randomNumber;
     }
 }

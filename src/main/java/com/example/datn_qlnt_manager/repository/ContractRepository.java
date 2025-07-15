@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,35 +65,35 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 
 
 	@Query("""
-    SELECT new com.example.datn_qlnt_manager.dto.response.contract.ContractDetailResponse(
-    	c.id,
-        c.contractCode,
-        r.roomCode,
-        owner.fullName,
-        owner.phoneNumber,
-        rep.fullName,
-        rep.email,
-        rep.phoneNumber,
-        rep.identityCardNumber,
-        rep.address,
-        c.numberOfPeople,
-        c.startDate,
-        c.endDate,
-        c.deposit,
-        r.price,
-        b.address,
-        c.status,
-        c.createdAt,
-        c.updatedAt
-    )
-    FROM Contract c
-    JOIN c.room r
-    JOIN r.floor f
-    JOIN f.building b
-    JOIN b.user owner
-    JOIN c.tenants rep
-    WHERE c.id = :contractId AND rep.isRepresentative = true
-""")
+		SELECT new com.example.datn_qlnt_manager.dto.response.contract.ContractDetailResponse(
+			c.id,
+			c.contractCode,
+			r.roomCode,
+			owner.fullName,
+			owner.phoneNumber,
+			rep.fullName,
+			rep.email,
+			rep.phoneNumber,
+			rep.identityCardNumber,
+			rep.address,
+			c.numberOfPeople,
+			c.startDate,
+			c.endDate,
+			c.deposit,
+			r.price,
+			b.address,
+			c.status,
+			c.createdAt,
+			c.updatedAt
+		)
+		FROM Contract c
+		JOIN c.room r
+		JOIN r.floor f
+		JOIN f.building b
+		JOIN b.user owner
+		JOIN c.tenants rep
+		WHERE c.id = :contractId AND rep.isRepresentative = true
+	""")
 	Optional<ContractDetailResponse> findContractDetailById(@Param("contractId") String contractId);
 
 
@@ -119,6 +120,16 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
         WHERE c.room.floor.building.user.id = :userId
     """)
 	ContractStatistics getTotalContractByStatus(@Param("userId") String userId);
+
+	@Query("""
+		SELECT c FROM Contract c
+		WHERE c.startDate <= :endOfMonth
+		  AND c.endDate >= :startOfMonth
+	""")
+	List<Contract> findValidContractsInMonth(
+			@Param("startOfMonth") LocalDateTime startOfMonth,
+			@Param("endOfMonth") LocalDateTime endOfMonth
+	);
 
 	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
 	boolean existsByTenants_Id(String tenantId);
