@@ -19,7 +19,6 @@ import java.util.Date;
 public class JobCreationRequest {
     @NotBlank(message = "BUILDING_ID_NOT_FOUND")
     String buildingId;
-    String jobCode;
     @NotBlank(message = "INVALID_TITLE_BLANK")
     String title;
     String description;
