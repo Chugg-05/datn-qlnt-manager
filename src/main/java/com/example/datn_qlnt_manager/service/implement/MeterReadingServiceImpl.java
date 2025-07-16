@@ -51,7 +51,7 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         Page<MeterReading> pageResult = meterReadingRepository.filterMeterReadings(
                 currentUserId,
                 meterReadingFilter.getBuildingId(),
-                meterReadingFilter.getRoomCode(),
+                meterReadingFilter.getRoomId(),
                 meterReadingFilter.getMeterType(),
                 meterReadingFilter.getMonth(),
                 pageable

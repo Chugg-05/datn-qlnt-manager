@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.repository;
 
 import com.example.datn_qlnt_manager.common.MeterType;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.entity.Meter;
 import feign.Param;
@@ -96,5 +97,18 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
             """)
     List<Meter> findByRoomId(@Param("roomId") String roomId);
 
-
+    @Query("""
+            SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(
+                m.id,
+                CONCAT(m.meterCode, ' - ', m.meterName)
+            )
+            FROM Meter m
+            JOIN m.room r
+            JOIN r.floor f
+            JOIN f.building b
+            JOIN b.user u
+            WHERE u.id = :userId
+            ORDER BY m.updatedAt DESC
+            """)
+    List<IdAndName> findAllByUserId(@Param("userId") String userId);
 }

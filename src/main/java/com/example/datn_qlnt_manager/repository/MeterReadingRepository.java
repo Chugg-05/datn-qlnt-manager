@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.repository;
 
 import com.example.datn_qlnt_manager.common.MeterType;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
+import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.entity.MeterReading;
 import feign.Param;
 import org.springframework.data.domain.Page;
@@ -24,7 +25,7 @@ public interface MeterReadingRepository extends JpaRepository<MeterReading, Stri
     JOIN b.user u
     WHERE u.id = :userId
       AND (:buildingId IS NULL OR b.id = :buildingId)
-      AND (:roomCode IS NULL OR r.roomCode = :roomCode)
+      AND (:roomId IS NULL OR r.id = :roomId)
       AND (:meterType IS NULL OR m.meterType = :meterType)
       AND (:month IS NULL OR mr.month = :month)
     ORDER BY mr.updatedAt DESC
@@ -32,7 +33,7 @@ public interface MeterReadingRepository extends JpaRepository<MeterReading, Stri
     Page<MeterReading> filterMeterReadings(
             @Param("userId") String userId,
             @Param("buildingId") String buildingId,
-            @Param("roomCode") String roomCode,
+            @Param("roomId") String roomId,
             @Param("meterType") MeterType meterType,
             @Param("month") Integer month,
             Pageable pageable
@@ -61,7 +62,7 @@ public interface MeterReadingRepository extends JpaRepository<MeterReading, Stri
                 )
                 FROM MeterReading mr
                 JOIN mr.meter m
-                WHERE (:roomId IS NULL OR m.room.id = :roomId)
+                WHERE (:roomId IS NULL OR m.room.id = :roomId) AND m.service.user.id = :userId
                 ORDER BY mr.year DESC, mr.month DESC
             """)
     List<MeterReadingMonthlyStatsResponse> getMonthlyStats(@Param("roomId") String roomId, @Param("userId") String userId);

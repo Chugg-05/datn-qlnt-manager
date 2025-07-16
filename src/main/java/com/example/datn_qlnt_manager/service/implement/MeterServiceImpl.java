@@ -7,6 +7,7 @@ import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
 import com.example.datn_qlnt_manager.dto.filter.MeterInitFilterResponse;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.meter.CreateMeterInitResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
@@ -45,7 +46,6 @@ public class MeterServiceImpl implements MeterService {
     RoomRepository roomRepository;
     ServiceRepository serviceRepository;
     UserService userService;
-    private final BuildingRepository buildingRepository;
 
     @Override
     public PaginatedResponse<MeterResponse> getPageAndSearchAndFilterMeterByUserId(MeterFilter meterFilter, int page,
@@ -156,5 +156,10 @@ public class MeterServiceImpl implements MeterService {
         return MeterInitFilterResponse.builder()
                 .rooms(roomRepository.getRoomInfoByUserId(userService.getCurrentUser().getId()))
                 .build();
+    }
+
+    @Override
+    public List<IdAndName> findAllMeters() {
+        return meterRepository.findAllByUserId(userService.getCurrentUser().getId());
     }
 }

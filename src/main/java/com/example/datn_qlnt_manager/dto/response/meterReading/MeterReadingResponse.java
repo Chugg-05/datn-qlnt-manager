@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.dto.response.meterReading;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 @Getter
@@ -26,5 +27,7 @@ public class MeterReadingResponse {
     Integer year;
     LocalDate readingDate;
     String descriptionMeterReading;
+    Instant createdAt;
+    Instant updatedAt;
 }
 
