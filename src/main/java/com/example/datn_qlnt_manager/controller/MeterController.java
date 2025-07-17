@@ -6,6 +6,7 @@ import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
 import com.example.datn_qlnt_manager.dto.filter.MeterInitFilterResponse;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.meter.CreateMeterInitResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
@@ -100,6 +101,16 @@ public class MeterController {
         return ApiResponse.<MeterInitFilterResponse>builder()
                 .data(data)
                 .message("Assets has been found!")
+                .build();
+    }
+
+    @Operation(summary = "Hiển thị công tơ không phân trang theo người đang đăng nhập")
+    @GetMapping("/find-all")
+    public ApiResponse<List<IdAndName>> findAllMeters() {
+        List<IdAndName> data = meterService.findAllMeters();
+        return ApiResponse.<List<IdAndName>>builder()
+                .data(data)
+                .message("Meter list has been found!")
                 .build();
     }
 }

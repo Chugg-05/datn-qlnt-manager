@@ -5,6 +5,7 @@ import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
 import com.example.datn_qlnt_manager.dto.filter.MeterInitFilterResponse;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.meter.CreateMeterInitResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
@@ -13,7 +14,8 @@ import java.util.List;
 
 public interface MeterService {
 
-    PaginatedResponse<MeterResponse> getPageAndSearchAndFilterMeterByUserId(MeterFilter meterFilter, int page, int size);
+    PaginatedResponse<MeterResponse> getPageAndSearchAndFilterMeterByUserId(MeterFilter meterFilter, int page,
+                                                                            int size);
 
     MeterResponse createMeter(MeterCreationRequest request);
 
@@ -26,4 +28,6 @@ public interface MeterService {
     CreateMeterInitResponse getMeterInfoByUserId();
 
     MeterInitFilterResponse getMeterFilterByUserId();
+
+    List<IdAndName> findAllMeters();
 }

@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.dto.response.meter;
 
+import com.example.datn_qlnt_manager.common.MeterType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,4 +18,5 @@ public class MeterReadingMonthlyStatsResponse {
      Integer oldIndex;
      Integer newIndex;
      Integer quantity;
+     MeterType meterType;
 }

@@ -19,6 +19,8 @@ public interface MeterReadingMapper {
     @Mapping(target = "meterCode", source = "meter.meterCode")
     @Mapping(target = "meterName", source = "meter.meterName")
     @Mapping(target = "meterType", source = "meter.meterType")
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "updatedAt", source = "updatedAt")
     MeterReadingResponse toResponse(MeterReading meterReading);
 
     void toMeterReadingUpdate(@MappingTarget MeterReading meterReading, MeterReadingUpdateRequest request);

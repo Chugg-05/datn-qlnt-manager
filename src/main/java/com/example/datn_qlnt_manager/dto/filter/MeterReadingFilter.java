@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MeterReadingFilter {
     String buildingId;
-    String roomCode;
+    String roomId;
     MeterType meterType;
     Integer month;
 
