@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import com.example.datn_qlnt_manager.entity.Role;
+import com.example.datn_qlnt_manager.repository.RoleRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -50,6 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     UserRepository userRepository;
+    RoleRepository roleRepository;
     PasswordEncoder passwordEncoder;
     TokenProvider tokenProvider;
     AuthenticationManager authenticationManager;
@@ -97,6 +100,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // Kiểm tra xem người dùng đã tồn tại trong hệ thống chưa
         if (!userRepository.existsByEmail(email)) {
+            Role role = roleRepository.findByName("MANAGER").orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
             // Nếu người dùng chưa tồn tại, tạo mới người dùng
             User user = User.builder()
                     .email(email)
@@ -105,6 +109,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .gender(Gender.UNKNOWN)
                     .profilePicture(profilePicture)
                     .userStatus(UserStatus.ACTIVE)
+                    .roles(Set.of(role))
                     .build();
             user.setCreatedAt(Instant.now());
             user.setUpdatedAt(Instant.now());
