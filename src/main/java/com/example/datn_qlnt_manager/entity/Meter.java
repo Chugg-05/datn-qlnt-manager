@@ -41,8 +41,8 @@ public class Meter extends AbstractEntity {
     @Column(name = "ngay_san_xuat")
     LocalDate manufactureDate;
 
-    @Column(name = "chi_so_dau", nullable = false)
-    Integer initialIndex;
+    @Column(name = "so_gan_nhat", nullable = false)
+    Integer closestIndex;
 
     @Column(name = "mo_ta")
     String descriptionMeter;

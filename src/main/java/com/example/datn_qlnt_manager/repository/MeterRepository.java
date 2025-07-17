@@ -57,7 +57,7 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
                     m.meterName,
                     m.meterCode,
                     m.manufactureDate,
-                    m.initialIndex,
+                    m.closestIndex,
                     m.descriptionMeter,
                     m.createdAt,
                     m.updatedAt
