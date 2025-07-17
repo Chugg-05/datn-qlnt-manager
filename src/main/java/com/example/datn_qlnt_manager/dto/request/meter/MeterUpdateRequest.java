@@ -33,7 +33,7 @@ public class MeterUpdateRequest {
     LocalDate manufactureDate;
 
     @NotNull(message = "INITIAL_INDEX_REQUIRED")
-    Integer initialIndex;
+    Integer closestIndex;
 
     String descriptionMeter;
 }
