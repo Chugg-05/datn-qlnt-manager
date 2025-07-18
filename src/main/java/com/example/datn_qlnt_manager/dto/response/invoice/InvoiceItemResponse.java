@@ -1,6 +1,6 @@
 package com.example.datn_qlnt_manager.dto.response.invoice;
 
-import com.example.datn_qlnt_manager.common.ServiceType;
+import com.example.datn_qlnt_manager.common.ServiceCategory;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 public class InvoiceItemResponse {
     String id;
     String serviceName;
-    ServiceType serviceType;
+    ServiceCategory serviceType;
     Integer oldIndex;        // optional
     Integer newIndex;        // optional
     Integer quantity;

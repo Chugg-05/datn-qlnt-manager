@@ -1,8 +1,8 @@
 package com.example.datn_qlnt_manager.repository;
 
-import com.example.datn_qlnt_manager.common.ServiceAppliedBy;
+import com.example.datn_qlnt_manager.common.ServiceCalculation;
 import com.example.datn_qlnt_manager.common.ServiceStatus;
-import com.example.datn_qlnt_manager.common.ServiceType;
+import com.example.datn_qlnt_manager.common.ServiceCategory;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
 import com.example.datn_qlnt_manager.entity.Service;
@@ -29,21 +29,21 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
                     LOWER(s.name) LIKE LOWER(CONCAT('%', :query, '%')) OR
                     LOWER(s.unit) LIKE LOWER(CONCAT('%', :query, '%'))
                 )
-                AND (:serviceType IS NULL OR s.type = :serviceType)
+                AND (:category IS NULL OR s.category = :category)
                 AND (:userId IS NULL OR s.user.id = :userId)
                 AND (:minPrice IS NULL OR s.price >= :minPrice)
                 AND (:maxPrice IS NULL OR s.price <= :maxPrice)
                 AND (:serviceStatus IS NULL OR s.status = :serviceStatus)
-                AND (:serviceAppliedBy IS NULL OR s.appliedBy = :serviceAppliedBy)
+                AND (:serviceCalculation IS NULL OR s.serviceCalculation = :serviceCalculation)
             """)
     Page<Service> filterServicesPaging(
             @Param("userId") String userId,
             @Param("query") String query,
-            @Param("serviceType") ServiceType serviceType,
+            @Param("category") ServiceCategory category,
             @Param("minPrice") BigDecimal minPrice,
             @Param("maxPrice") BigDecimal maxPrice,
             @Param("serviceStatus") ServiceStatus serviceStatus,
-            @Param("serviceAppliedBy") ServiceAppliedBy serviceAppliedBy,
+            @Param("serviceCalculation") ServiceCalculation serviceCalculation,
             Pageable pageable
     );
 

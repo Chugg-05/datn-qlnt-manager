@@ -1,6 +1,6 @@
 package com.example.datn_qlnt_manager.mapper;
 
-import com.example.datn_qlnt_manager.common.ServiceType;
+import com.example.datn_qlnt_manager.common.ServiceCategory;
 import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceItemResponse;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceResponse;
@@ -50,9 +50,9 @@ public interface InvoiceMapper {
     }
 
     default InvoiceItemResponse toItemResponse(InvoiceDetail detail) {
-        ServiceType serviceType = null;
+        ServiceCategory serviceType = null;
         if (detail.getServiceRoom() != null && detail.getServiceRoom().getService() != null) {
-            serviceType = detail.getServiceRoom().getService().getType();
+//            serviceType = detail.getServiceRoom().getService().getType();
         }
 
         return InvoiceItemResponse.builder()

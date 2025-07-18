@@ -91,7 +91,9 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         meterReading.setOldIndex(meter.getClosestIndex());
         meterReading.setQuantity(request.getNewIndex() - meter.getClosestIndex());
         meterReading.setReadingDate(request.getReadingDate());
-        meterReading.setDescriptionMeterReading("Ghi chỉ số tháng " +request.getMonth()+ "/" +request.getYear());
+        if (request.getDescriptionMeterReading().isBlank()){
+            meterReading.setDescriptionMeterReading("Ghi chỉ số tháng " +request.getMonth()+ "/" +request.getYear());
+        }
         meterReading.setCreatedAt(Instant.now());
         meterReading.setUpdatedAt(Instant.now());
 

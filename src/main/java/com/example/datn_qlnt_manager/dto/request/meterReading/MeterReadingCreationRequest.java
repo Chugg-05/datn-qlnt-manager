@@ -33,4 +33,6 @@ public class MeterReadingCreationRequest {
     @NotNull(message = "READING_DATE_NOT_FOUND")
     LocalDate readingDate;
 
+    String descriptionMeterReading;
+
 }
