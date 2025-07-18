@@ -29,7 +29,7 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
                     LOWER(s.name) LIKE LOWER(CONCAT('%', :query, '%')) OR
                     LOWER(s.unit) LIKE LOWER(CONCAT('%', :query, '%'))
                 )
-                AND (:category IS NULL OR s.category = :category)
+                AND (:category IS NULL OR s.serviceCategory = :category)
                 AND (:userId IS NULL OR s.user.id = :userId)
                 AND (:minPrice IS NULL OR s.price >= :minPrice)
                 AND (:maxPrice IS NULL OR s.price <= :maxPrice)
@@ -71,16 +71,6 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
             WHERE s.user.id = :userId AND s.status != 'KHONG_SU_DUNG'
             """)
     List<IdAndName> findAllByUserId(String userId);
-
-    @Query("""
-            SELECT s
-            FROM Service s
-            WHERE (:name IS NULL OR s.name LIKE CONCAT('%', :name, '%'))
-            """)
-    Page<Service> filterServicePaging(
-            @Param("name") String name,
-            Pageable pageable
-    );
 
     @Query("""
             SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(

@@ -27,18 +27,6 @@ public class Contract extends AbstractEntity {
     @JoinColumn(name = "phong_id", nullable = false)
     Room room;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dich_vu_id")
-    Service service;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tai_san_id")
-    Asset asset;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "phuong_tien_id")
-    Vehicle vehicle;
-
     @Column(name = "so_luong_nguoi", nullable = false)
     Integer numberOfPeople;
 
@@ -70,4 +58,28 @@ public class Contract extends AbstractEntity {
             inverseJoinColumns = @JoinColumn(name = "khach_thue_id")
     )
     Set<Tenant> tenants;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "hop_dong_tai_san",
+            joinColumns = @JoinColumn(name = "hop_dong_id"),
+            inverseJoinColumns = @JoinColumn(name = "tai_san_id")
+    )
+    Set<Asset> assets;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "hop_dong_dich_vu",
+            joinColumns = @JoinColumn(name = "hop_dong_id"),
+            inverseJoinColumns = @JoinColumn(name = "dich_vu_id")
+    )
+    Set<Service> services;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "hop_dong_phuong_tien",
+            joinColumns = @JoinColumn(name = "hop_dong_id"),
+            inverseJoinColumns = @JoinColumn(name = "phuong_tien_id")
+    )
+    Set<Vehicle> vehicles;
 }

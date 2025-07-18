@@ -4,6 +4,8 @@ import com.example.datn_qlnt_manager.common.MeterType;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.entity.Meter;
+import com.example.datn_qlnt_manager.entity.Room;
+import com.example.datn_qlnt_manager.entity.Service;
 import feign.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,39 +14,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MeterRepository extends JpaRepository<Meter, String> {
 
     boolean existsByMeterCode(String meterCode);
-
-//    @Query("""
-//                SELECT m
-//                FROM Meter m
-//                JOIN m.room r
-//                JOIN r.floor f
-//                JOIN f.building b
-//                JOIN b.user u
-//                WHERE u.id = :userId
-//                  AND (:buildingId IS NULL OR b.id = :buildingId)
-//                  AND (:roomCode IS NULL OR r.roomCode = :roomCode)
-//                  AND (:meterType IS NULL OR m.meterType = :meterType)
-//                  AND (
-//                    :query IS NULL OR
-//                    LOWER(m.meterCode) LIKE LOWER(CONCAT('%', :query, '%')) OR
-//                    LOWER(m.meterName) LIKE LOWER(CONCAT('%', :query, '%')) OR
-//                    LOWER(m.descriptionMeter) LIKE LOWER(CONCAT('%', :query, '%'))
-//                  )
-//                ORDER BY m.updatedAt DESC
-//            """)
-//    Page<Meter> findByUserIdWithFilter(
-//            @Param("userId") String userId,
-//            @Param("buildingId") String buildingId,
-//            @Param("roomCode") String roomCode,
-//            @Param("meterType") MeterType meterType,
-//            @Param("query") String query,
-//            Pageable pageable
-//    );
 
     @Query("""
                 SELECT new com.example.datn_qlnt_manager.dto.response.meter.MeterResponse(
@@ -111,4 +86,6 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
             ORDER BY m.updatedAt DESC
             """)
     List<IdAndName> findAllByUserId(@Param("userId") String userId);
+
+    Optional<Meter> findByRoomAndService(Room room, Service service);
 }

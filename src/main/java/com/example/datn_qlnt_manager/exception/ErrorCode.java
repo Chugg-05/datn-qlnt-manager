@@ -177,6 +177,8 @@ public enum ErrorCode {
     INVOICE_NOT_EDITABLE(400, "This invoice cannot be edited.", HttpStatus.BAD_REQUEST),
     INVALID_PAYMENT_DUE_DATE(400, "Payment due date must be in the future.", HttpStatus.BAD_REQUEST),
     INVOICE_CAN_NOT_BE_DELETED(400, "This invoice cannot be deleted.", HttpStatus.BAD_REQUEST),
+    INVALID_ASSETS_BLANK(400, "Assets cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_ASSETS(400, "At least one asset must be selected.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),

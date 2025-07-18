@@ -4,7 +4,6 @@ import com.example.datn_qlnt_manager.dto.filter.ServiceFilter;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
 import com.example.datn_qlnt_manager.entity.Service;
 import com.example.datn_qlnt_manager.entity.User;
-import com.example.datn_qlnt_manager.repository.UserRepository;
 import com.example.datn_qlnt_manager.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,7 +39,6 @@ public class ServiceServiceImpl implements ServiceService {
 
     ServiceRepository serviceRepository;
     ServiceMapper serviceMapper;
-    UserRepository userRepository;
     UserService userService;
 
 
@@ -84,8 +82,6 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     public ServiceResponse createService(ServiceCreationRequest request) {
         User user = userService.getCurrentUser();
-//        User user = userRepository.findById(request.getUserId())
-//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         Service service = serviceMapper.toServiceCreation(request);
         service.setUser(user);

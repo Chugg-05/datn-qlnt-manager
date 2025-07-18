@@ -33,4 +33,12 @@ public class ContractCreationRequest {
     @NotNull(message = "INVALID_TENANTS_BLANK")
     @Size(min = 1, message = "INVALID_TENANTS")
     Set<String> tenants;
+
+    @NotNull(message = "INVALID_ASSETS_BLANK")
+    @Size(min = 1, message = "INVALID_ASSETS")
+    Set<String> assets;
+
+    Set<String> services;
+
+    Set<String> vehicles;
 }

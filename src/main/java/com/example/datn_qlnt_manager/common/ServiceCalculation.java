@@ -8,5 +8,4 @@ public enum ServiceCalculation {
     TINH_THEO_NGUOI,
     TINH_THEO_PHONG,
     TIEN_PHONG
-
 }
