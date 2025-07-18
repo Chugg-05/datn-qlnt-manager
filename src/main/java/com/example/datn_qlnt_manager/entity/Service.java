@@ -31,7 +31,7 @@ public class Service extends AbstractEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "danh_muc", nullable = false)
-    ServiceCategory category;
+    ServiceCategory serviceCategory;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "cach_tinh")

@@ -1,7 +1,10 @@
 package com.example.datn_qlnt_manager.dto.response.contract;
 
 import com.example.datn_qlnt_manager.common.ContractStatus;
+import com.example.datn_qlnt_manager.dto.response.asset.AssetBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleBasicResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -33,9 +36,14 @@ public class ContractDetailResponse {
     BigDecimal roomPrice;
     String buildingAddress;
     ContractStatus status;
+    BigDecimal electricPrice;
+    BigDecimal waterPrice;
+    Set<TenantBasicResponse> tenants;
+    Set<AssetBasicResponse> assets;
+    Set<ServiceBasicResponse> services;
+    Set<VehicleBasicResponse> vehicles;
     Instant createdAt;
     Instant updatedAt;
-    Set<TenantBasicResponse> tenants;
 
     public ContractDetailResponse(
             String id,
@@ -55,6 +63,8 @@ public class ContractDetailResponse {
             BigDecimal roomPrice,
             String buildingAddress,
             ContractStatus status,
+            BigDecimal electricPrice,
+            BigDecimal waterPrice,
             Instant createdAt,
             Instant updatedAt
     ) {
@@ -75,6 +85,8 @@ public class ContractDetailResponse {
         this.roomPrice = roomPrice;
         this.buildingAddress = buildingAddress;
         this.status = status;
+        this.electricPrice = electricPrice;
+        this.waterPrice = waterPrice;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

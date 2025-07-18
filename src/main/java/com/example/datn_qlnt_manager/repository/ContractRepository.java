@@ -83,6 +83,8 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 			r.price,
 			b.address,
 			c.status,
+			c.electricPrice,
+			c.waterPrice,
 			c.createdAt,
 			c.updatedAt
 		)
