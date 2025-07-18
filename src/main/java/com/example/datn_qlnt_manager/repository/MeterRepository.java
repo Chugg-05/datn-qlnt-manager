@@ -1,8 +1,11 @@
 package com.example.datn_qlnt_manager.repository;
 
 import com.example.datn_qlnt_manager.common.MeterType;
+import com.example.datn_qlnt_manager.common.RoomStatus;
+import com.example.datn_qlnt_manager.common.RoomType;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
+import com.example.datn_qlnt_manager.dto.response.meter.RoomNoMeterResponse;
 import com.example.datn_qlnt_manager.entity.Meter;
 import com.example.datn_qlnt_manager.entity.Room;
 import com.example.datn_qlnt_manager.entity.Service;
@@ -13,6 +16,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,5 +91,44 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
             """)
     List<IdAndName> findAllByUserId(@Param("userId") String userId);
 
-    Optional<Meter> findByRoomAndService(Room room, Service service);
+    @Query("""
+    SELECT new com.example.datn_qlnt_manager.dto.response.meter.RoomNoMeterResponse(
+        r.id, r.floor.nameFloor, r.roomCode, r.price, r.roomType, r.status, r.description
+    )
+    FROM Room r
+    WHERE r.floor.building.user.id = :userId
+    AND r.id NOT IN (
+        SELECT ct.room.id
+        FROM Meter ct
+        WHERE ct.room IS NOT NULL
+    )
+    AND (:query IS NULL OR (
+        LOWER(r.floor.nameFloor) LIKE LOWER(CONCAT('%', :query, '%'))
+        OR LOWER(r.roomCode) LIKE LOWER(CONCAT('%', :query, '%'))
+        OR LOWER(r.description) LIKE LOWER(CONCAT('%', :query, '%'))
+    ))
+    AND (:status IS NULL OR r.status = :status)
+    AND (:roomType IS NULL OR r.roomType = :roomType)
+    AND (:minPrice IS NULL OR r.price >= :minPrice)
+    AND (:maxPrice IS NULL OR r.price <= :maxPrice)
+""")
+    Page<RoomNoMeterResponse> findRoomsWithoutMeterByUserIdWithFilter(
+            @Param("userId") String userId,
+            @Param("query") String query,
+            @Param("status") RoomStatus status,
+            @Param("roomType") RoomType roomType,
+            @Param("minPrice") BigDecimal minPrice,
+            @Param("maxPrice") BigDecimal maxPrice,
+            Pageable pageable
+    );
+
+    @Query("""
+            SELECT COUNT(r) FROM Room r
+            WHERE r.floor.building.user.id = :userId
+            AND r.id NOT IN (
+                SELECT DISTINCT ct.room.id FROM Meter ct
+                WHERE ct.room IS NOT NULL
+            )
+        """)
+    Long countRoomsWithoutMeterByUserId(@org.springframework.data.repository.query.Param("userId") String userId);
 }

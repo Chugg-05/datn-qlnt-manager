@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.controller;
 
+import com.example.datn_qlnt_manager.common.RoomStatus;
+import com.example.datn_qlnt_manager.common.RoomType;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
@@ -10,6 +12,8 @@ import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.meter.CreateMeterInitResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
+import com.example.datn_qlnt_manager.dto.response.meter.RoomNoMeterResponse;
+import com.example.datn_qlnt_manager.dto.statistics.RoomNoMeterCountStatistics;
 import com.example.datn_qlnt_manager.service.MeterService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +27,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -111,6 +116,36 @@ public class MeterController {
         return ApiResponse.<List<IdAndName>>builder()
                 .data(data)
                 .message("Meter list has been found!")
+                .build();
+    }
+
+    @Operation(summary = "Xem,Tìm kiếm,Lọc phòng chưa có công tơ")
+    @GetMapping("/no-meter")
+    public ApiResponse<List<RoomNoMeterResponse>> getRoomsWithoutMeterByUser(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size,
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) RoomStatus status,
+            @RequestParam(required = false) RoomType roomType,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice
+    ) {
+        PaginatedResponse<RoomNoMeterResponse> result = meterService.getRoomsWithoutMeterByUser(
+                page, size, query, status, roomType, minPrice, maxPrice);
+
+        return ApiResponse.<List<RoomNoMeterResponse>>builder()
+                .message("Get list of rooms without meter successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Đếm số phòng chưa có công tơ")
+    @GetMapping("/no-meter/count")
+    public ApiResponse<RoomNoMeterCountStatistics> countRoomsWithoutMeter() {
+        return ApiResponse.<RoomNoMeterCountStatistics>builder()
+                .message("Counting rooms without meter successfully")
+                .data(meterService.countRoomsWithoutMeterByUser())
                 .build();
     }
 }
