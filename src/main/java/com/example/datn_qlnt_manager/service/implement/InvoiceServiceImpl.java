@@ -306,30 +306,30 @@ public class InvoiceServiceImpl implements InvoiceService {
                 ));
 
         return items.stream().map(item -> {
-            ServiceType serviceType = item.getServiceType();
+            ServiceCategory serviceType = item.getServiceType();
             InvoiceItemType invoiceItemType;
 
             if (serviceType == null) {
                 throw new AppException(ErrorCode.INVALID_SERVICE_TYPE);
             }
 
-            switch (serviceType) {
-                case TIEN_PHONG -> invoiceItemType = InvoiceItemType.TIEN_PHONG;
-
-                case TINH_THEO_SO -> {
-                    String serviceId = findServiceIdByItem(serviceRoomMap, item.getServiceName());
-                    MeterType type = meterServiceMap.get(serviceId);
-                    if (type == null) {
-                        throw new AppException(ErrorCode.METER_TYPE_NOT_FOUND);
-                    }
-                    invoiceItemType = switch (type) {
-                        case DIEN -> InvoiceItemType.DIEN;
-                        case NUOC -> InvoiceItemType.NUOC;
-                    };
-                }
-
-                default -> invoiceItemType = InvoiceItemType.DICH_VU;
-            }
+//            switch (serviceType) {
+//                case TIEN_PHONG -> invoiceItemType = InvoiceItemType.TIEN_PHONG;
+//
+//                case TINH_THEO_SO -> {
+//                    String serviceId = findServiceIdByItem(serviceRoomMap, item.getServiceName());
+//                    MeterType type = meterServiceMap.get(serviceId);
+//                    if (type == null) {
+//                        throw new AppException(ErrorCode.METER_TYPE_NOT_FOUND);
+//                    }
+//                    invoiceItemType = switch (type) {
+//                        case DIEN -> InvoiceItemType.DIEN;
+//                        case NUOC -> InvoiceItemType.NUOC;
+//                    };
+//                }
+//
+//                default -> invoiceItemType = InvoiceItemType.DICH_VU;
+//            }
 
             ServiceRoom serviceRoom = null;
             String serviceId = findServiceIdByItem(serviceRoomMap, item.getServiceName());
@@ -344,7 +344,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
             return InvoiceDetail.builder()
                     .invoice(invoice)
-                    .invoiceItemType(invoiceItemType)
+//                    .invoiceItemType(invoiceItemType)
                     .serviceRoom(serviceRoom)
                     .serviceName(item.getServiceName())
                     .oldIndex(item.getOldIndex())
@@ -572,9 +572,9 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     private BigDecimal resolveMeterUnitPrice(Meter meter, Service service, Contract contract) {
-        if (service.getType() != ServiceType.TINH_THEO_SO) {
-            return service.getPrice();
-        }
+//        if (service.getType() != ServiceCategory.TINH_THEO_SO) {
+//            return service.getPrice();
+//        }
 
         return switch (meter.getMeterType()) {
             case DIEN -> contract.getElectricPrice() != null ? contract.getElectricPrice() : service.getPrice();
@@ -587,7 +587,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private InvoiceItemResponse buildRoomCharge(Room room) {
         return InvoiceItemResponse.builder()
                 .serviceName("Tiền phòng")
-                .serviceType(ServiceType.TIEN_PHONG)
+//                .serviceType(ServiceCategory.TIEN_PHONG)
                 .quantity(1)
                 .unitPrice(room.getPrice())
                 .amount(room.getPrice())
@@ -606,7 +606,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         return InvoiceItemResponse.builder()
                 .serviceName(service.getName())
-                .serviceType(service.getType())
+//                .serviceType(service.getType())
                 .oldIndex(meterReading.getOldIndex())
                 .newIndex(meterReading.getNewIndex())
                 .quantity(quantity)
@@ -621,21 +621,21 @@ public class InvoiceServiceImpl implements InvoiceService {
             Integer numberOfPeople
     ) {
         int quantity;
-        if (service.getAppliedBy() == ServiceAppliedBy.PHONG) {
-            quantity = 1;
-        } else if (service.getAppliedBy() == ServiceAppliedBy.NGUOI) {
-            quantity = numberOfPeople;
-        } else {
-            throw new AppException(ErrorCode.INVALID_SERVICE_APPLIES);
-        }
+//        if (service.getAppliedBy() == ServiceCalculation.PHONG) {
+//            quantity = 1;
+//        } else if (service.getAppliedBy() == ServiceCalculation.NGUOI) {
+//            quantity = numberOfPeople;
+//        } else {
+//            throw new AppException(ErrorCode.INVALID_SERVICE_APPLIES);
+//        }
 
         BigDecimal unitPrice = service.getPrice();
         return InvoiceItemResponse.builder()
                 .serviceName(service.getName())
-                .serviceType(service.getType())
-                .quantity(quantity)
+//                .serviceType(service.getType())
+//                .quantity(quantity)
                 .unitPrice(unitPrice)
-                .amount(unitPrice.multiply(BigDecimal.valueOf(quantity)))
+//                .amount(unitPrice.multiply(BigDecimal.valueOf(quantity)))
                 .build();
     }
 

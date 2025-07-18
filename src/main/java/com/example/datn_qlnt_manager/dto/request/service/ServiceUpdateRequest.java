@@ -1,8 +1,8 @@
 package com.example.datn_qlnt_manager.dto.request.service;
 
-import com.example.datn_qlnt_manager.common.ServiceAppliedBy;
+import com.example.datn_qlnt_manager.common.ServiceCalculation;
 import com.example.datn_qlnt_manager.common.ServiceStatus;
-import com.example.datn_qlnt_manager.common.ServiceType;
+import com.example.datn_qlnt_manager.common.ServiceCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -20,7 +20,7 @@ public class ServiceUpdateRequest {
     String name;
 
     @NotNull
-    ServiceType type;
+    ServiceCategory type;
 
     @NotBlank
     String unit;
@@ -28,7 +28,7 @@ public class ServiceUpdateRequest {
     @NotNull
     BigDecimal price;
 
-    ServiceAppliedBy appliedBy;
+    ServiceCalculation appliedBy;
 
     @NotNull
     ServiceStatus status;

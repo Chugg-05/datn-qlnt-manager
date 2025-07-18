@@ -1,10 +1,9 @@
 package com.example.datn_qlnt_manager.dto.response.service;
 
-import com.example.datn_qlnt_manager.common.ServiceAppliedBy;
+import com.example.datn_qlnt_manager.common.ServiceCalculation;
 import com.example.datn_qlnt_manager.common.ServiceStatus;
-import com.example.datn_qlnt_manager.common.ServiceType;
+import com.example.datn_qlnt_manager.common.ServiceCategory;
 import com.example.datn_qlnt_manager.dto.response.UserResponse;
-import com.example.datn_qlnt_manager.entity.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -21,10 +20,10 @@ import java.time.Instant;
 public class ServiceResponse {
     String id;
     String name;
-    ServiceType type;
+    ServiceCategory type;
     String unit;
     BigDecimal price;
-    ServiceAppliedBy appliedBy;
+    ServiceCalculation appliedBy;
     ServiceStatus status;
     String description;
     UserResponse user;

@@ -1,9 +1,9 @@
 package com.example.datn_qlnt_manager.entity;
 
 
-import com.example.datn_qlnt_manager.common.ServiceAppliedBy;
+import com.example.datn_qlnt_manager.common.ServiceCalculation;
 import com.example.datn_qlnt_manager.common.ServiceStatus;
-import com.example.datn_qlnt_manager.common.ServiceType;
+import com.example.datn_qlnt_manager.common.ServiceCategory;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -23,10 +23,6 @@ public class Service extends AbstractEntity {
     @Column(name = "ten_dich_vu", nullable = false)
     String name;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "loai_dich_vu", nullable = false)
-    ServiceType type;
-
     @Column(name = "don_vi_tinh", nullable = false, length = 50)
     String unit;
 
@@ -34,8 +30,12 @@ public class Service extends AbstractEntity {
     BigDecimal price;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ap_dung_theo")
-    ServiceAppliedBy appliedBy;
+    @Column(name = "danh_muc", nullable = false)
+    ServiceCategory category;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cach_tinh")
+    ServiceCalculation serviceCalculation;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai", nullable = false)
