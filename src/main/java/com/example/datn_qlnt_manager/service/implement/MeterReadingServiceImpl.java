@@ -26,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -65,18 +66,40 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         Meter meter = meterRepository.findById(request.getMeterId())
                 .orElseThrow(() -> new AppException(ErrorCode.METER_NOT_FOUND));
 
-        if (request.getNewIndex() < request.getOldIndex()) {
+        if (meterReadingRepository.existsByMeterIdAndMonthAndYear(request.getMeterId(), request.getMonth(), request.getYear())) {
+            throw new AppException(ErrorCode.METER_READING_EXISTED);
+        }
+
+        if (request.getNewIndex() < meter.getClosestIndex()) {
             throw new AppException(ErrorCode.NEW_INDEX_LESS_THAN_OLD);
+        }
+
+        if (request.getMonth() == null && request.getYear() == null) {
+            LocalDate now = LocalDate.now();
+            request.setMonth(now.getMonthValue());
+            request.setYear(now.getYear());
+        }
+
+        if (request.getMonth() == null && request.getYear() != null) {
+            throw new AppException(ErrorCode.MONTH_NOT_FOUND);
+        } else if (request.getMonth() != null && request.getYear() == null) {
+            throw new AppException(ErrorCode.YEAR_NOT_FOUND);
         }
 
         MeterReading meterReading = meterReadingMapper.toMeterReadingCreation(request);
         meterReading.setMeter(meter);
-        meterReading.setQuantity(request.getNewIndex() - request.getOldIndex());
+        meterReading.setOldIndex(meter.getClosestIndex());
+        meterReading.setQuantity(request.getNewIndex() - meter.getClosestIndex());
         meterReading.setReadingDate(request.getReadingDate());
+        meterReading.setDescriptionMeterReading("Ghi chỉ số tháng " +request.getMonth()+ "/" +request.getYear());
         meterReading.setCreatedAt(Instant.now());
         meterReading.setUpdatedAt(Instant.now());
 
         meterReadingRepository.save(meterReading);
+
+        meter.setClosestIndex(request.getNewIndex());
+        meter.setUpdatedAt(Instant.now());
+        meterRepository.save(meter);
         return meterReadingMapper.toResponse(meterReading);
     }
 

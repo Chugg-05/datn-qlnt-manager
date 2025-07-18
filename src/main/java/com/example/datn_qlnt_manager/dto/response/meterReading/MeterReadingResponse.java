@@ -16,6 +16,7 @@ public class MeterReadingResponse {
     String id;
 
     String meterId;
+    String roomCode;
     String meterCode;
     String meterName;
     String meterType;
