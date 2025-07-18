@@ -141,6 +141,8 @@ public interface RoomRepository extends JpaRepository<Room, String> {
                 LEFT JOIN r.floor f
                 LEFT JOIN f.building b
                 WHERE r.status != 'HUY_HOAT_DONG' AND b.user.id = :userId
+                            AND b.id =:buildingId
             """)
-    List<IdAndName> getRoomInfoByUserId(@Param("userId") String userId);
+    List<IdAndName> getRoomInfoByUserId(@Param("userId") String userId,
+                                        @Param("buildingId") String buildingId);
 }

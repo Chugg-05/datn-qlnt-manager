@@ -152,9 +152,9 @@ public class MeterServiceImpl implements MeterService {
     }
 
     @Override
-    public MeterInitFilterResponse getMeterFilterByUserId() {
+    public MeterInitFilterResponse getMeterFilterByUserId(String buildingId) {
         return MeterInitFilterResponse.builder()
-                .rooms(roomRepository.getRoomInfoByUserId(userService.getCurrentUser().getId()))
+                .rooms(roomRepository.getRoomInfoByUserId(userService.getCurrentUser().getId(), buildingId))
                 .build();
     }
 

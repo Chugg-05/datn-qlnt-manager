@@ -95,9 +95,9 @@ public class MeterController {
     }
 
     @Operation(summary = "Hiển thị thông tin liên quan để lọc và tìm kiếm theo người đang đăng nhập")
-    @GetMapping("/init-filter")
-    public ApiResponse<MeterInitFilterResponse> getMeterFilterByUserId() {
-        MeterInitFilterResponse data = meterService.getMeterFilterByUserId();
+    @GetMapping("/init-filter/{buildingId}")
+    public ApiResponse<MeterInitFilterResponse> getMeterFilterByUserId(@PathVariable("buildingId") String buildingId) {
+        MeterInitFilterResponse data = meterService.getMeterFilterByUserId(buildingId);
         return ApiResponse.<MeterInitFilterResponse>builder()
                 .data(data)
                 .message("Assets has been found!")

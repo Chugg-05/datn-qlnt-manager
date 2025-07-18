@@ -27,7 +27,7 @@ public interface MeterService {
 
     CreateMeterInitResponse getMeterInfoByUserId();
 
-    MeterInitFilterResponse getMeterFilterByUserId();
+    MeterInitFilterResponse getMeterFilterByUserId(String buildingId);
 
     List<IdAndName> findAllMeters();
 }

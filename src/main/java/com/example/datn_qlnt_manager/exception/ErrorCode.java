@@ -261,7 +261,9 @@ public enum ErrorCode {
     ROOM_EXISTED_SERVICE(409, "Room already has this service", HttpStatus.BAD_REQUEST),
     SERVICE_ROOM_NOT_FOUND(409, "Service room not found.", HttpStatus.NOT_FOUND),
     ROOM_ALREADY_HAS_CONTRACT(409,"This room is under contract.", HttpStatus.BAD_REQUEST),
-    NEW_INDEX_LESS_THAN_OLD(409,"New number must be less than old number",HttpStatus.BAD_REQUEST)
+    NEW_INDEX_LESS_THAN_OLD(409,"New number must be less than old number",HttpStatus.BAD_REQUEST),
+    METER_READING_EXISTED(409, "The meter reading has been recorded for this month.", HttpStatus.CONFLICT),
+
     ;
 
     final int code;
