@@ -2,6 +2,8 @@ package com.example.datn_qlnt_manager.service.implement;
 
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
+import com.example.datn_qlnt_manager.common.RoomStatus;
+import com.example.datn_qlnt_manager.common.RoomType;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
 import com.example.datn_qlnt_manager.dto.filter.MeterInitFilterResponse;
@@ -11,14 +13,16 @@ import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.meter.CreateMeterInitResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
+import com.example.datn_qlnt_manager.dto.response.meter.RoomNoMeterResponse;
+import com.example.datn_qlnt_manager.dto.statistics.RoomNoMeterCountStatistics;
 import com.example.datn_qlnt_manager.entity.Meter;
 import com.example.datn_qlnt_manager.entity.Room;
+import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.MeterMapper;
 import com.example.datn_qlnt_manager.repository.*;
 import com.example.datn_qlnt_manager.service.MeterService;
-import com.example.datn_qlnt_manager.service.RoomService;
 import com.example.datn_qlnt_manager.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -30,6 +34,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
@@ -161,5 +166,37 @@ public class MeterServiceImpl implements MeterService {
     @Override
     public List<IdAndName> findAllMeters() {
         return meterRepository.findAllByUserId(userService.getCurrentUser().getId());
+    }
+
+    @Override
+    public PaginatedResponse<RoomNoMeterResponse> getRoomsWithoutMeterByUser(
+            Integer page, Integer size, String query, RoomStatus status, RoomType roomType,
+            BigDecimal minPrice, BigDecimal maxPrice) {
+
+        User user = userService.getCurrentUser();
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+
+        Page<RoomNoMeterResponse> rooms = meterRepository.findRoomsWithoutMeterByUserIdWithFilter(
+                user.getId(), query, status, roomType, minPrice, maxPrice, pageable);
+
+        return PaginatedResponse.<RoomNoMeterResponse>builder()
+                .data(rooms.getContent())
+                .meta(Meta.builder()
+                        .pagination(Pagination.builder()
+                                .count(rooms.getNumberOfElements())
+                                .perPage(size)
+                                .currentPage(page)
+                                .totalPages(rooms.getTotalPages())
+                                .total(rooms.getTotalElements())
+                                .build())
+                        .build())
+                .build();
+    }
+
+    @Override
+    public RoomNoMeterCountStatistics countRoomsWithoutMeterByUser() {
+        User user = userService.getCurrentUser();
+        Long count = meterRepository.countRoomsWithoutMeterByUserId(user.getId());
+        return new RoomNoMeterCountStatistics(count.intValue());
     }
 }
