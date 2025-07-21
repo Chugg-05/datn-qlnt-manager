@@ -7,5 +7,5 @@ public enum ServiceCalculation {
     TINH_THEO_SO,
     TINH_THEO_NGUOI,
     TINH_THEO_PHONG,
-
+    TINH_THEO_PHUONG_TIEN,
 }

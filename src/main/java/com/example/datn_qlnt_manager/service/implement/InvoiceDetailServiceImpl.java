@@ -211,21 +211,27 @@ public class InvoiceDetailServiceImpl implements InvoiceDetailService {
     }
 
     private void validateDuplicateDetail(Invoice invoice, InvoiceDetailCreationRequest request) {
-        if (request.getInvoiceItemType() == InvoiceItemType.DEN_BU) return;
+        InvoiceItemType itemType = request.getInvoiceItemType();
+        if (itemType == InvoiceItemType.DEN_BU) return;
 
-        boolean exists = invoice.getDetails().stream().anyMatch(detail -> {
-            if (request.getInvoiceItemType() == InvoiceItemType.DICH_VU
-                    || request.getInvoiceItemType() == InvoiceItemType.DIEN
-                    || request.getInvoiceItemType() == InvoiceItemType.NUOC
-                    || request.getInvoiceItemType() == InvoiceItemType.TIEN_PHONG
-            ) {
+        boolean exists;
 
-                return detail.getInvoiceItemType() == request.getInvoiceItemType()
-                        && detail.getServiceRoom() != null
-                        && detail.getServiceRoom().getId().equals(request.getServiceRoomId());
+        if (itemType == InvoiceItemType.TIEN_PHONG) {
+            exists = invoice.getDetails().stream()
+                    .anyMatch(detail -> detail.getInvoiceItemType() == InvoiceItemType.TIEN_PHONG);
+        } else {
+            String serviceRoomId = request.getServiceRoomId();
+            if (!StringUtils.hasText(serviceRoomId)) {
+                throw new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND);
             }
-            return false;
-        });
+
+            exists = invoice.getDetails().stream()
+                    .anyMatch(detail ->
+                            detail.getInvoiceItemType() == itemType
+                                    && detail.getServiceRoom() != null
+                                    && serviceRoomId.equals(detail.getServiceRoom().getId())
+                    );
+        }
 
         if (exists) {
             throw new AppException(ErrorCode.DUPLICATE_INVOICE_DETAIL);

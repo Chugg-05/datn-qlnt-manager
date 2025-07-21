@@ -41,6 +41,9 @@ public class Contract extends AbstractEntity {
     @Column(name = "tien_coc", nullable = false)
     BigDecimal deposit;
 
+    @Column(name = "tien_phong", nullable = false)
+    BigDecimal roomPrice;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai", nullable = false)
     ContractStatus status;
