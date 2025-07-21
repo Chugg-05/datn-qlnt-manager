@@ -306,36 +306,39 @@ public class InvoiceServiceImpl implements InvoiceService {
                 ));
 
         return items.stream().map(item -> {
-            ServiceCategory serviceType = item.getServiceType();
+            ServiceCategory serviceCategory = item.getServiceCategory();
             InvoiceItemType invoiceItemType;
+            ServiceRoom serviceRoom = null;
 
-            if (serviceType == null) {
+            if (serviceCategory == null) {
                 throw new AppException(ErrorCode.INVALID_SERVICE_TYPE);
             }
 
-//            switch (serviceType) {
-//                case TIEN_PHONG -> invoiceItemType = InvoiceItemType.TIEN_PHONG;
-//
-//                case TINH_THEO_SO -> {
-//                    String serviceId = findServiceIdByItem(serviceRoomMap, item.getServiceName());
-//                    MeterType type = meterServiceMap.get(serviceId);
-//                    if (type == null) {
-//                        throw new AppException(ErrorCode.METER_TYPE_NOT_FOUND);
-//                    }
-//                    invoiceItemType = switch (type) {
-//                        case DIEN -> InvoiceItemType.DIEN;
-//                        case NUOC -> InvoiceItemType.NUOC;
-//                    };
-//                }
-//
-//                default -> invoiceItemType = InvoiceItemType.DICH_VU;
-//            }
+            switch (serviceCategory) {
+                case TIEN_PHONG -> invoiceItemType = InvoiceItemType.TIEN_PHONG;
 
-            ServiceRoom serviceRoom = null;
-            String serviceId = findServiceIdByItem(serviceRoomMap, item.getServiceName());
+                case DIEN -> {
+                    invoiceItemType = InvoiceItemType.DIEN;
+                    String serviceId = findServiceIdByItem(serviceRoomMap, item.getServiceName());
+                    serviceRoom = serviceRoomMap.get(serviceId);
+                }
 
-            if (StringUtils.hasText(serviceId)) {
-                serviceRoom = serviceRoomMap.get(serviceId);
+                case NUOC -> {
+                    String serviceId = findServiceIdByItem(serviceRoomMap, item.getServiceName());
+                    serviceRoom = serviceRoomMap.get(serviceId);
+
+                    // NUOC có thể là theo số hoặc theo người
+                    MeterType meterType = meterServiceMap.get(serviceId);
+                    invoiceItemType = (meterType == MeterType.NUOC)
+                            ? InvoiceItemType.NUOC
+                            : InvoiceItemType.DICH_VU;
+                }
+
+                default -> {
+                    invoiceItemType = InvoiceItemType.DICH_VU;
+                    String serviceId = findServiceIdByItem(serviceRoomMap, item.getServiceName());
+                    serviceRoom = serviceRoomMap.get(serviceId);
+                }
             }
 
             BigDecimal unitPrice = Optional.ofNullable(item.getUnitPrice()).orElse(BigDecimal.ZERO);
@@ -344,7 +347,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
             return InvoiceDetail.builder()
                     .invoice(invoice)
-//                    .invoiceItemType(invoiceItemType)
+                    .invoiceItemType(invoiceItemType)
                     .serviceRoom(serviceRoom)
                     .serviceName(item.getServiceName())
                     .oldIndex(item.getOldIndex())
@@ -502,6 +505,13 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
     }
 
+    private boolean isMeterService(Service service) {
+        // Chỉ lấy những dịch vụ có đồng hồ đo (điện luôn có, nước có thể)
+        return service.getServiceCalculation() == ServiceCalculation.TINH_THEO_SO &&
+                (service.getServiceCategory() == ServiceCategory.DIEN ||
+                        service.getServiceCategory() == ServiceCategory.NUOC);
+    }
+
     private List<InvoiceItemResponse> getInvoiceItemsByContext(
             Contract contract,
             Room room,
@@ -511,12 +521,11 @@ public class InvoiceServiceImpl implements InvoiceService {
         List<InvoiceItemResponse> items = new ArrayList<>();
 
         LocalDate contractStart = contract.getStartDate().toLocalDate();
-
         // tháng đầu tiên không tính tiền điện, nước (dịch vụ tính theo số)
         boolean isFirstMonth = contractStart.getMonthValue() == month && contractStart.getYear() == year;
 
-        items.add(buildRoomCharge(room));
-        items.addAll(buildFixedServices(room, contract, month, year));
+        items.add(buildRoomCharge(contract));
+        items.addAll(buildNonMeterServiceCharges(room, contract, month, year));
 
         // Nếu không phải tháng đầu tiên => thêm tiền điện nước tháng trước
         if (!isFirstMonth) {
@@ -535,7 +544,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         for (Meter meter : meters) {
             Service service = meter.getService();
-            if (service == null) continue;
+            if (service == null || !isMeterService(service)) continue;
 
             MeterReading meterReading = meterReadingRepository
                     .findByMeterIdAndMonthAndYear(meter.getId(), month, year)
@@ -547,15 +556,11 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     /// Tính tiền dịch vụ cố định/tháng
-    private List<InvoiceItemResponse> buildFixedServices(Room room, Contract contract, int month, int year) {
+    private List<InvoiceItemResponse> buildNonMeterServiceCharges(Room room, Contract contract, int month, int year) {
         List<InvoiceItemResponse> items = new ArrayList<>();
-        List<Meter> meters = meterRepository.findByRoomId(room.getId());
-        Set<String> meterServiceIds = meters.stream()
-                .map(Meter::getService)
-                .filter(Objects::nonNull)
-                .map(Service::getId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+
+        int numberOfPeople = contract.getNumberOfPeople();
+        int vehicleNumber = contract.getVehicles() != null ? contract.getVehicles().size() : 0;
 
         List<ServiceRoom> serviceRooms = serviceRoomRepository.findActiveByRoomIdAndMonth(
                 room.getId(),
@@ -564,18 +569,38 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         for (ServiceRoom serviceRoom : serviceRooms) {
             Service service = serviceRoom.getService();
-            if (service == null || meterServiceIds.contains(service.getId())) continue;
+            if (service == null) continue;
 
-            items.add(buildServiceCharge(service, contract.getNumberOfPeople()));
+            ServiceCalculation calculation = service.getServiceCalculation();
+            ServiceCategory category = service.getServiceCategory();
+            BigDecimal donGia = service.getPrice();
+
+            int quantity;
+
+            switch (calculation) {
+                case TINH_THEO_PHONG -> quantity = 1;
+                case TINH_THEO_NGUOI -> quantity = numberOfPeople;
+                case TINH_THEO_PHUONG_TIEN -> quantity = vehicleNumber;
+                default -> {
+                    continue;
+                }
+            }
+
+            BigDecimal amount = donGia.multiply(BigDecimal.valueOf(quantity));
+
+            items.add(InvoiceItemResponse.builder()
+                    .serviceName(service.getName())
+                    .serviceCategory(category)
+                    .serviceCalculation(calculation)
+                    .quantity(quantity)
+                    .unitPrice(donGia)
+                    .amount(amount)
+                    .build());
         }
         return items;
     }
 
     private BigDecimal resolveMeterUnitPrice(Meter meter, Service service, Contract contract) {
-//        if (service.getType() != ServiceCategory.TINH_THEO_SO) {
-//            return service.getPrice();
-//        }
-
         return switch (meter.getMeterType()) {
             case DIEN -> contract.getElectricPrice() != null ? contract.getElectricPrice() : service.getPrice();
             case NUOC -> contract.getWaterPrice() != null ? contract.getWaterPrice() : service.getPrice();
@@ -584,15 +609,20 @@ public class InvoiceServiceImpl implements InvoiceService {
 
 
     // Tính tiền phòng
-    private InvoiceItemResponse buildRoomCharge(Room room) {
+    private InvoiceItemResponse buildRoomCharge(Contract contract) {
+        BigDecimal unitPrice = contract.getRoomPrice();
+
         return InvoiceItemResponse.builder()
                 .serviceName("Tiền phòng")
-//                .serviceType(ServiceCategory.TIEN_PHONG)
+                .serviceCategory(ServiceCategory.TIEN_PHONG)
+                .serviceCalculation(ServiceCalculation.TINH_THEO_PHONG)
                 .quantity(1)
-                .unitPrice(room.getPrice())
-                .amount(room.getPrice())
+                .unitPrice(unitPrice)
+                .unit("phòng")
+                .amount(unitPrice)
                 .build();
     }
+
 
     //Tính tiền điện & nước
     private InvoiceItemResponse buildMeterCharge(
@@ -606,36 +636,14 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         return InvoiceItemResponse.builder()
                 .serviceName(service.getName())
-//                .serviceType(service.getType())
+                .serviceCategory(service.getServiceCategory())
+                .serviceCalculation(service.getServiceCalculation())
                 .oldIndex(meterReading.getOldIndex())
                 .newIndex(meterReading.getNewIndex())
                 .quantity(quantity)
                 .unitPrice(unitPrice)
+                .unit(service.getUnit())
                 .amount(unitPrice.multiply(BigDecimal.valueOf(quantity)))
-                .build();
-    }
-
-    // Tính tiền dịch vụ (cố định hoặc theo người)
-    private InvoiceItemResponse buildServiceCharge(
-            Service service, // đổi thành serviceRoom nếu giá dv cố định mỗi phòng một giá khác nhau
-            Integer numberOfPeople
-    ) {
-        int quantity;
-//        if (service.getAppliedBy() == ServiceCalculation.PHONG) {
-//            quantity = 1;
-//        } else if (service.getAppliedBy() == ServiceCalculation.NGUOI) {
-//            quantity = numberOfPeople;
-//        } else {
-//            throw new AppException(ErrorCode.INVALID_SERVICE_APPLIES);
-//        }
-
-        BigDecimal unitPrice = service.getPrice();
-        return InvoiceItemResponse.builder()
-                .serviceName(service.getName())
-//                .serviceType(service.getType())
-//                .quantity(quantity)
-                .unitPrice(unitPrice)
-//                .amount(unitPrice.multiply(BigDecimal.valueOf(quantity)))
                 .build();
     }
 

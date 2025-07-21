@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.mapper;
 
+import com.example.datn_qlnt_manager.common.InvoiceItemType;
+import com.example.datn_qlnt_manager.common.ServiceCalculation;
 import com.example.datn_qlnt_manager.common.ServiceCategory;
 import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceItemResponse;
@@ -50,19 +52,29 @@ public interface InvoiceMapper {
     }
 
     default InvoiceItemResponse toItemResponse(InvoiceDetail detail) {
-        ServiceCategory serviceType = null;
-        if (detail.getServiceRoom() != null && detail.getServiceRoom().getService() != null) {
-//            serviceType = detail.getServiceRoom().getService().getType();
+        ServiceCategory category = null;
+        ServiceCalculation calculation = null;
+        String unit = null;
+
+        if (detail.getInvoiceItemType() == InvoiceItemType.TIEN_PHONG) {
+            category = ServiceCategory.TIEN_PHONG;
+            calculation = ServiceCalculation.TINH_THEO_PHONG;
+            unit = "phòng";
+        } else if (detail.getServiceRoom() != null && detail.getServiceRoom().getService() != null) {
+            var service = detail.getServiceRoom().getService();
+            category = service.getServiceCategory();
+            calculation = service.getServiceCalculation();
+            unit = service.getUnit();
         }
 
-        return InvoiceItemResponse.builder()
+            return InvoiceItemResponse.builder()
                 .id(detail.getId())
                 .serviceName(detail.getServiceName())
-                .serviceType(serviceType)
-                .oldIndex(detail.getOldIndex())
-                .newIndex(detail.getNewIndex())
+                .serviceCategory(category)
+                .serviceCalculation(calculation)
                 .quantity(detail.getQuantity())
                 .unitPrice(detail.getUnitPrice())
+                .unit(unit)
                 .amount(detail.getAmount())
                 .build();
     }

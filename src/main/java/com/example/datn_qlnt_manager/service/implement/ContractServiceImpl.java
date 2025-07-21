@@ -134,6 +134,7 @@ public class ContractServiceImpl implements ContractService {
 
         Contract contract = contractMapper.toContract(request);
         contract.setRoom(room);
+        contract.setRoomPrice(room.getPrice());
         contract.setTenants(tenants);
         contract.setAssets(assets);
         contract.setServices(services);
@@ -200,7 +201,6 @@ public class ContractServiceImpl implements ContractService {
         contract.setAssets(assets);
         contract.setServices(services);
         contract.setVehicles(vehicles);
-        applyUtilityPrices(contract);
         contract.setUpdatedAt(Instant.now());
 
         contractRepository.save(contract);

@@ -23,6 +23,7 @@ public class ContractResponse {
     LocalDateTime startDate;
     LocalDateTime endDate;
     BigDecimal deposit;
+    BigDecimal roomPrice;
     ContractStatus status;
     Instant createdAt;
     Set<TenantBasicResponse> tenants;

@@ -80,7 +80,7 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 			c.startDate,
 			c.endDate,
 			c.deposit,
-			r.price,
+			c.roomPrice,
 			b.address,
 			c.status,
 			c.electricPrice,
