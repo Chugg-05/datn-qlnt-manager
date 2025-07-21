@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import com.example.datn_qlnt_manager.common.*;
 import com.example.datn_qlnt_manager.dto.filter.ServiceFilter;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
 import com.example.datn_qlnt_manager.entity.Service;
@@ -10,9 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.example.datn_qlnt_manager.common.Meta;
-import com.example.datn_qlnt_manager.common.Pagination;
-import com.example.datn_qlnt_manager.common.ServiceStatus;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.request.service.ServiceCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateRequest;
@@ -30,6 +28,8 @@ import jakarta.transaction.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @org.springframework.stereotype.Service
 @Transactional
@@ -50,11 +50,11 @@ public class ServiceServiceImpl implements ServiceService {
         Page<Service> paging = serviceRepository.filterServicesPaging(
                 user.getId(),
                 filter.getQuery(),
-                filter.getServiceType(),
+                filter.getServiceCategory(),
                 filter.getMinPrice(),
                 filter.getMaxPrice(),
                 filter.getServiceStatus(),
-                filter.getServiceAppliedBy(),
+                filter.getServiceCalculation(),
                 pageable
         );
 
@@ -83,9 +83,23 @@ public class ServiceServiceImpl implements ServiceService {
     public ServiceResponse createService(ServiceCreationRequest request) {
         User user = userService.getCurrentUser();
 
+        validateDuplicateCategory(request.getServiceCategory());
+
+        validateCalculationWithCategory(
+                request.getServiceCalculation(),
+                request.getServiceCategory()
+        );
+
+        String unit = getDefaultUnit(
+                request.getServiceCalculation(),
+                request.getServiceCategory(),
+                request.getUnit()
+        );
+
         Service service = serviceMapper.toServiceCreation(request);
         service.setUser(user);
-
+        service.setUnit(unit);
+        service.setStatus(ServiceStatus.HOAT_DONG);
         Instant now = Instant.now();
         service.setCreatedAt(now);
         service.setUpdatedAt(now);
@@ -145,5 +159,79 @@ public class ServiceServiceImpl implements ServiceService {
     public ServiceCountResponse statisticsServiceByStatus() {
         return serviceRepository.getServiceStats(userService.getCurrentUser().getId());
     }
+
+
+    private static final Map<ServiceCalculation, Set<ServiceCategory>> validCategoryMap = Map.of(
+            ServiceCalculation.TINH_THEO_SO, Set.of(
+                    ServiceCategory.DIEN, ServiceCategory.NUOC
+            ),
+            ServiceCalculation.TINH_THEO_NGUOI, Set.of(
+                    ServiceCategory.NUOC, ServiceCategory.GUI_XE,
+                    ServiceCategory.VE_SINH, ServiceCategory.THANG_MAY,
+                    ServiceCategory.GIAT_SAY, ServiceCategory.KHAC
+            ),
+            ServiceCalculation.TINH_THEO_PHONG, Set.of(
+                    ServiceCategory.INTERNET, ServiceCategory.VE_SINH,
+                    ServiceCategory.THANG_MAY, ServiceCategory.BAO_TRI,
+                    ServiceCategory.AN_NINH, ServiceCategory.GIAT_SAY,
+                    ServiceCategory.KHAC
+            )
+    );
+
+    //validate mối liên hệ giữa cách tính và danh mục
+    private void validateCalculationWithCategory(ServiceCalculation calculation, ServiceCategory category) {
+        if (category == ServiceCategory.TIEN_PHONG) {
+            throw new AppException(ErrorCode.FORBIDDEN_CATEGORY_TYPE);
+        }
+
+        Set<ServiceCategory> validCategories = validCategoryMap.get(calculation);
+        if (validCategories == null || !validCategories.contains(category)) {
+            throw new AppException(ErrorCode.INVALID_CATEGORY_WITH_CALCULATION);
+        }
+    }
+
+    //Tự set giá trị cho unit dựa theo cách tính
+    private String getDefaultUnit(ServiceCalculation calculation, ServiceCategory category, String providedUnit) {
+
+        if (providedUnit != null && !providedUnit.isBlank() && category == ServiceCategory.KHAC) {
+            return providedUnit;
+        }
+
+        switch (calculation) {
+            case TINH_THEO_SO:
+                // Phân biệt giữa điện và nước
+                if (category == ServiceCategory.DIEN) {
+                    return "kWh";
+                } else if (category == ServiceCategory.NUOC) {
+                    return "m3";
+                }
+                break;
+
+            case TINH_THEO_NGUOI:
+                return "người";
+
+            case TINH_THEO_PHONG:
+                return "phòng";
+
+            default:
+                throw new AppException(ErrorCode.UNIT_REQUIRED_FOR_CALCULATION);
+        }
+
+        throw new AppException(ErrorCode.INVALID_UNIT_COMBINATION);
+    }
+
+    //Check trùng danh mục, mỗi danh mục chỉ 1 bản ghi trừ danh mục 'KHAC'
+    private void validateDuplicateCategory(ServiceCategory category) {
+        if (category == ServiceCategory.KHAC) {
+            return;
+        }
+
+        boolean exists = serviceRepository.existsByServiceCategory(category);
+        if (exists) {
+            throw new AppException(ErrorCode.DUPLICATE_SERVICE_CATEGORY);
+
+        }
+    }
+
 
 }

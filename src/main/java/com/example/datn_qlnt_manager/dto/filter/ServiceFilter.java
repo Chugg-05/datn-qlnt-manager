@@ -15,9 +15,9 @@ import java.math.BigDecimal;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ServiceFilter {
     String query;
-    ServiceCategory serviceType;
+    ServiceCategory serviceCategory;
     BigDecimal minPrice;
     BigDecimal maxPrice;
     ServiceStatus serviceStatus;
-    ServiceCalculation serviceAppliedBy;
+    ServiceCalculation serviceCalculation;
 }

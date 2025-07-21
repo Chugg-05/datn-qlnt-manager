@@ -25,6 +25,7 @@ public enum ErrorCode {
     FORBIDDEN(403, "You don't have permission.", HttpStatus.FORBIDDEN),
     CANT_REMOVE_USER(403, "You can't remove another user.", HttpStatus.FORBIDDEN),
     ACCOUNT_HAS_BEEN_LOCKED(403, "User account is locked.", HttpStatus.FORBIDDEN),
+    FORBIDDEN_CATEGORY_TYPE(400, "Additional services cannot be added by charging the room rate.", HttpStatus.FORBIDDEN),
 
     // Code: 400
     BAD_REQUEST(400, "Invalid request.", HttpStatus.BAD_REQUEST),
@@ -180,6 +181,17 @@ public enum ErrorCode {
     INVALID_ASSETS_BLANK(400, "Assets cannot be blank.", HttpStatus.BAD_REQUEST),
     INVALID_ASSETS(400, "At least one asset must be selected.", HttpStatus.BAD_REQUEST),
 
+    INVALID_CATEGORY_WITH_CALCULATION(400, "Invalid category with calculation.", HttpStatus.BAD_REQUEST),
+    UNIT_REQUIRED_FOR_CALCULATION(400, "Units must be entered for this calculation or not supported.", HttpStatus.BAD_REQUEST),
+    INVALID_UNIT_COMBINATION(400, "Unable to determine appropriate unit of measure for selected calculation and category.", HttpStatus.BAD_REQUEST),
+    INVALID_SERVICE_NAME_BLANK(400, "Service name cannot be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_SERVICE_CATEGORY_NULL(400, "Service category cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_PRICE(400, "Price must be greater than 0.", HttpStatus.BAD_REQUEST),
+    INVALID_PRICE_NULL(400, "Price cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_SERVICE_CALCULATION_NULL(400, "Service calculation cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_SERVICE_STATUS_NULL(400, "Service status cannot be blank.", HttpStatus.BAD_REQUEST),
+
+
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     BUILDING_ID_NOT_FOUND(404, "Building ID not found.", HttpStatus.NOT_FOUND),
@@ -265,6 +277,8 @@ public enum ErrorCode {
     ROOM_ALREADY_HAS_CONTRACT(409,"This room is under contract.", HttpStatus.BAD_REQUEST),
     NEW_INDEX_LESS_THAN_OLD(409,"New number must be less than old number",HttpStatus.BAD_REQUEST),
     METER_READING_EXISTED(409, "The meter reading has been recorded for this month.", HttpStatus.CONFLICT),
+    DUPLICATE_SERVICE_CATEGORY(409,"Category already exists.",HttpStatus.BAD_REQUEST),
+
 
     ;
 

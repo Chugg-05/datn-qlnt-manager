@@ -3,7 +3,6 @@ package com.example.datn_qlnt_manager.dto.response.service;
 import com.example.datn_qlnt_manager.common.ServiceCalculation;
 import com.example.datn_qlnt_manager.common.ServiceStatus;
 import com.example.datn_qlnt_manager.common.ServiceCategory;
-import com.example.datn_qlnt_manager.dto.response.UserResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -20,13 +19,12 @@ import java.time.Instant;
 public class ServiceResponse {
     String id;
     String name;
-    ServiceCategory type;
     String unit;
     BigDecimal price;
-    ServiceCalculation appliedBy;
+    ServiceCategory serviceCategory;
+    ServiceCalculation serviceCalculation;
     ServiceStatus status;
     String description;
-    UserResponse user;
     Instant createdAt;
     Instant updatedAt;
 }
