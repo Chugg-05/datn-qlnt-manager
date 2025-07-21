@@ -1,12 +1,10 @@
 package com.example.datn_qlnt_manager.controller;
 
-import com.example.datn_qlnt_manager.common.ServiceStatus;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ServiceFilter;
 import com.example.datn_qlnt_manager.dto.request.service.ServiceCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceResponse;
 import com.example.datn_qlnt_manager.service.ServiceService;
@@ -21,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/service")
+@RequestMapping("/services")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Service", description = "API Room")

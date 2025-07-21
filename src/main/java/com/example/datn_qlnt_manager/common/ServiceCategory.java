@@ -13,6 +13,7 @@ public enum ServiceCategory {
     BAO_TRI,
     AN_NINH,
     GIAT_SAY,
+    TIEN_PHONG,
     KHAC
 
 }

@@ -82,4 +82,6 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
             """)
     List<IdAndName> getServiceInfoByUserId(@Param("userId") String userId);
 
+    boolean existsByServiceCategory(ServiceCategory serviceCategory);
+
 }
