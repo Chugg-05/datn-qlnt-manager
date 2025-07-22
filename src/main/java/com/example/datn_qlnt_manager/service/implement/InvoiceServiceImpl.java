@@ -277,7 +277,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
     }
 
-    private List<InvoiceDetail> buildInvoiceDetailsFromItems(
+    private List<InvoiceDetail> buildInvoiceDetailsItems(
             Invoice invoice,
             List<InvoiceItemResponse> items
     ) {
@@ -345,7 +345,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             int quantity = Optional.ofNullable(item.getQuantity()).orElse(1);
             BigDecimal amount = unitPrice.multiply(BigDecimal.valueOf(quantity));
 
-            return InvoiceDetail.builder()
+            InvoiceDetail details = InvoiceDetail.builder()
                     .invoice(invoice)
                     .invoiceItemType(invoiceItemType)
                     .serviceRoom(serviceRoom)
@@ -357,6 +357,10 @@ public class InvoiceServiceImpl implements InvoiceService {
                     .amount(amount)
                     .description(item.getServiceName() + " tháng " + invoice.getMonth() + "/" + invoice.getYear())
                     .build();
+            details.setCreatedAt(Instant.now());
+            details.setUpdatedAt(Instant.now());
+
+            return details;
         }).toList();
     }
 
@@ -447,7 +451,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .note(finalNote)
                 .build();
 
-        List<InvoiceDetail> details = buildInvoiceDetailsFromItems(invoice, items);
+        List<InvoiceDetail> details = buildInvoiceDetailsItems(invoice, items);
         invoice.setDetails(details);
 
         BigDecimal totalAmount = details.stream()
