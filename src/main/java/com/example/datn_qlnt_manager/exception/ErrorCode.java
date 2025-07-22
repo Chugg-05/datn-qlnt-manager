@@ -190,6 +190,7 @@ public enum ErrorCode {
     INVALID_PRICE_NULL(400, "Price cannot be null.", HttpStatus.BAD_REQUEST),
     INVALID_SERVICE_CALCULATION_NULL(400, "Service calculation cannot be null.", HttpStatus.BAD_REQUEST),
     INVALID_SERVICE_STATUS_NULL(400, "Service status cannot be blank.", HttpStatus.BAD_REQUEST),
+    METER_READING_ALREADY_BILLED(400, "Meter reading has been invoiced. Cannot be updated.", HttpStatus.BAD_REQUEST),
 
 
     // Code: 404

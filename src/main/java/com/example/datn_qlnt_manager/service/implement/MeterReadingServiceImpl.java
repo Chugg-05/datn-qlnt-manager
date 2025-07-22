@@ -12,6 +12,7 @@ import com.example.datn_qlnt_manager.entity.MeterReading;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.MeterReadingMapper;
+import com.example.datn_qlnt_manager.repository.InvoiceDetailsRepository;
 import com.example.datn_qlnt_manager.repository.MeterReadingRepository;
 import com.example.datn_qlnt_manager.repository.MeterRepository;
 import com.example.datn_qlnt_manager.service.MeterReadingService;
@@ -39,6 +40,7 @@ public class MeterReadingServiceImpl implements MeterReadingService {
     MeterRepository meterRepository;
     MeterReadingMapper meterReadingMapper;
     UserService userService;
+    InvoiceDetailsRepository invoiceDetailsRepository;
 
     @Override
     public PaginatedResponse<MeterReadingResponse> getPageAndSearchAndFilterMeterReadingByUserId(
@@ -91,7 +93,7 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         meterReading.setOldIndex(meter.getClosestIndex());
         meterReading.setQuantity(request.getNewIndex() - meter.getClosestIndex());
         meterReading.setReadingDate(request.getReadingDate());
-        if (request.getDescriptionMeterReading().isBlank()){
+        if (request.getDescriptionMeterReading() == null || request.getDescriptionMeterReading().isBlank()){
             meterReading.setDescriptionMeterReading("Ghi chỉ số tháng " +request.getMonth()+ "/" +request.getYear());
         }
         meterReading.setCreatedAt(Instant.now());
@@ -110,12 +112,22 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         MeterReading meterReading = meterReadingRepository.findById(meterReadingId)
                 .orElseThrow(() -> new AppException(ErrorCode.METER_READING_NOT_FOUND));
 
-        if (request.getNewIndex() < request.getOldIndex()) {
+        if (isReadingUsedInInvoice(meterReadingId)) {
+            throw new AppException(ErrorCode.METER_READING_ALREADY_BILLED);
+        }
+
+        if (request.getNewIndex() < meterReading.getOldIndex()) {
             throw new AppException(ErrorCode.NEW_INDEX_LESS_THAN_OLD);
         }
         meterReadingMapper.toMeterReadingUpdate(meterReading, request);
-        meterReading.setQuantity(request.getNewIndex() - request.getOldIndex());
+        meterReading.setQuantity(request.getNewIndex() - meterReading.getOldIndex());
         meterReading.setUpdatedAt(Instant.now());
+
+        Meter meter = meterRepository.findById(meterReading.getMeter().getId())
+                .orElseThrow(() -> new AppException(ErrorCode.METER_NOT_FOUND));
+        meter.setClosestIndex(request.getNewIndex());
+        meter.setUpdatedAt(Instant.now());
+        meterRepository.save(meter);
 
         return meterReadingMapper.toResponse(meterReadingRepository.save(meterReading));
     }
@@ -157,4 +169,20 @@ public class MeterReadingServiceImpl implements MeterReadingService {
                 .meta(meta)
                 .build();
     }
+
+    public boolean isReadingUsedInInvoice(String meterReadingId) {
+        MeterReading reading = meterReadingRepository.findById(meterReadingId)
+                .orElseThrow(() -> new AppException(ErrorCode.METER_READING_NOT_FOUND));
+
+        int oldIndex = reading.getOldIndex();
+        int newIndex = reading.getNewIndex();
+        int month = reading.getMonth();
+        int year = reading.getYear();
+        String meterId = reading.getMeter().getId();
+
+        return invoiceDetailsRepository.existsByOldIndexAndNewIndexAndMonthAndYearAndMeterId(
+                oldIndex, newIndex, month, year, meterId
+        );
+    }
+
 }

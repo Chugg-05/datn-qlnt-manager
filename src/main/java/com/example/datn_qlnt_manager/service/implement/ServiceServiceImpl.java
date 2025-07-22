@@ -83,7 +83,7 @@ public class ServiceServiceImpl implements ServiceService {
     public ServiceResponse createService(ServiceCreationRequest request) {
         User user = userService.getCurrentUser();
 
-        validateDuplicateCategory(request.getServiceCategory());
+        validateDuplicateCategory(request.getServiceCategory(), user.getId());
 
         validateCalculationWithCategory(
                 request.getServiceCalculation(),
@@ -221,12 +221,12 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     //Check trùng danh mục, mỗi danh mục chỉ 1 bản ghi trừ danh mục 'KHAC'
-    private void validateDuplicateCategory(ServiceCategory category) {
+    private void validateDuplicateCategory(ServiceCategory category, String userId) {
         if (category == ServiceCategory.KHAC) {
             return;
         }
 
-        boolean exists = serviceRepository.existsByServiceCategory(category);
+        boolean exists = serviceRepository.existsByServiceCategoryAndUserId(category, userId);
         if (exists) {
             throw new AppException(ErrorCode.DUPLICATE_SERVICE_CATEGORY);
 
