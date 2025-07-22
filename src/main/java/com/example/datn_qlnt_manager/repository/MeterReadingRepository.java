@@ -2,7 +2,6 @@ package com.example.datn_qlnt_manager.repository;
 
 import com.example.datn_qlnt_manager.common.MeterType;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterReadingMonthlyStatsResponse;
-import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.entity.MeterReading;
 import feign.Param;
 import org.springframework.data.domain.Page;
