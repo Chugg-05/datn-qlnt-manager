@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.controller;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -127,5 +128,16 @@ public class BuildingController {
     public ApiResponse<String> deleteBuildingById(@PathVariable("buildingId") String buildingId) {
         buildingService.deleteBuildingById(buildingId);
         return ApiResponse.<String>builder().data("Building has been deleted!").build();
+    }
+
+
+    @Operation(summary = "Lấy thông tin tòa nhà - tầng - phòng")
+    @GetMapping("/init")
+    public ApiResponse<List<BuildingSelectResponse>> getBuildingsInfoByUserId() {
+        List<BuildingSelectResponse> data = buildingService.getBuildingsInfoByUserId();
+        return ApiResponse.<List<BuildingSelectResponse>>builder()
+                .data(data)
+                .message("Get buildings info successfully")
+                .build();
     }
 }

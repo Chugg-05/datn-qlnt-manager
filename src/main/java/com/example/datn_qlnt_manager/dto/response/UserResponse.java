@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.dto.response;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Set;
 
 import com.example.datn_qlnt_manager.common.Gender;
 import com.example.datn_qlnt_manager.common.UserStatus;
@@ -25,4 +26,5 @@ public class UserResponse implements Serializable {
     UserStatus userStatus;
     Instant createdAt;
     Instant updatedAt;
+    Set<RoleResponse> roles;
 }
