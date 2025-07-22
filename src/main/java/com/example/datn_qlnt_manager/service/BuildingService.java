@@ -6,6 +6,7 @@ import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationReques
 import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
 import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 
 import java.util.List;
@@ -34,4 +35,6 @@ public interface BuildingService {
     BuildingStatistics statisticsBuildingByStatus();
 
     void toggleStatus(String id);
+
+    List<BuildingSelectResponse>  getBuildingsInfoByUserId();
 }

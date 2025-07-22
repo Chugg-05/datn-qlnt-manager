@@ -15,6 +15,7 @@ public interface UserMapper {
     @Mapping(target = "profilePicture", ignore = true)
     User toUser(UserCreationRequest request); // chuyển đổi UserCreationRequest sang User
 
+    @Mapping(target = "roles", source = "roles")
     UserResponse toUserResponse(User user);
 
     @Mapping(source = "roles", target = "roles")
