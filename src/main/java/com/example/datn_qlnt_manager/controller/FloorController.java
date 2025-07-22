@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import jakarta.validation.Valid;
@@ -126,6 +127,15 @@ public class FloorController {
         return ApiResponse.<List<FloorBasicResponse>>builder()
                 .message("Display floors successfully")
                 .data(response)
+                .build();
+    }
+
+    @Operation(summary = "Hiển thị danh sách tầng nhà theo người dùng")
+    @GetMapping("/all")
+    public ApiResponse<List<IdAndName>> getFloorsByUserId() {
+        return ApiResponse.<List<IdAndName>>builder()
+                .message("Display floors successfully")
+                .data(floorService.getFloorsByUserId())
                 .build();
     }
 

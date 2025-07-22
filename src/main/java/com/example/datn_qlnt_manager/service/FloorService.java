@@ -4,6 +4,7 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
 import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
@@ -42,4 +43,6 @@ public interface FloorService {
     // hiển thị tầng theo building id
     List<FloorBasicResponse> getFloorBasicByBuildingId(String buildingId);
     void toggleStatus(String id);
+
+    List<IdAndName> getFloorsByUserId();
 }

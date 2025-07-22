@@ -106,7 +106,18 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
                 JOIN f.building b
                 WHERE b.user.id = :userId AND f.status != 'KHONG_SU_DUNG' AND b.id = :buildingId
             """)
-    List<IdAndName> findAllFloorsByUserIdAndBuildingId(@Param("userId") String userId, @Param("buildingId") String buildingId);
+    List<IdAndName> findAllFloorsByUserIdAndBuildingId(@Param("userId") String userId,
+                                                       @Param("buildingId") String buildingId);
+
+    @Query("""
+                SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(
+                    f.id, CONCAT(b.buildingName, ' - ', f.nameFloor)
+                )
+                FROM Floor f
+                JOIN f.building b
+                WHERE b.user.id = :userId AND f.status != 'KHONG_SU_DUNG'
+            """)
+    List<IdAndName> getFloorsByUserId(@Param("userId") String userId);
 
     @Query("SELECT COUNT(f) FROM Floor f WHERE f.building.id = :buildingId")
     int countByBuildingId(@Param("buildingId") String buildingId);
