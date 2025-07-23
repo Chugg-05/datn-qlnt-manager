@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
@@ -43,8 +44,7 @@ public class BuildingController {
         PaginatedResponse<BuildingResponse> result = buildingService.getPageAndSearchAndFilterBuildingByUserId(
                 filter,
                 page,
-                size
-        );
+                size);
 
         return ApiResponse.<List<BuildingResponse>>builder()
                 .message("Get building successfully")
@@ -101,7 +101,8 @@ public class BuildingController {
     @Operation(summary = "Cập nhật tòa nhà")
     @PutMapping("/{buildingId}")
     public ApiResponse<BuildingResponse> updateBuilding(
-            @Valid @RequestBody BuildingUpdateRequest request, @PathVariable("buildingId") String buildingId) {
+            @Valid @RequestBody BuildingUpdateRequest request,
+            @PathVariable("buildingId") String buildingId) {
         return ApiResponse.<BuildingResponse>builder()
                 .message("Building updated!")
                 .data(buildingService.updateBuilding(buildingId, request))
@@ -131,7 +132,6 @@ public class BuildingController {
         return ApiResponse.<String>builder().data("Building has been deleted!").build();
     }
 
-
     @Operation(summary = "Lấy thông tin tòa nhà - tầng - phòng")
     @GetMapping("/init")
     public ApiResponse<List<BuildingSelectResponse>> getBuildingsInfoByUserId() {
@@ -148,6 +148,13 @@ public class BuildingController {
         return ApiResponse.<List<BuildingOccupancyResponse>>builder()
                 .data(buildingService.calculateOccupancyByUser()    )
                 .message("Get occupancy rate successfully")
+
+          @Operation(summary = "Lấy thông tin tòa nhà không phân trang")
+    @GetMapping("/all")
+    public ApiResponse<List<IdAndName>> getAllBuildingByUserId() {
+        return ApiResponse.<List<IdAndName>>builder()
+                .data(buildingService.getAllBuildingByUserId())
+                .message("Get buildings successfully")
                 .build();
     }
 }

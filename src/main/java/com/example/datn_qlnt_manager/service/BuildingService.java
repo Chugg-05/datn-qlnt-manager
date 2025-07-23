@@ -4,6 +4,7 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.BuildingFilter;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
@@ -41,4 +42,5 @@ public interface BuildingService {
 
     List<BuildingOccupancyResponse> calculateOccupancyByUser();
 
+    List<IdAndName> getAllBuildingByUserId();
 }

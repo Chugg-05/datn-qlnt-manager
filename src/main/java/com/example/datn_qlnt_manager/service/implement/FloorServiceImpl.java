@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import com.example.datn_qlnt_manager.entity.User;
@@ -170,6 +171,11 @@ public List<FloorBasicResponse> getFloorBasicByBuildingId(String buildingId) {
             throw new IllegalStateException("Cannot toggle status for deleted floor");
         }
         floorRepository.save(floor);
+    }
+
+    @Override
+    public List<IdAndName> getFloorsByUserId() {
+        return floorRepository.getFloorsByUserId(userService.getCurrentUser().getId());
     }
 
     private PaginatedResponse<FloorResponse> buildPaginatedFloorResponse(

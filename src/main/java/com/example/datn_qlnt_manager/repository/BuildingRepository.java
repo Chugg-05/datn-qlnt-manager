@@ -21,18 +21,17 @@ import com.example.datn_qlnt_manager.entity.Building;
 @Repository
 public interface BuildingRepository extends JpaRepository<Building, String> {
 
-    @Query(
-            """
-                    	SELECT b FROM Building b
-                    	WHERE (b.user.id = :userId)
-                    	AND ((:query IS NULL OR b.buildingCode LIKE CONCAT('%', :query, '%') )
-                    	OR (:query IS NULL OR  b.buildingName LIKE  CONCAT('%', :query, '%') )
-                    	OR (:query IS NULL OR b.address LIKE CONCAT('%', :query, '%') ))
-                    	AND (:status IS NULL OR  b.status = :status )
-                    	AND (:buildingType IS NULL OR b.buildingType = :buildingType)
-                    	AND b.status != 'HUY_HOAT_DONG'
-                    	ORDER BY b.updatedAt DESC
-                    """)
+    @Query("""
+            	SELECT b FROM Building b
+            	WHERE (b.user.id = :userId)
+            	AND ((:query IS NULL OR b.buildingCode LIKE CONCAT('%', :query, '%') )
+            	OR (:query IS NULL OR  b.buildingName LIKE  CONCAT('%', :query, '%') )
+            	OR (:query IS NULL OR b.address LIKE CONCAT('%', :query, '%') ))
+            	AND (:status IS NULL OR  b.status = :status )
+            	AND (:buildingType IS NULL OR b.buildingType = :buildingType)
+            	AND b.status != 'HUY_HOAT_DONG'
+            	ORDER BY b.updatedAt DESC
+            """)
     Page<Building> getPageAndSearchAndFilterBuildingByUserId(
             @Param("userId") String userId,
             @Param("query") String query,
@@ -40,17 +39,16 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
             @Param("buildingType") BuildingType buildingType,
             Pageable pageable);
 
-    @Query(
-            """
-                    	SELECT b FROM Building b
-                    	WHERE (b.user.id = :userId)
-                    	AND ((:query IS NULL OR b.buildingCode LIKE CONCAT('%', :query, '%') )
-                    	OR (:query IS NULL OR  b.buildingName LIKE  CONCAT('%', :query, '%') )
-                    	OR (:query IS NULL OR b.address LIKE CONCAT('%', :query, '%') ))
-                    	AND (:buildingType IS NULL OR b.buildingType = :buildingType)
-                    	AND b.status = 'HUY_HOAT_DONG'
-                    	ORDER BY b.updatedAt DESC
-                    """)
+    @Query("""
+            	SELECT b FROM Building b
+            	WHERE (b.user.id = :userId)
+            	AND ((:query IS NULL OR b.buildingCode LIKE CONCAT('%', :query, '%') )
+            	OR (:query IS NULL OR  b.buildingName LIKE  CONCAT('%', :query, '%') )
+            	OR (:query IS NULL OR b.address LIKE CONCAT('%', :query, '%') ))
+            	AND (:buildingType IS NULL OR b.buildingType = :buildingType)
+            	AND b.status = 'HUY_HOAT_DONG'
+            	ORDER BY b.updatedAt DESC
+            """)
     Page<Building> getBuildingWithStatusCancelByUserId(
             @Param("userId") String userId,
             @Param("query") String query,
@@ -68,8 +66,7 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
             """)
     BuildingStatistics getBuildingStatsByUser(@Param("userId") String userId);
 
-
-    @Query(""" 
+    @Query("""
                 SELECT new com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse(
                     b.id,
                     b.buildingName,
@@ -86,7 +83,6 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
                 GROUP BY b.id, b.buildingName, b.address, b.buildingType, b.status
             """)
     List<BuildingBasicResponse> findAllBuildingBasicByUserId(@Param("userId") String userId);
-
 
     boolean existsByBuildingNameAndUserId(String buildingName, String userId); // check trùng tên khi thêm tòa nhà
 
