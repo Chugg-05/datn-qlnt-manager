@@ -3,7 +3,6 @@ package com.example.datn_qlnt_manager.controller;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
-import com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
 import jakarta.validation.Valid;
 
@@ -139,15 +138,6 @@ public class BuildingController {
         return ApiResponse.<List<BuildingSelectResponse>>builder()
                 .data(data)
                 .message("Get buildings info successfully")
-                .build();
-    }
-
-    @Operation(summary = "Tính tỉ lệ lấp đầy phòng trong các tòa nhà của người dùng hiện tại")
-    @GetMapping("/occupancy-rate")
-    public ApiResponse<List<BuildingOccupancyResponse>> getOccupancyRateByBuilding() {
-        return ApiResponse.<List<BuildingOccupancyResponse>>builder()
-                .data(buildingService.calculateOccupancyByUser()    )
-                .message("Get occupancy rate successfully")
                 .build();
     }
 }
