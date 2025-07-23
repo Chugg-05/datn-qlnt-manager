@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
 import jakarta.validation.Valid;
 
@@ -141,7 +142,14 @@ public class BuildingController {
                 .build();
     }
 
-    @Operation(summary = "Lấy thông tin tòa nhà không phân trang")
+    @Operation(summary = "Tính tỉ lệ lấp đầy phòng trong các tòa nhà của người dùng hiện tại")
+    @GetMapping("/occupancy-rate")
+    public ApiResponse<List<BuildingOccupancyResponse>> getOccupancyRateByBuilding() {
+        return ApiResponse.<List<BuildingOccupancyResponse>>builder()
+                .data(buildingService.calculateOccupancyByUser()    )
+                .message("Get occupancy rate successfully")
+
+          @Operation(summary = "Lấy thông tin tòa nhà không phân trang")
     @GetMapping("/all")
     public ApiResponse<List<IdAndName>> getAllBuildingByUserId() {
         return ApiResponse.<List<IdAndName>>builder()

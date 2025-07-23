@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorSelectResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomSelectResponse;
-import com.example.datn_qlnt_manager.dto.response.tenant.TenantSelectResponse;
 import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.repository.FloorRepository;
@@ -238,5 +238,11 @@ public class BuildingServiceImpl implements BuildingService {
                 .data(buildings)
                 .meta(meta)
                 .build();
+    }
+
+    @Override
+    public List<BuildingOccupancyResponse> calculateOccupancyByUser() {
+        User currentUser = userService.getCurrentUser();
+        return buildingRepository.calculateBuildingOccupancy(currentUser.getId());
     }
 }
