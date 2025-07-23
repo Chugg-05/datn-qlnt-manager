@@ -142,19 +142,21 @@ public class BuildingController {
                 .build();
     }
 
-    @Operation(summary = "Tính tỉ lệ lấp đầy phòng trong các tòa nhà của người dùng hiện tại")
-    @GetMapping("/occupancy-rate")
-    public ApiResponse<List<BuildingOccupancyResponse>> getOccupancyRateByBuilding() {
-        return ApiResponse.<List<BuildingOccupancyResponse>>builder()
-                .data(buildingService.calculateOccupancyByUser()    )
-                .message("Get occupancy rate successfully")
-
-          @Operation(summary = "Lấy thông tin tòa nhà không phân trang")
+    @Operation(summary = "Lấy thông tin tòa nhà không phân trang")
     @GetMapping("/all")
     public ApiResponse<List<IdAndName>> getAllBuildingByUserId() {
         return ApiResponse.<List<IdAndName>>builder()
                 .data(buildingService.getAllBuildingByUserId())
                 .message("Get buildings successfully")
+                .build();
+    }
+
+    @Operation(summary = "Tính tỉ lệ lấp đầy phòng trong các tòa nhà của người dùng hiện tại")
+    @GetMapping("/occupancy-rate")
+    public ApiResponse<List<BuildingOccupancyResponse>> getOccupancyRateByBuilding() {
+        return ApiResponse.<List<BuildingOccupancyResponse>>builder()
+                .data(buildingService.calculateOccupancyByUser())
+                .message("Get occupancy rate successfully")
                 .build();
     }
 }
