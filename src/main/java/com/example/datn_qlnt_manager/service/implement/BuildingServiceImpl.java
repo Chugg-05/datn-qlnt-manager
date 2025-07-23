@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorSelectResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomSelectResponse;
@@ -233,5 +234,11 @@ public class BuildingServiceImpl implements BuildingService {
                 .data(buildings)
                 .meta(meta)
                 .build();
+    }
+
+    @Override
+    public List<BuildingOccupancyResponse> calculateOccupancyByUser() {
+        User currentUser = userService.getCurrentUser();
+        return buildingRepository.calculateBuildingOccupancy(currentUser.getId());
     }
 }

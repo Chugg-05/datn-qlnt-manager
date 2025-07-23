@@ -5,6 +5,7 @@ import com.example.datn_qlnt_manager.dto.filter.BuildingFilter;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
 import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
@@ -37,4 +38,7 @@ public interface BuildingService {
     void toggleStatus(String id);
 
     List<BuildingSelectResponse>  getBuildingsInfoByUserId();
+
+    List<BuildingOccupancyResponse> calculateOccupancyByUser();
+
 }

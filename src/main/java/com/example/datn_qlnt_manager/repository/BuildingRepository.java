@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse;
 import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -101,4 +102,22 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
             """)
     List<IdAndName> findAllBuildingsByUserId(@Param("userId") String userId);
 
+    @Query("""
+    SELECT new com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse(
+        b.id,
+        b.buildingName,
+        COUNT(DISTINCT r.id),
+        SUM(CASE
+                WHEN c.status = 'HIEU_LUC' OR c.status = 'SAP_HET_HAN' THEN 1
+                ELSE 0
+            END)
+    )
+    FROM Contract c
+    JOIN c.room r
+    JOIN r.floor f
+    JOIN f.building b
+    WHERE b.user.id = :userId
+    GROUP BY b.id, b.buildingName
+""")
+    List<BuildingOccupancyResponse> calculateBuildingOccupancy(@Param("userId") String userId);
 }
