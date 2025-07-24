@@ -27,7 +27,6 @@ public class ServiceRoomCreationRequest {
     @FutureOrPresent(message = "START_DATE_MUST_BE_TODAY_OR_FUTURE")
     LocalDate startDate;
 
-    @NotNull(message = "TOTAL_PRICE_REQUIRED")
     @DecimalMin(value = "0.0", message = "TOTAL_PRICE_MUST_BE_NON_NEGATIVE")
     BigDecimal totalPrice;
 
