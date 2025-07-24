@@ -1,7 +1,6 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import com.example.datn_qlnt_manager.common.AssetBeLongTo;
-import com.example.datn_qlnt_manager.common.ContractStatus;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -173,21 +172,6 @@ public class AssetServiceImpl implements AssetService {
                 Tenant tenant = tenantRepository.findById(tenantId)
                         .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
                 asset.setTenant(tenant);
-
-                Contract latestValidContract = tenant.getContracts().stream()
-                        .filter(contract -> contract.getStatus() == ContractStatus.HIEU_LUC
-                                || contract.getStatus() == ContractStatus.SAP_HET_HAN)
-                        .max(Comparator.comparing(Contract::getStartDate))
-                        .orElse(null);
-
-                if (latestValidContract != null) {
-                    Room room = latestValidContract.getRoom();
-                    if (room != null) {
-                        setRoom(asset, room);
-                    }
-                } else {
-                    throw new AppException(ErrorCode.TENANT_HAS_NO_CONTRACT);
-                }
             }
 
         }
