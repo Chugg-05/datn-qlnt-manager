@@ -30,9 +30,6 @@ public class MeterReadingCreationRequest {
     @Min(value = 1,message = "YEAR_GREATER")
     Integer year;
 
-    @NotNull(message = "READING_DATE_NOT_FOUND")
-    LocalDate readingDate;
-
     String descriptionMeterReading;
 
 }
