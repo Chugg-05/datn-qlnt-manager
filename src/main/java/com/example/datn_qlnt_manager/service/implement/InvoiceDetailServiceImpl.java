@@ -1,5 +1,12 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.math.BigDecimal;
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import com.example.datn_qlnt_manager.common.InvoiceItemType;
 import com.example.datn_qlnt_manager.dto.request.invoiceDetail.InvoiceDetailCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.invoiceDetail.InvoiceDetailUpdateRequest;
@@ -14,15 +21,10 @@ import com.example.datn_qlnt_manager.repository.InvoiceDetailsRepository;
 import com.example.datn_qlnt_manager.repository.InvoiceRepository;
 import com.example.datn_qlnt_manager.repository.ServiceRoomRepository;
 import com.example.datn_qlnt_manager.service.InvoiceDetailService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -185,9 +187,7 @@ public class InvoiceDetailServiceImpl implements InvoiceDetailService {
             throw new AppException(ErrorCode.INVALID_COMPENSATION_DATA);
         }
 
-        String name = StringUtils.hasText(request.getServiceName())
-                ? request.getServiceName()
-                : "Đền bù thiệt hại";
+        String name = StringUtils.hasText(request.getServiceName()) ? request.getServiceName() : "Đền bù thiệt hại";
 
         return InvoiceDetail.builder()
                 .invoice(invoice)
@@ -201,12 +201,12 @@ public class InvoiceDetailServiceImpl implements InvoiceDetailService {
     }
 
     private Invoice getInvoice(String invoiceId) {
-        return invoiceRepository.findById(invoiceId)
-                .orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
+        return invoiceRepository.findById(invoiceId).orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
     }
 
     private InvoiceDetail getInvoiceDetail(String detailId) {
-        return invoiceDetailsRepository.findById(detailId)
+        return invoiceDetailsRepository
+                .findById(detailId)
                 .orElseThrow(() -> new AppException(ErrorCode.INVOICE_DETAIL_NOT_FOUND));
     }
 
@@ -226,11 +226,9 @@ public class InvoiceDetailServiceImpl implements InvoiceDetailService {
             }
 
             exists = invoice.getDetails().stream()
-                    .anyMatch(detail ->
-                            detail.getInvoiceItemType() == itemType
-                                    && detail.getServiceRoom() != null
-                                    && serviceRoomId.equals(detail.getServiceRoom().getId())
-                    );
+                    .anyMatch(detail -> detail.getInvoiceItemType() == itemType
+                            && detail.getServiceRoom() != null
+                            && serviceRoomId.equals(detail.getServiceRoom().getId()));
         }
 
         if (exists) {
@@ -240,7 +238,8 @@ public class InvoiceDetailServiceImpl implements InvoiceDetailService {
 
     private ServiceRoom getServiceRoomIfNeeded(InvoiceDetailCreationRequest request) {
         if (request.getServiceRoomId() == null) return null;
-        return serviceRoomRepository.findById(request.getServiceRoomId())
+        return serviceRoomRepository
+                .findById(request.getServiceRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
     }
 

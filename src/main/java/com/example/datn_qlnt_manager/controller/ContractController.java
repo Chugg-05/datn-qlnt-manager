@@ -1,5 +1,11 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ContractFilter;
@@ -9,16 +15,13 @@ import com.example.datn_qlnt_manager.dto.response.contract.ContractDetailRespons
 import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
 import com.example.datn_qlnt_manager.dto.statistics.ContractStatistics;
 import com.example.datn_qlnt_manager.service.ContractService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -37,11 +40,8 @@ public class ContractController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
 
-        PaginatedResponse<ContractResponse> result = contractService.getPageAndSearchAndFilterTenantByUserId(
-                filter,
-                page,
-                size
-        );
+        PaginatedResponse<ContractResponse> result =
+                contractService.getPageAndSearchAndFilterTenantByUserId(filter, page, size);
 
         return ApiResponse.<List<ContractResponse>>builder()
                 .message("Get contracts successfully")
@@ -57,11 +57,8 @@ public class ContractController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
 
-        PaginatedResponse<ContractResponse> result = contractService.getContractWithStatusCancelByUserId(
-                filter,
-                page,
-                size
-        );
+        PaginatedResponse<ContractResponse> result =
+                contractService.getContractWithStatusCancelByUserId(filter, page, size);
 
         return ApiResponse.<List<ContractResponse>>builder()
                 .message("Get cancelled contracts successfully")
@@ -83,8 +80,7 @@ public class ContractController {
     @Operation(summary = "Update hợp đồng")
     @PutMapping("/{contractId}")
     public ApiResponse<ContractResponse> updateContract(
-            @Valid @RequestBody ContractUpdateRequest request,
-            @PathVariable("contractId") String contractId) {
+            @Valid @RequestBody ContractUpdateRequest request, @PathVariable("contractId") String contractId) {
 
         return ApiResponse.<ContractResponse>builder()
                 .message("Contract updated successfully")

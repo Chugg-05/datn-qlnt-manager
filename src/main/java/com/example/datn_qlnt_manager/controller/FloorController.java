@@ -2,9 +2,6 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.IdAndName;
-import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
-import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import jakarta.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
@@ -15,7 +12,10 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
+import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import com.example.datn_qlnt_manager.service.FloorService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +36,7 @@ public class FloorController {
 
     @Operation(summary = "Thêm tầng mới")
     @PostMapping
-    public ApiResponse<FloorResponse>createFloor(@Valid @RequestBody FloorCreationRequest request) {
+    public ApiResponse<FloorResponse> createFloor(@Valid @RequestBody FloorCreationRequest request) {
         return ApiResponse.<FloorResponse>builder()
                 .message("Floor has been created!")
                 .data(floorService.createFloor(request))
@@ -50,7 +50,8 @@ public class FloorController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
 
-        PaginatedResponse<FloorResponse> result = floorService.getPageAndSearchAndFilterFloorByUserId(filter, page, size);
+        PaginatedResponse<FloorResponse> result =
+                floorService.getPageAndSearchAndFilterFloorByUserId(filter, page, size);
         return ApiResponse.<List<FloorResponse>>builder()
                 .message("Floor data retrieved successfully")
                 .data(result.getData())
@@ -116,10 +117,10 @@ public class FloorController {
                 .message("Status update successful!")
                 .build();
     }
+
     @Operation(summary = "Hiển thị danh sách tầng dạng card hoặc combobox theo building")
     @GetMapping("/find-all")
-    public ApiResponse<List<FloorBasicResponse>> getFloorsByBuilding(
-            @RequestParam String buildingId) {
+    public ApiResponse<List<FloorBasicResponse>> getFloorsByBuilding(@RequestParam String buildingId) {
 
         // Chỉ lọc theo buildingId, không cần userId
         List<FloorBasicResponse> response = floorService.getFloorBasicByBuildingId(buildingId);
@@ -138,5 +139,4 @@ public class FloorController {
                 .data(floorService.getFloorsByUserId())
                 .build();
     }
-
 }

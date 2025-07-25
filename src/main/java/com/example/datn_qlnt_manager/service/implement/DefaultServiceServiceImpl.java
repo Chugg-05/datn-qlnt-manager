@@ -1,6 +1,13 @@
 package com.example.datn_qlnt_manager.service.implement;
 
-import com.example.datn_qlnt_manager.common.BuildingStatus;
+import java.time.Instant;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.common.DefaultServiceStatus;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
@@ -9,14 +16,10 @@ import com.example.datn_qlnt_manager.dto.filter.DefaultServiceFilter;
 import com.example.datn_qlnt_manager.dto.request.defaultService.DefaultServiceCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.defaultService.DefaultServiceUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
-import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
 import com.example.datn_qlnt_manager.dto.response.building.DefaultServiceBuildingSelectResponse;
 import com.example.datn_qlnt_manager.dto.response.defaultService.DefaultServiceInitResponse;
 import com.example.datn_qlnt_manager.dto.response.defaultService.DefaultServiceResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.DefaultServiceFloorSelectResponse;
-import com.example.datn_qlnt_manager.dto.response.floor.FloorSelectResponse;
-import com.example.datn_qlnt_manager.dto.response.room.RoomSelectResponse;
-import com.example.datn_qlnt_manager.dto.response.tenant.TenantSelectResponse;
 import com.example.datn_qlnt_manager.dto.statistics.DefaultServiceStatistics;
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.DefaultService;
@@ -31,18 +34,11 @@ import com.example.datn_qlnt_manager.repository.FloorRepository;
 import com.example.datn_qlnt_manager.repository.ServiceRepository;
 import com.example.datn_qlnt_manager.service.DefaultServiceService;
 import com.example.datn_qlnt_manager.service.UserService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -56,13 +52,9 @@ public class DefaultServiceServiceImpl implements DefaultServiceService {
     FloorRepository floorRepository;
     private final UserService userService;
 
-
     @Override
     public PaginatedResponse<DefaultServiceResponse> getPageAndSearchAndFilterDefaultServiceByUserId(
-            DefaultServiceFilter filter,
-            int page,
-            int size
-    ) {
+            DefaultServiceFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
         var user = userService.getCurrentUser();
@@ -75,18 +67,14 @@ public class DefaultServiceServiceImpl implements DefaultServiceService {
                 filter.getDefaultServiceAppliesTo(),
                 filter.getMaxPricesApply(),
                 filter.getMinPricesApply(),
-                pageable
-        );
+                pageable);
 
         return buildPaginatedDefaultServiceResponse(paging, page, size);
     }
 
     @Override
     public PaginatedResponse<DefaultServiceResponse> getDefaultServiceWithStatusCancelByUserId(
-            DefaultServiceFilter filter,
-            int page,
-            int size
-    ) {
+            DefaultServiceFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
         var user = userService.getCurrentUser();
@@ -98,8 +86,7 @@ public class DefaultServiceServiceImpl implements DefaultServiceService {
                 filter.getDefaultServiceAppliesTo(),
                 filter.getMaxPricesApply(),
                 filter.getMinPricesApply(),
-                pageable
-        );
+                pageable);
 
         return buildPaginatedDefaultServiceResponse(paging, page, size);
     }
@@ -107,20 +94,19 @@ public class DefaultServiceServiceImpl implements DefaultServiceService {
     @Override
     public DefaultServiceResponse createDefaultService(DefaultServiceCreationRequest request) {
 
-        com.example.datn_qlnt_manager.entity.Service service = serviceRepository.findById(request.getServiceId())
+        com.example.datn_qlnt_manager.entity.Service service = serviceRepository
+                .findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
-        Building building = buildingRepository.findById(request.getBuildingId())
+        Building building = buildingRepository
+                .findById(request.getBuildingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
-        Floor floor = floorRepository.findById(request.getFloorId())
+        Floor floor = floorRepository
+                .findById(request.getFloorId())
                 .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
         if (defaultServiceRepository.existsByBuildingIdAndServiceIdAndDefaultServiceAppliesTo(
-                request.getBuildingId(),
-                request.getServiceId(),
-                request.getDefaultServiceAppliesTo()
-        )) {
+                request.getBuildingId(), request.getServiceId(), request.getDefaultServiceAppliesTo())) {
             throw new AppException(ErrorCode.DUPLICATE_SERVICE);
         }
-
 
         DefaultService defaultService = defaultServiceMapper.toDefaultService(request);
         if (request.getPricesApply() == null) {
@@ -137,7 +123,8 @@ public class DefaultServiceServiceImpl implements DefaultServiceService {
 
     @Override
     public DefaultServiceResponse updateDefaultService(String defaultServiceId, DefaultServiceUpdateRequest request) {
-        DefaultService defaultService = defaultServiceRepository.findById(defaultServiceId)
+        DefaultService defaultService = defaultServiceRepository
+                .findById(defaultServiceId)
                 .orElseThrow(() -> new AppException(ErrorCode.DEFAULT_SERVICE_NOT_FOUND));
 
         defaultServiceMapper.updateDefaultService(defaultService, request);
@@ -157,22 +144,23 @@ public class DefaultServiceServiceImpl implements DefaultServiceService {
     public DefaultServiceInitResponse initDefaultService() {
         User user = userService.getCurrentUser();
 
-        List<IdAndName> services = serviceRepository.findAllByUserId(user.getId()).stream().toList();
+        List<IdAndName> services =
+                serviceRepository.findAllByUserId(user.getId()).stream().toList();
 
-        List<DefaultServiceBuildingSelectResponse> buildings = buildingRepository.findAllBuildingsByUserId(user.getId())
-                .stream()
-                .map(b -> {
-                    List<DefaultServiceFloorSelectResponse> floorSelectResponses =
-                            floorRepository.findAllFloorsByUserIdAndBuildingId(user.getId(), b.getId()).stream()
-                                    .map(f -> new DefaultServiceFloorSelectResponse(f.getId(), f.getName()))
-                                    .toList();
-                    return DefaultServiceBuildingSelectResponse.builder()
-                            .id(b.getId())
-                            .name(b.getName())
-                            .floors(floorSelectResponses)
-                            .build();
-                })
-                .toList();
+        List<DefaultServiceBuildingSelectResponse> buildings =
+                buildingRepository.findAllBuildingsByUserId(user.getId()).stream()
+                        .map(b -> {
+                            List<DefaultServiceFloorSelectResponse> floorSelectResponses =
+                                    floorRepository.findAllFloorsByUserIdAndBuildingId(user.getId(), b.getId()).stream()
+                                            .map(f -> new DefaultServiceFloorSelectResponse(f.getId(), f.getName()))
+                                            .toList();
+                            return DefaultServiceBuildingSelectResponse.builder()
+                                    .id(b.getId())
+                                    .name(b.getName())
+                                    .floors(floorSelectResponses)
+                                    .build();
+                        })
+                        .toList();
 
         return DefaultServiceInitResponse.builder()
                 .services(services)
@@ -235,5 +223,4 @@ public class DefaultServiceServiceImpl implements DefaultServiceService {
                 .meta(meta)
                 .build();
     }
-
 }

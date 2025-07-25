@@ -20,6 +20,4 @@ public interface FeedbackService {
     PaginatedResponse<FeedbackResponse> filterFeedbacksForManager(FeedbackFilter filter, int page, int size);
 
     FeedbackStatusUpdateResponse updateFeedbackStatus(FeedbackStatusUpdateRequest request);
-
-
 }

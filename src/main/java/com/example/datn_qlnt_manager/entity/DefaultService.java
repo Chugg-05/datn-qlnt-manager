@@ -1,14 +1,17 @@
 package com.example.datn_qlnt_manager.entity;
 
-import com.example.datn_qlnt_manager.common.DefaultServiceAppliesTo;
-import com.example.datn_qlnt_manager.common.DefaultServiceStatus;
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import jakarta.persistence.*;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.example.datn_qlnt_manager.common.DefaultServiceAppliesTo;
+import com.example.datn_qlnt_manager.common.DefaultServiceStatus;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -19,7 +22,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "dich_vu_mac_dinh")
-public class DefaultService extends AbstractEntity{
+public class DefaultService extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "ap_dung_cho")
     DefaultServiceAppliesTo defaultServiceAppliesTo;

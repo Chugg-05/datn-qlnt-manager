@@ -1,12 +1,14 @@
 package com.example.datn_qlnt_manager.dto.request.notification;
 
-import com.example.datn_qlnt_manager.common.NotificationType;
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import com.example.datn_qlnt_manager.common.NotificationType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Getter
 @Setter

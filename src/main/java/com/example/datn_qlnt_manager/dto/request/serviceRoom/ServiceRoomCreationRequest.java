@@ -1,13 +1,12 @@
 package com.example.datn_qlnt_manager.dto.request.serviceRoom;
 
-import jakarta.validation.constraints.DecimalMin;
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Getter
 @Setter

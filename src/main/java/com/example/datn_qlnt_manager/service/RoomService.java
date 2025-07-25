@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.service;
 
+import java.util.List;
+
 import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
@@ -8,21 +10,12 @@ import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
 
-import java.util.List;
-
 public interface RoomService {
 
     PaginatedResponse<RoomResponse> getPageAndSearchAndFilterRoomByUserId(
-            RoomFilter roomFilter,
-            Integer page,
-            Integer size
-    );
+            RoomFilter roomFilter, Integer page, Integer size);
 
-    PaginatedResponse<RoomResponse> getRoomWithStatusCancelByUserId(
-            RoomFilter roomFilter,
-            Integer page,
-            Integer size
-    );
+    PaginatedResponse<RoomResponse> getRoomWithStatusCancelByUserId(RoomFilter roomFilter, Integer page, Integer size);
 
     RoomResponse createRoom(RoomCreationRequest request);
 
@@ -37,6 +30,4 @@ public interface RoomService {
     RoomResponse updateRoomStatus(String roomId, RoomStatus status);
 
     RoomCountResponse statisticsRoomByStatus(String buildingId);
-
-
 }

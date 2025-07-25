@@ -16,13 +16,13 @@ import com.example.datn_qlnt_manager.entity.AssetType;
 @Repository
 public interface AssetTypeRepository extends JpaRepository<AssetType, String> {
     @Query(
-        """
-                        SELECT a FROM AssetType a
-                        WHERE a.user.id = :userId
-                        AND (:name IS NULL OR a.nameAssetType LIKE CONCAT('%', :name, '%'))
-                        AND (:group IS NULL OR a.assetGroup = :group)
-                        ORDER BY a.updatedAt DESC
-                """)
+            """
+						SELECT a FROM AssetType a
+						WHERE a.user.id = :userId
+						AND (:name IS NULL OR a.nameAssetType LIKE CONCAT('%', :name, '%'))
+						AND (:group IS NULL OR a.assetGroup = :group)
+						ORDER BY a.updatedAt DESC
+				""")
     Page<AssetType> getPageAndSearchAndFilterAssetTypeByUserId(
             @Param("name") String nameAssetType,
             @Param("group") AssetGroup assetGroup,
@@ -30,10 +30,10 @@ public interface AssetTypeRepository extends JpaRepository<AssetType, String> {
             Pageable pageable);
 
     @Query("""
-            SELECT at FROM AssetType at
-            WHERE at.user.id = :userId
-            ORDER BY at.updatedAt DESC
-            """)
+			SELECT at FROM AssetType at
+			WHERE at.user.id = :userId
+			ORDER BY at.updatedAt DESC
+			""")
     List<AssetType> findAllAssetTypeByUserId(@Param("userId") String userId);
 
     // check trùng tên loại trong nhóm

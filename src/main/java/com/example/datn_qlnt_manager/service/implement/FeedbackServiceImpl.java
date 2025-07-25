@@ -1,5 +1,16 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.time.Instant;
+import java.util.List;
+
+import jakarta.transaction.Transactional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.common.FeedbackStatus;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
@@ -22,18 +33,10 @@ import com.example.datn_qlnt_manager.repository.RoomRepository;
 import com.example.datn_qlnt_manager.repository.TenantRepository;
 import com.example.datn_qlnt_manager.service.FeedbackService;
 import com.example.datn_qlnt_manager.service.UserService;
-import jakarta.transaction.Transactional;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -49,24 +52,21 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     public FeedbackResponse createFeedback(FeedbackCreationRequest request) {
-        Tenant tenant = tenantRepository.findById(request.getTenantId())
+        Tenant tenant = tenantRepository
+                .findById(request.getTenantId())
                 .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
 
-        Room room = roomRepository.findById(request.getRoomId())
+        Room room = roomRepository
+                .findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         String normalizedContent = normalizeContent(request.getContent());
-        List<Feedback> existingFeedbacks = feedbackRepository
-                .findAllByTenantIdAndRoomIdAndFeedbackTypeAndFeedbackStatusIn(
-                        tenant.getId(),
-                        room.getId(),
-                        request.getFeedbackType(),
-                        List.of(FeedbackStatus.CHUA_XU_LY)
-                );
-        boolean isDuplicate = existingFeedbacks.stream().anyMatch(f ->
-                f.getContent() != null &&
-                        normalizeContent(f.getContent()).equals(normalizedContent)
-        );
+        List<Feedback> existingFeedbacks =
+                feedbackRepository.findAllByTenantIdAndRoomIdAndFeedbackTypeAndFeedbackStatusIn(
+                        tenant.getId(), room.getId(), request.getFeedbackType(), List.of(FeedbackStatus.CHUA_XU_LY));
+        boolean isDuplicate = existingFeedbacks.stream()
+                .anyMatch(f -> f.getContent() != null
+                        && normalizeContent(f.getContent()).equals(normalizedContent));
 
         if (isDuplicate) {
             throw new AppException(ErrorCode.FEED_BACK_DUPLICATED);
@@ -83,7 +83,8 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     public FeedbackResponse updateFeedback(String feedbackId, FeedbackUpdateRequest request) {
-        Feedback feedback = feedbackRepository.findById(feedbackId)
+        Feedback feedback = feedbackRepository
+                .findById(feedbackId)
                 .orElseThrow(() -> new AppException(ErrorCode.FEED_BACK_NOT_FOUND));
 
         feedbackMapper.updateFeedback(feedback, request);
@@ -104,8 +105,7 @@ public class FeedbackServiceImpl implements FeedbackService {
                 filter.getFeedbackType(),
                 filter.getFeedbackStatus(),
                 filter.getQuery(),
-                pageable
-        );
+                pageable);
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
@@ -123,7 +123,6 @@ public class FeedbackServiceImpl implements FeedbackService {
                 .build();
     }
 
-
     @Override
     public PaginatedResponse<FeedbackResponse> filterFeedbacksForManager(FeedbackFilter filter, int page, int size) {
         String userId = userService.getCurrentUser().getId();
@@ -136,8 +135,7 @@ public class FeedbackServiceImpl implements FeedbackService {
                 filter.getRating(),
                 filter.getFeedbackType(),
                 filter.getQuery(),
-                pageable
-        );
+                pageable);
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
@@ -161,7 +159,8 @@ public class FeedbackServiceImpl implements FeedbackService {
         User currentUser = userService.getCurrentUser();
         String userId = currentUser.getId();
 
-        Feedback feedback = feedbackRepository.findById(request.getFeedbackId())
+        Feedback feedback = feedbackRepository
+                .findById(request.getFeedbackId())
                 .orElseThrow(() -> new AppException(ErrorCode.FEED_BACK_NOT_FOUND));
 
         // check: là quản lí thì mới được update
@@ -192,12 +191,11 @@ public class FeedbackServiceImpl implements FeedbackService {
                 .build();
     }
 
-     String normalizeContent(String content) {
+    String normalizeContent(String content) {
         if (content == null) return "";
-        return content
-                .trim()
+        return content.trim()
                 .toLowerCase()
                 .replaceAll("\\p{Punct}", "") //  bỏ dấu câu
-                .replaceAll("\\s+", " ");     // chuẩn hóa khoảng trắng
+                .replaceAll("\\s+", " "); // chuẩn hóa khoảng trắng
     }
 }

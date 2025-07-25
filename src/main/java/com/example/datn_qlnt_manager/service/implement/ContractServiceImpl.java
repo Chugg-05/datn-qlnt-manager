@@ -1,5 +1,19 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import jakarta.transaction.Transactional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.common.*;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ContractFilter;
@@ -19,22 +33,11 @@ import com.example.datn_qlnt_manager.mapper.ContractMapper;
 import com.example.datn_qlnt_manager.repository.*;
 import com.example.datn_qlnt_manager.service.ContractService;
 import com.example.datn_qlnt_manager.service.UserService;
-import jakarta.transaction.Transactional;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -52,37 +55,25 @@ public class ContractServiceImpl implements ContractService {
     VehicleRepository vehicleRepository;
 
     @Override
-    public PaginatedResponse<ContractResponse> getPageAndSearchAndFilterTenantByUserId
-            (ContractFilter filter, int page, int size) {
+    public PaginatedResponse<ContractResponse> getPageAndSearchAndFilterTenantByUserId(
+            ContractFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
 
         Page<Contract> paging = contractRepository.getPageAndSearchAndFilterContractByUserId(
-                user.getId(),
-                filter.getQuery(),
-                filter.getGender(),
-                filter.getStatus(),
-                pageable
-        );
+                user.getId(), filter.getQuery(), filter.getGender(), filter.getStatus(), pageable);
 
         return buildPaginatedContractResponse(paging, page, size);
     }
 
     @Override
     public PaginatedResponse<ContractResponse> getContractWithStatusCancelByUserId(
-            ContractFilter filter,
-            int page,
-            int size
-    ) {
+            ContractFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
 
         Page<Contract> paging = contractRepository.getContractWithStatusCancelByUserId(
-                user.getId(),
-                filter.getQuery(),
-                filter.getGender(),
-                pageable
-        );
+                user.getId(), filter.getQuery(), filter.getGender(), pageable);
 
         return buildPaginatedContractResponse(paging, page, size);
     }
@@ -90,12 +81,12 @@ public class ContractServiceImpl implements ContractService {
     @Transactional
     @Override
     public ContractResponse createContract(ContractCreationRequest request) {
-        Room room = roomRepository.findById(request.getRoomId())
+        Room room = roomRepository
+                .findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         if (contractRepository.existsByRoomIdAndStatusIn(
-                room.getId(), List.of(ContractStatus.HIEU_LUC, ContractStatus.SAP_HET_HAN)
-        )) {
+                room.getId(), List.of(ContractStatus.HIEU_LUC, ContractStatus.SAP_HET_HAN))) {
             throw new AppException(ErrorCode.ROOM_ALREADY_HAS_CONTRACT);
         }
 
@@ -113,16 +104,18 @@ public class ContractServiceImpl implements ContractService {
             throw new AppException(ErrorCode.ASSET_NOT_FOUND);
         }
 
-        Set<com.example.datn_qlnt_manager.entity.Service> services = request.getServices() != null && !request.getServices().isEmpty()
-                ? new HashSet<>(serviceRepository.findAllById(request.getServices()))
-                : new HashSet<>();
+        Set<com.example.datn_qlnt_manager.entity.Service> services =
+                request.getServices() != null && !request.getServices().isEmpty()
+                        ? new HashSet<>(serviceRepository.findAllById(request.getServices()))
+                        : new HashSet<>();
         if (services.size() != request.getServices().size()) {
             throw new AppException(ErrorCode.SERVICE_NOT_FOUND);
         }
 
-        Set<Vehicle> vehicles = request.getVehicles() != null && !request.getVehicles().isEmpty()
-                ? new HashSet<>(vehicleRepository.findAllById(request.getVehicles()))
-                : new HashSet<>();
+        Set<Vehicle> vehicles =
+                request.getVehicles() != null && !request.getVehicles().isEmpty()
+                        ? new HashSet<>(vehicleRepository.findAllById(request.getVehicles()))
+                        : new HashSet<>();
 
         if (vehicles.size() != request.getVehicles().size()) {
             throw new AppException(ErrorCode.VEHICLE_NOT_FOUND);
@@ -154,7 +147,8 @@ public class ContractServiceImpl implements ContractService {
     @Transactional
     @Override
     public ContractResponse updateContract(String contractId, ContractUpdateRequest request) {
-        Contract contract = contractRepository.findById(contractId)
+        Contract contract = contractRepository
+                .findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
         if (request.getEndDate().isBefore(contract.getStartDate())) {
@@ -208,13 +202,14 @@ public class ContractServiceImpl implements ContractService {
         return contractMapper.toContractResponse(contract);
     }
 
-
     @Override
     public ContractDetailResponse getContractDetailById(String contractId) {
-        Contract contract = contractRepository.findById(contractId)
+        Contract contract = contractRepository
+                .findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        ContractDetailResponse detail = contractRepository.findContractDetailById(contractId)
+        ContractDetailResponse detail = contractRepository
+                .findContractDetailById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
         List<TenantBasicResponse> tenants = tenantRepository.findTenantsByContractId(contractId);
@@ -258,14 +253,13 @@ public class ContractServiceImpl implements ContractService {
     public List<ContractResponse> getAllContractsByUserId() {
         User user = userService.getCurrentUser();
         List<Contract> contracts = contractRepository.findAllContractByUserId(user.getId());
-        return contracts.stream()
-                .map(contractMapper::toContractResponse)
-                .toList();
+        return contracts.stream().map(contractMapper::toContractResponse).toList();
     }
 
     @Override
     public void toggleContractStatusById(String contractId) {
-        Contract contract = contractRepository.findById(contractId)
+        Contract contract = contractRepository
+                .findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
         if (contract.getStatus() == ContractStatus.HIEU_LUC || contract.getStatus() == ContractStatus.SAP_HET_HAN) {
@@ -296,7 +290,8 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public void softDeleteContractById(String contractId) {
-        Contract contract = contractRepository.findById(contractId)
+        Contract contract = contractRepository
+                .findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
         if (contract.getStatus() == ContractStatus.HIEU_LUC || contract.getStatus() == ContractStatus.SAP_HET_HAN) {
@@ -311,7 +306,8 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public void deleteContractById(String contractId) {
-        Contract contract = contractRepository.findById(contractId)
+        Contract contract = contractRepository
+                .findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
         if (contract.getStatus() == ContractStatus.HIEU_LUC || contract.getStatus() == ContractStatus.SAP_HET_HAN) {
@@ -348,8 +344,7 @@ public class ContractServiceImpl implements ContractService {
     private PaginatedResponse<ContractResponse> buildPaginatedContractResponse(
             Page<Contract> paging, int page, int size) {
 
-        List<ContractResponse> contracts = paging.getContent()
-                .stream()
+        List<ContractResponse> contracts = paging.getContent().stream()
                 .map(contractMapper::toContractResponse)
                 .toList();
 

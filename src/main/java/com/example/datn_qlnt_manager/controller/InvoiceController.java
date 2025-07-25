@@ -1,5 +1,11 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.InvoiceFilter;
@@ -11,16 +17,13 @@ import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceDetailsResponse
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceResponse;
 import com.example.datn_qlnt_manager.dto.statistics.InvoiceStatistics;
 import com.example.datn_qlnt_manager.service.InvoiceService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -36,9 +39,9 @@ public class InvoiceController {
     public ApiResponse<List<InvoiceResponse>> getPageAndSearchAndFilter(
             @ModelAttribute InvoiceFilter filter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
-        PaginatedResponse<InvoiceResponse> result = invoiceService.getPageAndSearchAndFilterByUserId(filter, page, size);
+            @RequestParam(defaultValue = "15") int size) {
+        PaginatedResponse<InvoiceResponse> result =
+                invoiceService.getPageAndSearchAndFilterByUserId(filter, page, size);
 
         return ApiResponse.<List<InvoiceResponse>>builder()
                 .message("Get invoices successfully")
@@ -52,9 +55,9 @@ public class InvoiceController {
     public ApiResponse<List<InvoiceResponse>> getInvoiceWithStatusCancel(
             @ModelAttribute InvoiceFilter filter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
-        PaginatedResponse<InvoiceResponse> result = invoiceService.getInvoiceWithStatusCancelByUserId(filter, page, size);
+            @RequestParam(defaultValue = "15") int size) {
+        PaginatedResponse<InvoiceResponse> result =
+                invoiceService.getInvoiceWithStatusCancelByUserId(filter, page, size);
 
         return ApiResponse.<List<InvoiceResponse>>builder()
                 .message("Get canceled invoices successfully")
@@ -65,9 +68,7 @@ public class InvoiceController {
 
     @Operation(summary = "Xem chi tiết hóa đơn")
     @GetMapping("/{invoiceId}")
-    public ApiResponse<InvoiceDetailsResponse> getInvoiceDetails(
-            @PathVariable("invoiceId") String invoiceId
-    ) {
+    public ApiResponse<InvoiceDetailsResponse> getInvoiceDetails(@PathVariable("invoiceId") String invoiceId) {
         InvoiceDetailsResponse response = invoiceService.getInvoiceDetails(invoiceId);
 
         return ApiResponse.<InvoiceDetailsResponse>builder()
@@ -78,8 +79,7 @@ public class InvoiceController {
 
     @Operation(summary = "Tạo hóa đơn theo hợp đồng")
     @PostMapping("/by-contract")
-    public ApiResponse<InvoiceResponse> createInvoiceForContract(
-            @Valid @RequestBody InvoiceCreationRequest request) {
+    public ApiResponse<InvoiceResponse> createInvoiceForContract(@Valid @RequestBody InvoiceCreationRequest request) {
         InvoiceResponse response = invoiceService.createInvoiceForContract(request);
 
         return ApiResponse.<InvoiceResponse>builder()
@@ -91,8 +91,7 @@ public class InvoiceController {
     @Operation(summary = "Tạo hóa đơn theo tòa nhà")
     @PostMapping("/by-building")
     public ApiResponse<List<InvoiceResponse>> createInvoicesForBuilding(
-            @Valid @RequestBody InvoiceBuildingCreationRequest request
-    ) {
+            @Valid @RequestBody InvoiceBuildingCreationRequest request) {
         List<InvoiceResponse> responses = invoiceService.createInvoicesForBuilding(request);
 
         return ApiResponse.<List<InvoiceResponse>>builder()
@@ -104,8 +103,7 @@ public class InvoiceController {
     @Operation(summary = "Tạo hóa đơn theo tầng")
     @PostMapping("/by-floor")
     public ApiResponse<List<InvoiceResponse>> createInvoicesForFloor(
-            @Valid @RequestBody InvoiceFloorCreationRequest request
-    ) {
+            @Valid @RequestBody InvoiceFloorCreationRequest request) {
         List<InvoiceResponse> responses = invoiceService.createInvoicesForFloor(request);
 
         return ApiResponse.<List<InvoiceResponse>>builder()
@@ -116,9 +114,7 @@ public class InvoiceController {
 
     @Operation(summary = "Tạo hóa đơn cuối cùng")
     @PostMapping("/finalize")
-    public ApiResponse<InvoiceResponse> createFinalInvoice(
-            @Valid @RequestBody InvoiceCreationRequest request
-    ) {
+    public ApiResponse<InvoiceResponse> createFinalInvoice(@Valid @RequestBody InvoiceCreationRequest request) {
         InvoiceResponse response = invoiceService.createEndOfMonthInvoice(request);
 
         return ApiResponse.<InvoiceResponse>builder()
@@ -130,9 +126,7 @@ public class InvoiceController {
     @Operation(summary = "Cập nhật hóa đơn")
     @PutMapping("/{invoiceId}")
     public ApiResponse<InvoiceResponse> updateInvoice(
-            @Valid @RequestBody InvoiceUpdateRequest request,
-            @PathVariable("invoiceId") String invoiceId
-    ) {
+            @Valid @RequestBody InvoiceUpdateRequest request, @PathVariable("invoiceId") String invoiceId) {
         InvoiceResponse response = invoiceService.updateInvoice(invoiceId, request);
 
         return ApiResponse.<InvoiceResponse>builder()

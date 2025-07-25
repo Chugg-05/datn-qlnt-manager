@@ -1,12 +1,14 @@
 package com.example.datn_qlnt_manager.dto.request.meter;
 
-import com.example.datn_qlnt_manager.common.MeterType;
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import com.example.datn_qlnt_manager.common.MeterType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter

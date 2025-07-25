@@ -1,5 +1,14 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.common.ServiceRoomStatus;
@@ -22,17 +31,10 @@ import com.example.datn_qlnt_manager.repository.ServiceRepository;
 import com.example.datn_qlnt_manager.repository.ServiceRoomRepository;
 import com.example.datn_qlnt_manager.service.ServiceRoomService;
 import com.example.datn_qlnt_manager.service.UserService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
@@ -48,12 +50,13 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
 
     @Override
     public ServiceRoomResponse createServiceRoom(ServiceRoomCreationRequest request) {
-        Room room =
-                roomRepository.findById(request.getRoomId()).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        Room room = roomRepository
+                .findById(request.getRoomId())
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
-        Service service = serviceRepository.findById(request.getServiceId())
+        Service service = serviceRepository
+                .findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
-
 
         if (serviceRoomRepository.existsByRoomIdAndServiceId(room.getId(), service.getId())) {
             throw new AppException(ErrorCode.ROOM_EXISTED_SERVICE);
@@ -69,8 +72,9 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
 
     @Override
     public ServiceRoomResponse updateServiceRoom(String serviceRoomId, ServiceRoomUpdateRequest request) {
-        ServiceRoom serviceRoom =
-                serviceRoomRepository.findById(serviceRoomId).orElseThrow(() -> new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
+        ServiceRoom serviceRoom = serviceRoomRepository
+                .findById(serviceRoomId)
+                .orElseThrow(() -> new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
 
         serviceRoomMapper.updateServiceRoom(request, serviceRoom);
         serviceRoom.setUpdatedAt(Instant.now());
@@ -79,8 +83,8 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
 
     @Override
     public void softDeleteServiceRoom(String serviceRoomId) {
-        ServiceRoom serviceRoom = serviceRoomRepository.findByIdAndServiceRoomStatusNot(serviceRoomId,
-                        ServiceRoomStatus.DA_HUY)
+        ServiceRoom serviceRoom = serviceRoomRepository
+                .findByIdAndServiceRoomStatusNot(serviceRoomId, ServiceRoomStatus.DA_HUY)
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
 
         serviceRoom.setServiceRoomStatus(ServiceRoomStatus.DA_HUY);
@@ -91,7 +95,6 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     public void deleteServiceRoom(String serviceRoomId) {
         if (!serviceRoomRepository.existsById(serviceRoomId)) {
             throw new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND);
-
         }
         serviceRoomRepository.deleteById(serviceRoomId);
     }
@@ -107,8 +110,7 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
                 filter.getMinPrice(),
                 filter.getMaxPrice(),
                 filter.getStatus(),
-                pageable
-        );
+                pageable);
 
         List<ServiceRoomResponse> responses = serviceRoomPage.getContent().stream()
                 .map(serviceRoomMapper::toResponse)
@@ -157,9 +159,10 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     @Override
     public CreateRoomServiceInitResponse getServiceRoomInfoByUserId() {
         return CreateRoomServiceInitResponse.builder()
-                .rooms(roomRepository.getServiceRoomInfoByUserId(userService.getCurrentUser().getId()))
-                .services(serviceRepository.findAllByUserId(userService.getCurrentUser().getId()))
+                .rooms(roomRepository.getServiceRoomInfoByUserId(
+                        userService.getCurrentUser().getId()))
+                .services(serviceRepository.findAllByUserId(
+                        userService.getCurrentUser().getId()))
                 .build();
     }
-
 }

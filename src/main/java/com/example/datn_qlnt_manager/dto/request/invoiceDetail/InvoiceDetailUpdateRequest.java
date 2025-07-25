@@ -1,10 +1,11 @@
 package com.example.datn_qlnt_manager.dto.request.invoiceDetail;
 
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.Min;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvoiceDetailUpdateRequest {
-    @Min(value = 1 , message = "INVALID_NEW_INDEX_MIN")
+    @Min(value = 1, message = "INVALID_NEW_INDEX_MIN")
     Integer newIndex;
 
     @Min(value = 1, message = "INVALID_QUANTITY_MIN")

@@ -1,5 +1,11 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ServiceFilter;
@@ -8,15 +14,12 @@ import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceResponse;
 import com.example.datn_qlnt_manager.service.ServiceService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/services")
@@ -33,7 +36,8 @@ public class ServiceController {
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "15") Integer size) {
 
-        PaginatedResponse<ServiceResponse> result = serviceService.getPageAndSearchAndFilterService(serviceFilter, page, size);
+        PaginatedResponse<ServiceResponse> result =
+                serviceService.getPageAndSearchAndFilterService(serviceFilter, page, size);
 
         return ApiResponse.<List<ServiceResponse>>builder()
                 .message("Lấy danh sách dịch vụ thành công")
@@ -41,7 +45,6 @@ public class ServiceController {
                 .meta(result.getMeta())
                 .build();
     }
-
 
     @PostMapping
     public ApiResponse<ServiceResponse> createService(@RequestBody @Valid ServiceCreationRequest request) {
@@ -89,8 +92,7 @@ public class ServiceController {
     }
 
     @PutMapping("/toggle-status/{id}")
-    public ApiResponse<ServiceResponse> toggleServiceStatus(
-            @PathVariable("id") String serviceId) {
+    public ApiResponse<ServiceResponse> toggleServiceStatus(@PathVariable("id") String serviceId) {
 
         ServiceResponse response = serviceService.toggleServiceStatus(serviceId);
 
@@ -100,6 +102,4 @@ public class ServiceController {
                 .code(200)
                 .build();
     }
-
-
 }

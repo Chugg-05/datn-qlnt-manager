@@ -2,10 +2,6 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.IdAndName;
-import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
-import com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse;
-import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +11,12 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.BuildingFilter;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
-import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
+import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 import com.example.datn_qlnt_manager.service.BuildingService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,10 +41,8 @@ public class BuildingController {
             @ModelAttribute BuildingFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
-        PaginatedResponse<BuildingResponse> result = buildingService.getPageAndSearchAndFilterBuildingByUserId(
-                filter,
-                page,
-                size);
+        PaginatedResponse<BuildingResponse> result =
+                buildingService.getPageAndSearchAndFilterBuildingByUserId(filter, page, size);
 
         return ApiResponse.<List<BuildingResponse>>builder()
                 .message("Get building successfully")
@@ -59,10 +57,8 @@ public class BuildingController {
             @ModelAttribute BuildingFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
-        PaginatedResponse<BuildingResponse> result = buildingService.getBuildingWithStatusCancelByUserId(
-                filter,
-                page,
-                size);
+        PaginatedResponse<BuildingResponse> result =
+                buildingService.getBuildingWithStatusCancelByUserId(filter, page, size);
 
         return ApiResponse.<List<BuildingResponse>>builder()
                 .message("Get cancelled buildings successfully")
@@ -101,8 +97,7 @@ public class BuildingController {
     @Operation(summary = "Cập nhật tòa nhà")
     @PutMapping("/{buildingId}")
     public ApiResponse<BuildingResponse> updateBuilding(
-            @Valid @RequestBody BuildingUpdateRequest request,
-            @PathVariable("buildingId") String buildingId) {
+            @Valid @RequestBody BuildingUpdateRequest request, @PathVariable("buildingId") String buildingId) {
         return ApiResponse.<BuildingResponse>builder()
                 .message("Building updated!")
                 .data(buildingService.updateBuilding(buildingId, request))

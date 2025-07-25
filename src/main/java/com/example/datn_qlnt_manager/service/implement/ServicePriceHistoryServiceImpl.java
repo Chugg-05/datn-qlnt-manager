@@ -1,5 +1,16 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
+import jakarta.transaction.Transactional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -10,18 +21,10 @@ import com.example.datn_qlnt_manager.mapper.ServicePriceHistoryMapper;
 import com.example.datn_qlnt_manager.repository.ServicePriceHistoryRepository;
 import com.example.datn_qlnt_manager.service.ServicePriceHistoryService;
 import com.example.datn_qlnt_manager.service.UserService;
-import jakarta.transaction.Transactional;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 
 @Service
 @Transactional
@@ -29,9 +32,9 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ServicePriceHistoryServiceImpl implements ServicePriceHistoryService {
 
-     ServicePriceHistoryRepository servicePriceHistoryRepository;
-     ServicePriceHistoryMapper servicePriceHistoryMapper;
-     UserService userService;
+    ServicePriceHistoryRepository servicePriceHistoryRepository;
+    ServicePriceHistoryMapper servicePriceHistoryMapper;
+    UserService userService;
 
     @Override
     public PaginatedResponse<ServicePriceHistoryResponse> getServicePriceHistories(
@@ -40,7 +43,8 @@ public class ServicePriceHistoryServiceImpl implements ServicePriceHistoryServic
         String userId = userService.getCurrentUser().getId();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
-        LocalDateTime start = filter.getStartDate() != null ? filter.getStartDate().atStartOfDay() : null;
+        LocalDateTime start =
+                filter.getStartDate() != null ? filter.getStartDate().atStartOfDay() : null;
         LocalDateTime end = filter.getEndDate() != null ? filter.getEndDate().atTime(LocalTime.MAX) : null;
 
         Page<ServicePriceHistory> result = servicePriceHistoryRepository.filterByUser(
@@ -52,8 +56,7 @@ public class ServicePriceHistoryServiceImpl implements ServicePriceHistoryServic
                 filter.getMaxNewPrice(),
                 start,
                 end,
-                pageable
-        );
+                pageable);
 
         List<ServicePriceHistoryResponse> responseList = result.getContent().stream()
                 .map(servicePriceHistoryMapper::toResponse)

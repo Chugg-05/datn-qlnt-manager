@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.service;
 
+import java.util.List;
+
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.BuildingFilter;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
@@ -11,16 +13,9 @@ import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
 import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 
-import java.util.List;
-
-
 public interface BuildingService {
 
-    PaginatedResponse<BuildingResponse> getBuildingWithStatusCancelByUserId(
-            BuildingFilter filter,
-            int page,
-            int size
-    );
+    PaginatedResponse<BuildingResponse> getBuildingWithStatusCancelByUserId(BuildingFilter filter, int page, int size);
 
     List<BuildingBasicResponse> getBuildingBasicForCurrentUser();
 
@@ -30,7 +25,8 @@ public interface BuildingService {
 
     void softDeleteBuildingById(String buildingId);
 
-    PaginatedResponse<BuildingResponse> getPageAndSearchAndFilterBuildingByUserId(BuildingFilter filter, int page, int size);
+    PaginatedResponse<BuildingResponse> getPageAndSearchAndFilterBuildingByUserId(
+            BuildingFilter filter, int page, int size);
 
     void deleteBuildingById(String buildingId);
 
@@ -38,7 +34,7 @@ public interface BuildingService {
 
     void toggleStatus(String id);
 
-    List<BuildingSelectResponse>  getBuildingsInfoByUserId();
+    List<BuildingSelectResponse> getBuildingsInfoByUserId();
 
     List<BuildingOccupancyResponse> calculateOccupancyByUser();
 

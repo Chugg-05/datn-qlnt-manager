@@ -1,14 +1,15 @@
 package com.example.datn_qlnt_manager.dto.response.meter;
 
+import java.time.Instant;
+import java.time.LocalDate;
+
 import com.example.datn_qlnt_manager.common.MeterType;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
-import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor

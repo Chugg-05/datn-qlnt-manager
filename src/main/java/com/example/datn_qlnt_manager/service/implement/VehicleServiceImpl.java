@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.example.datn_qlnt_manager.common.VehicleType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.common.VehicleStatus;
+import com.example.datn_qlnt_manager.common.VehicleType;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.VehicleFilter;
 import com.example.datn_qlnt_manager.dto.request.vehicle.VehicleCreationRequest;
@@ -46,46 +46,29 @@ public class VehicleServiceImpl implements VehicleService {
     TenantRepository tenantRepository;
     UserService userService;
 
-
     @Override
     public PaginatedResponse<VehicleResponse> getPageAndSearchAndFilterVehicleByUserId(
-            VehicleFilter filter,
-            int page,
-            int size
-    ) {
+            VehicleFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
 
         Page<Vehicle> paging = vehicleRepository.getPageAndSearchAndFilterVehicleByUserId(
-                user.getId(),
-                filter.getVehicleType(),
-                filter.getLicensePlate(),
-                pageable
-        );
+                user.getId(), filter.getVehicleType(), filter.getLicensePlate(), pageable);
 
         return buildPaginatedVehicleResponse(paging, page, size);
     }
 
     @Override
     public PaginatedResponse<VehicleResponse> getVehicleWithStatusCancelByUserId(
-            VehicleFilter filter,
-            int page,
-            int size
-    ) {
+            VehicleFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
 
         Page<Vehicle> paging = vehicleRepository.getVehicleWithStatusCancelByUserId(
-                user.getId(),
-                filter.getVehicleType(),
-                filter.getLicensePlate(),
-                pageable
-        );
+                user.getId(), filter.getVehicleType(), filter.getLicensePlate(), pageable);
 
         return buildPaginatedVehicleResponse(paging, page, size);
     }
-
-
 
     @Override
     public VehicleResponse createVehicle(VehicleCreationRequest request) {
@@ -93,10 +76,11 @@ public class VehicleServiceImpl implements VehicleService {
             throw new AppException(ErrorCode.LICENSE_PLATE_EXISTED);
         }
 
-        if ((request.getLicensePlate() == null || request.getLicensePlate().isBlank()) && request.getVehicleType() == VehicleType.XE_DAP) {
+        if ((request.getLicensePlate() == null || request.getLicensePlate().isBlank())
+                && request.getVehicleType() == VehicleType.XE_DAP) {
             request.setLicensePlate(null);
         } else {
-            if (!isValidCivilianLicensePlate(request.getLicensePlate())){
+            if (!isValidCivilianLicensePlate(request.getLicensePlate())) {
                 throw new AppException(ErrorCode.INVALID_LICENSE_PLATE);
             }
         }
@@ -142,8 +126,8 @@ public class VehicleServiceImpl implements VehicleService {
             "XE_MAY", "motorbike",
             "OTO", "car",
             "XE_DAP", "bicycle",
-            "KHAC", "other"
-    );
+            "KHAC", "other");
+
     @Override
     public VehicleStatistics getVehicleStatistics() {
         var user = userService.getCurrentUser();
@@ -186,8 +170,7 @@ public class VehicleServiceImpl implements VehicleService {
         vehicleRepository.save(vehicle);
     }
 
-    private PaginatedResponse<VehicleResponse> buildPaginatedVehicleResponse(
-            Page<Vehicle> paging, int page, int size) {
+    private PaginatedResponse<VehicleResponse> buildPaginatedVehicleResponse(Page<Vehicle> paging, int page, int size) {
 
         List<VehicleResponse> vehicles = paging.getContent().stream()
                 .map(vehicleMapper::toVehicleResponse)
@@ -209,13 +192,13 @@ public class VehicleServiceImpl implements VehicleService {
                 .build();
     }
 
-    //check biển số xe
-    private static final String LICENSE_PLATE_REGEX =
-            "^(0[1-9]|[1-9][0-9])[A-Z]{1,2}[0-9]?-?[0-9]{4,6}$";
+    // check biển số xe
+    private static final String LICENSE_PLATE_REGEX = "^(0[1-9]|[1-9][0-9])[A-Z]{1,2}[0-9]?-?[0-9]{4,6}$";
 
     private static final String[] INVALID_PREFIXES = {
-            "NG", "QT", "CD", "LD", "HC", "DA", "R", "TĐ", "MK", "MD", "MĐ", "XN", "TD"
+        "NG", "QT", "CD", "LD", "HC", "DA", "R", "TĐ", "MK", "MD", "MĐ", "XN", "TD"
     };
+
     public boolean isValidCivilianLicensePlate(String plate) {
         if (plate == null || plate.isBlank()) {
             throw new AppException(ErrorCode.INVALID_LICENSE_PLATE_BLANK);
@@ -224,7 +207,7 @@ public class VehicleServiceImpl implements VehicleService {
         String normalized = plate.trim().toUpperCase();
 
         for (String prefix : INVALID_PREFIXES) {
-            if (normalized.startsWith(prefix)){
+            if (normalized.startsWith(prefix)) {
                 return false;
             }
         }

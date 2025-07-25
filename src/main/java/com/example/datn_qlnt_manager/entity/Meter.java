@@ -1,11 +1,13 @@
 package com.example.datn_qlnt_manager.entity;
 
-import com.example.datn_qlnt_manager.common.MeterType;
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
+
+import com.example.datn_qlnt_manager.common.MeterType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Entity
 @Setter
@@ -15,8 +17,7 @@ import java.time.LocalDate;
 @Builder
 @Table(
         name = "cong_to",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"ma_cong_to","phong_id"})}
-)
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"ma_cong_to", "phong_id"})})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Meter extends AbstractEntity {
 
@@ -46,5 +47,4 @@ public class Meter extends AbstractEntity {
 
     @Column(name = "mo_ta")
     String descriptionMeter;
-
 }

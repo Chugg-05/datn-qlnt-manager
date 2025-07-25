@@ -3,20 +3,20 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.util.List;
 import java.util.Map;
 
-import com.example.datn_qlnt_manager.dto.request.Recipient;
-import com.example.datn_qlnt_manager.entity.User;
-import com.example.datn_qlnt_manager.utils.EmailTemplateUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.example.datn_qlnt_manager.dto.request.EmailRequest;
+import com.example.datn_qlnt_manager.dto.request.Recipient;
 import com.example.datn_qlnt_manager.dto.request.SendEmailRequest;
 import com.example.datn_qlnt_manager.dto.request.Sender;
 import com.example.datn_qlnt_manager.dto.response.EmailResponse;
+import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.repository.client.EmailClient;
 import com.example.datn_qlnt_manager.service.EmailService;
+import com.example.datn_qlnt_manager.utils.EmailTemplateUtil;
 
 import feign.FeignException;
 import lombok.AccessLevel;
@@ -79,11 +79,12 @@ public class EmailServiceImpl implements EmailService {
     public void sendAccountInfoToTenant(String recipientEmail, String recipientName, String rawPassword) {
         String subject = "Thông tin tài khoản khách thuê";
 
-        String content = EmailTemplateUtil.loadTemplate("tenant-account-info", Map.of(
-                "name", recipientName,
-                "email", recipientEmail,
-                "password", rawPassword
-        ));
+        String content = EmailTemplateUtil.loadTemplate(
+                "tenant-account-info",
+                Map.of(
+                        "name", recipientName,
+                        "email", recipientEmail,
+                        "password", rawPassword));
 
         try {
             sendEmail(SendEmailRequest.builder()
@@ -105,10 +106,8 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendOtpEmail(User user, String otp) {
         String subject = "Mã xác nhận đặt lại mật khẩu";
-        String content = EmailTemplateUtil.loadTemplate("otp-forgot-password", Map.of(
-                "name", user.getFullName(),
-                "otp", otp
-        ));
+        String content =
+                EmailTemplateUtil.loadTemplate("otp-forgot-password", Map.of("name", user.getFullName(), "otp", otp));
 
         try {
             sendEmail(SendEmailRequest.builder()
@@ -124,5 +123,4 @@ public class EmailServiceImpl implements EmailService {
             throw new AppException(ErrorCode.EMAIL_SENDING_FAILED);
         }
     }
-
 }

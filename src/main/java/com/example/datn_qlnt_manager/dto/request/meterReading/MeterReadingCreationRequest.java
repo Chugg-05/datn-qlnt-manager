@@ -4,10 +4,9 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -24,12 +23,11 @@ public class MeterReadingCreationRequest {
     Integer newIndex;
 
     @Min(value = 1, message = "MONTH_GREATER")
-    @Max(value = 12,message = "MONTH_LESS")
+    @Max(value = 12, message = "MONTH_LESS")
     Integer month;
 
-    @Min(value = 1,message = "YEAR_GREATER")
+    @Min(value = 1, message = "YEAR_GREATER")
     Integer year;
 
     String descriptionMeterReading;
-
 }

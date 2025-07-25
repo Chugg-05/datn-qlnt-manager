@@ -1,14 +1,16 @@
 package com.example.datn_qlnt_manager.entity;
 
-import com.example.datn_qlnt_manager.common.ContractStatus;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
+
+import jakarta.persistence.*;
+
+import com.example.datn_qlnt_manager.common.ContractStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -58,31 +60,27 @@ public class Contract extends AbstractEntity {
     @JoinTable(
             name = "hop_dong_khach_thue",
             joinColumns = @JoinColumn(name = "hop_dong_id"),
-            inverseJoinColumns = @JoinColumn(name = "khach_thue_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "khach_thue_id"))
     Set<Tenant> tenants;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "hop_dong_tai_san",
             joinColumns = @JoinColumn(name = "hop_dong_id"),
-            inverseJoinColumns = @JoinColumn(name = "tai_san_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "tai_san_id"))
     Set<Asset> assets;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "hop_dong_dich_vu",
             joinColumns = @JoinColumn(name = "hop_dong_id"),
-            inverseJoinColumns = @JoinColumn(name = "dich_vu_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "dich_vu_id"))
     Set<Service> services;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "hop_dong_phuong_tien",
             joinColumns = @JoinColumn(name = "hop_dong_id"),
-            inverseJoinColumns = @JoinColumn(name = "phuong_tien_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "phuong_tien_id"))
     Set<Vehicle> vehicles;
 }

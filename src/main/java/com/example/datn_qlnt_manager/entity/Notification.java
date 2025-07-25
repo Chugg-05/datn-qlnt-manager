@@ -1,11 +1,13 @@
 package com.example.datn_qlnt_manager.entity;
 
-import com.example.datn_qlnt_manager.common.NotificationType;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
+
+import com.example.datn_qlnt_manager.common.NotificationType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter

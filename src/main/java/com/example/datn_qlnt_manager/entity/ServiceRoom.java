@@ -1,14 +1,15 @@
 package com.example.datn_qlnt_manager.entity;
 
-import com.example.datn_qlnt_manager.common.ServiceRoomStatus;
-import jakarta.persistence.*;
-
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.*;
+
+import com.example.datn_qlnt_manager.common.ServiceRoomStatus;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,10 +17,10 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "dich_vu_phong", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"phong_id", "dich_vu_id"})
-})
-public class ServiceRoom extends AbstractEntity{
+@Table(
+        name = "dich_vu_phong",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"phong_id", "dich_vu_id"})})
+public class ServiceRoom extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "phong_id", nullable = false)
     private Room room;
@@ -29,7 +30,7 @@ public class ServiceRoom extends AbstractEntity{
     Service service;
 
     @Column(name = "ma_su_dung", nullable = false)
-     String usageCode;
+    String usageCode;
 
     // thời điểm gán dịch vụ vào phòng
     @Column(name = "thoi_gian_ap_dung", nullable = false)
@@ -37,7 +38,7 @@ public class ServiceRoom extends AbstractEntity{
 
     // ngày bắt đầu tính phí dịch vụ
     @Column(name = "ngay_bat_dau", nullable = false)
-     LocalDate startDate;
+    LocalDate startDate;
 
     @Column(name = "tong_tien", nullable = false)
     BigDecimal totalPrice;
@@ -47,5 +48,5 @@ public class ServiceRoom extends AbstractEntity{
     ServiceRoomStatus serviceRoomStatus;
 
     @Column(name = "mo_ta")
-     String descriptionServiceRoom;
+    String descriptionServiceRoom;
 }

@@ -1,5 +1,10 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -8,15 +13,12 @@ import com.example.datn_qlnt_manager.dto.request.meterReading.MeterReadingCreati
 import com.example.datn_qlnt_manager.dto.request.meterReading.MeterReadingUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.meterReading.MeterReadingResponse;
 import com.example.datn_qlnt_manager.service.MeterReadingService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/meter-readings")
@@ -32,10 +34,9 @@ public class MeterReadingController {
     public ApiResponse<List<MeterReadingResponse>> filterMeterReadings(
             @ModelAttribute MeterReadingFilter meterReadingFilter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
-        PaginatedResponse<MeterReadingResponse> result = meterReadingService
-                .getPageAndSearchAndFilterMeterReadingByUserId(meterReadingFilter, page, size);
+            @RequestParam(defaultValue = "15") int size) {
+        PaginatedResponse<MeterReadingResponse> result =
+                meterReadingService.getPageAndSearchAndFilterMeterReadingByUserId(meterReadingFilter, page, size);
 
         return ApiResponse.<List<MeterReadingResponse>>builder()
                 .data(result.getData())
@@ -80,6 +81,4 @@ public class MeterReadingController {
                 .message("Get meter reading success")
                 .build();
     }
-
-
 }

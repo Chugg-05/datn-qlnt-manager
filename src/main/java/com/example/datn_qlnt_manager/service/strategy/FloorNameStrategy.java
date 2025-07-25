@@ -1,13 +1,15 @@
 package com.example.datn_qlnt_manager.service.strategy;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.repository.FloorRepository;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

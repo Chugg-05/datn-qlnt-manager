@@ -1,12 +1,15 @@
 package com.example.datn_qlnt_manager.entity;
 
-import com.example.datn_qlnt_manager.common.InvoiceItemType;
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.math.BigDecimal;
+import com.example.datn_qlnt_manager.common.InvoiceItemType;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -17,7 +20,7 @@ import java.math.BigDecimal;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "chi_tiet_hoa_don")
-public class InvoiceDetail extends AbstractEntity{
+public class InvoiceDetail extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hoa_don_id", nullable = false)
     Invoice invoice;

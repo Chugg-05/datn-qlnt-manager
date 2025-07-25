@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
-import com.example.datn_qlnt_manager.dto.request.tenant.TenantCreationRequest;
-import com.example.datn_qlnt_manager.dto.statistics.UserStatistics;
-import com.example.datn_qlnt_manager.service.EmailService;
-import com.example.datn_qlnt_manager.utils.PasswordUtil;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -28,8 +24,10 @@ import com.example.datn_qlnt_manager.dto.filter.UserFilter;
 import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateForAdminRequest;
 import com.example.datn_qlnt_manager.dto.request.UserUpdateRequest;
+import com.example.datn_qlnt_manager.dto.request.tenant.TenantCreationRequest;
 import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.UserResponse;
+import com.example.datn_qlnt_manager.dto.statistics.UserStatistics;
 import com.example.datn_qlnt_manager.entity.Role;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
@@ -37,7 +35,9 @@ import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.UserMapper;
 import com.example.datn_qlnt_manager.repository.RoleRepository;
 import com.example.datn_qlnt_manager.repository.UserRepository;
+import com.example.datn_qlnt_manager.service.EmailService;
 import com.example.datn_qlnt_manager.service.UserService;
+import com.example.datn_qlnt_manager.utils.PasswordUtil;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -263,8 +263,8 @@ public class UserServiceImpl implements UserService {
         String rawPassword = PasswordUtil.generateRandomPassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
-        Role tenantRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        Role tenantRole =
+                roleRepository.findByName("USER").orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
         User user = User.builder()
                 .fullName(request.getFullName())
@@ -282,15 +282,10 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
 
-        emailService.sendAccountInfoToTenant(
-                request.getEmail(),
-                request.getFullName(),
-                rawPassword
-        );
+        emailService.sendAccountInfoToTenant(request.getEmail(), request.getFullName(), rawPassword);
 
         return savedUser;
     }
-
 
     @Override
     public User findUserWithRolesAndPermissionsById(String id) {
