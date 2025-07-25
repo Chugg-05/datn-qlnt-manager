@@ -25,7 +25,7 @@ public class MeterResponse {
     String meterName;
     String meterCode;
     LocalDate manufactureDate;
-    Integer initialIndex;
+    Integer closestIndex;
     String descriptionMeter;
     Instant createdAt;
     Instant updatedAt;
