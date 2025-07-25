@@ -1,17 +1,18 @@
 package com.example.datn_qlnt_manager.mapper;
 
+import org.mapstruct.*;
+
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
 import com.example.datn_qlnt_manager.entity.Room;
 import com.example.datn_qlnt_manager.entity.Service;
 import com.example.datn_qlnt_manager.entity.ServiceRoom;
-import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface ServiceRoomMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "serviceRoomStatus",constant = "DANG_SU_DUNG")
+    @Mapping(target = "serviceRoomStatus", constant = "DANG_SU_DUNG")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "room", source = "room")
@@ -25,5 +26,5 @@ public interface ServiceRoomMapper {
     ServiceRoomResponse toResponse(ServiceRoom serviceRoom);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateServiceRoom(ServiceRoomUpdateRequest request, @MappingTarget ServiceRoom serviceRoom );
+    void updateServiceRoom(ServiceRoomUpdateRequest request, @MappingTarget ServiceRoom serviceRoom);
 }

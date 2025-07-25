@@ -1,14 +1,15 @@
 package com.example.datn_qlnt_manager.entity;
 
+import java.math.BigDecimal;
+
+import jakarta.persistence.*;
 
 import com.example.datn_qlnt_manager.common.ServiceCalculation;
-import com.example.datn_qlnt_manager.common.ServiceStatus;
 import com.example.datn_qlnt_manager.common.ServiceCategory;
-import jakarta.persistence.*;
+import com.example.datn_qlnt_manager.common.ServiceStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
 
 @Entity
 @Setter
@@ -47,5 +48,4 @@ public class Service extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     User user;
-
 }

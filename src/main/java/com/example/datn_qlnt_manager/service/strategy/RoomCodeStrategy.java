@@ -1,18 +1,20 @@
 package com.example.datn_qlnt_manager.service.strategy;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Floor;
 import com.example.datn_qlnt_manager.repository.RoomRepository;
 import com.example.datn_qlnt_manager.service.RedisService;
 import com.example.datn_qlnt_manager.utils.CodeGeneratorUtil;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +31,7 @@ public class RoomCodeStrategy {
             throw new IllegalArgumentException("Tên tầng không hợp lệ: " + floor.getNameFloor());
         }
 
-        List<String> roomCodes = roomRepository
-                .findRoomCodesByBuildingAndFloor(building.getId(), floor.getId());
+        List<String> roomCodes = roomRepository.findRoomCodesByBuildingAndFloor(building.getId(), floor.getId());
 
         Set<Integer> usedNumbers = roomCodes.stream()
                 .map(code -> Integer.parseInt(code.replace(prefix, "")))
@@ -49,5 +50,4 @@ public class RoomCodeStrategy {
 
         return prefix + roomNumber;
     }
-
 }

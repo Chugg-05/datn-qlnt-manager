@@ -1,5 +1,9 @@
 package com.example.datn_qlnt_manager.service;
 
+import java.util.List;
+
+import jakarta.transaction.Transactional;
+
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ContractFilter;
 import com.example.datn_qlnt_manager.dto.request.contract.ContractCreationRequest;
@@ -7,12 +11,10 @@ import com.example.datn_qlnt_manager.dto.request.contract.ContractUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.contract.ContractDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
 import com.example.datn_qlnt_manager.dto.statistics.ContractStatistics;
-import jakarta.transaction.Transactional;
-
-import java.util.List;
 
 public interface ContractService {
-    PaginatedResponse<ContractResponse> getPageAndSearchAndFilterTenantByUserId(ContractFilter filter, int page, int size);
+    PaginatedResponse<ContractResponse> getPageAndSearchAndFilterTenantByUserId(
+            ContractFilter filter, int page, int size);
 
     PaginatedResponse<ContractResponse> getContractWithStatusCancelByUserId(ContractFilter filter, int page, int size);
 

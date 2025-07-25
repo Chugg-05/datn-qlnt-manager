@@ -1,12 +1,13 @@
 package com.example.datn_qlnt_manager.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
 import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackResponse;
 import com.example.datn_qlnt_manager.entity.Feedback;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface FeedbackMapper {

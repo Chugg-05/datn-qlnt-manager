@@ -1,13 +1,13 @@
 package com.example.datn_qlnt_manager.dto.response.room;
 
+import java.time.Instant;
+
 import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.common.RoomType;
-
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
 
 @Data
 @AllArgsConstructor

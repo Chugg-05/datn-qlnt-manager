@@ -3,11 +3,6 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.IdAndName;
-import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
-import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
-import com.example.datn_qlnt_manager.entity.User;
-import com.example.datn_qlnt_manager.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,15 +15,20 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
+import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Floor;
+import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.FloorMapper;
 import com.example.datn_qlnt_manager.repository.BuildingRepository;
 import com.example.datn_qlnt_manager.repository.FloorRepository;
 import com.example.datn_qlnt_manager.service.FloorService;
+import com.example.datn_qlnt_manager.service.UserService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -71,10 +71,7 @@ public class FloorServiceImpl implements FloorService {
 
     @Override
     public PaginatedResponse<FloorResponse> getPageAndSearchAndFilterFloorByUserId(
-            FloorFilter filter,
-            int page,
-            int size
-    ) {
+            FloorFilter filter, int page, int size) {
         User user = userService.getCurrentUser();
 
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
@@ -92,11 +89,7 @@ public class FloorServiceImpl implements FloorService {
     }
 
     @Override
-    public PaginatedResponse<FloorResponse> getTenantWithStatusCancelByUserId(
-            FloorFilter filter,
-            int page,
-            int size
-    ) {
+    public PaginatedResponse<FloorResponse> getTenantWithStatusCancelByUserId(FloorFilter filter, int page, int size) {
         User user = userService.getCurrentUser();
 
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
@@ -151,10 +144,11 @@ public class FloorServiceImpl implements FloorService {
         return floorRepository.countFloorsByBuildingId(buildingId);
     }
 
-@Override
-public List<FloorBasicResponse> getFloorBasicByBuildingId(String buildingId) {
-    return floorRepository.findAllFloorBasicByBuildingId(buildingId);
-}
+    @Override
+    public List<FloorBasicResponse> getFloorBasicByBuildingId(String buildingId) {
+        return floorRepository.findAllFloorBasicByBuildingId(buildingId);
+    }
+
     @Override
     public void toggleStatus(String id) {
         Floor floor = floorRepository
@@ -178,8 +172,7 @@ public List<FloorBasicResponse> getFloorBasicByBuildingId(String buildingId) {
         return floorRepository.getFloorsByUserId(userService.getCurrentUser().getId());
     }
 
-    private PaginatedResponse<FloorResponse> buildPaginatedFloorResponse(
-            Page<Floor> paging, int page, int size) {
+    private PaginatedResponse<FloorResponse> buildPaginatedFloorResponse(Page<Floor> paging, int page, int size) {
 
         List<FloorResponse> floors =
                 paging.getContent().stream().map(floorMapper::toResponse).toList();

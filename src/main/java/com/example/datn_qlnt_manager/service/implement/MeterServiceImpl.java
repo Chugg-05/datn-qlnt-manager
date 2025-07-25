@@ -1,5 +1,17 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
+
+import jakarta.transaction.Transactional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.common.RoomStatus;
@@ -24,20 +36,10 @@ import com.example.datn_qlnt_manager.mapper.MeterMapper;
 import com.example.datn_qlnt_manager.repository.*;
 import com.example.datn_qlnt_manager.service.MeterService;
 import com.example.datn_qlnt_manager.service.UserService;
-import jakarta.transaction.Transactional;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
-
 
 @Service
 @Transactional
@@ -53,8 +55,8 @@ public class MeterServiceImpl implements MeterService {
     UserService userService;
 
     @Override
-    public PaginatedResponse<MeterResponse> getPageAndSearchAndFilterMeterByUserId(MeterFilter meterFilter, int page,
-                                                                                   int size) {
+    public PaginatedResponse<MeterResponse> getPageAndSearchAndFilterMeterByUserId(
+            MeterFilter meterFilter, int page, int size) {
         String currentUserId = userService.getCurrentUser().getId();
 
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
@@ -65,8 +67,7 @@ public class MeterServiceImpl implements MeterService {
                 meterFilter.getRoomId(),
                 meterFilter.getMeterType(),
                 meterFilter.getQuery(),
-                pageable
-        );
+                pageable);
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
@@ -86,17 +87,18 @@ public class MeterServiceImpl implements MeterService {
                 .build();
     }
 
-
     @Override
     public MeterResponse createMeter(MeterCreationRequest request) {
         if (meterRepository.existsByMeterCode(request.getMeterCode())) {
             throw new AppException(ErrorCode.METER_CODE_EXISTED);
         }
 
-        Room room = roomRepository.findById(request.getRoomId())
+        Room room = roomRepository
+                .findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
-        com.example.datn_qlnt_manager.entity.Service service = serviceRepository.findById(request.getServiceId())
+        com.example.datn_qlnt_manager.entity.Service service = serviceRepository
+                .findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
         Meter meter = meterMapper.toMeterCreation(request);
@@ -110,8 +112,7 @@ public class MeterServiceImpl implements MeterService {
 
     @Override
     public MeterResponse updateMeter(String meterId, MeterUpdateRequest request) {
-        Meter meter = meterRepository.findById(meterId)
-                .orElseThrow(() -> new AppException(ErrorCode.METER_NOT_FOUND));
+        Meter meter = meterRepository.findById(meterId).orElseThrow(() -> new AppException(ErrorCode.METER_NOT_FOUND));
 
         // check trùng mã
         if (!meter.getMeterCode().equalsIgnoreCase(request.getMeterCode())) {
@@ -121,10 +122,12 @@ public class MeterServiceImpl implements MeterService {
             }
             meter.setMeterCode(request.getMeterCode());
         }
-        Room room = roomRepository.findById(request.getRoomId())
+        Room room = roomRepository
+                .findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
-        com.example.datn_qlnt_manager.entity.Service service = serviceRepository.findById(request.getServiceId())
+        com.example.datn_qlnt_manager.entity.Service service = serviceRepository
+                .findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
         meterMapper.toMeterUpdate(meter, request);
@@ -145,21 +148,25 @@ public class MeterServiceImpl implements MeterService {
 
     @Override
     public List<MeterReadingMonthlyStatsResponse> getMonthlyStats(String roomId) {
-        return meterReadingRepository.getMonthlyStats(roomId, userService.getCurrentUser().getId());
+        return meterReadingRepository.getMonthlyStats(
+                roomId, userService.getCurrentUser().getId());
     }
 
     @Override
     public CreateMeterInitResponse getMeterInfoByUserId() {
         return CreateMeterInitResponse.builder()
-                .rooms(roomRepository.getServiceRoomInfoByUserId(userService.getCurrentUser().getId()))
-                .services(serviceRepository.getServiceInfoByUserId(userService.getCurrentUser().getId()))
+                .rooms(roomRepository.getServiceRoomInfoByUserId(
+                        userService.getCurrentUser().getId()))
+                .services(serviceRepository.getServiceInfoByUserId(
+                        userService.getCurrentUser().getId()))
                 .build();
     }
 
     @Override
     public MeterInitFilterResponse getMeterFilterByUserId(String buildingId) {
         return MeterInitFilterResponse.builder()
-                .rooms(roomRepository.getRoomInfoByUserId(userService.getCurrentUser().getId(), buildingId))
+                .rooms(roomRepository.getRoomInfoByUserId(
+                        userService.getCurrentUser().getId(), buildingId))
                 .build();
     }
 
@@ -170,8 +177,13 @@ public class MeterServiceImpl implements MeterService {
 
     @Override
     public PaginatedResponse<RoomNoMeterResponse> getRoomsWithoutMeterByUser(
-            Integer page, Integer size, String query, RoomStatus status, RoomType roomType,
-            BigDecimal minPrice, BigDecimal maxPrice) {
+            Integer page,
+            Integer size,
+            String query,
+            RoomStatus status,
+            RoomType roomType,
+            BigDecimal minPrice,
+            BigDecimal maxPrice) {
 
         User user = userService.getCurrentUser();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);

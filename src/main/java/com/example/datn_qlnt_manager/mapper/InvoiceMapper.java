@@ -1,5 +1,9 @@
 package com.example.datn_qlnt_manager.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
 import com.example.datn_qlnt_manager.common.InvoiceItemType;
 import com.example.datn_qlnt_manager.common.ServiceCalculation;
 import com.example.datn_qlnt_manager.common.ServiceCategory;
@@ -9,10 +13,6 @@ import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceResponse;
 import com.example.datn_qlnt_manager.entity.Invoice;
 import com.example.datn_qlnt_manager.entity.InvoiceDetail;
 import com.example.datn_qlnt_manager.entity.Tenant;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-
 
 @Mapper(componentModel = "spring")
 public interface InvoiceMapper {
@@ -67,7 +67,7 @@ public interface InvoiceMapper {
             unit = service.getUnit();
         }
 
-            return InvoiceItemResponse.builder()
+        return InvoiceItemResponse.builder()
                 .id(detail.getId())
                 .serviceName(detail.getServiceName())
                 .serviceCategory(category)
@@ -80,5 +80,4 @@ public interface InvoiceMapper {
                 .amount(detail.getAmount())
                 .build();
     }
-
 }

@@ -1,13 +1,14 @@
 package com.example.datn_qlnt_manager.dto.response.job;
 
+import java.time.Instant;
+import java.util.Date;
+
 import com.example.datn_qlnt_manager.common.JobObjectType;
 import com.example.datn_qlnt_manager.common.JobPriorityLevel;
 import com.example.datn_qlnt_manager.common.JobStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor

@@ -1,9 +1,9 @@
 package com.example.datn_qlnt_manager.dto.response.tenant;
 
+import java.io.Serializable;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.io.Serializable;
 
 @Data
 @Builder

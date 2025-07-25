@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.dto.response.vehicle;
 
 import com.example.datn_qlnt_manager.common.VehicleType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

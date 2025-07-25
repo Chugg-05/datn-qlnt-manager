@@ -1,14 +1,16 @@
 package com.example.datn_qlnt_manager.dto.request.asset;
 
-import com.example.datn_qlnt_manager.common.AssetBeLongTo;
-import com.example.datn_qlnt_manager.common.AssetStatus;
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import com.example.datn_qlnt_manager.common.AssetBeLongTo;
+import com.example.datn_qlnt_manager.common.AssetStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -21,6 +23,7 @@ public class AssetUpdateRequest {
     String nameAsset;
 
     String assetTypeId;
+
     @NotNull(message = "ASSET_BELONG_TO_REQUIRED")
     AssetBeLongTo assetBeLongTo;
 

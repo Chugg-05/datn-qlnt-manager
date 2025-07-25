@@ -1,14 +1,16 @@
 package com.example.datn_qlnt_manager.dto.request.contract;
 
-import com.example.datn_qlnt_manager.common.ContractStatus;
+import java.time.LocalDateTime;
+import java.util.Set;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import com.example.datn_qlnt_manager.common.ContractStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
-import java.util.Set;
 
 @Data
 @Builder

@@ -1,5 +1,11 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ServiceRoomFilter;
@@ -9,15 +15,12 @@ import com.example.datn_qlnt_manager.dto.response.serviceRoom.CreateRoomServiceI
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
 import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatistics;
 import com.example.datn_qlnt_manager.service.ServiceRoomService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,7 +42,8 @@ public class ServiceRoomController {
 
     @Operation(summary = "Sửa dịch vụ phòng")
     @PutMapping("/{serviceRoomId}")
-    public ApiResponse<ServiceRoomResponse> updateServiceRoom(@PathVariable("serviceRoomId") String serviceRoomId,@Valid @RequestBody ServiceRoomUpdateRequest request) {
+    public ApiResponse<ServiceRoomResponse> updateServiceRoom(
+            @PathVariable("serviceRoomId") String serviceRoomId, @Valid @RequestBody ServiceRoomUpdateRequest request) {
         return ApiResponse.<ServiceRoomResponse>builder()
                 .data(serviceRoomService.updateServiceRoom(serviceRoomId, request))
                 .message("Service room has been updated!")
@@ -57,7 +61,7 @@ public class ServiceRoomController {
 
     @Operation(summary = "Xóa hoàn toàn")
     @DeleteMapping("/{roomServiceId}")
-    public ApiResponse<String> deleteServiceRoom(@PathVariable("roomServiceId") String roomServiceId){
+    public ApiResponse<String> deleteServiceRoom(@PathVariable("roomServiceId") String roomServiceId) {
         serviceRoomService.deleteServiceRoom(roomServiceId);
         return ApiResponse.<String>builder()
                 .message("Service room deleted successfully.")
@@ -91,7 +95,7 @@ public class ServiceRoomController {
 
     @Operation(summary = "Cập nhật trạng thái: dang su dung <-> tam dung")
     @PutMapping("/toggle-status/{serviceRoomId}")
-    public ApiResponse<String> toggleServiceRoomStatus (@PathVariable("serviceRoomId") String serviceRoomId) {
+    public ApiResponse<String> toggleServiceRoomStatus(@PathVariable("serviceRoomId") String serviceRoomId) {
         serviceRoomService.toggleServiceRoomStatus(serviceRoomId);
         return ApiResponse.<String>builder()
                 .message("Service room status update successful!")
@@ -107,5 +111,4 @@ public class ServiceRoomController {
                 .message("Assets has been found!")
                 .build();
     }
-
 }

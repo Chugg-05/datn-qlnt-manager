@@ -1,14 +1,17 @@
 package com.example.datn_qlnt_manager.entity;
 
+import java.util.Date;
+
+import jakarta.persistence.*;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.example.datn_qlnt_manager.common.JobObjectType;
 import com.example.datn_qlnt_manager.common.JobPriorityLevel;
 import com.example.datn_qlnt_manager.common.JobStatus;
-import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.util.Date;
 
 @Getter
 @Setter
@@ -19,7 +22,7 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "cong_viec")
-public class Job extends AbstractEntity{
+public class Job extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "toa_nha_id")
@@ -48,5 +51,4 @@ public class Job extends AbstractEntity{
     @Enumerated(EnumType.STRING)
     @Column(name = "loai_doi_tuong")
     JobObjectType jobObjectType;
-
 }

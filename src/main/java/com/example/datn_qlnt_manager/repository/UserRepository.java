@@ -2,7 +2,6 @@ package com.example.datn_qlnt_manager.repository;
 
 import java.util.Optional;
 
-import com.example.datn_qlnt_manager.dto.statistics.UserStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.datn_qlnt_manager.common.Gender;
 import com.example.datn_qlnt_manager.common.UserStatus;
+import com.example.datn_qlnt_manager.dto.statistics.UserStatistics;
 import com.example.datn_qlnt_manager.entity.User;
 
 @Repository
@@ -54,14 +54,14 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query(
             """
-        SELECT COUNT(u),
-               SUM(CASE WHEN u.userStatus = 'ACTIVE' THEN 1 ELSE 0 END),
-               SUM(CASE WHEN u.userStatus = 'EXPIRED' THEN 1 ELSE 0 END),
-               SUM(CASE WHEN u.userStatus = 'LOCKED' THEN 1 ELSE 0 END),
-               SUM(CASE WHEN u.userStatus = 'DELETED' THEN 1 ELSE 0 END)
-        FROM User u
-        WHERE u.id = :userId
-    """)
+		SELECT COUNT(u),
+			SUM(CASE WHEN u.userStatus = 'ACTIVE' THEN 1 ELSE 0 END),
+			SUM(CASE WHEN u.userStatus = 'EXPIRED' THEN 1 ELSE 0 END),
+			SUM(CASE WHEN u.userStatus = 'LOCKED' THEN 1 ELSE 0 END),
+			SUM(CASE WHEN u.userStatus = 'DELETED' THEN 1 ELSE 0 END)
+		FROM User u
+		WHERE u.id = :userId
+	""")
     UserStatistics getTotalUsersByStatus(@Param("userId") String userId); // thống kê người dùng theo trạng thái
 
     boolean existsByEmail(String email); // ktra email đã tồn tại

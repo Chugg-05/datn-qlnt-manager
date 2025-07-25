@@ -1,12 +1,13 @@
 package com.example.datn_qlnt_manager.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
 import com.example.datn_qlnt_manager.dto.request.contract.ContractCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.contract.ContractUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
 import com.example.datn_qlnt_manager.entity.Contract;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface ContractMapper {

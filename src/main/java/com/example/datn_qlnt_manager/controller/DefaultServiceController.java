@@ -1,5 +1,11 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.DefaultServiceFilter;
@@ -9,16 +15,13 @@ import com.example.datn_qlnt_manager.dto.response.defaultService.DefaultServiceI
 import com.example.datn_qlnt_manager.dto.response.defaultService.DefaultServiceResponse;
 import com.example.datn_qlnt_manager.dto.statistics.DefaultServiceStatistics;
 import com.example.datn_qlnt_manager.service.DefaultServiceService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -34,8 +37,7 @@ public class DefaultServiceController {
     public ApiResponse<List<DefaultServiceResponse>> getPageAndSearchAndFilterDefaultService(
             @ModelAttribute DefaultServiceFilter filter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
+            @RequestParam(defaultValue = "15") int size) {
         PaginatedResponse<DefaultServiceResponse> result =
                 defaultServiceService.getPageAndSearchAndFilterDefaultServiceByUserId(filter, page, size);
 
@@ -51,8 +53,7 @@ public class DefaultServiceController {
     public ApiResponse<List<DefaultServiceResponse>> getDefaultServiceWithStatusCancel(
             @ModelAttribute DefaultServiceFilter filter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
+            @RequestParam(defaultValue = "15") int size) {
         PaginatedResponse<DefaultServiceResponse> result =
                 defaultServiceService.getDefaultServiceWithStatusCancelByUserId(filter, page, size);
 
@@ -67,7 +68,9 @@ public class DefaultServiceController {
     @PutMapping("/soft-delete/{defaultServiceId}")
     public ApiResponse<String> softDeleteDefaultServiceById(@PathVariable("defaultServiceId") String defaultServiceId) {
         defaultServiceService.softDeleteDefaultServiceById(defaultServiceId);
-        return ApiResponse.<String>builder().data("Default service has been deleted!").build();
+        return ApiResponse.<String>builder()
+                .data("Default service has been deleted!")
+                .build();
     }
 
     @Operation(summary = "Cập nhật trạng thái: hoạt động <-> tạm ngưng")
@@ -81,7 +84,8 @@ public class DefaultServiceController {
 
     @Operation(summary = "thêm dịch vụ mặc định")
     @PostMapping
-    public ApiResponse<DefaultServiceResponse> createDefaultService(@Valid @RequestBody DefaultServiceCreationRequest request) {
+    public ApiResponse<DefaultServiceResponse> createDefaultService(
+            @Valid @RequestBody DefaultServiceCreationRequest request) {
         return ApiResponse.<DefaultServiceResponse>builder()
                 .message("Default Service has been created!")
                 .data(defaultServiceService.createDefaultService(request))
@@ -103,11 +107,14 @@ public class DefaultServiceController {
     @DeleteMapping("/{defaultServiceId}")
     public ApiResponse<String> deleteDefaultServiceById(@PathVariable("defaultServiceId") String defaultServiceId) {
         defaultServiceService.deleteDefaultServiceById(defaultServiceId);
-        return ApiResponse.<String>builder().message("Default Service has been deleted!").build();
+        return ApiResponse.<String>builder()
+                .message("Default Service has been deleted!")
+                .build();
     }
 
-    @Operation(summary = "Hiển thị thông tin liên quan để thêm mới, cập nhật, tìm kiếm dịch vụ mặc định theo người " +
-            "đang đăng nhập")
+    @Operation(
+            summary = "Hiển thị thông tin liên quan để thêm mới, cập nhật, tìm kiếm dịch vụ mặc định theo người "
+                    + "đang đăng nhập")
     @GetMapping("/init")
     public ApiResponse<DefaultServiceInitResponse> getAssetsInfoByUserId() {
         DefaultServiceInitResponse data = defaultServiceService.initDefaultService();

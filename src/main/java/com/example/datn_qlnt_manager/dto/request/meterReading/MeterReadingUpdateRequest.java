@@ -1,9 +1,9 @@
 package com.example.datn_qlnt_manager.dto.request.meterReading;
 
 import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
 
 @Getter
 @Setter

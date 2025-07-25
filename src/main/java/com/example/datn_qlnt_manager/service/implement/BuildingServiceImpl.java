@@ -3,16 +3,6 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.IdAndName;
-import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
-import com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse;
-import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
-import com.example.datn_qlnt_manager.dto.response.floor.FloorSelectResponse;
-import com.example.datn_qlnt_manager.dto.response.room.RoomSelectResponse;
-import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
-import com.example.datn_qlnt_manager.entity.User;
-import com.example.datn_qlnt_manager.repository.FloorRepository;
-import com.example.datn_qlnt_manager.repository.RoomRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,12 +15,22 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.BuildingFilter;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingOccupancyResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingResponse;
+import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
+import com.example.datn_qlnt_manager.dto.response.floor.FloorSelectResponse;
+import com.example.datn_qlnt_manager.dto.response.room.RoomSelectResponse;
+import com.example.datn_qlnt_manager.dto.statistics.BuildingStatistics;
 import com.example.datn_qlnt_manager.entity.Building;
+import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.BuildingMapper;
 import com.example.datn_qlnt_manager.repository.BuildingRepository;
+import com.example.datn_qlnt_manager.repository.FloorRepository;
+import com.example.datn_qlnt_manager.repository.RoomRepository;
 import com.example.datn_qlnt_manager.service.BuildingService;
 import com.example.datn_qlnt_manager.service.UserService;
 
@@ -54,35 +54,24 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public PaginatedResponse<BuildingResponse> getPageAndSearchAndFilterBuildingByUserId(
-            BuildingFilter filter,
-            int page,
-            int size) {
+            BuildingFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
 
         Page<Building> paging = buildingRepository.getPageAndSearchAndFilterBuildingByUserId(
-                user.getId(),
-                filter.getQuery(),
-                filter.getStatus(),
-                filter.getBuildingType(),
-                pageable);
+                user.getId(), filter.getQuery(), filter.getStatus(), filter.getBuildingType(), pageable);
 
         return buildPaginatedBuildingResponse(paging, page, size);
     }
 
     @Override
     public PaginatedResponse<BuildingResponse> getBuildingWithStatusCancelByUserId(
-            BuildingFilter filter,
-            int page,
-            int size) {
+            BuildingFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
 
         Page<Building> paging = buildingRepository.getBuildingWithStatusCancelByUserId(
-                user.getId(),
-                filter.getQuery(),
-                filter.getBuildingType(),
-                pageable);
+                user.getId(), filter.getQuery(), filter.getBuildingType(), pageable);
 
         return buildPaginatedBuildingResponse(paging, page, size);
     }
@@ -126,8 +115,8 @@ public class BuildingServiceImpl implements BuildingService {
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
         String userId = building.getUser().getId();
-        boolean exists = buildingRepository.existsByBuildingNameAndUserIdAndIdNot(request.getBuildingName(), userId,
-                buildingId);
+        boolean exists =
+                buildingRepository.existsByBuildingNameAndUserIdAndIdNot(request.getBuildingName(), userId, buildingId);
         if (exists) {
             throw new AppException(ErrorCode.BUILDING_NAME_EXISTED);
         }
@@ -183,25 +172,27 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     public List<BuildingSelectResponse> getBuildingsInfoByUserId() {
         User user = userService.getCurrentUser();
-        return buildingRepository.findAllBuildingsByUserId(user.getId())
-                .stream()
+        return buildingRepository.findAllBuildingsByUserId(user.getId()).stream()
                 .map(b -> {
-                    List<FloorSelectResponse> floorSelectResponses = floorRepository
-                            .findAllFloorsByUserIdAndBuildingId(user.getId(), b.getId()).stream()
-                            .map(f -> {
-                                List<RoomSelectResponse> roomSelectResponses = roomRepository
-                                        .findRoomsByUserIdAndFloorId(user.getId(), f.getId())
-                                        .stream().map(r -> RoomSelectResponse.builder()
-                                                .id(r.getId())
-                                                .name(r.getName())
-                                                .build())
-                                        .toList();
-                                return FloorSelectResponse.builder()
-                                        .id(f.getId())
-                                        .name(f.getName())
-                                        .rooms(roomSelectResponses)
-                                        .build();
-                            }).toList();
+                    List<FloorSelectResponse> floorSelectResponses =
+                            floorRepository.findAllFloorsByUserIdAndBuildingId(user.getId(), b.getId()).stream()
+                                    .map(f -> {
+                                        List<RoomSelectResponse> roomSelectResponses =
+                                                roomRepository
+                                                        .findRoomsByUserIdAndFloorId(user.getId(), f.getId())
+                                                        .stream()
+                                                        .map(r -> RoomSelectResponse.builder()
+                                                                .id(r.getId())
+                                                                .name(r.getName())
+                                                                .build())
+                                                        .toList();
+                                        return FloorSelectResponse.builder()
+                                                .id(f.getId())
+                                                .name(f.getName())
+                                                .rooms(roomSelectResponses)
+                                                .build();
+                                    })
+                                    .toList();
                     return BuildingSelectResponse.builder()
                             .id(b.getId())
                             .name(b.getName())
@@ -213,14 +204,14 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public List<IdAndName> getAllBuildingByUserId() {
-        return buildingRepository.findAllBuildingsByUserId(userService.getCurrentUser().getId());
+        return buildingRepository.findAllBuildingsByUserId(
+                userService.getCurrentUser().getId());
     }
 
     private PaginatedResponse<BuildingResponse> buildPaginatedBuildingResponse(
             Page<Building> paging, int page, int size) {
 
-        List<BuildingResponse> buildings = paging.getContent()
-                .stream()
+        List<BuildingResponse> buildings = paging.getContent().stream()
                 .map(buildingMapper::toBuildingResponse)
                 .toList();
 

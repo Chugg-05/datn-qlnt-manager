@@ -4,8 +4,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.datn_qlnt_manager.entity.User;
-import com.example.datn_qlnt_manager.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +18,13 @@ import com.example.datn_qlnt_manager.dto.request.assetType.AssetTypeCreationRequ
 import com.example.datn_qlnt_manager.dto.request.assetType.AssetTypeUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.assetType.AssetTypeResponse;
 import com.example.datn_qlnt_manager.entity.AssetType;
+import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.AssetTypeMapper;
 import com.example.datn_qlnt_manager.repository.AssetTypeRepository;
 import com.example.datn_qlnt_manager.service.AssetTypeService;
+import com.example.datn_qlnt_manager.service.UserService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -59,14 +59,13 @@ public class AssetTypeServiceImpl implements AssetTypeService {
     }
 
     @Override
-    public PaginatedResponse<AssetTypeResponse> getPageAndSearchAndFilterAssetTypeByUserId(AssetTypeFilter filter, int page, int size) {
+    public PaginatedResponse<AssetTypeResponse> getPageAndSearchAndFilterAssetTypeByUserId(
+            AssetTypeFilter filter, int page, int size) {
         var user = userService.getCurrentUser();
-        Pageable pageable = PageRequest.of(
-                Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
-        Page<AssetType> assetPage =
-                assetTypeRepository.getPageAndSearchAndFilterAssetTypeByUserId(filter.getNameAssetType(), filter.getAssetGroup(), user.getId(),
-                        pageable);
+        Page<AssetType> assetPage = assetTypeRepository.getPageAndSearchAndFilterAssetTypeByUserId(
+                filter.getNameAssetType(), filter.getAssetGroup(), user.getId(), pageable);
 
         List<AssetTypeResponse> responses =
                 assetPage.getContent().stream().map(assetTypeMapper::toResponse).toList();
@@ -131,8 +130,6 @@ public class AssetTypeServiceImpl implements AssetTypeService {
     public List<AssetTypeResponse> findAssetTypesByCurrentUser() {
         String userId = userService.getCurrentUser().getId();
         List<AssetType> assetTypes = assetTypeRepository.findAllByUserId(userId);
-        return assetTypes.stream()
-                .map(assetTypeMapper::toResponse)
-                .collect(Collectors.toList());
+        return assetTypes.stream().map(assetTypeMapper::toResponse).collect(Collectors.toList());
     }
 }

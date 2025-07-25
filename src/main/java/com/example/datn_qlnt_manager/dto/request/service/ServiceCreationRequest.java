@@ -1,14 +1,17 @@
 package com.example.datn_qlnt_manager.dto.request.service;
 
-import com.example.datn_qlnt_manager.common.ServiceCalculation;
-import com.example.datn_qlnt_manager.common.ServiceCategory;
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import com.example.datn_qlnt_manager.common.ServiceCalculation;
+import com.example.datn_qlnt_manager.common.ServiceCategory;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
 @Getter
 @Setter
 @Builder
@@ -33,5 +36,4 @@ public class ServiceCreationRequest {
     ServiceCalculation serviceCalculation;
 
     String description;
-
 }

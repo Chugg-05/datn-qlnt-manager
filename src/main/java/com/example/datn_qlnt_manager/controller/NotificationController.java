@@ -1,5 +1,12 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.NotificationFilter;
@@ -8,16 +15,12 @@ import com.example.datn_qlnt_manager.dto.request.notification.NotificationUpdate
 import com.example.datn_qlnt_manager.dto.response.notification.NotificationDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.notification.NotificationResponse;
 import com.example.datn_qlnt_manager.service.NotificationService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/notifications")
@@ -31,7 +34,8 @@ public class NotificationController {
 
     @Operation(summary = "Thêm thông báo")
     @PostMapping
-    public ApiResponse<NotificationResponse> createNotification(@Valid @RequestBody NotificationCreationRequest request){
+    public ApiResponse<NotificationResponse> createNotification(
+            @Valid @RequestBody NotificationCreationRequest request) {
         return ApiResponse.<NotificationResponse>builder()
                 .data(notificationService.createNotification(request))
                 .message("Create Notification successfully")
@@ -41,9 +45,7 @@ public class NotificationController {
     @Operation(summary = "Cập nhật thông báo")
     @PutMapping("/{notificationId}")
     public ApiResponse<NotificationResponse> updateNotification(
-            @PathVariable String notificationId,
-            @Valid @RequestBody NotificationUpdateRequest request
-    ) {
+            @PathVariable String notificationId, @Valid @RequestBody NotificationUpdateRequest request) {
         return ApiResponse.<NotificationResponse>builder()
                 .data(notificationService.updateNotification(notificationId, request))
                 .message("Update Notification successfully")
@@ -55,8 +57,7 @@ public class NotificationController {
     public ApiResponse<List<NotificationResponse>> getMyNotifications(
             @Valid @ModelAttribute NotificationFilter filter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
+            @RequestParam(defaultValue = "15") int size) {
         PaginatedResponse<NotificationResponse> result = notificationService.filterMyNotifications(filter, page, size);
         return ApiResponse.<List<NotificationResponse>>builder()
                 .message("Notification data retrieved successfully")
@@ -82,5 +83,4 @@ public class NotificationController {
                 .message("Notification deleted successfully")
                 .build();
     }
-
 }

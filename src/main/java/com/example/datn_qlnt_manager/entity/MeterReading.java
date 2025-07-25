@@ -1,10 +1,11 @@
 package com.example.datn_qlnt_manager.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Entity
 @Setter
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @Builder
 @Table(name = "chi_so")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MeterReading extends AbstractEntity{
+public class MeterReading extends AbstractEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cong_to_id", nullable = false)
@@ -40,7 +41,4 @@ public class MeterReading extends AbstractEntity{
 
     @Column(name = "mo_ta", columnDefinition = "TEXT")
     String descriptionMeterReading;
-
-
 }
-

@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.util.List;
+
 import jakarta.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
@@ -18,8 +20,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

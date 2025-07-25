@@ -1,11 +1,12 @@
 package com.example.datn_qlnt_manager.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.*;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Setter
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @Table(name = "lich_su_gia_dich_vu")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ServicePriceHistory{
+public class ServicePriceHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
@@ -33,5 +34,4 @@ public class ServicePriceHistory{
 
     @Column(name = "ngay_ap_dung")
     LocalDateTime applicableDate;
-
 }

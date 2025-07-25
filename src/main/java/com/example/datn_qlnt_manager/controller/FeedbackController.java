@@ -1,5 +1,9 @@
 package com.example.datn_qlnt_manager.controller;
 
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.common.FeedbackStatus;
 import com.example.datn_qlnt_manager.common.FeedbackType;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
@@ -13,12 +17,11 @@ import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackResponse;
 import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackSelfResponse;
 import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackStatusUpdateResponse;
 import com.example.datn_qlnt_manager.service.FeedbackService;
+
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/feed-backs")
@@ -40,10 +43,9 @@ public class FeedbackController {
     @Operation(summary = "Sửa phản hồi")
     @PutMapping("/{feedbackId}")
     public ApiResponse<FeedbackResponse> updateFeedback(
-            @PathVariable String feedbackId,
-            @Valid @RequestBody FeedbackUpdateRequest request) {
+            @PathVariable String feedbackId, @Valid @RequestBody FeedbackUpdateRequest request) {
         return ApiResponse.<FeedbackResponse>builder()
-                .data(feedbackService.updateFeedback(feedbackId,request))
+                .data(feedbackService.updateFeedback(feedbackId, request))
                 .message("Feedback created successfully")
                 .build();
     }
@@ -56,14 +58,14 @@ public class FeedbackController {
             @RequestParam(required = false) FeedbackStatus feedbackStatus,
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
+            @RequestParam(defaultValue = "15") int size) {
         FeedBackSelfFilter filter = new FeedBackSelfFilter(rating, feedbackType, feedbackStatus, query);
         return ApiResponse.<PaginatedResponse<FeedbackSelfResponse>>builder()
                 .data(feedbackService.filterMyFeedbacks(filter, page, size))
                 .message("List of feedbacks by current tenant loaded successfully.")
                 .build();
     }
+
     @Operation(summary = "Quản lý xem, tìm kiếm ,lọc phản hồi theo các tòa nhà của họ")
     @GetMapping("/find-all")
     public ApiResponse<PaginatedResponse<FeedbackResponse>> filterFeedbacksForManager(
@@ -73,8 +75,7 @@ public class FeedbackController {
             @RequestParam(required = false) Integer rating,
             @RequestParam(required = false) FeedbackType feedbackType,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
+            @RequestParam(defaultValue = "15") int size) {
         FeedbackFilter filter = FeedbackFilter.builder()
                 .buildingId(buildingId)
                 .query(query)
@@ -97,5 +98,4 @@ public class FeedbackController {
                 .message("Feedback status updated successfully")
                 .build();
     }
-
 }

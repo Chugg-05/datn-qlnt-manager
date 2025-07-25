@@ -25,7 +25,8 @@ public enum ErrorCode {
     FORBIDDEN(403, "You don't have permission.", HttpStatus.FORBIDDEN),
     CANT_REMOVE_USER(403, "You can't remove another user.", HttpStatus.FORBIDDEN),
     ACCOUNT_HAS_BEEN_LOCKED(403, "User account is locked.", HttpStatus.FORBIDDEN),
-    FORBIDDEN_CATEGORY_TYPE(400, "Additional services cannot be added by charging the room rate.", HttpStatus.FORBIDDEN),
+    FORBIDDEN_CATEGORY_TYPE(
+            400, "Additional services cannot be added by charging the room rate.", HttpStatus.FORBIDDEN),
 
     // Code: 400
     BAD_REQUEST(400, "Invalid request.", HttpStatus.BAD_REQUEST),
@@ -138,15 +139,18 @@ public enum ErrorCode {
     INVALID_CONTRACT_STATUS_BLANK(400, "Contract status cannot be blank.", HttpStatus.BAD_REQUEST),
     NUMBER_OF_PEOPLE_EXCEEDS_LIMIT(400, "Number of people exceeds the limit of the room.", HttpStatus.NOT_FOUND),
     END_DATE_BEFORE_START_DATE(400, "End date cannot be before start date.", HttpStatus.NOT_FOUND),
-    TENANTS_EXCEEDS_NUMBER_OF_PEOPLE(400, "The number of tenants exceeds the number of people in the room.", HttpStatus.NOT_FOUND),
+    TENANTS_EXCEEDS_NUMBER_OF_PEOPLE(
+            400, "The number of tenants exceeds the number of people in the room.", HttpStatus.NOT_FOUND),
     CANNOT_DELETE_CONTRACT(400, "This room is still under contract and cannot be deleted.", HttpStatus.NOT_FOUND),
     CANNOT_REACTIVATE_EXPIRED_CONTRACT(400, "Expired contracts cannot be reactivated.", HttpStatus.BAD_REQUEST),
     CANNOT_TOGGLE_CONTRACT_STATUS(400, "Cannot transfer current contract status.", HttpStatus.BAD_REQUEST),
     OWNER_ID_REQUIRED(400, "Owner ID is required.", HttpStatus.BAD_REQUEST),
     IS_REPRESENTATIVE_REQUIRED(400, "Is Representative is required.", HttpStatus.BAD_REQUEST),
-    TENANT_ALREADY_IN_CONTRACT(400, "This tenant already has a lease. Information cannot be changed.", HttpStatus.BAD_REQUEST),
+    TENANT_ALREADY_IN_CONTRACT(
+            400, "This tenant already has a lease. Information cannot be changed.", HttpStatus.BAD_REQUEST),
     TENANT_HAS_NO_CONTRACT(400, "Tenant has no contract", HttpStatus.BAD_REQUEST),
-    CANNOT_ADD_MORE_FLOORS(400, "Cannot add more floors than building's real number of floors.", HttpStatus.BAD_REQUEST),
+    CANNOT_ADD_MORE_FLOORS(
+            400, "Cannot add more floors than building's real number of floors.", HttpStatus.BAD_REQUEST),
     CANNOT_TOGGLE_SERVICE_STATUS(400, "Cannot toggle status for deleted service.", HttpStatus.BAD_REQUEST),
 
     INVALID_TITLE_BLANK(400, "Title cannot be blank.", HttpStatus.BAD_REQUEST),
@@ -163,7 +167,8 @@ public enum ErrorCode {
     INVALID_SERVICE_TYPE(400, "Invalid service type.", HttpStatus.BAD_REQUEST),
     METER_TYPE_NOT_FOUND(400, "Meter type not found.", HttpStatus.BAD_REQUEST),
     DUPLICATE_INVOICE_DETAIL(400, "Duplicate invoice detail for the same service type.", HttpStatus.BAD_REQUEST),
-    INVALID_METER_READING(400, "Invalid meter reading. New number cannot be less than old number.", HttpStatus.BAD_REQUEST),
+    INVALID_METER_READING(
+            400, "Invalid meter reading. New number cannot be less than old number.", HttpStatus.BAD_REQUEST),
     INVALID_COMPENSATION_DATA(400, "Invalid compensation data.", HttpStatus.UNAUTHORIZED),
     INVOICE_ITEM_TYPE_NOT_NULL(400, "Invoice item type must not be null.", HttpStatus.BAD_REQUEST),
     INVALID_NEW_INDEX_MIN(400, "The new index must be greater than {min}.", HttpStatus.BAD_REQUEST),
@@ -176,14 +181,19 @@ public enum ErrorCode {
     INVOICE_ALREADY_CANCELLED(400, "This invoice has already been cancelled.", HttpStatus.BAD_REQUEST),
     INVALID_INVOICE_STATUS(400, "Invalid invoice status.", HttpStatus.BAD_REQUEST),
     INVOICE_NOT_EDITABLE(400, "This invoice cannot be edited.", HttpStatus.BAD_REQUEST),
-    INVALID_PAYMENT_DUE_DATE(400, "The payment due date must be in the future and within this month only", HttpStatus.BAD_REQUEST),
+    INVALID_PAYMENT_DUE_DATE(
+            400, "The payment due date must be in the future and within this month only", HttpStatus.BAD_REQUEST),
     INVOICE_CAN_NOT_BE_DELETED(400, "This invoice cannot be deleted.", HttpStatus.BAD_REQUEST),
     INVALID_ASSETS_BLANK(400, "Assets cannot be blank.", HttpStatus.BAD_REQUEST),
     INVALID_ASSETS(400, "At least one asset must be selected.", HttpStatus.BAD_REQUEST),
 
     INVALID_CATEGORY_WITH_CALCULATION(400, "Invalid category with calculation.", HttpStatus.BAD_REQUEST),
-    UNIT_REQUIRED_FOR_CALCULATION(400, "Units must be entered for this calculation or not supported.", HttpStatus.BAD_REQUEST),
-    INVALID_UNIT_COMBINATION(400, "Unable to determine appropriate unit of measure for selected calculation and category.", HttpStatus.BAD_REQUEST),
+    UNIT_REQUIRED_FOR_CALCULATION(
+            400, "Units must be entered for this calculation or not supported.", HttpStatus.BAD_REQUEST),
+    INVALID_UNIT_COMBINATION(
+            400,
+            "Unable to determine appropriate unit of measure for selected calculation and category.",
+            HttpStatus.BAD_REQUEST),
     INVALID_SERVICE_NAME_BLANK(400, "Service name cannot be blank.", HttpStatus.BAD_REQUEST),
     INVALID_SERVICE_CATEGORY_NULL(400, "Service category cannot be null.", HttpStatus.BAD_REQUEST),
     INVALID_PRICE(400, "Price must be greater than 0.", HttpStatus.BAD_REQUEST),
@@ -241,18 +251,18 @@ public enum ErrorCode {
     RATING_TOO_HIGH(404, "Rating must not exceed 5.", HttpStatus.BAD_REQUEST),
     FEED_BACK_STATUS_NOT_FOUND(404, "Feedback status must not be null.", HttpStatus.BAD_REQUEST),
     FEED_BACK_TYPE_NOT_FOUND(404, "Feedback status must not be null.", HttpStatus.BAD_REQUEST),
-    FEED_BACK_DUPLICATED(404,"Feedback was duplicated", HttpStatus.BAD_REQUEST),
+    FEED_BACK_DUPLICATED(404, "Feedback was duplicated", HttpStatus.BAD_REQUEST),
     NOTE_NOT_FOUND(404, "Note not found.", HttpStatus.NOT_FOUND),
     ASSET_STATUS_NOT_FOUND(404, "Asset status not found.", HttpStatus.NOT_FOUND),
 
     // notification
-    NOTIFICATION_TITLE_REQUIRED(404,"Title must not be blank", HttpStatus.NOT_FOUND),
-    NOTIFICATION_CONTENT_REQUIRED(404,"Content must not be blank", HttpStatus.NOT_FOUND),
-    NOTIFICATION_TYPE_REQUIRED(404,"Notification type is required", HttpStatus.NOT_FOUND),
-    SEND_TO_ALL_REQUIRED(404,"SendToAll must not be null", HttpStatus.NOT_FOUND),
-    NOTIFICATION_USERS_REQUIRED(404,"Notification users must not be null", HttpStatus.NOT_FOUND),
-    NOTIFICATION_NOT_FOUND(404,"Notification must not be null", HttpStatus.NOT_FOUND),
-    NOTIFICATION_NOT_ASSIGNED(404,"Notification not assigned to this user",HttpStatus.NOT_FOUND),
+    NOTIFICATION_TITLE_REQUIRED(404, "Title must not be blank", HttpStatus.NOT_FOUND),
+    NOTIFICATION_CONTENT_REQUIRED(404, "Content must not be blank", HttpStatus.NOT_FOUND),
+    NOTIFICATION_TYPE_REQUIRED(404, "Notification type is required", HttpStatus.NOT_FOUND),
+    SEND_TO_ALL_REQUIRED(404, "SendToAll must not be null", HttpStatus.NOT_FOUND),
+    NOTIFICATION_USERS_REQUIRED(404, "Notification users must not be null", HttpStatus.NOT_FOUND),
+    NOTIFICATION_NOT_FOUND(404, "Notification must not be null", HttpStatus.NOT_FOUND),
+    NOTIFICATION_NOT_ASSIGNED(404, "Notification not assigned to this user", HttpStatus.NOT_FOUND),
 
     INVOICE_DETAIL_NOT_FOUND(404, "Invoice detail not found.", HttpStatus.NOT_FOUND),
 
@@ -272,15 +282,13 @@ public enum ErrorCode {
     ID_NUMBER_EXISTED(409, "ID card number already existed.", HttpStatus.CONFLICT),
     ASSET_TYPE_EXISTED(409, "Asset Type already existed.", HttpStatus.BAD_REQUEST),
     LICENSE_PLATE_EXISTED(409, "License plate already exists", HttpStatus.BAD_REQUEST),
-    DUPLICATE_ASSET_NAME(409,"Asset name already exists", HttpStatus.BAD_REQUEST),
+    DUPLICATE_ASSET_NAME(409, "Asset name already exists", HttpStatus.BAD_REQUEST),
     ROOM_EXISTED_SERVICE(409, "Room already has this service", HttpStatus.BAD_REQUEST),
     SERVICE_ROOM_NOT_FOUND(409, "Service room not found.", HttpStatus.NOT_FOUND),
-    ROOM_ALREADY_HAS_CONTRACT(409,"This room is under contract.", HttpStatus.BAD_REQUEST),
-    NEW_INDEX_LESS_THAN_OLD(409,"New number must be less than old number",HttpStatus.BAD_REQUEST),
+    ROOM_ALREADY_HAS_CONTRACT(409, "This room is under contract.", HttpStatus.BAD_REQUEST),
+    NEW_INDEX_LESS_THAN_OLD(409, "New number must be less than old number", HttpStatus.BAD_REQUEST),
     METER_READING_EXISTED(409, "The meter reading has been recorded for this month.", HttpStatus.CONFLICT),
-    DUPLICATE_SERVICE_CATEGORY(409,"Category already exists.",HttpStatus.BAD_REQUEST),
-
-
+    DUPLICATE_SERVICE_CATEGORY(409, "Category already exists.", HttpStatus.BAD_REQUEST),
     ;
 
     final int code;

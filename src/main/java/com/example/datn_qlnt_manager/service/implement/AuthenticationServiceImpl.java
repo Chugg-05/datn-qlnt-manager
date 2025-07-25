@@ -5,8 +5,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import com.example.datn_qlnt_manager.entity.Role;
-import com.example.datn_qlnt_manager.repository.RoleRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -26,9 +24,11 @@ import com.example.datn_qlnt_manager.dto.request.AuthenticationRequest;
 import com.example.datn_qlnt_manager.dto.request.ResetPasswordRequest;
 import com.example.datn_qlnt_manager.dto.response.LoginResponse;
 import com.example.datn_qlnt_manager.dto.response.RefreshTokenResponse;
+import com.example.datn_qlnt_manager.entity.Role;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
+import com.example.datn_qlnt_manager.repository.RoleRepository;
 import com.example.datn_qlnt_manager.repository.UserRepository;
 import com.example.datn_qlnt_manager.repository.client.GoogleClient;
 import com.example.datn_qlnt_manager.service.AuthenticationService;
@@ -100,7 +100,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // Kiểm tra xem người dùng đã tồn tại trong hệ thống chưa
         if (!userRepository.existsByEmail(email)) {
-            Role role = roleRepository.findByName("MANAGER").orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+            Role role =
+                    roleRepository.findByName("MANAGER").orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
             // Nếu người dùng chưa tồn tại, tạo mới người dùng
             User user = User.builder()
                     .email(email)

@@ -1,13 +1,15 @@
 package com.example.datn_qlnt_manager.dto.request.invoiceDetail;
 
-import com.example.datn_qlnt_manager.common.InvoiceItemType;
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import com.example.datn_qlnt_manager.common.InvoiceItemType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -23,7 +25,7 @@ public class InvoiceDetailCreationRequest {
 
     String serviceRoomId;
 
-    @Min(value = 1 , message = "INVALID_NEW_INDEX_MIN")
+    @Min(value = 1, message = "INVALID_NEW_INDEX_MIN")
     Integer newIndex;
 
     @Min(value = 1, message = "INVALID_QUANTITY_MIN")
