@@ -72,6 +72,8 @@ public interface InvoiceMapper {
                 .serviceName(detail.getServiceName())
                 .serviceCategory(category)
                 .serviceCalculation(calculation)
+                .oldIndex(detail.getOldIndex())
+                .newIndex(detail.getNewIndex())
                 .quantity(detail.getQuantity())
                 .unitPrice(detail.getUnitPrice())
                 .unit(unit)
