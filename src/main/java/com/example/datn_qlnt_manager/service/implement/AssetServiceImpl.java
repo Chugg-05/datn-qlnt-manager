@@ -8,6 +8,7 @@ import com.example.datn_qlnt_manager.dto.filter.AssetFilter;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInit2Response;
 import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInitResponse;
 import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
 import com.example.datn_qlnt_manager.dto.response.building.BuildingSelectResponse;
@@ -63,7 +64,8 @@ public class AssetServiceImpl implements AssetService {
         asset.setAssetType(assetType);
 
         // Xử lý theo loại tài sản thuộc về đâu
-        addOrUpdateAsset(asset, request.getAssetBeLongTo(), request.getRoomID(), request.getFloorID(), request.getBuildingID(), request.getTenantId());
+        addOrUpdateAsset(asset, request.getAssetBeLongTo(), request.getRoomID(), request.getFloorID(),
+                request.getBuildingID(), request.getTenantId());
 
         asset.setCreatedAt(Instant.now());
         asset.setUpdatedAt(Instant.now());
@@ -137,13 +139,15 @@ public class AssetServiceImpl implements AssetService {
         asset.setFloor(null);
         asset.setTenant(null);
 
-        addOrUpdateAsset(asset, request.getAssetBeLongTo(), request.getRoomID(), request.getFloorID(), request.getBuildingID(), request.getTenantId());
+        addOrUpdateAsset(asset, request.getAssetBeLongTo(), request.getRoomID(), request.getFloorID(),
+                request.getBuildingID(), request.getTenantId());
 
         asset.setUpdatedAt(Instant.now());
         return assetMapper.toResponse(assetRepository.save(asset));
     }
 
-    private void addOrUpdateAsset(Asset asset, AssetBeLongTo assetBeLongTo, String roomID, String floorID, String buildingID, String tenantId) {
+    private void addOrUpdateAsset(Asset asset, AssetBeLongTo assetBeLongTo, String roomID, String floorID,
+                                  String buildingID, String tenantId) {
         switch (assetBeLongTo) {
             case PHONG -> {
                 Room room = roomRepository.findById(roomID)
@@ -244,6 +248,44 @@ public class AssetServiceImpl implements AssetService {
         return CreateAssetInitResponse.builder()
                 .assetTypes(assetTypes)
                 .buildings(buildings)
+                .build();
+    }
+
+    @Override
+    public CreateAssetInit2Response getAssetsInfoByUserId2() {
+        User user = userService.getCurrentUser();
+
+        List<IdAndName> assetTypes =
+                assetTypeRepository.findAllByUserId(user.getId())
+                        .stream().map(at -> new IdAndName(at.getId(),
+                                at.getNameAssetType())).toList();
+
+        List<IdAndName> buildings =
+                buildingRepository.findAllBuildingsByUserId(user.getId())
+                        .stream().map(b -> new IdAndName(b.getId(), b.getName()))
+                        .toList();
+
+        List<IdAndName> floors =
+                floorRepository.getFloorsByUserId(user.getId())
+                        .stream().map(b -> new IdAndName(b.getId(), b.getName()))
+                        .toList();
+
+        List<IdAndName> rooms =
+                roomRepository.findAllRoomsByUserId(user.getId())
+                        .stream().map(b -> new IdAndName(b.getId(), b.getRoomCode()))
+                        .toList();
+
+        List<IdAndName> tenants =
+                tenantRepository.findAllTenantsByUserId(user.getId())
+                        .stream().map(b -> new IdAndName(b.getId(), b.getFullName()))
+                        .toList();
+
+        return CreateAssetInit2Response.builder()
+                .assetTypes(assetTypes)
+                .buildings(buildings)
+                .floors(floors)
+                .tenants(tenants)
+                .rooms(rooms)
                 .build();
     }
 }

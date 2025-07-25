@@ -6,6 +6,7 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.AssetFilter;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInit2Response;
 import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInitResponse;
 import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
 import com.example.datn_qlnt_manager.service.AssetService;
@@ -89,6 +90,16 @@ public class AssetController {
     public ApiResponse<CreateAssetInitResponse> getAssetsInfoByUserId() {
         CreateAssetInitResponse data = assetService.getInitDataForAssetCreation();
         return ApiResponse.<CreateAssetInitResponse>builder()
+                .data(data)
+                .message("Assets has been found!")
+                .build();
+    }
+
+    @Operation(summary = "Hiển thị thông tin liên quan để thêm mới tài sản theo người đang đăng nhập")
+    @GetMapping("/init/2")
+    public ApiResponse<CreateAssetInit2Response> getAssetsInfoByUserId2() {
+        CreateAssetInit2Response data = assetService.getAssetsInfoByUserId2();
+        return ApiResponse.<CreateAssetInit2Response>builder()
                 .data(data)
                 .message("Assets has been found!")
                 .build();

@@ -117,6 +117,7 @@ public class ServiceServiceImpl implements ServiceService {
         updated.setCreatedAt(existing.getCreatedAt());
         updated.setUser(existing.getUser());
         updated.setUpdatedAt(Instant.now());
+        updated.setStatus(request.getStatus());
 
         return serviceMapper.toServiceResponse(serviceRepository.save(updated));
     }

@@ -139,11 +139,7 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
     @Query("""
                 SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantSelectResponse(t.id, t.fullName)
                 FROM Tenant t
-                JOIN t.contracts c
                 WHERE t.owner.id = :userId
-                  AND t.isRepresentative = true
-                  AND c.room IS NOT NULL AND c.room.id = :roomId
-                  AND t.tenantStatus != 'HUY_BO'
             """)
     List<TenantSelectResponse> findAllTenantsByOwnerIdAndRoomId(@Param("userId") String userId, @Param("roomId") String roomId );
 }
