@@ -1,13 +1,15 @@
 package com.example.datn_qlnt_manager.dto.request.notification;
 
-import com.example.datn_qlnt_manager.common.NotificationType;
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import com.example.datn_qlnt_manager.common.NotificationType;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -26,5 +28,4 @@ public class NotificationCreationRequest {
     Boolean sendToAll;
 
     List<String> users;
-
 }

@@ -1,11 +1,12 @@
 package com.example.datn_qlnt_manager.dto.response.invoice;
 
+import java.math.BigDecimal;
+
 import com.example.datn_qlnt_manager.common.ServiceCalculation;
 import com.example.datn_qlnt_manager.common.ServiceCategory;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -17,11 +18,10 @@ public class InvoiceItemResponse {
     String serviceName;
     ServiceCategory serviceCategory;
     ServiceCalculation serviceCalculation;
-    Integer oldIndex;        // optional
-    Integer newIndex;      // optional
+    Integer oldIndex; // optional
+    Integer newIndex; // optional
     Integer quantity;
     String unit;
     BigDecimal unitPrice;
     BigDecimal amount;
-
 }

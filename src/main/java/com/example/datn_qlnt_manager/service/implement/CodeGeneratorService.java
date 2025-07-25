@@ -1,11 +1,12 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Floor;
 import com.example.datn_qlnt_manager.entity.Room;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.service.strategy.*;
-import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

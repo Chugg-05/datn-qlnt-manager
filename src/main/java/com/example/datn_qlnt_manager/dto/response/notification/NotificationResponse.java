@@ -1,12 +1,13 @@
 package com.example.datn_qlnt_manager.dto.response.notification;
 
+import java.time.LocalDateTime;
+
 import com.example.datn_qlnt_manager.common.NotificationType;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
 
 @Data
 @Builder

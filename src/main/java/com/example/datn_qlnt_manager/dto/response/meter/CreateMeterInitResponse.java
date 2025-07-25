@@ -1,11 +1,11 @@
 package com.example.datn_qlnt_manager.dto.response.meter;
 
+import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Getter
 @Setter

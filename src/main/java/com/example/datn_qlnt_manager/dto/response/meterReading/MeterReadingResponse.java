@@ -1,10 +1,10 @@
 package com.example.datn_qlnt_manager.dto.response.meterReading;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.Instant;
 import java.time.LocalDate;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -31,4 +31,3 @@ public class MeterReadingResponse {
     Instant createdAt;
     Instant updatedAt;
 }
-

@@ -1,7 +1,5 @@
 package com.example.datn_qlnt_manager.utils;
 
-import lombok.experimental.UtilityClass;
-
 import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.util.Arrays;
@@ -9,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class CodeGeneratorUtil {

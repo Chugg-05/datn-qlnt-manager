@@ -1,35 +1,40 @@
 package com.example.datn_qlnt_manager.service.implement;
 
-import com.example.datn_qlnt_manager.common.*;
-import com.example.datn_qlnt_manager.dto.filter.ServiceFilter;
-import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
-import com.example.datn_qlnt_manager.entity.Service;
-import com.example.datn_qlnt_manager.entity.User;
-import com.example.datn_qlnt_manager.service.UserService;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import com.example.datn_qlnt_manager.common.*;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.ServiceFilter;
 import com.example.datn_qlnt_manager.dto.request.service.ServiceCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceResponse;
+import com.example.datn_qlnt_manager.entity.Service;
+import com.example.datn_qlnt_manager.entity.ServicePriceHistory;
+import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.ServiceMapper;
+import com.example.datn_qlnt_manager.repository.ServicePriceHistoryRepository;
 import com.example.datn_qlnt_manager.repository.ServiceRepository;
 import com.example.datn_qlnt_manager.service.ServiceService;
+import com.example.datn_qlnt_manager.service.UserService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import jakarta.transaction.Transactional;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @org.springframework.stereotype.Service
 @Transactional
@@ -40,10 +45,11 @@ public class ServiceServiceImpl implements ServiceService {
     ServiceRepository serviceRepository;
     ServiceMapper serviceMapper;
     UserService userService;
-
+    ServicePriceHistoryRepository servicePriceHistoryRepository;
 
     @Override
-    public PaginatedResponse<ServiceResponse> getPageAndSearchAndFilterService(ServiceFilter filter, int page, int size) {
+    public PaginatedResponse<ServiceResponse> getPageAndSearchAndFilterService(
+            ServiceFilter filter, int page, int size) {
         User user = userService.getCurrentUser();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Order.desc("updatedAt")));
 
@@ -55,8 +61,7 @@ public class ServiceServiceImpl implements ServiceService {
                 filter.getMaxPrice(),
                 filter.getServiceStatus(),
                 filter.getServiceCalculation(),
-                pageable
-        );
+                pageable);
 
         List<ServiceResponse> serviceResponses = paging.getContent().stream()
                 .map(serviceMapper::toServiceResponse)
@@ -78,23 +83,15 @@ public class ServiceServiceImpl implements ServiceService {
                 .build();
     }
 
-
     @Override
     public ServiceResponse createService(ServiceCreationRequest request) {
         User user = userService.getCurrentUser();
 
         validateDuplicateCategory(request.getServiceCategory(), user.getId());
 
-        validateCalculationWithCategory(
-                request.getServiceCalculation(),
-                request.getServiceCategory()
-        );
+        validateCalculationWithCategory(request.getServiceCalculation(), request.getServiceCategory());
 
-        String unit = getDefaultUnit(
-                request.getServiceCalculation(),
-                request.getServiceCategory(),
-                request.getUnit()
-        );
+        String unit = getDefaultUnit(request.getServiceCalculation(), request.getServiceCategory(), request.getUnit());
 
         Service service = serviceMapper.toServiceCreation(request);
         service.setUser(user);
@@ -109,8 +106,22 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public ServiceResponse updateService(String serviceId, ServiceUpdateRequest request) {
-        Service existing = serviceRepository.findById(serviceId)
-                .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+        Service existing =
+                serviceRepository.findById(serviceId).orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+
+        // So sánh giá trước và sau
+        BigDecimal oldPrice = existing.getPrice();
+        BigDecimal newPrice = request.getPrice();
+
+        // Nếu giá thay đổi thì lưu lịch sử
+        if (oldPrice != null && !oldPrice.equals(newPrice)) {
+            ServicePriceHistory servicePriceHistory = new ServicePriceHistory();
+            servicePriceHistory.setService(existing);
+            servicePriceHistory.setOldPrice(oldPrice);
+            servicePriceHistory.setNewPrice(newPrice);
+            servicePriceHistory.setApplicableDate(LocalDateTime.now());
+            servicePriceHistoryRepository.save(servicePriceHistory);
+        }
 
         Service updated = serviceMapper.toServiceUpdate(request);
         updated.setId(existing.getId());
@@ -124,16 +135,15 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public Void deleteService(String serviceId) {
-        serviceRepository.findById(serviceId)
-                .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+        serviceRepository.findById(serviceId).orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
         serviceRepository.deleteById(serviceId);
         return null;
     }
 
     @Override
     public void softDeleteServiceById(String id) {
-        Service service = serviceRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+        Service service =
+                serviceRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
         service.setStatus(ServiceStatus.KHONG_SU_DUNG);
         service.setUpdatedAt(Instant.now());
         serviceRepository.save(service);
@@ -141,7 +151,8 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public ServiceResponse toggleServiceStatus(String serviceId) {
-        Service service = serviceRepository.findByIdAndStatusNot(serviceId, ServiceStatus.KHONG_SU_DUNG)
+        Service service = serviceRepository
+                .findByIdAndStatusNot(serviceId, ServiceStatus.KHONG_SU_DUNG)
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
         if (service.getStatus() == ServiceStatus.HOAT_DONG) {
@@ -161,25 +172,24 @@ public class ServiceServiceImpl implements ServiceService {
         return serviceRepository.getServiceStats(userService.getCurrentUser().getId());
     }
 
-
     private static final Map<ServiceCalculation, Set<ServiceCategory>> validCategoryMap = Map.of(
-            ServiceCalculation.TINH_THEO_SO, Set.of(
-                    ServiceCategory.DIEN, ServiceCategory.NUOC
-            ),
-            ServiceCalculation.TINH_THEO_NGUOI, Set.of(
-                    ServiceCategory.NUOC, ServiceCategory.GUI_XE,
-                    ServiceCategory.VE_SINH, ServiceCategory.THANG_MAY,
-                    ServiceCategory.GIAT_SAY, ServiceCategory.KHAC
-            ),
-            ServiceCalculation.TINH_THEO_PHONG, Set.of(
-                    ServiceCategory.INTERNET, ServiceCategory.VE_SINH,
-                    ServiceCategory.THANG_MAY, ServiceCategory.BAO_TRI,
-                    ServiceCategory.AN_NINH, ServiceCategory.GIAT_SAY,
-                    ServiceCategory.KHAC
-            )
-    );
+            ServiceCalculation.TINH_THEO_SO, Set.of(ServiceCategory.DIEN, ServiceCategory.NUOC),
+            ServiceCalculation.TINH_THEO_NGUOI,
+                    Set.of(
+                            ServiceCategory.NUOC, ServiceCategory.GUI_XE,
+                            ServiceCategory.VE_SINH, ServiceCategory.THANG_MAY,
+                            ServiceCategory.GIAT_SAY, ServiceCategory.KHAC),
+            ServiceCalculation.TINH_THEO_PHONG,
+                    Set.of(
+                            ServiceCategory.INTERNET,
+                            ServiceCategory.VE_SINH,
+                            ServiceCategory.THANG_MAY,
+                            ServiceCategory.BAO_TRI,
+                            ServiceCategory.AN_NINH,
+                            ServiceCategory.GIAT_SAY,
+                            ServiceCategory.KHAC));
 
-    //validate mối liên hệ giữa cách tính và danh mục
+    // validate mối liên hệ giữa cách tính và danh mục
     private void validateCalculationWithCategory(ServiceCalculation calculation, ServiceCategory category) {
         if (category == ServiceCategory.TIEN_PHONG) {
             throw new AppException(ErrorCode.FORBIDDEN_CATEGORY_TYPE);
@@ -191,7 +201,7 @@ public class ServiceServiceImpl implements ServiceService {
         }
     }
 
-    //Tự set giá trị cho unit dựa theo cách tính
+    // Tự set giá trị cho unit dựa theo cách tính
     private String getDefaultUnit(ServiceCalculation calculation, ServiceCategory category, String providedUnit) {
 
         if (providedUnit != null && !providedUnit.isBlank() && category == ServiceCategory.KHAC) {
@@ -221,7 +231,7 @@ public class ServiceServiceImpl implements ServiceService {
         throw new AppException(ErrorCode.INVALID_UNIT_COMBINATION);
     }
 
-    //Check trùng danh mục, mỗi danh mục chỉ 1 bản ghi trừ danh mục 'KHAC'
+    // Check trùng danh mục, mỗi danh mục chỉ 1 bản ghi trừ danh mục 'KHAC'
     private void validateDuplicateCategory(ServiceCategory category, String userId) {
         if (category == ServiceCategory.KHAC) {
             return;
@@ -230,9 +240,6 @@ public class ServiceServiceImpl implements ServiceService {
         boolean exists = serviceRepository.existsByServiceCategoryAndUserId(category, userId);
         if (exists) {
             throw new AppException(ErrorCode.DUPLICATE_SERVICE_CATEGORY);
-
         }
     }
-
-
 }

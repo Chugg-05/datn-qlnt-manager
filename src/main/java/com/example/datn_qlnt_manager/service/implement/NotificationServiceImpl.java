@@ -1,5 +1,18 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import jakarta.transaction.Transactional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -19,20 +32,10 @@ import com.example.datn_qlnt_manager.repository.NotificationUserRepository;
 import com.example.datn_qlnt_manager.repository.UserRepository;
 import com.example.datn_qlnt_manager.service.NotificationService;
 import com.example.datn_qlnt_manager.service.UserService;
-import jakarta.transaction.Transactional;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +47,6 @@ public class NotificationServiceImpl implements NotificationService {
     UserRepository userRepository;
     UserService userService;
     NotificationMapper notificationMapper;
-
 
     @Override
     public NotificationResponse createNotification(NotificationCreationRequest request) {
@@ -70,7 +72,8 @@ public class NotificationServiceImpl implements NotificationService {
                     nu.setUser(user);
                     nu.setNotification(notification);
                     return nu;
-                }).collect(Collectors.toList());
+                })
+                .collect(Collectors.toList());
 
         notificationUserRepository.saveAll(notifyLinks);
         return notificationMapper.toResponse(notification);
@@ -78,7 +81,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationResponse updateNotification(String notificationId, NotificationUpdateRequest request) {
-        Notification notification = notificationRepository.findById(notificationId)
+        Notification notification = notificationRepository
+                .findById(notificationId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
 
         if (!Boolean.TRUE.equals(request.getSendToAll())
@@ -100,7 +104,8 @@ public class NotificationServiceImpl implements NotificationService {
                     nu.setUser(user);
                     nu.setNotification(notification);
                     return nu;
-                }).collect(Collectors.toList());
+                })
+                .collect(Collectors.toList());
 
         notificationRepository.save(notification);
         notificationUserRepository.saveAll(notifyLinks);
@@ -109,7 +114,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public PaginatedResponse<NotificationResponse> filterMyNotifications(NotificationFilter filter, int page, int size) {
+    public PaginatedResponse<NotificationResponse> filterMyNotifications(
+            NotificationFilter filter, int page, int size) {
         String userId = userService.getCurrentUser().getId();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "sentAt"));
 
@@ -119,8 +125,7 @@ public class NotificationServiceImpl implements NotificationService {
                 filter.getNotificationType(),
                 filter.getFromDate(),
                 filter.getToDate(),
-                pageable
-        );
+                pageable);
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
@@ -174,6 +179,4 @@ public class NotificationServiceImpl implements NotificationService {
         }
         notificationRepository.deleteById(notificationId);
     }
-
-
 }

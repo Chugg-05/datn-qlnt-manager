@@ -1,14 +1,16 @@
 package com.example.datn_qlnt_manager.dto.request.job;
 
+import java.util.Date;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import com.example.datn_qlnt_manager.common.JobObjectType;
 import com.example.datn_qlnt_manager.common.JobPriorityLevel;
 import com.example.datn_qlnt_manager.common.JobStatus;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -18,13 +20,18 @@ import java.util.Date;
 public class JobUpdateRequest {
     @NotBlank(message = "INVALID_TITLE_BLANK")
     String title;
+
     String description;
+
     @NotNull(message = "INVALID_JOB_PRIORITY_LEVEL_NULL")
     JobPriorityLevel jobPriorityLevel;
+
     @NotNull(message = "INVALID_JOB_STATUS_NULL")
     JobStatus jobStatus;
+
     @NotNull(message = "INVALID_COMPLETION_DEADLINE_NULL")
     Date completionDeadline;
+
     @NotNull(message = "INVALID_JOB_OBJECT_TYPE_NULL")
     JobObjectType jobObjectType;
 }

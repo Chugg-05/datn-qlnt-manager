@@ -1,10 +1,9 @@
 package com.example.datn_qlnt_manager.repository;
 
-import com.example.datn_qlnt_manager.common.ContractStatus;
-import com.example.datn_qlnt_manager.common.Gender;
-import com.example.datn_qlnt_manager.dto.response.contract.ContractDetailResponse;
-import com.example.datn_qlnt_manager.dto.statistics.ContractStatistics;
-import com.example.datn_qlnt_manager.entity.Contract;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,9 +11,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import com.example.datn_qlnt_manager.common.ContractStatus;
+import com.example.datn_qlnt_manager.common.Gender;
+import com.example.datn_qlnt_manager.dto.response.contract.ContractDetailResponse;
+import com.example.datn_qlnt_manager.dto.statistics.ContractStatistics;
+import com.example.datn_qlnt_manager.entity.Contract;
 
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, String> {
@@ -42,7 +43,7 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
             @Param("status") ContractStatus status,
             Pageable pageable);
 
-	@Query(
+    @Query(
             """
 		SELECT c FROM Contract c
 		INNER JOIN c.tenants t
@@ -63,8 +64,8 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
             @Param("gender") Gender gender,
             Pageable pageable);
 
-
-	@Query("""
+    @Query(
+            """
 		SELECT new com.example.datn_qlnt_manager.dto.response.contract.ContractDetailResponse(
 			c.id,
 			c.contractCode,
@@ -96,10 +97,10 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 		JOIN c.tenants rep
 		WHERE c.id = :contractId AND rep.isRepresentative = true
 	""")
-	Optional<ContractDetailResponse> findContractDetailById(@Param("contractId") String contractId);
+    Optional<ContractDetailResponse> findContractDetailById(@Param("contractId") String contractId);
 
-
-	@Query("""
+    @Query(
+            """
 		SELECT c FROM Contract c
 		JOIN c.room r
 		JOIN r.floor f
@@ -108,31 +109,30 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 		WHERE u.id = :userId
 		ORDER BY c.updatedAt DESC
 	""")
-	List<Contract> findAllContractByUserId(@Param("userId") String userId);
+    List<Contract> findAllContractByUserId(@Param("userId") String userId);
 
-	@Query(
-			"""
-        SELECT COUNT(c),
-               SUM(CASE WHEN c.status = 'HIEU_LUC' THEN 1 ELSE 0 END),
-               SUM(CASE WHEN c.status = 'SAP_HET_HAN' THEN 1 ELSE 0 END),
-               SUM(CASE WHEN c.status = 'HET_HAN' THEN 1 ELSE 0 END),
-               SUM(CASE WHEN c.status = 'DA_THANH_LY' THEN 1 ELSE 0 END),
-               SUM(CASE WHEN c.status = 'DA_HUY' THEN 1 ELSE 0 END)
-        FROM Contract c
-        WHERE c.room.floor.building.user.id = :userId
-    """)
-	ContractStatistics getTotalContractByStatus(@Param("userId") String userId);
+    @Query(
+            """
+		SELECT COUNT(c),
+			SUM(CASE WHEN c.status = 'HIEU_LUC' THEN 1 ELSE 0 END),
+			SUM(CASE WHEN c.status = 'SAP_HET_HAN' THEN 1 ELSE 0 END),
+			SUM(CASE WHEN c.status = 'HET_HAN' THEN 1 ELSE 0 END),
+			SUM(CASE WHEN c.status = 'DA_THANH_LY' THEN 1 ELSE 0 END),
+			SUM(CASE WHEN c.status = 'DA_HUY' THEN 1 ELSE 0 END)
+		FROM Contract c
+		WHERE c.room.floor.building.user.id = :userId
+	""")
+    ContractStatistics getTotalContractByStatus(@Param("userId") String userId);
 
-	@Query("""
+    @Query("""
 		SELECT c FROM Contract c
 		WHERE c.startDate <= :endOfMonth
-		  AND c.endDate >= :startOfMonth
+		AND c.endDate >= :startOfMonth
 	""")
-	List<Contract> findValidContractsInMonth(
-			@Param("startOfMonth") LocalDateTime startOfMonth,
-			@Param("endOfMonth") LocalDateTime endOfMonth
-	);
+    List<Contract> findValidContractsInMonth(
+            @Param("startOfMonth") LocalDateTime startOfMonth, @Param("endOfMonth") LocalDateTime endOfMonth);
 
-	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
-	boolean existsByTenants_Id(String tenantId);
+    boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
+
+    boolean existsByTenants_Id(String tenantId);
 }

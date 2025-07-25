@@ -1,5 +1,12 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.common.RoomType;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
@@ -15,20 +22,12 @@ import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.RoomNoMeterResponse;
 import com.example.datn_qlnt_manager.dto.statistics.RoomNoMeterCountStatistics;
 import com.example.datn_qlnt_manager.service.MeterService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.*;
-
-
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/meters")
@@ -44,8 +43,7 @@ public class MeterController {
     public ApiResponse<PaginatedResponse<MeterResponse>> getMyMeters(
             @Valid @ModelAttribute MeterFilter filter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
+            @RequestParam(defaultValue = "15") int size) {
         return ApiResponse.<PaginatedResponse<MeterResponse>>builder()
                 .data(meterService.getPageAndSearchAndFilterMeterByUserId(filter, page, size))
                 .message("Get my meter list successfully")
@@ -64,8 +62,7 @@ public class MeterController {
     @Operation(summary = "Sửa công tơ")
     @PutMapping("/{meterId}")
     public ApiResponse<MeterResponse> updateMeter(
-            @PathVariable("meterId") String meterId,
-            @RequestBody @Valid MeterUpdateRequest request) {
+            @PathVariable("meterId") String meterId, @RequestBody @Valid MeterUpdateRequest request) {
         return ApiResponse.<MeterResponse>builder()
                 .data(meterService.updateMeter(meterId, request))
                 .message("Update meter success")
@@ -76,13 +73,12 @@ public class MeterController {
     @DeleteMapping("/{meterId}")
     public ApiResponse<String> deleteRoom(@PathVariable("meterId") String meterId) {
         meterService.deleteMeter(meterId);
-        return ApiResponse.<String>builder()
-                .message("Delete meter success")
-                .build();
+        return ApiResponse.<String>builder().message("Delete meter success").build();
     }
 
     @GetMapping("/monthly-stats")
-    public ApiResponse<List<MeterReadingMonthlyStatsResponse>> getMonthlyStats(@RequestParam(required = false) String roomId) {
+    public ApiResponse<List<MeterReadingMonthlyStatsResponse>> getMonthlyStats(
+            @RequestParam(required = false) String roomId) {
         return ApiResponse.<List<MeterReadingMonthlyStatsResponse>>builder()
                 .message("Thống kê chỉ số từng tháng thành công")
                 .data(meterService.getMonthlyStats(roomId))
@@ -128,10 +124,9 @@ public class MeterController {
             @RequestParam(required = false) RoomStatus status,
             @RequestParam(required = false) RoomType roomType,
             @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice
-    ) {
-        PaginatedResponse<RoomNoMeterResponse> result = meterService.getRoomsWithoutMeterByUser(
-                page, size, query, status, roomType, minPrice, maxPrice);
+            @RequestParam(required = false) BigDecimal maxPrice) {
+        PaginatedResponse<RoomNoMeterResponse> result =
+                meterService.getRoomsWithoutMeterByUser(page, size, query, status, roomType, minPrice, maxPrice);
 
         return ApiResponse.<List<RoomNoMeterResponse>>builder()
                 .message("Get list of rooms without meter successfully")

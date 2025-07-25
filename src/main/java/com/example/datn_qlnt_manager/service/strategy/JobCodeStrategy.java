@@ -1,14 +1,16 @@
 package com.example.datn_qlnt_manager.service.strategy;
 
+import java.security.SecureRandom;
+import java.time.LocalDate;
+
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.utils.CodeGeneratorUtil;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.stereotype.Service;
-
-import java.security.SecureRandom;
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor

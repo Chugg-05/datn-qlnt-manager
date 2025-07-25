@@ -17,7 +17,4 @@ public interface NotificationService {
     NotificationDetailResponse getNotificationDetail(String notificationId);
 
     void deleteNotificationById(String notificationId);
-
-
-
 }

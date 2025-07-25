@@ -2,8 +2,6 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
-import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +11,9 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.TenantFilter;
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantResponse;
+import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
 import com.example.datn_qlnt_manager.service.TenantService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +39,8 @@ public class TenantController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
 
-        PaginatedResponse<TenantResponse> result = tenantService.getPageAndSearchAndFilterTenantByUserId(filter, page, size);
+        PaginatedResponse<TenantResponse> result =
+                tenantService.getPageAndSearchAndFilterTenantByUserId(filter, page, size);
 
         return ApiResponse.<List<TenantResponse>>builder()
                 .message("Get tenants successfully")
@@ -66,8 +67,7 @@ public class TenantController {
 
     @Operation(summary = "Thêm khách hàng mới dành cho chủ nhà trọ")
     @PostMapping("/owner")
-    public ApiResponse<TenantResponse> createTenantByOwner(
-            @Valid @RequestBody TenantCreationRequest request) {
+    public ApiResponse<TenantResponse> createTenantByOwner(@Valid @RequestBody TenantCreationRequest request) {
         TenantResponse response = tenantService.createTenantByOwner(request);
         return ApiResponse.<TenantResponse>builder()
                 .message("Tenant created successfully by owner")
@@ -77,8 +77,7 @@ public class TenantController {
 
     @Operation(summary = "Thêm khách hàng mới dành cho khach hàng đại diện")
     @PostMapping("/representative")
-    public ApiResponse<TenantResponse> createTenantByRepresentative(
-            @Valid @RequestBody TenantCreationRequest request) {
+    public ApiResponse<TenantResponse> createTenantByRepresentative(@Valid @RequestBody TenantCreationRequest request) {
         TenantResponse response = tenantService.createTenantByRepresentative(request);
         return ApiResponse.<TenantResponse>builder()
                 .message("Representative tenant created successfully")

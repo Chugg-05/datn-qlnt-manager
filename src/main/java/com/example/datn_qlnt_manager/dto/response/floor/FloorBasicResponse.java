@@ -1,7 +1,8 @@
 package com.example.datn_qlnt_manager.dto.response.floor;
 
-import com.example.datn_qlnt_manager.common.FloorType;
 import com.example.datn_qlnt_manager.common.FloorStatus;
+import com.example.datn_qlnt_manager.common.FloorType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FloorBasicResponse {
-//    String floorId;
+    //    String floorId;
     String id;
     String nameFloor;
     FloorType floorType;

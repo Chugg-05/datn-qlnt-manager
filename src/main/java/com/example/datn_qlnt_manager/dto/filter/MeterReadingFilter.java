@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.dto.filter;
 
 import com.example.datn_qlnt_manager.common.MeterType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,5 +16,4 @@ public class MeterReadingFilter {
     String roomId;
     MeterType meterType;
     Integer month;
-
 }

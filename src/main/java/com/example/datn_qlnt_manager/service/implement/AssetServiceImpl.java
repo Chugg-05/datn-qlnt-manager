@@ -1,5 +1,14 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.time.Instant;
+import java.util.*;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import com.example.datn_qlnt_manager.common.AssetBeLongTo;
 import com.example.datn_qlnt_manager.common.Meta;
 import com.example.datn_qlnt_manager.common.Pagination;
@@ -22,17 +31,10 @@ import com.example.datn_qlnt_manager.mapper.AssetMapper;
 import com.example.datn_qlnt_manager.repository.*;
 import com.example.datn_qlnt_manager.service.AssetService;
 import com.example.datn_qlnt_manager.service.UserService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +50,6 @@ public class AssetServiceImpl implements AssetService {
     TenantRepository tenantRepository;
     UserService userService;
 
-
     @Override
     public AssetResponse createAsset(AssetCreationRequest request) {
         List<Asset> duplicates = assetRepository.findByNameAssetIgnoreCase(request.getNameAsset());
@@ -59,8 +60,8 @@ public class AssetServiceImpl implements AssetService {
         Asset asset = assetMapper.toAsset(request);
 
         // set AssetType
-        AssetType assetType = assetTypeRepository.findById(request.getAssetTypeId())
-                .orElseThrow(() -> new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND));
+        AssetType assetType =
+                assetTypeRepository.findById(request.getAssetTypeId()).orElseThrow(() -> new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND));
         asset.setAssetType(assetType);
 
         // Xử lý theo loại tài sản thuộc về đâu
@@ -88,39 +89,20 @@ public class AssetServiceImpl implements AssetService {
 
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by("updatedAt").descending());
 
-        Page<Asset> pageAsset = assetRepository.findAllByFilterAndUserId(
-                filter.getNameAsset(),
-                filter.getAssetBeLongTo(),
-                filter.getAssetStatus(),
-                currentUser.getId(),
-                pageable
-        );
+        Page<Asset> pageAsset = assetRepository.findAllByFilterAndUserId(filter.getNameAsset(),
+                filter.getAssetBeLongTo(), filter.getAssetStatus(), currentUser.getId(), pageable);
 
-        List<AssetResponse> assetResponses = pageAsset.getContent()
-                .stream()
-                .map(assetMapper::toResponse)
-                .toList();
+        List<AssetResponse> assetResponses = pageAsset.getContent().stream().map(assetMapper::toResponse).toList();
 
-        Meta<?> meta = Meta.builder()
-                .pagination(Pagination.builder()
-                        .count(pageAsset.getNumberOfElements())
-                        .perPage(size)
-                        .currentPage(page)
-                        .totalPages(pageAsset.getTotalPages())
-                        .total(pageAsset.getTotalElements())
-                        .build())
-                .build();
+        Meta<?> meta =
+                Meta.builder().pagination(Pagination.builder().count(pageAsset.getNumberOfElements()).perPage(size).currentPage(page).totalPages(pageAsset.getTotalPages()).total(pageAsset.getTotalElements()).build()).build();
 
-        return PaginatedResponse.<AssetResponse>builder()
-                .data(assetResponses)
-                .meta(meta)
-                .build();
+        return PaginatedResponse.<AssetResponse>builder().data(assetResponses).meta(meta).build();
     }
 
     @Override
     public AssetResponse updateAssetById(String assetId, AssetUpdateRequest request) {
-        Asset asset = assetRepository.findById(assetId)
-                .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
+        Asset asset = assetRepository.findById(assetId).orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
         assetMapper.updateAsset(asset, request);
         asset.setAssetStatus(request.getAssetStatus());
         List<Asset> duplicates = assetRepository.findByNameAssetIgnoreCaseAndIdNot(request.getNameAsset(), assetId);
@@ -129,8 +111,8 @@ public class AssetServiceImpl implements AssetService {
         }
 
         // set AssetType
-        AssetType assetType = assetTypeRepository.findById(request.getAssetTypeId())
-                .orElseThrow(() -> new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND));
+        AssetType assetType =
+                assetTypeRepository.findById(request.getAssetTypeId()).orElseThrow(() -> new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND));
         asset.setAssetType(assetType);
 
         // clear id cũ - gán id liên quan khi sửa belongto
@@ -150,15 +132,15 @@ public class AssetServiceImpl implements AssetService {
                                   String buildingID, String tenantId) {
         switch (assetBeLongTo) {
             case PHONG -> {
-                Room room = roomRepository.findById(roomID)
-                        .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+                Room room =
+                        roomRepository.findById(roomID).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
                 setRoom(asset, room);
             }
 
             case CHUNG -> {
                 if (floorID != null) {
-                    Floor floor = floorRepository.findById(floorID)
-                            .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+                    Floor floor =
+                            floorRepository.findById(floorID).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
                     asset.setFloor(floor);
 
                     Building building = floor.getBuilding();
@@ -166,18 +148,17 @@ public class AssetServiceImpl implements AssetService {
                         asset.setBuilding(building);
                     }
                 } else if (buildingID != null) {
-                    Building building = buildingRepository.findById(buildingID)
-                            .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+                    Building building =
+                            buildingRepository.findById(buildingID).orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
                     asset.setBuilding(building);
                 }
             }
 
             case CA_NHAN -> {
-                Tenant tenant = tenantRepository.findById(tenantId)
-                        .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+                Tenant tenant =
+                        tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
                 asset.setTenant(tenant);
             }
-
         }
     }
 
@@ -199,9 +180,7 @@ public class AssetServiceImpl implements AssetService {
     public List<AssetResponse> findAssetsByCurrentUser() {
         String currentUserId = userService.getCurrentUser().getId(); // đảm bảo lấy từ token
         List<Asset> assets = assetRepository.findAssetsByUserId(currentUserId);
-        return assets.stream()
-                .map(assetMapper::toResponse)
-                .toList();
+        return assets.stream().map(assetMapper::toResponse).toList();
     }
 
     @Override
@@ -209,46 +188,27 @@ public class AssetServiceImpl implements AssetService {
         User user = userService.getCurrentUser();
 
         List<IdAndName> assetTypes =
-                assetTypeRepository.findAllByUserId(user.getId())
-                        .stream().map(at -> new IdAndName(at.getId(),
-                                at.getNameAssetType())).toList();
+                assetTypeRepository.findAllByUserId(user.getId()).stream().map(at -> new IdAndName(at.getId(),
+                        at.getNameAssetType())).toList();
 
-        List<BuildingSelectResponse> buildings = buildingRepository.findAllBuildingsByUserId(user.getId())
-                .stream()
-                .map(b -> {
+        List<BuildingSelectResponse> buildings =
+                buildingRepository.findAllBuildingsByUserId(user.getId()).stream().map(b -> {
                     List<FloorSelectResponse> floorSelectResponses =
-                            floorRepository.findAllFloorsByUserIdAndBuildingId(user.getId(), b.getId()).stream()
-                                    .map(f -> {
-                                        List<RoomSelectResponse> roomSelectResponses =
-                                                roomRepository.findRoomsByUserIdAndFloorId(user.getId(), f.getId())
-                                                        .stream().map(r -> {
-                                                            List<TenantSelectResponse> tenants =
-                                                                    tenantRepository.findAllTenantsByOwnerIdAndRoomId(user.getId(), r.getId()).stream().toList();
+                            floorRepository.findAllFloorsByUserIdAndBuildingId(user.getId(), b.getId()).stream().map(f -> {
+                                List<RoomSelectResponse> roomSelectResponses =
+                                        roomRepository.findRoomsByUserIdAndFloorId(user.getId(), f.getId()).stream().map(r -> {
+                                            List<TenantSelectResponse> tenants =
+                                                    tenantRepository.findAllTenantsByOwnerIdAndRoomId(user.getId(),
+                                                            r.getId()).stream().toList();
 
-                                                            return RoomSelectResponse.builder()
-                                                                    .id(r.getId())
-                                                                    .name(r.getName())
-                                                                    .tenants(tenants)
-                                                                    .build();
-                                                        }).toList();
-                                        return FloorSelectResponse.builder()
-                                                .id(f.getId())
-                                                .name(f.getName())
-                                                .rooms(roomSelectResponses)
-                                                .build();
-                                    }).toList();
-                    return BuildingSelectResponse.builder()
-                            .id(b.getId())
-                            .name(b.getName())
-                            .floors(floorSelectResponses)
-                            .build();
-                })
-                .toList();
+                                            return RoomSelectResponse.builder().id(r.getId()).name(r.getName()).tenants(tenants).build();
+                                        }).toList();
+                                return FloorSelectResponse.builder().id(f.getId()).name(f.getName()).rooms(roomSelectResponses).build();
+                            }).toList();
+                    return BuildingSelectResponse.builder().id(b.getId()).name(b.getName()).floors(floorSelectResponses).build();
+                }).toList();
 
-        return CreateAssetInitResponse.builder()
-                .assetTypes(assetTypes)
-                .buildings(buildings)
-                .build();
+        return CreateAssetInitResponse.builder().assetTypes(assetTypes).buildings(buildings).build();
     }
 
     @Override
@@ -256,36 +216,25 @@ public class AssetServiceImpl implements AssetService {
         User user = userService.getCurrentUser();
 
         List<IdAndName> assetTypes =
-                assetTypeRepository.findAllByUserId(user.getId())
-                        .stream().map(at -> new IdAndName(at.getId(),
-                                at.getNameAssetType())).toList();
+                assetTypeRepository.findAllByUserId(user.getId()).stream().map(at -> new IdAndName(at.getId(),
+                        at.getNameAssetType())).toList();
 
         List<IdAndName> buildings =
-                buildingRepository.findAllBuildingsByUserId(user.getId())
-                        .stream().map(b -> new IdAndName(b.getId(), b.getName()))
-                        .toList();
+                buildingRepository.findAllBuildingsByUserId(user.getId()).stream().map(b -> new IdAndName(b.getId(),
+                        b.getName())).toList();
 
         List<IdAndName> floors =
-                floorRepository.getFloorsByUserId(user.getId())
-                        .stream().map(b -> new IdAndName(b.getId(), b.getName()))
-                        .toList();
+                floorRepository.getFloorsByUserId(user.getId()).stream().map(b -> new IdAndName(b.getId(),
+                        b.getName())).toList();
 
         List<IdAndName> rooms =
-                roomRepository.findAllRoomsByUserId(user.getId())
-                        .stream().map(b -> new IdAndName(b.getId(), b.getRoomCode()))
-                        .toList();
+                roomRepository.findAllRoomsByUserId(user.getId()).stream().map(b -> new IdAndName(b.getId(),
+                        b.getRoomCode())).toList();
 
         List<IdAndName> tenants =
-                tenantRepository.findAllTenantsByUserId(user.getId())
-                        .stream().map(b -> new IdAndName(b.getId(), b.getFullName()))
-                        .toList();
+                tenantRepository.findAllTenantsByUserId(user.getId()).stream().map(b -> new IdAndName(b.getId(),
+                        b.getFullName())).toList();
 
-        return CreateAssetInit2Response.builder()
-                .assetTypes(assetTypes)
-                .buildings(buildings)
-                .floors(floors)
-                .tenants(tenants)
-                .rooms(rooms)
-                .build();
+        return CreateAssetInit2Response.builder().assetTypes(assetTypes).buildings(buildings).floors(floors).tenants(tenants).rooms(rooms).build();
     }
 }

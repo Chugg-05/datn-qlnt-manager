@@ -37,11 +37,8 @@ public class VehicleController {
             @ModelAttribute VehicleFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
-        PaginatedResponse<VehicleResponse> result = vehicleService.getPageAndSearchAndFilterVehicleByUserId(
-                filter,
-                page,
-                size
-        );
+        PaginatedResponse<VehicleResponse> result =
+                vehicleService.getPageAndSearchAndFilterVehicleByUserId(filter, page, size);
 
         return ApiResponse.<List<VehicleResponse>>builder()
                 .message("Get vehicle successfully")
@@ -56,11 +53,8 @@ public class VehicleController {
             @ModelAttribute VehicleFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
-        PaginatedResponse<VehicleResponse> result = vehicleService.getVehicleWithStatusCancelByUserId(
-                filter,
-                page,
-                size
-        );
+        PaginatedResponse<VehicleResponse> result =
+                vehicleService.getVehicleWithStatusCancelByUserId(filter, page, size);
 
         return ApiResponse.<List<VehicleResponse>>builder()
                 .message("Get vehicle with status cancel successfully")

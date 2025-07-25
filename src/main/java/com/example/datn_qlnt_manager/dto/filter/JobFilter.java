@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.dto.filter;
 import com.example.datn_qlnt_manager.common.JobObjectType;
 import com.example.datn_qlnt_manager.common.JobPriorityLevel;
 import com.example.datn_qlnt_manager.common.JobStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,5 +18,4 @@ public class JobFilter {
     JobPriorityLevel jobPriorityLevel;
     JobStatus jobStatus;
     JobObjectType jobObjectType;
-
 }

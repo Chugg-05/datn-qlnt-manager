@@ -1,6 +1,5 @@
 package com.example.datn_qlnt_manager.common;
 
-
 import lombok.Getter;
 
 @Getter

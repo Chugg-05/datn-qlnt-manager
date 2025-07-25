@@ -1,10 +1,11 @@
 package com.example.datn_qlnt_manager.entity;
 
+import java.time.Instant;
+
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
 
 @Entity
 @Table(name = "lich_su_xu_ly_phan_hoi")

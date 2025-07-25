@@ -6,7 +6,6 @@ import com.example.datn_qlnt_manager.dto.request.meterReading.MeterReadingCreati
 import com.example.datn_qlnt_manager.dto.request.meterReading.MeterReadingUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.meterReading.MeterReadingResponse;
 
-
 public interface MeterReadingService {
 
     PaginatedResponse<MeterReadingResponse> getPageAndSearchAndFilterMeterReadingByUserId(

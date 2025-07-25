@@ -2,13 +2,13 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.statistics.UserStatistics;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.UserFilter;
 import com.example.datn_qlnt_manager.dto.response.UserDetailResponse;
+import com.example.datn_qlnt_manager.dto.statistics.UserStatistics;
 import com.example.datn_qlnt_manager.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.dto.response.tenant;
 
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
+
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 

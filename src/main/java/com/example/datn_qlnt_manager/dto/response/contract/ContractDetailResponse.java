@@ -1,17 +1,18 @@
 package com.example.datn_qlnt_manager.dto.response.contract;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Set;
+
 import com.example.datn_qlnt_manager.common.ContractStatus;
 import com.example.datn_qlnt_manager.dto.response.asset.AssetBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleBasicResponse;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.Set;
 
 @Data
 @Builder
@@ -66,8 +67,7 @@ public class ContractDetailResponse {
             BigDecimal electricPrice,
             BigDecimal waterPrice,
             Instant createdAt,
-            Instant updatedAt
-    ) {
+            Instant updatedAt) {
         this.id = id;
         this.contractCode = contractCode;
         this.roomCode = roomCode;
@@ -91,4 +91,3 @@ public class ContractDetailResponse {
         this.updatedAt = updatedAt;
     }
 }
-

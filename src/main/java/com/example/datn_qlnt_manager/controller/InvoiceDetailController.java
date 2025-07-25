@@ -1,17 +1,20 @@
 package com.example.datn_qlnt_manager.controller;
 
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.request.invoiceDetail.InvoiceDetailCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.invoiceDetail.InvoiceDetailUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceItemResponse;
 import com.example.datn_qlnt_manager.service.InvoiceDetailService;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -23,7 +26,8 @@ public class InvoiceDetailController {
     InvoiceDetailService invoiceDetailService;
 
     @PostMapping
-    public ApiResponse<InvoiceItemResponse> createInvoiceDetail(@RequestBody @Valid InvoiceDetailCreationRequest request) {
+    public ApiResponse<InvoiceItemResponse> createInvoiceDetail(
+            @RequestBody @Valid InvoiceDetailCreationRequest request) {
         return ApiResponse.<InvoiceItemResponse>builder()
                 .message("Invoice detail has been created successfully!")
                 .data(invoiceDetailService.createInvoiceDetail(request))
@@ -32,9 +36,7 @@ public class InvoiceDetailController {
 
     @PutMapping("/{id}")
     public ApiResponse<InvoiceItemResponse> updateInvoiceDetail(
-            @PathVariable("id") String detailId,
-            @RequestBody @Valid InvoiceDetailUpdateRequest request
-    ) {
+            @PathVariable("id") String detailId, @RequestBody @Valid InvoiceDetailUpdateRequest request) {
         return ApiResponse.<InvoiceItemResponse>builder()
                 .message("Invoice detail has been updated successfully!")
                 .data(invoiceDetailService.updateInvoiceDetail(detailId, request))

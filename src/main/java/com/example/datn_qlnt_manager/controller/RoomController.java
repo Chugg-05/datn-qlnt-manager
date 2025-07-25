@@ -2,17 +2,16 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
-import com.example.datn_qlnt_manager.dto.statistics.RoomNoMeterCountStatistics;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
 import com.example.datn_qlnt_manager.service.RoomService;
 
@@ -36,13 +35,9 @@ public class RoomController {
     public ApiResponse<List<RoomResponse>> getPageAndSearchAndFilterRoom(
             @ModelAttribute RoomFilter roomFilter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
-        PaginatedResponse<RoomResponse> result = roomService.getPageAndSearchAndFilterRoomByUserId(
-                roomFilter,
-                page,
-                size
-        );
+            @RequestParam(defaultValue = "15") int size) {
+        PaginatedResponse<RoomResponse> result =
+                roomService.getPageAndSearchAndFilterRoomByUserId(roomFilter, page, size);
 
         return ApiResponse.<List<RoomResponse>>builder()
                 .message("Get rooms successfully")
@@ -56,13 +51,8 @@ public class RoomController {
     public ApiResponse<List<RoomResponse>> getRoomWithStatusCancel(
             @ModelAttribute RoomFilter roomFilter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
-        PaginatedResponse<RoomResponse> result = roomService.getRoomWithStatusCancelByUserId(
-                roomFilter,
-                page,
-                size
-        );
+            @RequestParam(defaultValue = "15") int size) {
+        PaginatedResponse<RoomResponse> result = roomService.getRoomWithStatusCancelByUserId(roomFilter, page, size);
 
         return ApiResponse.<List<RoomResponse>>builder()
                 .message("Get rooms with status cancel successfully")

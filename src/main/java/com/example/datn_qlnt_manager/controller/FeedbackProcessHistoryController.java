@@ -1,15 +1,17 @@
 package com.example.datn_qlnt_manager.controller;
 
+import static lombok.AccessLevel.PRIVATE;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.response.feedbackProcessHistory.FeedbackProcessHistoryResponse;
 import com.example.datn_qlnt_manager.service.FeedbackProcessHistoryService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
-
-import static lombok.AccessLevel.PRIVATE;
 
 @RestController
 @RequestMapping("/feedback-logs")
@@ -25,8 +27,7 @@ public class FeedbackProcessHistoryController {
             @RequestParam(required = false) String feedbackId,
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
+            @RequestParam(defaultValue = "15") int size) {
         return ApiResponse.<PaginatedResponse<FeedbackProcessHistoryResponse>>builder()
                 .data(feedbackProcessHistoryService.getAllByUserId(feedbackId, query, page, size))
                 .message("Response processing history loaded successfully")

@@ -1,17 +1,18 @@
 package com.example.datn_qlnt_manager.mapper;
 
-import com.example.datn_qlnt_manager.dto.request.meterReading.MeterReadingCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.meterReading.MeterReadingUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.meterReading.MeterReadingResponse;
-import com.example.datn_qlnt_manager.entity.MeterReading;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import com.example.datn_qlnt_manager.dto.request.meterReading.MeterReadingCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.meterReading.MeterReadingUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.meterReading.MeterReadingResponse;
+import com.example.datn_qlnt_manager.entity.MeterReading;
+
 @Mapper(componentModel = "spring")
 public interface MeterReadingMapper {
 
-//    @Mapping(target = "id", ignore = true)
+    //    @Mapping(target = "id", ignore = true)
 
     MeterReading toMeterReadingCreation(MeterReadingCreationRequest request);
 
