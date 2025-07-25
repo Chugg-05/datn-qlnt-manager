@@ -609,9 +609,9 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private void validatePaymentDueDate(LocalDate dueDate, int year, int month) {
         LocalDate startOfMonth = LocalDate.of(year, month, 1);
-        LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
+        LocalDate endOfNextMonth = startOfMonth.plusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
 
-        if (dueDate.isBefore(startOfMonth) || dueDate.isAfter(endOfMonth)) {
+        if (dueDate.isBefore(startOfMonth) || dueDate.isAfter(endOfNextMonth)) {
             throw new AppException(ErrorCode.INVALID_PAYMENT_DUE_DATE);
         }
     }
