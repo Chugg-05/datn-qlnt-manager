@@ -4,7 +4,9 @@ import com.example.datn_qlnt_manager.common.*;
 import com.example.datn_qlnt_manager.dto.filter.ServiceFilter;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
 import com.example.datn_qlnt_manager.entity.Service;
+import com.example.datn_qlnt_manager.entity.ServicePriceHistory;
 import com.example.datn_qlnt_manager.entity.User;
+import com.example.datn_qlnt_manager.repository.ServicePriceHistoryRepository;
 import com.example.datn_qlnt_manager.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +28,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import jakarta.transaction.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +44,7 @@ public class ServiceServiceImpl implements ServiceService {
     ServiceRepository serviceRepository;
     ServiceMapper serviceMapper;
     UserService userService;
+    ServicePriceHistoryRepository  servicePriceHistoryRepository;
 
 
     @Override
@@ -111,6 +116,20 @@ public class ServiceServiceImpl implements ServiceService {
     public ServiceResponse updateService(String serviceId, ServiceUpdateRequest request) {
         Service existing = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+
+        // So sánh giá trước và sau
+        BigDecimal oldPrice = existing.getPrice();
+        BigDecimal newPrice = request.getPrice();
+
+        // Nếu giá thay đổi thì lưu lịch sử
+        if (oldPrice != null && !oldPrice.equals(newPrice)) {
+            ServicePriceHistory servicePriceHistory = new ServicePriceHistory();
+            servicePriceHistory.setService(existing);
+            servicePriceHistory.setOldPrice(oldPrice);
+            servicePriceHistory.setNewPrice(newPrice);
+            servicePriceHistory.setApplicableDate(LocalDateTime.now());
+            servicePriceHistoryRepository.save(servicePriceHistory);
+        }
 
         Service updated = serviceMapper.toServiceUpdate(request);
         updated.setId(existing.getId());

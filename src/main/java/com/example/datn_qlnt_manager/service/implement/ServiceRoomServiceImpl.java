@@ -59,6 +59,9 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
             throw new AppException(ErrorCode.ROOM_EXISTED_SERVICE);
         }
         ServiceRoom serviceRoom = serviceRoomMapper.toServiceRoom(request, room, service);
+        if (request.getTotalPrice() == null){
+            serviceRoom.setTotalPrice(service.getPrice());
+        }
         serviceRoom.setApplyTime(LocalDateTime.now());
         serviceRoom.setCreatedAt(Instant.now());
         serviceRoom.setUpdatedAt(Instant.now());
