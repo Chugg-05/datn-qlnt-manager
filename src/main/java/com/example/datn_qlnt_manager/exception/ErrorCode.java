@@ -176,7 +176,7 @@ public enum ErrorCode {
     INVOICE_ALREADY_CANCELLED(400, "This invoice has already been cancelled.", HttpStatus.BAD_REQUEST),
     INVALID_INVOICE_STATUS(400, "Invalid invoice status.", HttpStatus.BAD_REQUEST),
     INVOICE_NOT_EDITABLE(400, "This invoice cannot be edited.", HttpStatus.BAD_REQUEST),
-    INVALID_PAYMENT_DUE_DATE(400, "Payment due date must be in the future.", HttpStatus.BAD_REQUEST),
+    INVALID_PAYMENT_DUE_DATE(400, "The payment due date must be in the future and within this month only", HttpStatus.BAD_REQUEST),
     INVOICE_CAN_NOT_BE_DELETED(400, "This invoice cannot be deleted.", HttpStatus.BAD_REQUEST),
     INVALID_ASSETS_BLANK(400, "Assets cannot be blank.", HttpStatus.BAD_REQUEST),
     INVALID_ASSETS(400, "At least one asset must be selected.", HttpStatus.BAD_REQUEST),
@@ -191,7 +191,7 @@ public enum ErrorCode {
     INVALID_SERVICE_CALCULATION_NULL(400, "Service calculation cannot be null.", HttpStatus.BAD_REQUEST),
     INVALID_SERVICE_STATUS_NULL(400, "Service status cannot be blank.", HttpStatus.BAD_REQUEST),
     METER_READING_ALREADY_BILLED(400, "Meter reading has been invoiced. Cannot be updated.", HttpStatus.BAD_REQUEST),
-
+    CONTRACT_EXPIRED(400, "Contract has expired. Invoice cannot be generated.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),

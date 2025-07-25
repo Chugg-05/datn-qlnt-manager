@@ -599,7 +599,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         LocalDate contractEndDate = contract.getEndDate().toLocalDate();
 
         if (contractStartDate.isAfter(endOfMonth) || contractEndDate.isBefore(startOfMonth)) {
-            throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
+            throw new AppException(ErrorCode.CONTRACT_EXPIRED);
         }
 
         if (invoiceRepository.existsByContractIdAndMonthAndYear(contract.getId(), month, year)) {
@@ -608,11 +608,10 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     private void validatePaymentDueDate(LocalDate dueDate, int year, int month) {
-        LocalDate now = LocalDate.now();
         LocalDate startOfMonth = LocalDate.of(year, month, 1);
         LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
 
-        if (dueDate.isBefore(now) || dueDate.isAfter(endOfMonth)) {
+        if (dueDate.isBefore(startOfMonth) || dueDate.isAfter(endOfMonth)) {
             throw new AppException(ErrorCode.INVALID_PAYMENT_DUE_DATE);
         }
     }
