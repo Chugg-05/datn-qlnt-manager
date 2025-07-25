@@ -25,8 +25,5 @@ public class ServiceRoomCreationRequest {
     @NotNull(message = "START_DATE_REQUIRED")
     LocalDate startDate;
 
-    @DecimalMin(value = "0.0", message = "TOTAL_PRICE_MUST_BE_NON_NEGATIVE")
-    BigDecimal totalPrice;
-
     String descriptionServiceRoom;
 }

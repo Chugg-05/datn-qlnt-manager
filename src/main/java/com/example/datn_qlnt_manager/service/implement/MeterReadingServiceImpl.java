@@ -92,7 +92,7 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         meterReading.setMeter(meter);
         meterReading.setOldIndex(meter.getClosestIndex());
         meterReading.setQuantity(request.getNewIndex() - meter.getClosestIndex());
-        meterReading.setReadingDate(request.getReadingDate());
+        meterReading.setReadingDate(LocalDate.now());
         if (request.getDescriptionMeterReading() == null || request.getDescriptionMeterReading().isBlank()){
             meterReading.setDescriptionMeterReading("Ghi chỉ số tháng " +request.getMonth()+ "/" +request.getYear());
         }
