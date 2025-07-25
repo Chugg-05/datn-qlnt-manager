@@ -93,6 +93,14 @@ public class MeterServiceImpl implements MeterService {
             throw new AppException(ErrorCode.METER_CODE_EXISTED);
         }
 
+        if (meterRepository.existsByRoomIdAndMeterName(request.getRoomId(), request.getMeterName())) {
+            throw new AppException(ErrorCode.METER_NAME_ALREADY_EXISTS_IN_ROOM);
+        }
+
+        if (meterRepository.existsByRoomIdAndMeterType(request.getRoomId(), request.getMeterType())) {
+            throw new AppException(ErrorCode.METER_TYPE_ALREADY_EXISTS_IN_ROOM);
+        }
+
         Room room = roomRepository
                 .findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));

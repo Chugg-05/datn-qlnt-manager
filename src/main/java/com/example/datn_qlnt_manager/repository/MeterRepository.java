@@ -24,6 +24,11 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
 
     boolean existsByMeterCode(String meterCode);
 
+	boolean existsByRoomIdAndMeterName(String roomId, String meterName);
+
+	boolean existsByRoomIdAndMeterType(String roomId, MeterType meterType);
+
+
     @Query(
             """
 				SELECT new com.example.datn_qlnt_manager.dto.response.meter.MeterResponse(

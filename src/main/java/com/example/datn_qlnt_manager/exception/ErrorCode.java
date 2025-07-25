@@ -289,6 +289,9 @@ public enum ErrorCode {
     NEW_INDEX_LESS_THAN_OLD(409, "New number must be less than old number", HttpStatus.BAD_REQUEST),
     METER_READING_EXISTED(409, "The meter reading has been recorded for this month.", HttpStatus.CONFLICT),
     DUPLICATE_SERVICE_CATEGORY(409, "Category already exists.", HttpStatus.BAD_REQUEST),
+    METER_NAME_ALREADY_EXISTS_IN_ROOM(409,"Meter name already exists in this room",HttpStatus.BAD_REQUEST),
+    METER_TYPE_ALREADY_EXISTS_IN_ROOM(409,"Meter type already exists in this room",HttpStatus.BAD_REQUEST),
+
     ;
 
     final int code;
