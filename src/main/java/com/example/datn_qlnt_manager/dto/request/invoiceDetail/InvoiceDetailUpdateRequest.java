@@ -13,6 +13,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvoiceDetailUpdateRequest {
+    String serviceName;
+
     @Min(value = 1, message = "INVALID_NEW_INDEX_MIN")
     Integer newIndex;
 

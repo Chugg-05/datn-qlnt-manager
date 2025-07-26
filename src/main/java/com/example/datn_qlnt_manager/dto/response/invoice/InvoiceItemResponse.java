@@ -24,4 +24,6 @@ public class InvoiceItemResponse {
     String unit;
     BigDecimal unitPrice;
     BigDecimal amount;
+    String description;
+
 }
