@@ -14,5 +14,6 @@ public enum ServiceCategory {
     AN_NINH,
     GIAT_SAY,
     TIEN_PHONG,
-    KHAC
+    KHAC,
+    DEN_BU
 }

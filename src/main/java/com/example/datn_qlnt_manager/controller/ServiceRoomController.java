@@ -2,6 +2,8 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.IdNamAndType;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -108,7 +110,16 @@ public class ServiceRoomController {
         CreateRoomServiceInitResponse data = serviceRoomService.getServiceRoomInfoByUserId();
         return ApiResponse.<CreateRoomServiceInitResponse>builder()
                 .data(data)
-                .message("Assets has been found!")
+                .message(" has been found!")
+                .build();
+    }
+
+    @Operation(summary = "Hiển thị dịch vụ phòng theo phòng và chủ trọ đang đăng nhập")
+    @GetMapping("/all/{roomId}")
+    public ApiResponse<List<IdNamAndType>> getAllServiceRoomByUserId(@PathVariable(name = "roomId") String roomId) {
+        return ApiResponse.<List<IdNamAndType>>builder()
+                .data(serviceRoomService.getAllServiceRoomByUserId(roomId))
+                .message("Service room has been found!")
                 .build();
     }
 }

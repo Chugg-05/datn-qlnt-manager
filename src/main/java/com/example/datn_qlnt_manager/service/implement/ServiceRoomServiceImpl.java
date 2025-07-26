@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.IdNamAndType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -164,5 +166,10 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
                 .services(serviceRepository.findAllByUserId(
                         userService.getCurrentUser().getId()))
                 .build();
+    }
+
+    @Override
+    public List<IdNamAndType> getAllServiceRoomByUserId(String roomId) {
+        return serviceRoomRepository.getAllServiceRoomByUserId(userService.getCurrentUser().getId(), roomId);
     }
 }

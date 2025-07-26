@@ -20,6 +20,7 @@ public class InvoiceResponse {
     String invoiceCode;
     String buildingName;
     String roomCode;
+    String roomId;
     String tenantName;
     Integer month;
     Integer year;

@@ -85,6 +85,10 @@ public class InvoiceDetailServiceImpl implements InvoiceDetailService {
             detail.setDescription(request.getDescription());
         }
 
+        if (request.getServiceName() != null) {
+            detail.setServiceName(request.getServiceName());
+        }
+
         detail.recalculateAmount();
         invoiceDetailsRepository.save(detail);
 

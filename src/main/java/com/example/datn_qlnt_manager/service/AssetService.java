@@ -6,8 +6,9 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.AssetFilter;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
+import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInit2Response;
 import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInitResponse;
+import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
 
 public interface AssetService {
     AssetResponse createAsset(AssetCreationRequest request);
@@ -21,4 +22,6 @@ public interface AssetService {
     List<AssetResponse> findAssetsByCurrentUser();
 
     CreateAssetInitResponse getInitDataForAssetCreation();
+
+    CreateAssetInit2Response getAssetsInfoByUserId2();
 }
