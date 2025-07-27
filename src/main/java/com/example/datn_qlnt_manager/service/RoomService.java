@@ -32,4 +32,6 @@ public interface RoomService {
     RoomResponse updateRoomStatus(String roomId, RoomStatus status);
 
     RoomCountResponse statisticsRoomByStatus(String buildingId);
+
+    PaginatedResponse<RoomResponse> getRoomsWithoutServiceByUserId(RoomFilter filter, Integer page, Integer size);
 }

@@ -183,6 +183,14 @@ public class RoomServiceImpl implements RoomService {
         return roomRepository.getRoomStatsByBuilding(buildingId);
     }
 
+    @Override
+    public PaginatedResponse<RoomResponse> getRoomsWithoutServiceByUserId(RoomFilter filter, Integer page, Integer size) {
+        User user = userService.getCurrentUser();
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+        Page<Room> paging = roomRepository.findActiveRoomsWithoutServiceRoomByUser(user.getId(), filter.getBuildingId(), pageable);
+        return buildPaginatedRoomResponse(paging, page, size);
+    }
+
     private PaginatedResponse<RoomResponse> buildPaginatedRoomResponse(Page<Room> paging, int page, int size) {
 
         List<RoomResponse> rooms =
