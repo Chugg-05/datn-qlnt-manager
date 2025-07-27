@@ -61,6 +61,15 @@ public class RoomController {
                 .build();
     }
 
+    @Operation(summary = "hiển thị danh sách phòng theo id khách thuê")
+    @GetMapping("/by-tenant")
+    public ApiResponse<List<RoomResponse>> getRoomsByTenant() {
+        return ApiResponse.<List<RoomResponse>>builder()
+                .data(roomService.getRoomsByTenantId())
+                .message("Get all room list by tenant successfully")
+                .build();
+    }
+
     @GetMapping("/statistics")
     public ApiResponse<RoomCountResponse> statisticsRoomByStatus(@RequestParam String buildingId) {
         return ApiResponse.<RoomCountResponse>builder()
@@ -114,13 +123,4 @@ public class RoomController {
                 .code(200)
                 .build();
     }
-
-    @Operation(summary = "Lấy phòng hiện tại của tôi")
-    @GetMapping("/me")
-    public ApiResponse<RoomResponse> myRoom() {
-        return ApiResponse.<RoomResponse>builder()
-                .data(roomService.getMyRoom())
-                .build();
-    }
-
 }

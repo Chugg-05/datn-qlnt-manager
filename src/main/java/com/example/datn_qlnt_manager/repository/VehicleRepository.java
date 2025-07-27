@@ -58,4 +58,14 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
     List<Object[]> countByVehicleType(@Param("userId") String userId);
 
     Optional<Vehicle> findByIdAndVehicleStatusNot(String id, VehicleStatus vehicleStatus);
+
+	@Query("""
+		SELECT v FROM Vehicle v
+		JOIN v.tenant t
+		JOIN t.contracts c
+		WHERE c.room.id = :roomId
+		AND (c.status = "HIEU_LUC"
+		OR c.status = "SAP_HET_HAN")
+""")
+	List<Vehicle> findActiveVehiclesByRoomId (@Param("roomId") String roomId);
 }

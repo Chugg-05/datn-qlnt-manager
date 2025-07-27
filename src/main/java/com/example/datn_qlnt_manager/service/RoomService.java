@@ -17,6 +17,8 @@ public interface RoomService {
 
     PaginatedResponse<RoomResponse> getRoomWithStatusCancelByUserId(RoomFilter roomFilter, Integer page, Integer size);
 
+    List<RoomResponse> getRoomsByTenantId();
+
     RoomResponse createRoom(RoomCreationRequest request);
 
     RoomResponse updateRoom(String roomId, RoomUpdateRequest request);
@@ -30,6 +32,4 @@ public interface RoomService {
     RoomResponse updateRoomStatus(String roomId, RoomStatus status);
 
     RoomCountResponse statisticsRoomByStatus(String buildingId);
-
-    RoomResponse getMyRoom();
 }
