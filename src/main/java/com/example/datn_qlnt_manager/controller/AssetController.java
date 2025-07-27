@@ -1,18 +1,19 @@
 package com.example.datn_qlnt_manager.controller;
 
+import com.example.datn_qlnt_manager.dto.ApiResponse;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.AssetFilter;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
+import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInit2Response;
 import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInitResponse;
 import com.example.datn_qlnt_manager.service.AssetService;
 
@@ -89,4 +90,15 @@ public class AssetController {
                 .message("Assets has been found!")
                 .build();
     }
+
+    @Operation(summary = "Hiển thị thông tin liên quan để thêm mới tài sản theo người đang đăng nhập")
+    @GetMapping("/init/2")
+    public ApiResponse<CreateAssetInit2Response> getAssetsInfoByUserId2() {
+        CreateAssetInit2Response data = assetService.getAssetsInfoByUserId2();
+        return ApiResponse.<CreateAssetInit2Response>builder()
+                .data(data)
+                .message("Assets has been found!")
+                .build();
+    }
+
 }

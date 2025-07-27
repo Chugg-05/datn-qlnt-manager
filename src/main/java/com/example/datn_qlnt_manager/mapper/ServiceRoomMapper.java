@@ -1,30 +1,36 @@
 package com.example.datn_qlnt_manager.mapper;
 
-import org.mapstruct.*;
-
-import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
+import com.example.datn_qlnt_manager.dto.response.room.RoomBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceLittleResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomDetailResponse;
 import com.example.datn_qlnt_manager.entity.Room;
 import com.example.datn_qlnt_manager.entity.Service;
+import org.mapstruct.*;
+
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
 import com.example.datn_qlnt_manager.entity.ServiceRoom;
+
+import java.util.List;
+
 
 @Mapper(componentModel = "spring")
 public interface ServiceRoomMapper {
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "serviceRoomStatus", constant = "DANG_SU_DUNG")
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "room", source = "room")
-    @Mapping(target = "service", source = "service")
-    ServiceRoom toServiceRoom(ServiceRoomCreationRequest request, Room room, Service service);
+    @Mapping(source = "service.id", target = "id")
+    @Mapping(source = "service.name", target = "serviceName")
+    @Mapping(source = "unitPrice", target = "unitPrice")
+    @Mapping(source = "service.unit", target = "unit")
+    @Mapping(source = "serviceRoomStatus", target = "serviceRoomStatus")
+    @Mapping(source = "description", target = "description")
+    ServiceLittleResponse toServiceLittleResponse(ServiceRoom serviceRoom);
 
-    @Mapping(target = "roomId", source = "room.id")
-    @Mapping(target = "roomCode", source = "room.roomCode")
-    @Mapping(target = "serviceId", source = "service.id")
-    @Mapping(target = "name", source = "service.name")
-    ServiceRoomResponse toResponse(ServiceRoom serviceRoom);
+    ServiceRoomDetailResponse toServiceRoomDetailResponse(Room room, List<ServiceLittleResponse> services);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateServiceRoom(ServiceRoomUpdateRequest request, @MappingTarget ServiceRoom serviceRoom);
+    RoomBasicResponse toRoomBasicResponse(Room room);
+
+    ServiceDetailResponse toServiceSmallResponse(Service service, List<RoomBasicResponse> rooms);
+
+    @Mapping(source = "room.roomCode", target = "roomCode")
+    @Mapping(source = "service.name", target = "serviceName")
+    ServiceRoomResponse toServiceRoomResponse(ServiceRoom serviceRoom);
 }

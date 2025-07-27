@@ -17,6 +17,7 @@ import com.example.datn_qlnt_manager.entity.Tenant;
 @Mapper(componentModel = "spring")
 public interface InvoiceMapper {
 
+    @Mapping(target = "roomId", source = "contract.room.id")
     @Mapping(source = "id", target = "id")
     @Mapping(source = "invoiceCode", target = "invoiceCode")
     @Mapping(source = "contract.room.floor.building.buildingName", target = "buildingName")
@@ -65,6 +66,8 @@ public interface InvoiceMapper {
             category = service.getServiceCategory();
             calculation = service.getServiceCalculation();
             unit = service.getUnit();
+        } else if (detail.getInvoiceItemType() == InvoiceItemType.DEN_BU) {
+            category = ServiceCategory.DEN_BU;
         }
 
         return InvoiceItemResponse.builder()
@@ -78,6 +81,7 @@ public interface InvoiceMapper {
                 .unitPrice(detail.getUnitPrice())
                 .unit(unit)
                 .amount(detail.getAmount())
+                .description(detail.getDescription())
                 .build();
     }
 }

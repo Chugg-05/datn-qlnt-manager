@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.datn_qlnt_manager.dto.statistics.FloorRoomStatisticResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -125,4 +126,18 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
 
     @Query("SELECT COUNT(f) FROM Floor f WHERE f.building.id = :buildingId")
     int countByBuildingId(@Param("buildingId") String buildingId);
+
+
+	@Query("""
+    SELECT new com.example.datn_qlnt_manager.dto.statistics.FloorRoomStatisticResponse(
+        f.id,
+        CONCAT(f.nameFloor, ' - Trống ',
+               SUM(CASE WHEN r.status = 'TRONG' THEN 1 ELSE 0 END), '/', COUNT(r.id))
+    )
+    FROM Floor f
+    JOIN Room r ON r.floor.id = f.id
+    WHERE f.id = :floorId
+    GROUP BY f.id, f.nameFloor
+""")
+	List<FloorRoomStatisticResponse> getRoomStatisticTextByFloor(@Param("floorId") String floorId);
 }

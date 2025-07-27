@@ -254,4 +254,12 @@ public class TenantServiceImpl implements TenantService {
                 .meta(meta)
                 .build();
     }
+
+    public List<TenantResponse> getTenantsByRoomId(String roomId) {
+        List<Tenant> tenants = tenantRepository.findAllTenantsByRoomId(roomId);
+        return tenants.stream()
+                .map(tenantMapper::toTenantResponse)
+                .toList();
+    }
+
 }

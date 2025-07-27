@@ -12,10 +12,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ServiceRoomCreationRequest {
-    @NotBlank(message = "ROOM_ID_REQUIRED")
-    String roomId;
+public class ServiceRoomCreationForBuildingRequest {
 
     @NotBlank(message = "SERVICE_IDS_REQUIRED")
     String serviceId;
+
+    @NotBlank(message = "BUILDING_ID_REQUIRED")
+    String buildingId;
 }

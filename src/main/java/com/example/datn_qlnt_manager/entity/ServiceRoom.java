@@ -15,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(
@@ -23,30 +24,25 @@ import lombok.experimental.FieldDefaults;
 public class ServiceRoom extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "phong_id", nullable = false)
-    private Room room;
+    Room room;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dich_vu_id", nullable = false)
     Service service;
 
-    @Column(name = "ma_su_dung", nullable = false)
-    String usageCode;
+    @Column(name = "don_gia_ap_dung", nullable = false)
+    BigDecimal unitPrice;
 
-    // thời điểm gán dịch vụ vào phòng
-    @Column(name = "thoi_gian_ap_dung", nullable = false)
-    LocalDateTime applyTime;
-
-    // ngày bắt đầu tính phí dịch vụ
     @Column(name = "ngay_bat_dau", nullable = false)
     LocalDate startDate;
 
-    @Column(name = "tong_tien", nullable = false)
-    BigDecimal totalPrice;
+    @Column(name = "ngayKetThuc")
+    LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai")
     ServiceRoomStatus serviceRoomStatus;
 
     @Column(name = "mo_ta")
-    String descriptionServiceRoom;
+    String description;
 }

@@ -132,7 +132,15 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
     List<Contract> findValidContractsInMonth(
             @Param("startOfMonth") LocalDateTime startOfMonth, @Param("endOfMonth") LocalDateTime endOfMonth);
 
-    boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
+	@Query("""
+		SELECT c FROM Contract c
+		WHERE c.room.id = :roomId
+		AND c.status = 'HIEU_LUC'
+	""")
+	Optional<Contract> findActiveContractByRoomId(@Param("roomId") String roomId);
+
+
+	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
 
     boolean existsByTenants_Id(String tenantId);
 }
