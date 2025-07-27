@@ -138,18 +138,17 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 
     @Query(
             """
-				SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(
-					r.id,
-					CONCAT(r.roomCode, ' - ', f.nameFloor, ' - ', b.buildingName)
-				)
-				FROM Room r
-				LEFT JOIN r.floor f
-				LEFT JOIN f.building b
-				WHERE r.status != 'HUY_HOAT_DONG' AND b.user.id = :userId
-							AND b.id =:buildingId
-			""")
+                    	SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(
+                    		r.id,
+                    		CONCAT(r.roomCode, ' - ', f.nameFloor, ' - ', b.buildingName)
+                    	)
+                    	FROM Room r
+                    	LEFT JOIN r.floor f
+                    	LEFT JOIN f.building b
+                    	WHERE r.status != 'HUY_HOAT_DONG' AND b.user.id = :userId
+                    				AND b.id =:buildingId
+                    """)
     List<IdAndName> getRoomInfoByUserId(@Param("userId") String userId, @Param("buildingId") String buildingId);
-
 
 	@Query("""
     SELECT DISTINCT c.room FROM Contract c
@@ -159,6 +158,4 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 	List<Room> findRoomsByTenantId(@Param("tenantId") String tenantId);
 
 	List<Room> findByFloorBuildingId(String buildingId);
-
-
 }
