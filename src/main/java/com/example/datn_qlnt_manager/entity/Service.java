@@ -1,6 +1,8 @@
 package com.example.datn_qlnt_manager.entity;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.*;
 
@@ -48,4 +50,7 @@ public class Service extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     User user;
+
+    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<ServiceRoom> serviceRooms = new HashSet<>();
 }
