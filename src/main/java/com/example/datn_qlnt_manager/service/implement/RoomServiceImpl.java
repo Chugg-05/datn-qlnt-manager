@@ -3,6 +3,8 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.entity.*;
+import com.example.datn_qlnt_manager.repository.TenantRepository;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -19,10 +21,6 @@ import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
-import com.example.datn_qlnt_manager.entity.Building;
-import com.example.datn_qlnt_manager.entity.Floor;
-import com.example.datn_qlnt_manager.entity.Room;
-import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.RoomMapper;
@@ -46,6 +44,7 @@ public class RoomServiceImpl implements RoomService {
     FloorRepository floorRepository;
     UserService userService;
     CodeGeneratorService codeGeneratorService;
+    private final TenantRepository tenantRepository;
 
     @Override
     public PaginatedResponse<RoomResponse> getPageAndSearchAndFilterRoomByUserId(
@@ -87,6 +86,17 @@ public class RoomServiceImpl implements RoomService {
                 pageable);
 
         return buildPaginatedRoomResponse(paging, page, size);
+    }
+
+    @Override
+    public List<RoomResponse> getRoomsByTenantId() {
+        User user = userService.getCurrentUser();
+        Tenant tenant = tenantRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+        List<Room> rooms = roomRepository.findRoomsByTenantId(tenant.getId());
+        return rooms.stream()
+                .map(roomMapper::toRoomResponse)
+                .toList();
     }
 
     @Override
