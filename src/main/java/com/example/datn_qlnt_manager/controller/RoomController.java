@@ -61,6 +61,7 @@ public class RoomController {
                 .build();
     }
 
+
     @Operation(summary = "Phân trang, lọc(theo tòa), hiển thị danh sách phòng chưa có dịch vụ")
     @GetMapping("/without-services")
     public ApiResponse<List<RoomResponse>> getRoomsWithoutService(
@@ -73,6 +74,15 @@ public class RoomController {
                 .message("Get rooms without service successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "hiển thị danh sách phòng theo id khách thuê")
+    @GetMapping("/by-tenant")
+    public ApiResponse<List<RoomResponse>> getRoomsByTenant() {
+        return ApiResponse.<List<RoomResponse>>builder()
+                .data(roomService.getRoomsByTenantId())
+                .message("Get all room list by tenant successfully")
                 .build();
     }
 

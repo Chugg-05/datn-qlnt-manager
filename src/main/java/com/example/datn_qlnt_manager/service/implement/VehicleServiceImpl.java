@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.example.datn_qlnt_manager.repository.RoomRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +46,7 @@ public class VehicleServiceImpl implements VehicleService {
     VehicleMapper vehicleMapper;
     TenantRepository tenantRepository;
     UserService userService;
+    RoomRepository roomRepository;
 
     @Override
     public PaginatedResponse<VehicleResponse> getPageAndSearchAndFilterVehicleByUserId(
@@ -68,6 +70,14 @@ public class VehicleServiceImpl implements VehicleService {
                 user.getId(), filter.getVehicleType(), filter.getLicensePlate(), pageable);
 
         return buildPaginatedVehicleResponse(paging, page, size);
+    }
+
+    @Override
+    public List<VehicleResponse> getVehiclesByRoomId(String roomId) {
+        List<Vehicle> vehicles = vehicleRepository.findActiveVehiclesByRoomId(roomId);
+        return vehicles.stream()
+                .map(vehicleMapper::toVehicleResponse)
+                .toList();
     }
 
     @Override
