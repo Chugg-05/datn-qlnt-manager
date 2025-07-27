@@ -149,4 +149,11 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 							AND b.id =:buildingId
 			""")
     List<IdAndName> getRoomInfoByUserId(@Param("userId") String userId, @Param("buildingId") String buildingId);
+
+	@Query("""
+    SELECT DISTINCT c.room FROM Contract c
+    JOIN c.tenants t
+    WHERE t.id = :tenantId
+""")
+	List<Room> findRoomsByTenantId(@Param("tenantId") String tenantId);
 }
