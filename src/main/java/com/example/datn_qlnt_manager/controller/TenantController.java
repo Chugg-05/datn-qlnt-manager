@@ -155,4 +155,13 @@ public class TenantController {
                 .data("Tenant with ID " + tenantId + " has been deleted.")
                 .build();
     }
+
+    @Operation(summary = "Hiển thị chi tiết khách thuê trong phòng")
+    @GetMapping("/room-tenants/detail/{roomId}")
+    public ApiResponse<List<TenantResponse>> getTenantsByRoomId(@PathVariable String roomId) {
+        return ApiResponse.<List<TenantResponse>>builder()
+                .data(tenantService.getTenantsByRoomId(roomId))
+                .message("Get detailed list of guests in the same room successfully")
+                .build();
+    }
 }

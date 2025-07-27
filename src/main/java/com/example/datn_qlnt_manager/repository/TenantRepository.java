@@ -124,6 +124,7 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
 
     boolean existsByIdentityCardNumber(String identityCardNumber);
 
+<<<<<<< Updated upstream
     @Query("""
             	SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantSelectResponse(t.id, t.fullName)
             	FROM Tenant t
@@ -135,4 +136,28 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
             """)
     List<TenantSelectResponse> findAllTenantsByOwnerIdAndRoomId(@Param("userId") String userId,
                                                                 @Param("roomId") String roomId);
+=======
+    @Query(
+            """
+				SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantSelectResponse(t.id, t.fullName)
+				FROM Tenant t
+				JOIN t.contracts c
+				WHERE t.owner.id = :userId
+				AND t.isRepresentative = true
+				AND c.room IS NOT NULL AND c.room.id = :roomId
+				AND t.tenantStatus != 'HUY_BO'
+			""")
+    List<TenantSelectResponse> findAllTenantsByOwnerIdAndRoomId(
+            @Param("userId") String userId, @Param("roomId") String roomId);
+
+
+	@Query("""
+    SELECT DISTINCT t FROM Tenant t
+    JOIN t.contracts c
+    WHERE c.room.id = :roomId
+    AND (c.status = 'HIEU_LUC' OR c.status = 'SAP_HET_HAN')
+    
+""")
+	List<Tenant> findAllTenantsByRoomId(@Param("roomId") String roomId);
+>>>>>>> Stashed changes
 }

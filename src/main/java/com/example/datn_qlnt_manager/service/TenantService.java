@@ -32,4 +32,7 @@ public interface TenantService {
     void softDeleteTenantById(String tenantId);
 
     void deleteTenantById(String tenantId);
+
+    List<TenantResponse> getTenantsByRoomId(String roomId);
+
 }
