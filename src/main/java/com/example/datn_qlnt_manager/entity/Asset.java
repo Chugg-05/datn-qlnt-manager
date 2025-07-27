@@ -1,7 +1,10 @@
 package com.example.datn_qlnt_manager.entity;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
+import com.example.datn_qlnt_manager.common.AssetType;
 import jakarta.persistence.*;
 
 import com.example.datn_qlnt_manager.common.AssetBeLongTo;
@@ -20,40 +23,30 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Asset extends AbstractEntity {
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    User user;
+
     @Column(name = "ten_tai_san", nullable = false)
     String nameAsset;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "loai_tai_san_id", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "loai_tai_san", nullable = false)
     AssetType assetType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "thuoc_ve", nullable = false)
     AssetBeLongTo assetBeLongTo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "phong_id")
-    Room room;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "toa_nha_id")
-    Building building;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tang_id")
-    Floor floor;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_thue_id")
-    Tenant tenant;
-
-    @Column(name = "gia_tien", nullable = false)
-    BigDecimal price;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "tinh_trang", nullable = false)
     AssetStatus assetStatus;
 
+    @Column(name = "gia_tien", nullable = false)
+    BigDecimal price;
+
     @Column(name = "mo_ta")
     String descriptionAsset;
+
+    @ManyToMany(mappedBy = "assets")
+    Set<Room> rooms = new HashSet<>();
 }

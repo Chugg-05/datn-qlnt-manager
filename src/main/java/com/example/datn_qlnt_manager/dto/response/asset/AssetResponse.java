@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.example.datn_qlnt_manager.common.AssetBeLongTo;
 import com.example.datn_qlnt_manager.common.AssetStatus;
 
+import com.example.datn_qlnt_manager.common.AssetType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,26 +20,13 @@ public class AssetResponse {
 
     String nameAsset;
 
-    String assetTypeId;
-    String nameAssetType;
+    AssetType assetType;
 
     AssetBeLongTo assetBeLongTo;
 
-    String roomID;
-    String roomCode;
-
-    String buildingID;
-    String buildingName;
-
-    String floorID;
-    String nameFloor;
-
-    String tenantId;
-    String fullName;
+    AssetStatus assetStatus;
 
     BigDecimal price;
-
-    AssetStatus assetStatus;
 
     String descriptionAsset;
 

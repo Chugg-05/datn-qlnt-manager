@@ -58,4 +58,12 @@ public class Room extends AbstractEntity {
     @Builder.Default
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Contract> contracts = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "tai_san_phong",
+            joinColumns = @JoinColumn(name = "phong_id"),
+            inverseJoinColumns = @JoinColumn(name = "tai_san_id")
+    )
+    Set<Asset> assets = new HashSet<>();
 }

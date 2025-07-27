@@ -2,6 +2,8 @@ package com.example.datn_qlnt_manager.repository;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.AssetType;
+import jakarta.persistence.AccessType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,48 +25,25 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
     @Query(
             """
 				SELECT a FROM Asset a
-				LEFT JOIN a.room r
-				LEFT JOIN r.floor rf
-				LEFT JOIN a.floor f
-				LEFT JOIN f.building fb
-				LEFT JOIN a.building b
-				LEFT JOIN b.user ub
-				LEFT JOIN fb.user ufb
-				LEFT JOIN a.tenant t
-				LEFT JOIN t.owner towner
-				WHERE (
-					(a.assetBeLongTo = 'CHUNG' AND (ub.id = :userId OR ufb.id = :userId))
-					OR (a.assetBeLongTo = 'PHONG' AND ufb.id = :userId)
-					OR (a.assetBeLongTo = 'CA_NHAN' AND towner.id = :userId)
-				)
+				WHERE a.user.id = :userId
 				AND (:name IS NULL OR a.nameAsset LIKE CONCAT('%', :name, '%'))
 				AND (:beLongTo IS NULL OR a.assetBeLongTo = :beLongTo)
-				AND (:status IS NULL OR a.assetStatus = :status)
+				AND (:assetType IS NULL OR a.assetType = :assetType)
+				AND (:assetStatus IS NULL OR a.assetStatus = :assetStatus)
 			""")
     Page<Asset> findAllByFilterAndUserId(
             @Param("name") String nameAsset,
+			@Param("assetType") AssetType assetType,
             @Param("beLongTo") AssetBeLongTo assetBeLongTo,
-            @Param("status") AssetStatus assetStatus,
+            @Param("assetStatus") AssetStatus assetStatus,
             @Param("userId") String userId,
             Pageable pageable);
 
     // hiển thị theo userId
     @Query(
             """
-				SELECT a
-				FROM Asset a
-				LEFT JOIN a.room r
-				LEFT JOIN r.floor f1
-				LEFT JOIN f1.building b1
-				LEFT JOIN a.floor f2
-				LEFT JOIN f2.building b2
-				LEFT JOIN a.building b3
-				LEFT JOIN a.tenant t
-				WHERE
-					(r IS NOT NULL AND b1.user.id = :userId)
-					OR (f2 IS NOT NULL AND b2.user.id = :userId)
-					OR (b3 IS NOT NULL AND b3.user.id = :userId)
-					OR (t IS NOT NULL AND t.user.id = :userId)
+				SELECT a FROM Asset a
+				WHERE a.user.id = :userId
 			""")
     List<Asset> findAssetsByUserId(@Param("userId") String userId);
 }

@@ -219,7 +219,7 @@ public class ContractServiceImpl implements ContractService {
                 .map(asset -> AssetBasicResponse.builder()
                         .id(asset.getId())
                         .nameAsset(asset.getNameAsset())
-                        .assetGroup(asset.getAssetType().getAssetGroup())
+                        .assetType(asset.getAssetType())
                         .description(asset.getDescriptionAsset())
                         .build())
                 .collect(Collectors.toSet());
