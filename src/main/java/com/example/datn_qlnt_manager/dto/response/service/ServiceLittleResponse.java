@@ -1,37 +1,20 @@
-package com.example.datn_qlnt_manager.dto.response.serviceRoom;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
+package com.example.datn_qlnt_manager.dto.response.service;
 
 import com.example.datn_qlnt_manager.common.ServiceRoomStatus;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ServiceRoomResponse {
+public class ServiceLittleResponse {
     String id;
-
-    String roomCode;
-
     String serviceName;
-
     BigDecimal unitPrice;
-
-    LocalDate startDate;
-
-    LocalDate endDate;
-
+    String unit;
     ServiceRoomStatus serviceRoomStatus;
-
     String description;
-
-    Instant createdAt;
-
-    Instant updatedAt;
 }

@@ -149,4 +149,9 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 							AND b.id =:buildingId
 			""")
     List<IdAndName> getRoomInfoByUserId(@Param("userId") String userId, @Param("buildingId") String buildingId);
+
+	List<Room> findByFloorBuildingId(String buildingId);
+
+
+
 }

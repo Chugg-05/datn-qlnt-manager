@@ -8,10 +8,13 @@ import com.example.datn_qlnt_manager.common.InvoiceStatus;
 import com.example.datn_qlnt_manager.common.InvoiceType;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvoiceDetailView {
     String invoiceId;
     String invoiceCode;

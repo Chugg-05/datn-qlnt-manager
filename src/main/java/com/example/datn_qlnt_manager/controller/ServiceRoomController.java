@@ -2,8 +2,16 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.IdNamAndType;
+import com.example.datn_qlnt_manager.dto.projection.ServiceRoomView;
+import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateUnitPriceRequest;
+import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForBuildingRequest;
+import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForServiceRequest;
+import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceUpdateUnitPriceResponse;
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ServiceRoomFilter;
-import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomUpdateRequest;
+import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForRoomRequest;
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.CreateRoomServiceInitResponse;
-import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
 import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatistics;
 import com.example.datn_qlnt_manager.service.ServiceRoomService;
 
@@ -26,38 +32,97 @@ import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("service-rooms")
+@RequestMapping("/service-rooms")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "ServiceRoom", description = "API Service Room")
 public class ServiceRoomController {
 
     ServiceRoomService serviceRoomService;
 
-    @Operation(summary = "Thêm dịch vụ vào phòng")
+    @Operation(summary = "Hiển thị, Tìm kiếm và lọc dịch vụ phòng theo người dùng hiện tại (có phân trang)")
+    @GetMapping
+    public ApiResponse<List<ServiceRoomView>> getServiceRoomsPaging(
+            @Valid @ModelAttribute ServiceRoomFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+
+        PaginatedResponse<ServiceRoomView> result = serviceRoomService.getServiceRoomsPaging(filter, page, size);
+
+        return ApiResponse.<List<ServiceRoomView>>builder()
+                .message("Service rooms fetched successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Thêm các dịch vụ vào phòng cho 1 phòng")
+    @PostMapping("/by-room")
+    public ApiResponse<ServiceRoomDetailResponse> createRoomServiceForRoom(
+            @Valid @RequestBody ServiceRoomCreationForRoomRequest request
+    ) {
+        return ApiResponse.<ServiceRoomDetailResponse>builder()
+                .message("Services added to the room!")
+                .data(serviceRoomService.createRoomServiceForRoom(request))
+                .build();
+    }
+
+    @Operation(summary = "Thêm 1 dịch vụ vào các phòng")
+    @PostMapping("/by-service")
+    public ApiResponse<ServiceDetailResponse> createRoomServiceForService(
+            @Valid @RequestBody ServiceRoomCreationForServiceRequest request
+    ) {
+        return ApiResponse.<ServiceDetailResponse>builder()
+                .message("This service has been added to the rooms!")
+                .data(serviceRoomService.createRoomServiceForService(request))
+                .build();
+    }
+
+    @Operation(summary = "Thêm 1 dịch vụ cho tất cả các phòng trong 1 tòa nhà")
+    @PostMapping("/by-building")
+    public ApiResponse<ServiceDetailResponse> createRoomServiceForBuilding(
+            @Valid @RequestBody ServiceRoomCreationForBuildingRequest request
+    ) {
+        return ApiResponse.<ServiceDetailResponse>builder()
+                .message("This service has been added to the building.!")
+                .data(serviceRoomService.createRoomServiceForBuilding(request))
+                .build();
+    }
+
+    @Operation(summary = "Thêm 1 dịch vụ cho 1 phòng")
     @PostMapping
-    public ApiResponse<ServiceRoomResponse> createServiceRoom(@Valid @RequestBody ServiceRoomCreationRequest request) {
+    public ApiResponse<ServiceRoomResponse> createRoomServiceForBuilding(
+            @Valid @RequestBody ServiceRoomCreationRequest request
+    ) {
         return ApiResponse.<ServiceRoomResponse>builder()
                 .message("Service room has been created!")
                 .data(serviceRoomService.createServiceRoom(request))
                 .build();
     }
 
-    @Operation(summary = "Sửa dịch vụ phòng")
-    @PutMapping("/{serviceRoomId}")
-    public ApiResponse<ServiceRoomResponse> updateServiceRoom(
-            @PathVariable("serviceRoomId") String serviceRoomId, @Valid @RequestBody ServiceRoomUpdateRequest request) {
-        return ApiResponse.<ServiceRoomResponse>builder()
-                .data(serviceRoomService.updateServiceRoom(serviceRoomId, request))
-                .message("Service room has been updated!")
+    @Operation(summary = "Cập nhật giá dịch vụ trong tòa nhà")
+    @PutMapping("/serviceId/{serviceId}/buildingId/{buildingId}")
+    public ApiResponse<ServiceUpdateUnitPriceResponse> updateServicePriceInBuilding(
+            @PathVariable String buildingId,
+            @PathVariable String serviceId,
+            @RequestBody @Valid ServiceUpdateUnitPriceRequest request) {
+
+        request.setBuildingId(buildingId);
+        request.setServiceId(serviceId);
+
+        ServiceUpdateUnitPriceResponse response = serviceRoomService.updateServicePriceInBuilding(request);
+
+        return ApiResponse.<ServiceUpdateUnitPriceResponse>builder()
+                .message("Service price updated successfully!")
+                .data(response)
                 .build();
     }
 
-    @Operation(summary = "Xóa mềm (trạng thái: DA_HUY)")
-    @PutMapping("/soft-delete/{serviceRoomId}")
-    public ApiResponse<Void> softDeleteServiceRoom(@PathVariable("serviceRoomId") String serviceRoomId) {
-        serviceRoomService.softDeleteServiceRoom(serviceRoomId);
-        return ApiResponse.<Void>builder()
-                .message("Service room deleted successfully.")
+    @Operation(summary = "Xem thông tin các dịch vụ có trong phòng")
+    @GetMapping("/{roomId}")
+    public ApiResponse<ServiceRoomDetailResponse> getServiceRoomDetailResponse(@PathVariable("roomId") String roomId) {
+        return ApiResponse.<ServiceRoomDetailResponse>builder()
+                .message("Service room details fetched successfully")
+                .data(serviceRoomService.getServiceRoomDetailResponse(roomId))
                 .build();
     }
 
@@ -67,22 +132,6 @@ public class ServiceRoomController {
         serviceRoomService.deleteServiceRoom(roomServiceId);
         return ApiResponse.<String>builder()
                 .message("Service room deleted successfully.")
-                .build();
-    }
-
-    @Operation(summary = "Hiển thị, Tìm kiếm và lọc dịch vụ phòng theo người dùng hiện tại (có phân trang)")
-    @GetMapping
-    public ApiResponse<List<ServiceRoomResponse>> filterServiceRooms(
-            @Valid @ModelAttribute ServiceRoomFilter filter,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size) {
-
-        PaginatedResponse<ServiceRoomResponse> result = serviceRoomService.filterServiceRooms(filter, page, size);
-
-        return ApiResponse.<List<ServiceRoomResponse>>builder()
-                .message("Filtered service rooms successfully")
-                .data(result.getData())
-                .meta(result.getMeta())
                 .build();
     }
 

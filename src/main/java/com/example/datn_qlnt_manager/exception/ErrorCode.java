@@ -69,7 +69,7 @@ public enum ErrorCode {
     INVALID_OTP_FORMAT(400, "OTP code is not in correct format.", HttpStatus.BAD_REQUEST),
 
     REFRESH_TOKEN_INVALID(400, "Refresh token invalid.", HttpStatus.BAD_REQUEST),
-    BUILDING_ID_REQUIRED(400, "Building ID can not be blank.", HttpStatus.BAD_REQUEST),
+    BUILDING_ID_REQUIRED(400,"Building ID is required.", HttpStatus.BAD_REQUEST),
     REFRESH_TOKEN_EXPIRED(400, "Refresh token expired.", HttpStatus.BAD_REQUEST),
     INVALID_OTP_CODE(400, "OTP code is incorrect or expired.", HttpStatus.BAD_REQUEST),
     INVALID_ISSUER(400, "Invalid issuer.", HttpStatus.BAD_REQUEST),
@@ -151,7 +151,7 @@ public enum ErrorCode {
     TENANT_HAS_NO_CONTRACT(400, "Tenant has no contract", HttpStatus.BAD_REQUEST),
     CANNOT_ADD_MORE_FLOORS(
             400, "Cannot add more floors than building's real number of floors.", HttpStatus.BAD_REQUEST),
-    CANNOT_TOGGLE_SERVICE_STATUS(400, "Cannot toggle status for deleted service.", HttpStatus.BAD_REQUEST),
+    CANNOT_TOGGLE_SERVICE_STATUS(400, "Unable to change status for this service", HttpStatus.BAD_REQUEST),
 
     INVALID_TITLE_BLANK(400, "Title cannot be blank.", HttpStatus.BAD_REQUEST),
     INVALID_JOB_PRIORITY_LEVEL_NULL(400, "Job priority level cannot be null.", HttpStatus.BAD_REQUEST),
@@ -202,6 +202,9 @@ public enum ErrorCode {
     INVALID_SERVICE_STATUS_NULL(400, "Service status cannot be blank.", HttpStatus.BAD_REQUEST),
     METER_READING_ALREADY_BILLED(400, "Meter reading has been invoiced. Cannot be updated.", HttpStatus.BAD_REQUEST),
     CONTRACT_EXPIRED(400, "Contract has expired. Invoice cannot be generated.", HttpStatus.BAD_REQUEST),
+    SERVICE_ROOM_ALREADY_EXISTS(400, "Service room already exists for this service and room.", HttpStatus.BAD_REQUEST),
+    NEW_UNIT_PRICE_REQUIRED(400, "New unit price is required.", HttpStatus.BAD_REQUEST),
+    UNIT_PRICE_MUST_BE_POSITIVE(400, "Unit price must be greater than 0.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
@@ -263,9 +266,9 @@ public enum ErrorCode {
     NOTIFICATION_USERS_REQUIRED(404, "Notification users must not be null", HttpStatus.NOT_FOUND),
     NOTIFICATION_NOT_FOUND(404, "Notification must not be null", HttpStatus.NOT_FOUND),
     NOTIFICATION_NOT_ASSIGNED(404, "Notification not assigned to this user", HttpStatus.NOT_FOUND),
-
     INVOICE_DETAIL_NOT_FOUND(404, "Invoice detail not found.", HttpStatus.NOT_FOUND),
-
+    SERVICE_IDS_REQUIRED(400, "Service IDs are required.", HttpStatus.BAD_REQUEST),
+    SERVICE_ROOM_CANNOT_DELETE(400, "This is a required service and cannot be deleted.", HttpStatus.BAD_REQUEST),
     // Code: 409
     OTP_ALREADY_SENT(409, "OTP already sent.", HttpStatus.BAD_REQUEST),
     USER_ALREADY_DELETED(409, "User has been deleted.", HttpStatus.BAD_REQUEST),
