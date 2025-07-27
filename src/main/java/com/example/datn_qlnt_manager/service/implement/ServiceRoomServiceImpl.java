@@ -103,36 +103,19 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
 
     @Override
     public ServiceRoomDetailResponse createRoomServiceForRoom(ServiceRoomCreationForRoomRequest request) {
-
-        Room room = roomRepository.findById(request.getRoomId()).orElseThrow(
-                () -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        Room room = roomRepository.findById(request.getRoomId())
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         List<Service> services = serviceRepository.findAllById(request.getServiceIds());
-
         if (services.size() != request.getServiceIds().size()) {
             throw new AppException(ErrorCode.SERVICE_NOT_FOUND);
         }
 
         for (Service service : services) {
-            boolean exists = serviceRoomRepository.existsByRoomAndService(room, service);
-            if (exists) continue;
-
-            ServiceRoom serviceRoom = ServiceRoom.builder()
-                    .room(room)
-                    .service(service)
-                    .unitPrice(service.getPrice())
-                    .startDate(LocalDate.now())
-                    .serviceRoomStatus(ServiceRoomStatus.DANG_SU_DUNG)
-                    .description(service.getName() + " đã được thêm vào phòng " + room.getRoomCode())
-                    .build();
-            serviceRoom.setCreatedAt(Instant.now());
-            serviceRoom.setUpdatedAt(Instant.now());
-
-            serviceRoomRepository.save(serviceRoom);
+            assignServiceToRooms(service, List.of(room));
         }
 
         List<ServiceRoom> serviceRooms = serviceRoomRepository.findAllByRoomWithService(room);
-
         List<ServiceLittleResponse> serviceResponses = serviceRooms.stream()
                 .map(serviceRoomMapper::toServiceLittleResponse)
                 .toList();
@@ -140,38 +123,20 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
         return serviceRoomMapper.toServiceRoomDetailResponse(room, serviceResponses);
     }
 
+
     @Override
     public ServiceDetailResponse createRoomServiceForService(ServiceRoomCreationForServiceRequest request) {
         Service service = serviceRepository.findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
         List<Room> rooms = roomRepository.findAllById(request.getRoomIds());
-
         if (rooms.size() != request.getRoomIds().size()) {
             throw new AppException(ErrorCode.ROOM_NOT_FOUND);
         }
 
-        for (Room room : rooms) {
-            boolean exists = serviceRoomRepository.existsByRoomAndService(room, service);
-            if (exists) continue;
-
-            ServiceRoom serviceRoom = ServiceRoom.builder()
-                    .room(room)
-                    .service(service)
-                    .unitPrice(service.getPrice())
-                    .startDate(LocalDate.now())
-                    .serviceRoomStatus(ServiceRoomStatus.DANG_SU_DUNG)
-                    .description(service.getName() + " đã được thêm vào phòng " + room.getRoomCode())
-                    .build();
-
-            serviceRoom.setCreatedAt(Instant.now());
-            serviceRoom.setUpdatedAt(Instant.now());
-
-            serviceRoomRepository.save(serviceRoom);
-        }
+        assignServiceToRooms(service, rooms);
 
         List<ServiceRoom> serviceRooms = serviceRoomRepository.findAllByServiceWithRoom(service.getId());
-
         List<RoomBasicResponse> roomResponses = serviceRooms.stream()
                 .map(sr -> serviceRoomMapper.toRoomBasicResponse(sr.getRoom()))
                 .toList();
@@ -186,27 +151,9 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
 
         List<Room> rooms = roomRepository.findByFloorBuildingId(request.getBuildingId());
 
-        for (Room room : rooms) {
-            boolean exists = serviceRoomRepository.existsByRoomAndService(room, service);
-            if (exists) continue;
-
-            ServiceRoom serviceRoom = ServiceRoom.builder()
-                    .room(room)
-                    .service(service)
-                    .unitPrice(service.getPrice())
-                    .startDate(LocalDate.now())
-                    .serviceRoomStatus(ServiceRoomStatus.DANG_SU_DUNG)
-                    .description(service.getName() + " đã được thêm vào phòng " + room.getRoomCode())
-                    .build();
-
-            serviceRoom.setCreatedAt(Instant.now());
-            serviceRoom.setUpdatedAt(Instant.now());
-
-            serviceRoomRepository.save(serviceRoom);
-        }
+        assignServiceToRooms(service, rooms);
 
         List<ServiceRoom> serviceRooms = serviceRoomRepository.findAllByServiceWithRoom(service.getId());
-
         List<RoomBasicResponse> roomResponses = serviceRooms.stream()
                 .map(sr -> serviceRoomMapper.toRoomBasicResponse(sr.getRoom()))
                 .toList();
@@ -353,4 +300,26 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     public List<IdNamAndType> getAllServiceRoomByUserId(String roomId) {
         return serviceRoomRepository.getAllServiceRoomByUserId(userService.getCurrentUser().getId(), roomId);
     }
+
+    private void assignServiceToRooms(Service service, List<Room> rooms) {
+        for (Room room : rooms) {
+            boolean exists = serviceRoomRepository.existsByRoomAndService(room, service);
+            if (exists) continue;
+
+            ServiceRoom serviceRoom = ServiceRoom.builder()
+                    .room(room)
+                    .service(service)
+                    .unitPrice(service.getPrice())
+                    .startDate(LocalDate.now())
+                    .serviceRoomStatus(ServiceRoomStatus.DANG_SU_DUNG)
+                    .description(service.getName() + " đã được thêm vào phòng " + room.getRoomCode())
+                    .build();
+
+            serviceRoom.setCreatedAt(Instant.now());
+            serviceRoom.setUpdatedAt(Instant.now());
+
+            serviceRoomRepository.save(serviceRoom);
+        }
+    }
+
 }
