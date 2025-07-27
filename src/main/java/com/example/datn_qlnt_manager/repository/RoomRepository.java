@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.repository;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -180,4 +181,27 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 			@Param("buildingId") String buildingId,
 			Pageable pageable);
 
+	@Query("""
+        SELECT new com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse(
+            b.id, COUNT(r)
+        )
+        FROM Room r
+        JOIN r.floor f
+        JOIN f.building b
+        WHERE r.floor.building.user.id = :userId
+          AND EXISTS (
+              SELECT c FROM Contract c
+              WHERE c.room = r AND c.status = 'HIEU_LUC'
+          )
+          AND NOT EXISTS (
+              SELECT sr FROM ServiceRoom sr
+              WHERE sr.room = r
+          )
+          AND (:buildingId IS NULL OR b.id = :buildingId)
+        GROUP BY b.id
+    """)
+	List<RoomNoServiceStatisticResponse> countRoomsWithoutServiceByUser(
+			@Param("userId") String userId,
+			@Param("buildingId") String buildingId
+	);
 }
