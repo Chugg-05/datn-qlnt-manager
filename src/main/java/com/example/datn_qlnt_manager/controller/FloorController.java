@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.statistics.FloorRoomStatisticResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
@@ -137,6 +138,14 @@ public class FloorController {
         return ApiResponse.<List<IdAndName>>builder()
                 .message("Display floors successfully")
                 .data(floorService.getFloorsByUserId())
+                .build();
+    }
+
+    @GetMapping("/room-statistics/{floorId}")
+    public ApiResponse<List<FloorRoomStatisticResponse>> getRoomStatisticTextByFloor(@PathVariable String floorId) {
+        return ApiResponse.<List<FloorRoomStatisticResponse>>builder()
+                .data(floorService.getRoomStatisticTextByFloor(floorId))
+                .message("Statistics of rooms by floor successfully")
                 .build();
     }
 }

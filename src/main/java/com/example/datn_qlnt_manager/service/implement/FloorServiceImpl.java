@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.statistics.FloorRoomStatisticResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -191,5 +192,10 @@ public class FloorServiceImpl implements FloorService {
                 .data(floors)
                 .meta(meta)
                 .build();
+    }
+
+    @Override
+    public List<FloorRoomStatisticResponse> getRoomStatisticTextByFloor(String floorId) {
+        return floorRepository.getRoomStatisticTextByFloor(floorId);
     }
 }

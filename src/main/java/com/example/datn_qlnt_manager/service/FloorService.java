@@ -9,6 +9,7 @@ import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
+import com.example.datn_qlnt_manager.dto.statistics.FloorRoomStatisticResponse;
 import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 
 public interface FloorService {
@@ -42,4 +43,7 @@ public interface FloorService {
     void toggleStatus(String id);
 
     List<IdAndName> getFloorsByUserId();
+
+    List<FloorRoomStatisticResponse> getRoomStatisticTextByFloor(String floorId);
+
 }
