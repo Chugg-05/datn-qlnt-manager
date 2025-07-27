@@ -30,4 +30,6 @@ public interface RoomService {
     RoomResponse updateRoomStatus(String roomId, RoomStatus status);
 
     RoomCountResponse statisticsRoomByStatus(String buildingId);
+
+    RoomResponse getMyRoom();
 }

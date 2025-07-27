@@ -51,7 +51,11 @@ public class Room extends AbstractEntity {
     @JoinColumn(name = "tang_id")
     Floor floor;
 
+    @Builder.Default
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ServiceRoom> serviceRooms = new HashSet<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<Contract> contracts = new HashSet<>();
 }

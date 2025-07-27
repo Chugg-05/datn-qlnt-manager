@@ -114,4 +114,13 @@ public class RoomController {
                 .code(200)
                 .build();
     }
+
+    @Operation(summary = "Lấy phòng hiện tại của tôi")
+    @GetMapping("/me")
+    public ApiResponse<RoomResponse> myRoom() {
+        return ApiResponse.<RoomResponse>builder()
+                .data(roomService.getMyRoom())
+                .build();
+    }
+
 }

@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.ContractStatus;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -171,6 +172,14 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomCountResponse statisticsRoomByStatus(String buildingId) {
         return roomRepository.getRoomStatsByBuilding(buildingId);
+    }
+
+    @Override
+    public RoomResponse getMyRoom() {
+        User user = userService.getCurrentUser();
+        Room room = roomRepository.getMyRoom(user.getId(), List.of(ContractStatus.HIEU_LUC,
+                ContractStatus.SAP_HET_HAN));
+        return roomMapper.toRoomResponse(room);
     }
 
     private PaginatedResponse<RoomResponse> buildPaginatedRoomResponse(Page<Room> paging, int page, int size) {
