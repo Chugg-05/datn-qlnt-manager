@@ -90,7 +90,7 @@ public class ServiceRoomController {
 
     @Operation(summary = "Thêm 1 dịch vụ cho 1 phòng")
     @PostMapping
-    public ApiResponse<ServiceRoomResponse> createRoomServiceForBuilding(
+    public ApiResponse<ServiceRoomResponse> createRoomService(
             @Valid @RequestBody ServiceRoomCreationRequest request
     ) {
         return ApiResponse.<ServiceRoomResponse>builder()
