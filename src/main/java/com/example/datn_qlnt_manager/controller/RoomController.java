@@ -61,6 +61,21 @@ public class RoomController {
                 .build();
     }
 
+    @Operation(summary = "Phân trang, lọc(theo tòa), hiển thị danh sách phòng chưa có dịch vụ")
+    @GetMapping("/without-services")
+    public ApiResponse<List<RoomResponse>> getRoomsWithoutService(
+            @ModelAttribute RoomFilter roomFilter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        PaginatedResponse<RoomResponse> result = roomService.getRoomsWithoutServiceByUserId(roomFilter, page, size);
+        return ApiResponse.<List<RoomResponse>>builder()
+                .message("Get rooms without service successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
     @GetMapping("/statistics")
     public ApiResponse<RoomCountResponse> statisticsRoomByStatus(@RequestParam String buildingId) {
         return ApiResponse.<RoomCountResponse>builder()

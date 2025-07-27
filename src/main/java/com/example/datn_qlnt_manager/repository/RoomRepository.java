@@ -154,4 +154,26 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 
 
 
+
+	@Query("""
+    SELECT r FROM Room r
+    JOIN r.floor f
+    JOIN f.building b
+    WHERE
+        r.floor.building.user.id = :userId
+        AND EXISTS (
+            SELECT c FROM Contract c
+            WHERE c.room = r AND c.status = 'HIEU_LUC'
+        )
+        AND NOT EXISTS (
+            SELECT sr FROM ServiceRoom sr
+            WHERE sr.room = r
+        )
+        AND (:buildingId IS NULL OR b.id = :buildingId)
+""")
+	Page<Room> findActiveRoomsWithoutServiceRoomByUser(
+			@Param("userId") String userId,
+			@Param("buildingId") String buildingId,
+			Pageable pageable);
+
 }
