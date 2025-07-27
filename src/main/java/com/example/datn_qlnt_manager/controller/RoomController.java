@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -137,6 +138,18 @@ public class RoomController {
         return ApiResponse.<Void>builder()
                 .message("Delete room success.")
                 .code(200)
+                .build();
+    }
+
+    @Operation(summary = "Thống kê phòng chưa có dịch vụ")
+    @GetMapping("/statistic/no-service")
+    public ApiResponse<List<RoomNoServiceStatisticResponse>> getRoomNoServiceStatistic(
+            @RequestParam(required = false) String buildingId) {
+        List<RoomNoServiceStatisticResponse> data = roomService.getRoomNoServiceStatistic(buildingId);
+
+        return ApiResponse.<List<RoomNoServiceStatisticResponse>>builder()
+                .message("Statistics of rooms with no successful service")
+                .data(data)
                 .build();
     }
 }
