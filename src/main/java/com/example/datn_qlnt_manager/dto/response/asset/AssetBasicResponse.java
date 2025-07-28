@@ -1,7 +1,9 @@
 package com.example.datn_qlnt_manager.dto.response.asset;
 
-import com.example.datn_qlnt_manager.common.AssetGroup;
 
+
+import com.example.datn_qlnt_manager.common.AssetStatus;
+import com.example.datn_qlnt_manager.common.AssetType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 public class AssetBasicResponse {
     String id;
     String nameAsset;
-    AssetGroup assetGroup;
+    AssetType assetType;
+    AssetStatus assetStatus;
     String description;
 }

@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.dto.request.asset;
 
 import java.math.BigDecimal;
 
+import com.example.datn_qlnt_manager.common.AssetType;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,18 +23,14 @@ public class AssetUpdateRequest {
     @NotBlank(message = "ASSET_NAME_REQUIRED")
     String nameAsset;
 
-    String assetTypeId;
+    @NotNull(message = "INVALID_ASSET_TYPE_NOT_NULL")
+    AssetType assetType;
 
     @NotNull(message = "ASSET_BELONG_TO_REQUIRED")
     AssetBeLongTo assetBeLongTo;
 
     @NotNull(message = "ASSET_STATUS_NOT_FOUND")
     AssetStatus assetStatus;
-
-    String roomID;
-    String buildingID;
-    String floorID;
-    String tenantId;
 
     @NotNull(message = "ASSET_PRICE_REQUIRED")
     @DecimalMin(value = "0.0", message = "ASSET_PRICE_INVALID")

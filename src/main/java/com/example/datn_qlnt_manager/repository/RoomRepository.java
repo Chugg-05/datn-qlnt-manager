@@ -204,4 +204,20 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 			@Param("userId") String userId,
 			@Param("buildingId") String buildingId
 	);
+
+	@Query("""
+    SELECT DISTINCT r
+    FROM Room r
+    LEFT JOIN FETCH r.assets
+    WHERE r.floor.building.user.id = :userId
+""")
+	List<Room> findAllWithAssets(@Param("userId") String userId);
+
+	@Query("""
+    SELECT r
+    FROM Room r
+    JOIN r.floor.building b
+    WHERE b.id = :buildingId
+""")
+	List<Room> findAllByBuilding(@Param("buildingId") String buildingId);
 }

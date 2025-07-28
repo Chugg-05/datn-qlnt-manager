@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.dto.filter;
 import com.example.datn_qlnt_manager.common.AssetBeLongTo;
 import com.example.datn_qlnt_manager.common.AssetStatus;
 
+import com.example.datn_qlnt_manager.common.AssetType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AssetFilter {
     String nameAsset;
+    AssetType assetType;
     AssetBeLongTo assetBeLongTo;
     AssetStatus assetStatus;
 }

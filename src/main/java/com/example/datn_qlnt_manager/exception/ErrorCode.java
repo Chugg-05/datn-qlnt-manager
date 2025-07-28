@@ -205,6 +205,8 @@ public enum ErrorCode {
     SERVICE_ROOM_ALREADY_EXISTS(400, "Service room already exists for this service and room.", HttpStatus.BAD_REQUEST),
     NEW_UNIT_PRICE_REQUIRED(400, "New unit price is required.", HttpStatus.BAD_REQUEST),
     UNIT_PRICE_MUST_BE_POSITIVE(400, "Unit price must be greater than 0.", HttpStatus.BAD_REQUEST),
+    INVALID_ASSET_TYPE_NOT_NULL(400, "Asset type must not be null", HttpStatus.BAD_REQUEST),
+    INVALID_SECURITY_ASSET_LOCATION(400, "Asset type 'AN_NINH' must belong to 'CHUNG'", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),

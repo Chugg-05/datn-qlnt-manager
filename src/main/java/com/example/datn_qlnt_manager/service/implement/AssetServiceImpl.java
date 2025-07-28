@@ -3,19 +3,19 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.*;
 
+import com.example.datn_qlnt_manager.common.*;
+import com.example.datn_qlnt_manager.common.AssetType;
+import com.example.datn_qlnt_manager.dto.filter.AssetFilter;
+import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
+import com.example.datn_qlnt_manager.mapper.RoomMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.example.datn_qlnt_manager.common.AssetBeLongTo;
-import com.example.datn_qlnt_manager.common.Meta;
-import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
-import com.example.datn_qlnt_manager.dto.filter.AssetFilter;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInit2Response;
 import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInitResponse;
@@ -45,6 +45,7 @@ public class AssetServiceImpl implements AssetService {
     AssetRepository assetRepository;
     AssetTypeRepository assetTypeRepository;
     RoomRepository roomRepository;
+    RoomMapper roomMapper;
     BuildingRepository buildingRepository;
     FloorRepository floorRepository;
     TenantRepository tenantRepository;
@@ -52,22 +53,20 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public AssetResponse createAsset(AssetCreationRequest request) {
+        User user = userService.getCurrentUser();
         List<Asset> duplicates = assetRepository.findByNameAssetIgnoreCase(request.getNameAsset());
         if (!duplicates.isEmpty()) {
             throw new AppException(ErrorCode.DUPLICATE_ASSET_NAME);
         }
 
+        if (request.getAssetType() == AssetType.AN_NINH && request.getAssetBeLongTo() != AssetBeLongTo.CHUNG) {
+            throw new AppException(ErrorCode.INVALID_SECURITY_ASSET_LOCATION);
+        }
+
         Asset asset = assetMapper.toAsset(request);
 
-        // set AssetType
-        AssetType assetType =
-                assetTypeRepository.findById(request.getAssetTypeId()).orElseThrow(() -> new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND));
-        asset.setAssetType(assetType);
-
-        // Xử lý theo loại tài sản thuộc về đâu
-        addOrUpdateAsset(asset, request.getAssetBeLongTo(), request.getRoomID(), request.getFloorID(),
-                request.getBuildingID(), request.getTenantId());
-
+        asset.setAssetStatus(AssetStatus.HOAT_DONG);
+        asset.setUser(user);
         asset.setCreatedAt(Instant.now());
         asset.setUpdatedAt(Instant.now());
 
@@ -89,8 +88,13 @@ public class AssetServiceImpl implements AssetService {
 
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by("updatedAt").descending());
 
-        Page<Asset> pageAsset = assetRepository.findAllByFilterAndUserId(filter.getNameAsset(),
-                filter.getAssetBeLongTo(), filter.getAssetStatus(), currentUser.getId(), pageable);
+        Page<Asset> pageAsset = assetRepository.findAllByFilterAndUserId(
+                filter.getNameAsset(),
+                filter.getAssetType(),
+                filter.getAssetBeLongTo(),
+                filter.getAssetStatus(),
+                currentUser.getId(),
+                pageable);
 
         List<AssetResponse> assetResponses = pageAsset.getContent().stream().map(assetMapper::toResponse).toList();
 
@@ -110,70 +114,8 @@ public class AssetServiceImpl implements AssetService {
             throw new AppException(ErrorCode.DUPLICATE_ASSET_NAME);
         }
 
-        // set AssetType
-        AssetType assetType =
-                assetTypeRepository.findById(request.getAssetTypeId()).orElseThrow(() -> new AppException(ErrorCode.ASSET_TYPE_NOT_FOUND));
-        asset.setAssetType(assetType);
-
-        // clear id cũ - gán id liên quan khi sửa belongto
-        asset.setRoom(null);
-        asset.setBuilding(null);
-        asset.setFloor(null);
-        asset.setTenant(null);
-
-        addOrUpdateAsset(asset, request.getAssetBeLongTo(), request.getRoomID(), request.getFloorID(),
-                request.getBuildingID(), request.getTenantId());
-
         asset.setUpdatedAt(Instant.now());
         return assetMapper.toResponse(assetRepository.save(asset));
-    }
-
-    private void addOrUpdateAsset(Asset asset, AssetBeLongTo assetBeLongTo, String roomID, String floorID,
-                                  String buildingID, String tenantId) {
-        switch (assetBeLongTo) {
-            case PHONG -> {
-                Room room =
-                        roomRepository.findById(roomID).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-                setRoom(asset, room);
-            }
-
-            case CHUNG -> {
-                if (floorID != null) {
-                    Floor floor =
-                            floorRepository.findById(floorID).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
-                    asset.setFloor(floor);
-
-                    Building building = floor.getBuilding();
-                    if (building != null) {
-                        asset.setBuilding(building);
-                    }
-                } else if (buildingID != null) {
-                    Building building =
-                            buildingRepository.findById(buildingID).orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
-                    asset.setBuilding(building);
-                }
-            }
-
-            case CA_NHAN -> {
-                Tenant tenant =
-                        tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
-                asset.setTenant(tenant);
-            }
-        }
-    }
-
-    private void setRoom(Asset asset, Room room) {
-        asset.setRoom(room);
-
-        Floor floor = room.getFloor();
-        if (floor != null) {
-            asset.setFloor(floor);
-
-            Building building = floor.getBuilding();
-            if (building != null) {
-                asset.setBuilding(building);
-            }
-        }
     }
 
     @Override
