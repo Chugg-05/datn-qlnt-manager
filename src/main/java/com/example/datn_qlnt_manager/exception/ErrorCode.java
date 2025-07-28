@@ -247,6 +247,9 @@ public enum ErrorCode {
     YEAR_GREATER(404, "Yeah must be greater than 1.", HttpStatus.NOT_FOUND),
     READING_DATE_NOT_FOUND(404, "Reading date not found.", HttpStatus.NOT_FOUND),
     INVOICE_NOT_FOUND(404, "Invoice not found.", HttpStatus.NOT_FOUND),
+    INVOICE_ID_REQUIRED(404, "Invoice ID must not be blank", HttpStatus.BAD_REQUEST),
+    PAYMENT_METHOD_REQUIRED(404, "Payment method is required", HttpStatus.BAD_REQUEST),
+    PAYMENT_STATUS_REQUIRED(404,"Payment method is required",HttpStatus.BAD_REQUEST),
 
     // feedback
     FEED_BACK_NOT_FOUND(404, "Feed back not found.", HttpStatus.NOT_FOUND),
@@ -259,6 +262,7 @@ public enum ErrorCode {
     FEED_BACK_DUPLICATED(404, "Feedback was duplicated", HttpStatus.BAD_REQUEST),
     NOTE_NOT_FOUND(404, "Note not found.", HttpStatus.NOT_FOUND),
     ASSET_STATUS_NOT_FOUND(404, "Asset status not found.", HttpStatus.NOT_FOUND),
+    PAYMENT_RECEIPT_NOT_FOUND(404, "Payment receipt not found.", HttpStatus.NOT_FOUND),
 
     // notification
     NOTIFICATION_TITLE_REQUIRED(404, "Title must not be blank", HttpStatus.NOT_FOUND),
@@ -296,6 +300,9 @@ public enum ErrorCode {
     DUPLICATE_SERVICE_CATEGORY(409, "Category already exists.", HttpStatus.BAD_REQUEST),
     METER_NAME_ALREADY_EXISTS_IN_ROOM(409,"Meter name already exists in this room",HttpStatus.BAD_REQUEST),
     METER_TYPE_ALREADY_EXISTS_IN_ROOM(409,"Meter type already exists in this room",HttpStatus.BAD_REQUEST),
+    PAYMENT_RECEIPT_CANNOT_BE_UPDATED(409, "Payment receipt cannot be updated", HttpStatus.BAD_REQUEST),
+    INVALID_PAYMENT_STATUS_CHANGE(409, "Only confirmed if status is CHO_XAC_NHAN", HttpStatus.BAD_REQUEST),
+    PAYMENT_RECEIPT_ALREADY_EXISTS(409, "Payment receipt already exists", HttpStatus.BAD_REQUEST),
 
     ;
 

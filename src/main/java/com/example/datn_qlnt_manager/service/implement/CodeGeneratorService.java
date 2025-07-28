@@ -1,11 +1,8 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import com.example.datn_qlnt_manager.entity.*;
 import org.springframework.stereotype.Service;
 
-import com.example.datn_qlnt_manager.entity.Building;
-import com.example.datn_qlnt_manager.entity.Floor;
-import com.example.datn_qlnt_manager.entity.Room;
-import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.service.strategy.*;
 
 import lombok.AccessLevel;
@@ -24,6 +21,7 @@ public class CodeGeneratorService {
     ServiceRoomCodeStrategy serviceRoomCodeStrategy;
     InvoiceCodeStrategy invoiceCodeStrategy;
     JobCodeStrategy jobCodeStrategy;
+    ReceiptCodeStrategy receiptCodeStrategy;
 
     public String generateBuildingCode(User user) {
         return buildingCodeStrategy.generate(user);
@@ -55,5 +53,9 @@ public class CodeGeneratorService {
 
     public String generateJobCode(Building building) {
         return jobCodeStrategy.generate(building);
+    }
+
+    public String generateReceiptCode(Invoice invoice) {
+        return receiptCodeStrategy.generateReceiptCode(invoice);
     }
 }
