@@ -20,12 +20,15 @@ public class TenantDetailResponse implements Serializable {
     String id;
     String customerCode;
     String buildingName;
+    String buildingAddress;
+    String floorName;
     String roomCode;
     String fullName;
     Gender gender;
     LocalDate dob;
     String email;
     String phoneNumber;
+    String pictureUrl;
     String identityCardNumber;
     String address;
     String contractCode;
