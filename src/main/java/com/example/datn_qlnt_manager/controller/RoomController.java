@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse;
 import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
 import com.example.datn_qlnt_manager.dto.statistics.RoomStatisticWithoutAssets;
 import com.example.datn_qlnt_manager.dto.statistics.StatisticRoomsWithoutContract;
@@ -63,7 +64,6 @@ public class RoomController {
                 .meta(result.getMeta())
                 .build();
     }
-
 
     @Operation(summary = "Phân trang, lọc(theo tòa), hiển thị danh sách phòng chưa có dịch vụ")
     @GetMapping("/without-services")
@@ -185,6 +185,16 @@ public class RoomController {
         return ApiResponse.<List<RoomNoServiceStatisticResponse>>builder()
                 .message("Statistics of rooms with no successful service")
                 .data(data)
+                .build();
+    }
+
+    @Operation(summary = "Xem chi tiết thông tin phòng")
+    @GetMapping("/details/{roomId}")
+    public ApiResponse<RoomDetailsResponse> getRoomDetails(@PathVariable String roomId) {
+        RoomDetailsResponse response = roomService.getRoomDetails(roomId);
+        return ApiResponse.<RoomDetailsResponse>builder()
+                .message("Get room details successfully")
+                .data(response)
                 .build();
     }
 }
