@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse;
 import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
 import com.example.datn_qlnt_manager.dto.statistics.RoomStatisticWithoutAssets;
 import com.example.datn_qlnt_manager.dto.statistics.StatisticRoomsWithoutContract;
@@ -243,5 +244,12 @@ public class RoomServiceImpl implements RoomService {
     public List<RoomNoServiceStatisticResponse> getRoomNoServiceStatistic(String buildingId) {
         User currentUser = userService.getCurrentUser();
         return roomRepository.countRoomsWithoutServiceByUser(currentUser.getId(), buildingId);
+    }
+
+    @Override
+    public RoomDetailsResponse getRoomDetails(String roomId) {
+        String userId = userService.getCurrentUser().getId();
+        return roomRepository.findRoomDetailsForTenant(roomId, userId)
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
     }
 }

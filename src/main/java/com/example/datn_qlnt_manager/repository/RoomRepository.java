@@ -1,7 +1,9 @@
 package com.example.datn_qlnt_manager.repository;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse;
 import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -235,6 +237,7 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 	long StatisticRoomsWithoutContract(@Param("userId") String userId);
 
 	@Query("""
+<<<<<<< Updated upstream
 		SELECT r FROM Room r
 		JOIN r.floor f
 		JOIN f.building b
@@ -266,4 +269,27 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 			@Param("userId") String userId,
 			@Param("buildingId") String buildingId
 			);
+=======
+    SELECT new com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse(
+        b.buildingName, b.address, owner.fullName, owner.phoneNumber,
+        r.roomCode, r.acreage, r.maximumPeople, r.roomType, r.status, r.description,
+        ctr.contractCode, ctr.numberOfPeople,
+        rep.fullName, rep.phoneNumber,rep.dob,rep.identityCardNumber,
+        ctr.deposit, ctr.roomPrice, ctr.status, ctr.startDate, ctr.endDate,
+        CAST((SELECT COUNT(DISTINCT t.id) FROM Contract c1 JOIN c1.tenants t WHERE c1 = ctr) AS long),
+        CAST((SELECT COUNT(ar.id) FROM AssetRoom ar WHERE ar.room = r) AS long),
+        CAST((SELECT COUNT(DISTINCT s.id) FROM Contract c2 JOIN c2.services s WHERE c2 = ctr) AS long),
+        CAST((SELECT COUNT(DISTINCT v.id) FROM Contract c3 JOIN c3.vehicles v WHERE c3 = ctr) AS long)
+    )
+    FROM Room r
+    JOIN r.floor f
+    JOIN f.building b
+    JOIN b.user owner
+    JOIN Contract ctr ON ctr.room = r AND ctr.status = com.example.datn_qlnt_manager.common.ContractStatus.HIEU_LUC
+    JOIN ctr.tenants tenant
+    JOIN ctr.tenants rep ON rep.isRepresentative = true
+    WHERE r.id = :roomId AND tenant.id = :userId
+""")
+	Optional<RoomDetailsResponse> findRoomDetailsForTenant(@Param("roomId") String roomId, @Param("userId") String userId);
+>>>>>>> Stashed changes
 }
