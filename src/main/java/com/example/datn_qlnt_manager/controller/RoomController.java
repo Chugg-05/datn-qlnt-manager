@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.controller;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
+import com.example.datn_qlnt_manager.dto.statistics.StatisticRoomsWithoutContract;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -92,6 +93,15 @@ public class RoomController {
         return ApiResponse.<RoomCountResponse>builder()
                 .message("Count room success!")
                 .data(roomService.statisticsRoomByStatus(buildingId))
+                .build();
+    }
+
+    @Operation(summary = "Tống kê số phòng chưa có hợp đồng")
+    @GetMapping("/statistic-without-contract")
+    public ApiResponse<StatisticRoomsWithoutContract> statisticRoomsWithoutContract() {
+        return ApiResponse.<StatisticRoomsWithoutContract>builder()
+                .message("Statistic rooms without contract successfully")
+                .data(roomService.statisticRoomsWithoutContractByUserId())
                 .build();
     }
 

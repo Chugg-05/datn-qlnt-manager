@@ -2,8 +2,10 @@ package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
+import com.example.datn_qlnt_manager.dto.statistics.StatisticRoomsWithoutContract;
 import com.example.datn_qlnt_manager.entity.*;
 import com.example.datn_qlnt_manager.repository.TenantRepository;
 import jakarta.transaction.Transactional;
@@ -190,6 +192,13 @@ public class RoomServiceImpl implements RoomService {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         Page<Room> paging = roomRepository.findActiveRoomsWithoutServiceRoomByUser(user.getId(), filter.getBuildingId(), pageable);
         return buildPaginatedRoomResponse(paging, page, size);
+    }
+
+    @Override
+    public StatisticRoomsWithoutContract statisticRoomsWithoutContractByUserId() {
+        User user = userService.getCurrentUser();
+        long statisticRoomsWithoutContract = roomRepository.StatisticRoomsWithoutContract(user.getId());
+        return new StatisticRoomsWithoutContract(statisticRoomsWithoutContract);
     }
 
     private PaginatedResponse<RoomResponse> buildPaginatedRoomResponse(Page<Room> paging, int page, int size) {
