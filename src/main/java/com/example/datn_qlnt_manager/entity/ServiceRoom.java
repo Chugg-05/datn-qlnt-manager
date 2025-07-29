@@ -36,7 +36,7 @@ public class ServiceRoom extends AbstractEntity {
     @Column(name = "ngay_bat_dau", nullable = false)
     LocalDate startDate;
 
-    @Column(name = "ngayKetThuc")
+    @Column(name = "ngay_ket_thuc")
     LocalDate endDate;
 
     @Enumerated(EnumType.STRING)

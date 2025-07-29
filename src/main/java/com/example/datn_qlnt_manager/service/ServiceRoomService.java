@@ -21,7 +21,7 @@ import java.util.List;
 public interface ServiceRoomService {
     PaginatedResponse<ServiceRoomView> getServiceRoomsPaging(ServiceRoomFilter filter, int page, int size);
 
-    ServiceRoomDetailResponse getServiceRoomDetailResponse(String roomId);
+    ServiceRoomDetailResponse getServiceRoomDetail(String roomId);
 
     ServiceRoomDetailResponse createRoomServiceForRoom(ServiceRoomCreationForRoomRequest request);
 

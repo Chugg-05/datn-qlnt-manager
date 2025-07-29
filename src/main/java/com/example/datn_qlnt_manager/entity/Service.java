@@ -51,6 +51,7 @@ public class Service extends AbstractEntity {
     @JoinColumn(name = "user_id", nullable = false)
     User user;
 
+    @Builder.Default
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ServiceRoom> serviceRooms = new HashSet<>();
 }

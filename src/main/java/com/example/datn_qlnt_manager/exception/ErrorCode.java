@@ -152,6 +152,7 @@ public enum ErrorCode {
     CANNOT_ADD_MORE_FLOORS(
             400, "Cannot add more floors than building's real number of floors.", HttpStatus.BAD_REQUEST),
     CANNOT_TOGGLE_SERVICE_STATUS(400, "Unable to change status for this service", HttpStatus.BAD_REQUEST),
+    CANNOT_TOGGLE_ASSET_STATUS(400, "Unable to change status for this asset", HttpStatus.BAD_REQUEST),
 
     INVALID_TITLE_BLANK(400, "Title cannot be blank.", HttpStatus.BAD_REQUEST),
     INVALID_JOB_PRIORITY_LEVEL_NULL(400, "Job priority level cannot be null.", HttpStatus.BAD_REQUEST),
@@ -204,9 +205,21 @@ public enum ErrorCode {
     CONTRACT_EXPIRED(400, "Contract has expired. Invoice cannot be generated.", HttpStatus.BAD_REQUEST),
     SERVICE_ROOM_ALREADY_EXISTS(400, "Service room already exists for this service and room.", HttpStatus.BAD_REQUEST),
     NEW_UNIT_PRICE_REQUIRED(400, "New unit price is required.", HttpStatus.BAD_REQUEST),
-    UNIT_PRICE_MUST_BE_POSITIVE(400, "Unit price must be greater than 0.", HttpStatus.BAD_REQUEST),
+    UNIT_PRICE_REQUIRED(400, "Unit price is required.", HttpStatus.BAD_REQUEST),
+    PRICE_MUST_BE_POSITIVE(400, "Price must be greater than 0.", HttpStatus.BAD_REQUEST),
     INVALID_ASSET_TYPE_NOT_NULL(400, "Asset type must not be null", HttpStatus.BAD_REQUEST),
     INVALID_SECURITY_ASSET_LOCATION(400, "Asset type 'AN_NINH' must belong to 'CHUNG'", HttpStatus.BAD_REQUEST),
+    ASSET_NAME_NOT_BLANK(400, "Asset name must not be blank.", HttpStatus.BAD_REQUEST),
+    ASSET_ROOM_ALREADY_EXISTS(400, "Asset already exists in this room.", HttpStatus.BAD_REQUEST),
+    ASSET_BELONG_TO_REQUIRED(400, "Asset belong to must not be null.", HttpStatus.BAD_REQUEST),
+    INVALID_ASSET_BELONG_TO(400, "Invalid asset belong to value.", HttpStatus.BAD_REQUEST),
+    PUBLIC_ASSET(400, "You cannot add shared property to a room.", HttpStatus.BAD_REQUEST),
+    SERVICE_IDS_REQUIRED(400, "Service ID are required.", HttpStatus.BAD_REQUEST),
+    ASSET_ID_REQUIRED(400, "Asset ID are required.", HttpStatus.BAD_REQUEST),
+    ROOM_NOT_FOUND_IN_BUILDING(400, "Room not found in this building.", HttpStatus.BAD_REQUEST),
+    ASSET_NOT_ACTIVE(400, "Asset is not active.", HttpStatus.BAD_REQUEST),
+    SERVICE_NOT_ACTIVE(400, "Service is not active.", HttpStatus.BAD_REQUEST),
+    ASSET_ROOM_NOT_FOUND(400, "Asset room not found.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
@@ -273,7 +286,6 @@ public enum ErrorCode {
     NOTIFICATION_NOT_FOUND(404, "Notification must not be null", HttpStatus.NOT_FOUND),
     NOTIFICATION_NOT_ASSIGNED(404, "Notification not assigned to this user", HttpStatus.NOT_FOUND),
     INVOICE_DETAIL_NOT_FOUND(404, "Invoice detail not found.", HttpStatus.NOT_FOUND),
-    SERVICE_IDS_REQUIRED(400, "Service IDs are required.", HttpStatus.BAD_REQUEST),
     SERVICE_ROOM_CANNOT_DELETE(400, "This is a required service and cannot be deleted.", HttpStatus.BAD_REQUEST),
     // Code: 409
     OTP_ALREADY_SENT(409, "OTP already sent.", HttpStatus.BAD_REQUEST),
