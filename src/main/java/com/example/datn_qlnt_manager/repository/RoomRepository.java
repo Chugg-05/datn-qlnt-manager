@@ -252,6 +252,7 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 			@Param("userId") String userId,
 			@Param("buildingId") String buildingId
 			);
+         
 	@Query("""
     SELECT new com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse(
         b.buildingName, b.address, owner.fullName, owner.phoneNumber,

@@ -79,19 +79,19 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
     List<TenantBasicResponse> findTenantsByContractId(@Param("contractId") String contractId);
 
     @Query("""
-        SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse(
-            t.id, t.customerCode, b.buildingName, r.roomCode, t.fullName, t.gender,
-            t.dob, t.email, t.phoneNumber, t.identityCardNumber, t.address,
-            c.contractCode, c.endDate, t.tenantStatus, t.isRepresentative,
-            t.createdAt, t.updatedAt
-        )
-        FROM Tenant t
-        LEFT JOIN t.contracts c
-        LEFT JOIN c.room r
-        LEFT JOIN r.floor f
-        LEFT JOIN f.building b
-        WHERE t.id = :tenantId
-    """)
+                SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse(
+                    t.id, t.customerCode, b.buildingName, b.address,f.nameFloor ,r.roomCode, t.fullName, t.gender,
+                    t.dob, t.email, t.phoneNumber, t.user.profilePicture,t.identityCardNumber, t.address,
+                    c.contractCode, c.endDate, t.tenantStatus, t.isRepresentative,
+                    t.createdAt, t.updatedAt
+                )
+                FROM Tenant t
+                LEFT JOIN t.contracts c
+                LEFT JOIN c.room r
+                LEFT JOIN r.floor f
+                LEFT JOIN f.building b
+                WHERE t.id = :tenantId
+            """)
     Optional<TenantDetailResponse> findTenantDetailById(@Param("tenantId") String tenantId);
 
     @Query("""

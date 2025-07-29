@@ -54,9 +54,15 @@ google:
   redirect:
     uri: ${REDIRECT_URI}
 
+#springdoc:
+#  swagger-ui:
+#    enabled: false
+
 springdoc:
   swagger-ui:
-    enabled: false
+    enabled: true
+    path: /docs
+    display-request-duration: true
 
 logging:
   level:
