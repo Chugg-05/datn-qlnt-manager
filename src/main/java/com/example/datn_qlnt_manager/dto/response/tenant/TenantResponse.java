@@ -22,6 +22,7 @@ public class TenantResponse implements Serializable {
     LocalDate dob;
     String email;
     String phoneNumber;
+    String pictureUrl;
     TenantStatus tenantStatus;
     Boolean isRepresentative;
     String address;

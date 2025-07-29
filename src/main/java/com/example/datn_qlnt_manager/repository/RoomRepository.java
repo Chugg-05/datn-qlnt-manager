@@ -237,39 +237,6 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 	long StatisticRoomsWithoutContract(@Param("userId") String userId);
 
 	@Query("""
-<<<<<<< Updated upstream
-		SELECT r FROM Room r
-		JOIN r.floor f
-		JOIN f.building b
-		WHERE b.user.id = :userId
-		AND (b.id = :buildingId)
-		AND (r.status != 'HUY_HOAT_DONG')
-		AND r.id NOT IN (
-			SELECT ar.room.id FROM AssetRoom ar
-    	)
-""")
-	Page<Room> findRoomsWithoutAssetsByUserId(
-			@Param("userId") String userId,
-			@Param("buildingId") String buildingId,
-			Pageable pageable
-	);
-
-	@Query("""
-		SELECT COUNT(r) FROM Room r
-		JOIN r.floor f
-		JOIN f.building b
-		WHERE b.user.id = :userId
-		AND (b.id = :buildingId)
-		AND (r.status != 'HUY_HOAT_DONG')
-		AND r.id NOT IN (
-			SELECT ar.room.id FROM AssetRoom ar
-			)
-""")
-	long StatisticRoomWithoutAssets(
-			@Param("userId") String userId,
-			@Param("buildingId") String buildingId
-			);
-=======
     SELECT new com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse(
         b.buildingName, b.address, owner.fullName, owner.phoneNumber,
         r.roomCode, r.acreage, r.maximumPeople, r.roomType, r.status, r.description,
@@ -291,5 +258,4 @@ public interface RoomRepository extends JpaRepository<Room, String> {
     WHERE r.id = :roomId AND tenant.id = :userId
 """)
 	Optional<RoomDetailsResponse> findRoomDetailsForTenant(@Param("roomId") String roomId, @Param("userId") String userId);
->>>>>>> Stashed changes
 }
