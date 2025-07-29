@@ -6,5 +6,6 @@ public enum AssetStatus {
     HU_HONG,
     CAN_BAO_TRI,
     THAT_LAC,
-    DA_THANH_LY
+    DA_THANH_LY,
+    HUY
 }

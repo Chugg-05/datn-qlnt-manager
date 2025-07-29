@@ -206,7 +206,7 @@ public class AssetServiceImpl implements AssetService {
     public void softDeleteAsset(String assetId) {
         Asset asset = assetRepository.findById(assetId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
-        asset.setAssetStatus(AssetStatus.KHONG_SU_DUNG);
+        asset.setAssetStatus(AssetStatus.HUY);
         assetRepository.save(asset);
     }
 }
