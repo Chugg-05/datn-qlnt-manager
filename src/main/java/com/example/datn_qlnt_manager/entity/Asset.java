@@ -49,4 +49,8 @@ public class Asset extends AbstractEntity {
 
     @ManyToMany(mappedBy = "assets")
     Set<Room> rooms = new HashSet<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL, orphanRemoval = true) // đã có assetRooms
+    Set<AssetRoom> assetRooms = new HashSet<>();
 }

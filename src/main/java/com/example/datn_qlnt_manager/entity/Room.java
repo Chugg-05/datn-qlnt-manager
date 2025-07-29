@@ -56,6 +56,10 @@ public class Room extends AbstractEntity {
     Set<ServiceRoom> serviceRooms = new HashSet<>();
 
     @Builder.Default
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)  // đã có assetRooms
+    Set<AssetRoom> assetRooms = new HashSet<>();
+
+    @Builder.Default
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Contract> contracts = new HashSet<>();
 

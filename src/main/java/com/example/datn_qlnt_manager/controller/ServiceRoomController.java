@@ -119,10 +119,10 @@ public class ServiceRoomController {
 
     @Operation(summary = "Xem thông tin các dịch vụ có trong phòng")
     @GetMapping("/{roomId}")
-    public ApiResponse<ServiceRoomDetailResponse> getServiceRoomDetailResponse(@PathVariable("roomId") String roomId) {
+    public ApiResponse<ServiceRoomDetailResponse> getServiceRoomDetail(@PathVariable("roomId") String roomId) {
         return ApiResponse.<ServiceRoomDetailResponse>builder()
                 .message("Service room details fetched successfully")
-                .data(serviceRoomService.getServiceRoomDetailResponse(roomId))
+                .data(serviceRoomService.getServiceRoomDetail(roomId))
                 .build();
     }
 

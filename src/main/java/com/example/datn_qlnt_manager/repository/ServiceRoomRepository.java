@@ -89,6 +89,7 @@ public interface ServiceRoomRepository extends JpaRepository<ServiceRoom, String
             		WHERE sr.service.user.id = :userId AND sr.room.id = :roomId
             """)
     List<IdNamAndType> getAllServiceRoomByUserId(@Param("userId") String userId, @Param("roomId") String roomId);
+
     @Query("""    
         SELECT sr FROM ServiceRoom sr
             JOIN FETCH sr.service
