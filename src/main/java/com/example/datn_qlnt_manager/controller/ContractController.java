@@ -151,4 +151,24 @@ public class ContractController {
                 .data("Contract with ID " + contractId + " has been deleted.")
                 .build();
     }
+
+
+
+    @Operation(summary = "Khách thuê - Xem danh sách, tìm kiếm, lọc hợp đồng của họ")
+    @GetMapping("/my-contracts")
+    public ApiResponse<List<ContractResponse>> getContractsOfCurrentTenant(
+            @ModelAttribute ContractFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+
+        PaginatedResponse<ContractResponse> result =
+                contractService.getContractsOfCurrentTenant(filter, page, size);
+
+        return ApiResponse.<List<ContractResponse>>builder()
+                .message("Get contracts successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
 }

@@ -4,6 +4,7 @@ import com.example.datn_qlnt_manager.dto.ApiResponse;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
+import com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic;
 import jakarta.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
@@ -101,4 +102,21 @@ public class AssetController {
                 .build();
     }
 
+    @Operation(summary = "Thống kê tài sản theo trạng thái")
+    @GetMapping("/statistics")
+    public ApiResponse<AssetStatusStatistic> getAssetStatistics() {
+        return ApiResponse.<AssetStatusStatistic>builder()
+                .message("Asset statistics successfully")
+                .data(assetService.getAssetStatisticsByUserId())
+                .build();
+    }
+
+    @Operation(summary = "Xóa mềm tài sản (chuyển trạng thái KHONG_SU_DUNG)")
+    @DeleteMapping("soft-delete/{assetId}")
+    public ApiResponse<Void> softDeleteAsset(@PathVariable String assetId) {
+        assetService.softDeleteAsset(assetId);
+        return ApiResponse.<Void>builder()
+                .message("Asset soft-deleted successfully")
+                .build();
+    }
 }

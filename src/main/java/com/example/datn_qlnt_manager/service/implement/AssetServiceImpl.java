@@ -7,7 +7,7 @@ import com.example.datn_qlnt_manager.common.*;
 import com.example.datn_qlnt_manager.common.AssetType;
 import com.example.datn_qlnt_manager.dto.filter.AssetFilter;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
-import com.example.datn_qlnt_manager.mapper.RoomMapper;
+import com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,7 +45,6 @@ public class AssetServiceImpl implements AssetService {
     AssetRepository assetRepository;
     AssetTypeRepository assetTypeRepository;
     RoomRepository roomRepository;
-    RoomMapper roomMapper;
     BuildingRepository buildingRepository;
     FloorRepository floorRepository;
     TenantRepository tenantRepository;
@@ -178,5 +177,19 @@ public class AssetServiceImpl implements AssetService {
                         b.getFullName())).toList();
 
         return CreateAssetInit2Response.builder().assetTypes(assetTypes).buildings(buildings).floors(floors).tenants(tenants).rooms(rooms).build();
+    }
+
+    @Override
+    public AssetStatusStatistic getAssetStatisticsByUserId() {
+        User user = userService.getCurrentUser();
+        return assetRepository.getAssetStatisticsByUserId(user.getId());
+    }
+
+    @Override
+    public void softDeleteAsset(String assetId) {
+        Asset asset = assetRepository.findById(assetId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
+        asset.setAssetStatus(AssetStatus.KHONG_SU_DUNG);
+        assetRepository.save(asset);
     }
 }
