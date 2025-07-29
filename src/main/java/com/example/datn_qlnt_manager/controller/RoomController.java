@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.controller;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
+import com.example.datn_qlnt_manager.dto.statistics.RoomStatisticWithoutAssets;
 import com.example.datn_qlnt_manager.dto.statistics.StatisticRoomsWithoutContract;
 import jakarta.validation.Valid;
 
@@ -88,6 +89,21 @@ public class RoomController {
                 .build();
     }
 
+    @Operation(summary = "hiển thị danh sách phòng chưa có tài sản")
+    @GetMapping("/rooms-without-assets")
+    public ApiResponse<List<RoomResponse>> getRoomsWithoutAssets (
+            @RequestParam String buildingId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        PaginatedResponse<RoomResponse> result = roomService.getRoomsWithoutAssets(buildingId, page, size);
+        return ApiResponse.<List<RoomResponse>>builder()
+                .message("Get rooms without asset successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
     @GetMapping("/statistics")
     public ApiResponse<RoomCountResponse> statisticsRoomByStatus(@RequestParam String buildingId) {
         return ApiResponse.<RoomCountResponse>builder()
@@ -96,12 +112,21 @@ public class RoomController {
                 .build();
     }
 
-    @Operation(summary = "Tống kê số phòng chưa có hợp đồng")
+    @Operation(summary = "Thống kê số phòng chưa có hợp đồng")
     @GetMapping("/statistic-without-contract")
     public ApiResponse<StatisticRoomsWithoutContract> statisticRoomsWithoutContract() {
         return ApiResponse.<StatisticRoomsWithoutContract>builder()
                 .message("Statistic rooms without contract successfully")
                 .data(roomService.statisticRoomsWithoutContractByUserId())
+                .build();
+    }
+
+    @Operation(summary = "thống kê số phòng chưa có tài sản")
+    @GetMapping("/statistic-without-asset")
+    public ApiResponse<RoomStatisticWithoutAssets> statisticRoomsWithoutAsset(@RequestParam String buildingId){
+        return ApiResponse.<RoomStatisticWithoutAssets>builder()
+                .message("Statistic rooms without asset successfully")
+                .data(roomService.statisticRoomsWithoutAssetByUserId(buildingId))
                 .build();
     }
 
