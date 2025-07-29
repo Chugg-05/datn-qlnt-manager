@@ -122,7 +122,6 @@ public class AssetRoomController {
                 .build();
     }
 
-
     @Operation(summary = "Chuyển trạng thái tài sản phòng HOAT_DONG <-> HU_HONG")
     @PutMapping("/toggle/{assetRoomId}")
     public ApiResponse<String> updateAssetRoom(

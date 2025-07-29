@@ -201,12 +201,14 @@ public class AssetRoomServiceImpl implements AssetRoomService {
     @Override
     public void toggleAssetRoomStatus(String assetRoomId) {
         AssetRoom assetRoom = assetRoomRepository.findById(assetRoomId)
-                .orElseThrow(() -> new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_ROOM_NOT_FOUND));
 
-        if (assetRoom.getAssetStatus() == AssetStatus.HOAT_DONG) {
+        AssetStatus assetRoomStatus = assetRoom.getAssetStatus();
+
+        if (assetRoomStatus == AssetStatus.HOAT_DONG) {
             assetRoom.setAssetStatus(AssetStatus.KHONG_SU_DUNG);
             assetRoom.setUpdatedAt(Instant.now());
-        } else if (assetRoom.getAssetStatus() == AssetStatus.KHONG_SU_DUNG) {
+        } else if (assetRoomStatus == AssetStatus.KHONG_SU_DUNG) {
             assetRoom.setAssetStatus(AssetStatus.HOAT_DONG);
             assetRoom.setUpdatedAt(Instant.now());
         } else {

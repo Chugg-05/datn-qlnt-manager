@@ -22,6 +22,8 @@ public interface AssetService {
 
     List<AssetResponse> findAssetsByCurrentUser();
 
+    void toggleAsseStatus(String assetId);
+
     CreateAssetInitResponse getInitDataForAssetCreation();
 
     CreateAssetInit2Response getAssetsInfoByUserId2();

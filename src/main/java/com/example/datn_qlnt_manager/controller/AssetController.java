@@ -119,4 +119,18 @@ public class AssetController {
                 .message("Asset soft-deleted successfully")
                 .build();
     }
+
+    @Operation(summary = "Chuyển trạng thái tài sản phòng HOAT_DONG <-> HU_HONG")
+    @PutMapping("/toggle/{assetId}")
+    public ApiResponse<String> updateAssetRoom(
+            @PathVariable("assetId") String assetId) {
+
+        assetService.toggleAsseStatus(assetId);
+
+        return ApiResponse.<String>builder()
+                .message("Asset toggle successfully")
+                .data("Asset with ID " + assetId + " has been toggled.")
+                .build();
+
+    }
 }

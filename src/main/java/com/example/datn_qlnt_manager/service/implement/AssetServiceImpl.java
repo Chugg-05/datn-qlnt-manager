@@ -125,6 +125,23 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
+    public void toggleAsseStatus(String assetId) {
+        Asset asset = assetRepository.findById(assetId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
+
+        if (asset.getAssetStatus() == AssetStatus.HOAT_DONG) {
+            asset.setAssetStatus(AssetStatus.KHONG_SU_DUNG);
+            asset.setUpdatedAt(Instant.now());
+        } else if (asset.getAssetStatus() == AssetStatus.KHONG_SU_DUNG) {
+            asset.setAssetStatus(AssetStatus.HOAT_DONG);
+            asset.setUpdatedAt(Instant.now());
+        } else {
+            throw new AppException(ErrorCode.CANNOT_TOGGLE_ASSET_STATUS);
+        }
+        assetRepository.save(asset);
+    }
+
+    @Override
     public CreateAssetInitResponse getInitDataForAssetCreation() {
         User user = userService.getCurrentUser();
 
