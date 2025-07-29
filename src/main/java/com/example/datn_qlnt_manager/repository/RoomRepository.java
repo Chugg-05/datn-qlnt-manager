@@ -208,22 +208,6 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 	);
 
 	@Query("""
-    SELECT DISTINCT r
-    FROM Room r
-    LEFT JOIN FETCH r.assets
-    WHERE r.floor.building.user.id = :userId
-""")
-	List<Room> findAllWithAssets(@Param("userId") String userId);
-
-	@Query("""
-    SELECT r
-    FROM Room r
-    JOIN r.floor.building b
-    WHERE b.id = :buildingId
-""")
-	List<Room> findAllByBuilding(@Param("buildingId") String buildingId);
-
-	@Query("""
     	SELECT COUNT(r)
     	FROM Room r
     	JOIN r.floor f
@@ -234,8 +218,41 @@ public interface RoomRepository extends JpaRepository<Room, String> {
         	SELECT c.room.id FROM Contract c
     )
 """)
-	long StatisticRoomsWithoutContract(@Param("userId") String userId);
+	long statisticRoomsWithoutContract(@Param("userId") String userId);
 
+	@Query("""
+		SELECT r FROM Room r
+		JOIN r.floor f
+		JOIN f.building b
+		WHERE b.user.id = :userId
+		AND (b.id = :buildingId)
+		AND (r.status != 'HUY_HOAT_DONG')
+		AND r.id NOT IN (
+			SELECT ar.room.id FROM AssetRoom ar
+    	)
+""")
+	Page<Room> findRoomsWithoutAssetsByUserId(
+			@Param("userId") String userId,
+			@Param("buildingId") String buildingId,
+			Pageable pageable
+	);
+
+	@Query("""
+		SELECT COUNT(r) FROM Room r
+		JOIN r.floor f
+		JOIN f.building b
+		WHERE b.user.id = :userId
+		AND (b.id = :buildingId)
+		AND (r.status != 'HUY_HOAT_DONG')
+		AND r.id NOT IN (
+			SELECT ar.room.id FROM AssetRoom ar
+			)
+""")
+	long statisticRoomWithoutAssets(
+			@Param("userId") String userId,
+			@Param("buildingId") String buildingId
+			);
+         
 	@Query("""
     SELECT new com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse(
         b.buildingName, b.address, owner.fullName, owner.phoneNumber,
