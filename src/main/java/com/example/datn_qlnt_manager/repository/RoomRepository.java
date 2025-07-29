@@ -220,4 +220,17 @@ public interface RoomRepository extends JpaRepository<Room, String> {
     WHERE b.id = :buildingId
 """)
 	List<Room> findAllByBuilding(@Param("buildingId") String buildingId);
+
+	@Query("""
+    	SELECT COUNT(r)
+    	FROM Room r
+    	JOIN r.floor f
+    	JOIN f.building b
+    	WHERE b.user.id = :userId
+    	AND r.status = 'TRONG'
+     	AND r.id NOT IN (
+        	SELECT c.room.id FROM Contract c
+    )
+""")
+	long StatisticRoomsWithoutContract(@Param("userId") String userId);
 }

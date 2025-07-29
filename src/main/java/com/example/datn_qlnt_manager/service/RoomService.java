@@ -10,6 +10,7 @@ import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
 import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
+import com.example.datn_qlnt_manager.dto.statistics.StatisticRoomsWithoutContract;
 
 public interface RoomService {
 
@@ -35,6 +36,8 @@ public interface RoomService {
     RoomCountResponse statisticsRoomByStatus(String buildingId);
 
     PaginatedResponse<RoomResponse> getRoomsWithoutServiceByUserId(RoomFilter filter, Integer page, Integer size);
+
+    StatisticRoomsWithoutContract statisticRoomsWithoutContractByUserId();
 
     List<RoomNoServiceStatisticResponse> getRoomNoServiceStatistic(String buildingId);
 }
