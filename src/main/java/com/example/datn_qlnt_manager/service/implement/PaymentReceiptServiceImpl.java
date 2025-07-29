@@ -115,7 +115,7 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_RECEIPT_NOT_FOUND));
 
         // Không cho cập nhật nếu trạng thái đã xác nhận
-        if (receipt.getPaymentStatus() == PaymentStatus.DA_XAC_NHAN) {
+        if (receipt.getPaymentStatus() == PaymentStatus.DA_THANH_TOAN) {
             throw new AppException(ErrorCode.PAYMENT_RECEIPT_CANNOT_BE_UPDATED);
         }
 
@@ -144,14 +144,14 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         PaymentReceipt receipt = paymentReceiptRepository.findById(paymentReceiptId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_RECEIPT_NOT_FOUND));
 
-        if (receipt.getPaymentStatus() == PaymentStatus.DA_XAC_NHAN) {
+        if (receipt.getPaymentStatus() == PaymentStatus.DA_THANH_TOAN) {
             throw new AppException(ErrorCode.PAYMENT_RECEIPT_CANNOT_BE_UPDATED);
         }
 
         receipt.setPaymentStatus(request.getPaymentStatus());
 
         // Nếu trạng thái là ĐÃ XÁC NHẬN thì cập nhật PaymentDate = now
-        if (PaymentStatus.DA_XAC_NHAN.equals(request.getPaymentStatus())) {
+        if (PaymentStatus.DA_THANH_TOAN.equals(request.getPaymentStatus())) {
             receipt.setPaymentDate(LocalDateTime.now());
         }
         receipt.setUpdatedAt(Instant.now());
@@ -167,7 +167,7 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
             throw new AppException(ErrorCode.INVALID_PAYMENT_STATUS_CHANGE);
         }
 
-        receipt.setPaymentStatus(PaymentStatus.DA_XAC_NHAN);
+        receipt.setPaymentStatus(PaymentStatus.DA_THANH_TOAN);
         receipt.setPaymentDate(LocalDateTime.now());
         receipt.setUpdatedAt(Instant.now());
 

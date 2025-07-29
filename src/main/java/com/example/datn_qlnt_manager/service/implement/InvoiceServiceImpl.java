@@ -266,6 +266,36 @@ public class InvoiceServiceImpl implements InvoiceService {
         return invoices.stream().map(invoiceMapper::toInvoiceResponse).toList();
     }
 
+
+    @Override
+    public PaginatedResponse<InvoiceResponse> getInvoicesForTenant(
+            InvoiceFilter filter, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+        var user = userService.getCurrentUser();
+
+        List<InvoiceStatus> statusList = List.of(
+                InvoiceStatus.CHO_THANH_TOAN,
+                InvoiceStatus.DA_THANH_TOAN,
+                InvoiceStatus.QUA_HAN
+        );
+
+        Page<Invoice> paging = invoiceRepository.getInvoicesForTenant(
+                user.getId(),
+                filter.getQuery(),
+                filter.getBuilding(),
+                filter.getFloor(),
+                filter.getMonth(),
+                filter.getYear(),
+                filter.getMinTotalAmount(),
+                filter.getMaxTotalAmount(),
+                filter.getInvoiceStatus(),
+                filter.getInvoiceType(),
+                statusList,
+                pageable);
+
+        return buildPaginatedInvoiceResponse(paging, page, size);
+    }
+
     private List<InvoiceDetail> buildInvoiceDetailsItems(Invoice invoice, List<InvoiceItemResponse> items) {
         Room room = invoice.getContract().getRoom();
         List<Meter> meters = meterRepository.findByRoomId(room.getId());

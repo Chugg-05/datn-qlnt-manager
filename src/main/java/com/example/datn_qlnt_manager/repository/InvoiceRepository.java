@@ -155,6 +155,51 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
 			""")
     List<Invoice> findAllInvoicesByUserId(@Param("userId") String userId);
 
+	@Query(
+			"""
+        SELECT i
+        FROM Invoice i
+        JOIN FETCH i.contract c
+        JOIN FETCH c.room r
+        JOIN FETCH r.floor f
+        JOIN FETCH f.building b
+        JOIN FETCH c.tenants t
+        WHERE t.user.id = :userId
+        AND t.isRepresentative = true
+        AND (
+        :query IS NULL
+        OR i.invoiceCode LIKE CONCAT('%', :query, '%')
+        OR b.buildingName LIKE CONCAT('%', :query, '%')
+        OR r.roomCode LIKE CONCAT('%', :query, '%')
+        OR t.fullName LIKE CONCAT('%', :query, '%')
+        OR t.phoneNumber LIKE CONCAT('%', :query, '%')
+        OR t.identityCardNumber LIKE CONCAT('%', :query, '%')
+        )
+        AND (:building IS NULL OR b.id = :building)
+        AND (:floor IS NULL OR f.id = :floor)
+        AND (:month IS NULL OR i.month = :month)
+        AND (:year IS NULL OR i.year = :year)
+        AND (:minTotalAmount IS NULL OR i.totalAmount >= :minTotalAmount)
+        AND (:maxTotalAmount IS NULL OR i.totalAmount <= :maxTotalAmount)
+        AND (:invoiceStatus IS NULL OR i.invoiceStatus = :invoiceStatus)
+        AND (:invoiceType IS NULL OR i.invoiceType = :invoiceType)
+        AND i.invoiceStatus IN :statusList
+        ORDER BY i.updatedAt DESC
+    """)
+	Page<Invoice> getInvoicesForTenant(
+			@Param("userId") String userId,
+			@Param("query") String query,
+			@Param("building") String building,
+			@Param("floor") String floor,
+			@Param("month") Integer month,
+			@Param("year") Integer year,
+			@Param("minTotalAmount") BigDecimal minTotalAmount,
+			@Param("maxTotalAmount") BigDecimal maxTotalAmount,
+			@Param("invoiceStatus") InvoiceStatus invoiceStatus,
+			@Param("invoiceType") InvoiceType invoiceType,
+			@Param("statusList") List<InvoiceStatus> statusList,
+			Pageable pageable);
+
     boolean existsByContractIdAndMonthAndYearAndInvoiceType(
             String contractId, int month, int year, InvoiceType invoiceType);
 

@@ -187,4 +187,20 @@ public class InvoiceController {
                 .data(invoices)
                 .build();
     }
+
+    @Operation(summary = "Danh sách, Phân trang, tìm kiếm, lọc hóa đơn dành cho màn khách")
+    @GetMapping("/tenant")
+    public ApiResponse<List<InvoiceResponse>> getInvoicesForTenant(
+            @ModelAttribute InvoiceFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+        PaginatedResponse<InvoiceResponse> result =
+                invoiceService.getInvoicesForTenant(filter, page, size);
+
+        return ApiResponse.<List<InvoiceResponse>>builder()
+                .message("Get invoices for tenant successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
 }

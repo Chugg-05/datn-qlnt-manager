@@ -43,4 +43,7 @@ public interface InvoiceService {
     void deleteInvoice(String invoiceId);
 
     List<InvoiceResponse> getAllInvoicesByUserId();
+
+    PaginatedResponse<InvoiceResponse> getInvoicesForTenant(
+            InvoiceFilter filter, int page, int size);
 }
