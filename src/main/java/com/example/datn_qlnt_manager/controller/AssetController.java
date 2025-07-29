@@ -112,7 +112,7 @@ public class AssetController {
     }
 
     @Operation(summary = "Xóa mềm tài sản (chuyển trạng thái KHONG_SU_DUNG)")
-    @DeleteMapping("soft-delete/{assetId}")
+    @PutMapping("soft-delete/{assetId}")
     public ApiResponse<Void> softDeleteAsset(@PathVariable String assetId) {
         assetService.softDeleteAsset(assetId);
         return ApiResponse.<Void>builder()
@@ -120,7 +120,7 @@ public class AssetController {
                 .build();
     }
 
-    @Operation(summary = "Chuyển trạng thái tài sản phòng HOAT_DONG <-> HU_HONG")
+    @Operation(summary = "Chuyển trạng thái tài sản phòng HOAT_DONG <-> KHONG_SU_DUNG")
     @PutMapping("/toggle/{assetId}")
     public ApiResponse<String> updateAssetRoom(
             @PathVariable("assetId") String assetId) {
