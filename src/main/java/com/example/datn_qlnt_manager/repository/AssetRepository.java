@@ -3,7 +3,7 @@ package com.example.datn_qlnt_manager.repository;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.common.AssetType;
-import jakarta.persistence.AccessType;
+import com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -46,4 +46,18 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
 				WHERE a.user.id = :userId
 			""")
     List<Asset> findAssetsByUserId(@Param("userId") String userId);
+
+	@Query("""
+    SELECT new com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic(
+        COUNT(a),
+        SUM(CASE WHEN a.assetStatus = 'HOAT_DONG' THEN 1 ELSE 0 END),
+        SUM(CASE WHEN a.assetStatus = 'HU_HONG' THEN 1 ELSE 0 END),
+        SUM(CASE WHEN a.assetStatus = 'CAN_BAO_TRI' THEN 1 ELSE 0 END),
+        SUM(CASE WHEN a.assetStatus = 'THAT_LAC' THEN 1 ELSE 0 END),
+        SUM(CASE WHEN a.assetStatus = 'KHONG_SU_DUNG' THEN 1 ELSE 0 END)
+    )
+    FROM Asset a
+    WHERE a.user.id = :userId
+""")
+	AssetStatusStatistic getAssetStatisticsByUserId(@Param("userId") String userId);
 }

@@ -363,4 +363,21 @@ public class ContractServiceImpl implements ContractService {
                 .meta(meta)
                 .build();
     }
+
+    @Override
+    public PaginatedResponse<ContractResponse> getContractsOfCurrentTenant(ContractFilter filter, int page, int size) {
+        String userId = userService.getCurrentUser().getId();
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+
+        Page<Contract> paging = contractRepository.getPageAndSearchAndFilterContractByTenantUserId(
+                userId,
+                filter.getQuery(),
+                filter.getGender(),
+                filter.getStatus(),
+                pageable
+        );
+        return buildPaginatedContractResponse(paging, page, size);
+    }
+
+
 }

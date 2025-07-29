@@ -143,4 +143,29 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
 
     boolean existsByTenants_Id(String tenantId);
+
+	@Query("""
+    SELECT DISTINCT c
+    FROM Contract c
+    JOIN c.tenants t
+    JOIN t.user u
+    WHERE u.id = :userId
+      AND (:query IS NULL OR LOWER(c.contractCode) LIKE LOWER(CONCAT('%', :query, '%'))
+           OR LOWER(c.room.roomCode) LIKE LOWER(CONCAT('%', :query, '%'))
+           OR LOWER(t.fullName) LIKE LOWER(CONCAT('%', :query, '%'))
+           OR LOWER(t.phoneNumber) LIKE LOWER(CONCAT('%', :query, '%'))
+           OR LOWER(t.identityCardNumber) LIKE LOWER(CONCAT('%', :query, '%'))
+           OR LOWER(t.email) LIKE LOWER(CONCAT('%', :query, '%')))
+      AND (:gender IS NULL OR t.gender = :gender)
+      AND (:status IS NULL OR c.status = :status)
+      AND c.status != 'DA_HUY'
+    ORDER BY c.updatedAt DESC
+""")
+	Page<Contract> getPageAndSearchAndFilterContractByTenantUserId(
+			@Param("userId") String userId,
+			@Param("query") String query,
+			@Param("gender") Gender gender,
+			@Param("status") ContractStatus status,
+			Pageable pageable
+	);
 }

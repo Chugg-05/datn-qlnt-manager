@@ -34,4 +34,6 @@ public interface ContractService {
     void softDeleteContractById(String contractId);
 
     void deleteContractById(String contractId);
+
+    PaginatedResponse<ContractResponse> getContractsOfCurrentTenant(ContractFilter filter, int page, int size);
 }

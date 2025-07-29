@@ -9,6 +9,7 @@ import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInit2Response;
 import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInitResponse;
 import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
+import com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic;
 
 public interface AssetService {
     AssetResponse createAsset(AssetCreationRequest request);
@@ -24,4 +25,8 @@ public interface AssetService {
     CreateAssetInitResponse getInitDataForAssetCreation();
 
     CreateAssetInit2Response getAssetsInfoByUserId2();
+
+    AssetStatusStatistic getAssetStatisticsByUserId();
+
+    void softDeleteAsset(String assetId);
 }
