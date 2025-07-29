@@ -200,14 +200,14 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public StatisticRoomsWithoutContract statisticRoomsWithoutContractByUserId() {
         User user = userService.getCurrentUser();
-        long statisticRoomsWithoutContract = roomRepository.StatisticRoomsWithoutContract(user.getId());
+        long statisticRoomsWithoutContract = roomRepository.statisticRoomsWithoutContract(user.getId());
         return new StatisticRoomsWithoutContract(statisticRoomsWithoutContract);
     }
 
     @Override
     public RoomStatisticWithoutAssets statisticRoomsWithoutAssetByUserId(String buildingId) {
         User user = userService.getCurrentUser();
-        long statisticRoomsWithoutAsset = roomRepository.StatisticRoomWithoutAssets(user.getId(), buildingId);
+        long statisticRoomsWithoutAsset = roomRepository.statisticRoomWithoutAssets(user.getId(), buildingId);
         return new RoomStatisticWithoutAssets(statisticRoomsWithoutAsset);
     }
 

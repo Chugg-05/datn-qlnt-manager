@@ -208,22 +208,6 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 	);
 
 	@Query("""
-    SELECT DISTINCT r
-    FROM Room r
-    LEFT JOIN FETCH r.assets
-    WHERE r.floor.building.user.id = :userId
-""")
-	List<Room> findAllWithAssets(@Param("userId") String userId);
-
-	@Query("""
-    SELECT r
-    FROM Room r
-    JOIN r.floor.building b
-    WHERE b.id = :buildingId
-""")
-	List<Room> findAllByBuilding(@Param("buildingId") String buildingId);
-
-	@Query("""
     	SELECT COUNT(r)
     	FROM Room r
     	JOIN r.floor f
@@ -234,10 +218,9 @@ public interface RoomRepository extends JpaRepository<Room, String> {
         	SELECT c.room.id FROM Contract c
     )
 """)
-	long StatisticRoomsWithoutContract(@Param("userId") String userId);
+	long statisticRoomsWithoutContract(@Param("userId") String userId);
 
 	@Query("""
-<<<<<<< Updated upstream
 		SELECT r FROM Room r
 		JOIN r.floor f
 		JOIN f.building b
@@ -265,11 +248,11 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 			SELECT ar.room.id FROM AssetRoom ar
 			)
 """)
-	long StatisticRoomWithoutAssets(
+	long statisticRoomWithoutAssets(
 			@Param("userId") String userId,
 			@Param("buildingId") String buildingId
 			);
-=======
+	@Query("""
     SELECT new com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse(
         b.buildingName, b.address, owner.fullName, owner.phoneNumber,
         r.roomCode, r.acreage, r.maximumPeople, r.roomType, r.status, r.description,
@@ -291,5 +274,4 @@ public interface RoomRepository extends JpaRepository<Room, String> {
     WHERE r.id = :roomId AND tenant.id = :userId
 """)
 	Optional<RoomDetailsResponse> findRoomDetailsForTenant(@Param("roomId") String roomId, @Param("userId") String userId);
->>>>>>> Stashed changes
 }
