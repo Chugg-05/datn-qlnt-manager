@@ -14,6 +14,9 @@ public interface PaymentReceiptService {
 
     PaginatedResponse<PaymentReceiptResponse> filterPaymentReceiptsByUserId( PaymentReceiptFilter filter, int page, int size);
 
+
+    PaginatedResponse<PaymentReceiptResponse> filterPaymentReceiptsByTenantId(PaymentReceiptFilter filter, int page, int size);
+
     void deletePaymentReceipt(String paymentReceiptId);
 
     @Transactional
