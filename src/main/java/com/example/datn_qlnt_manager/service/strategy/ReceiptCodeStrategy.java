@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.service.strategy;
 
+import java.time.YearMonth;
 import java.util.Random;
 
 import com.example.datn_qlnt_manager.entity.Invoice;
@@ -13,9 +14,13 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReceiptCodeStrategy {
-    public String generateReceiptCode(Invoice invoice) {
-        String contractCode = invoice.getContract().getContractCode();
+    public String generateReceiptCode() {
+        YearMonth current = YearMonth.now();
+
+        String yy = String.format("%02d", current.getYear() % 100);
+        String mm = String.format("%02d", current.getMonthValue());
         String randomNumber = String.format("%06d", new Random().nextInt(1_000_000));
-        return "MPTT-" + contractCode + "-" + randomNumber;
+
+        return "PTT" + yy + mm + randomNumber;
     }
 }

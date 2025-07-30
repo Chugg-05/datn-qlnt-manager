@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gửi thông báo thanh toán hóa đơn</title>
+</head>
+<body>
+    <div>
+        <p>Xin chào <b>{{name}}</b>,</p>
+
+        <p>Hệ thống vừa phát hành phiếu thanh toán cho hóa đơn <b>{{invoiceCode}}</b> của bạn.</p>
+
+        <ul>
+            <li><b>Mã phiếu:</b> {{receiptCode}}</li>
+            <li><b>Tòa nhà:</b> {{building}}</li>
+            <li><b>Phòng:</b> {{room}}</li>
+            <li><b>Loại hóa đơn:</b> {{invoiceType}}</li>
+            <li><b>Số tiền:</b> {{amount}}</li>
+            <li><b>Hạn thanh toán:</b> {{dueDate}}</li>
+            <li><b>Ghi chú:</b> {{note}}</li>
+        </ul>
+
+        <p>Vui lòng đăng nhập hệ thống để kiểm tra chi tiết và thanh toán đúng hạn.</p>
+
+        <p>Trân trọng,<br>
+            <b>Hệ thống Quản lý Nhà trọ - TroHub</b></p>
+    </div>
+</body>
+</html>

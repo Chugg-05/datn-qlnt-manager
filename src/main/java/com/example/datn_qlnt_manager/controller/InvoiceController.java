@@ -2,6 +2,11 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.request.paymentReceipt.PaymentMethodRequest;
+import com.example.datn_qlnt_manager.dto.request.paymentReceipt.RejectPaymentRequest;
+import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentBatchResponse;
+import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentMethodResponse;
+import com.example.datn_qlnt_manager.dto.response.paymentReceipt.RejectPaymentResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -185,6 +190,51 @@ public class InvoiceController {
         return ApiResponse.<List<InvoiceResponse>>builder()
                 .message("Get all invoices successfully")
                 .data(invoices)
+                .build();
+    }
+
+    @Operation(summary = "Gửi thông báo thanh toán hóa đơn tháng tới khách hàng")
+    @PostMapping("/send-payment-notice")
+    public ApiResponse<PaymentBatchResponse> generatePaymentReceiptsForCurrentMonth() {
+        PaymentBatchResponse response = invoiceService.generateMonthlyPaymentRequests();
+        return ApiResponse.<PaymentBatchResponse>builder()
+                .message("Create and send payment receipt successfully")
+                .data(response)
+                .build();
+    }
+
+    @Operation(summary = "Xác nhận phương thức thanh toán")
+    @PatchMapping("/payments/{receiptId}")
+    public ApiResponse<PaymentMethodResponse> confirmPaymentMethod(
+            @PathVariable("receiptId") String receiptId,
+            @RequestBody PaymentMethodRequest request
+    ) {
+        return ApiResponse.<PaymentMethodResponse>builder()
+                .message("Confirm payment method successfully")
+                .data(invoiceService.confirmPaymentMethod(receiptId, request))
+                .build();
+    }
+
+    @Operation(summary = "Từ chối thanh toán")
+    @PatchMapping("/reject/{receiptId}")
+    public ApiResponse<RejectPaymentResponse> rejectPaymentReceipt(
+            @PathVariable("receiptId") String receiptId,
+            @RequestBody @Valid RejectPaymentRequest request
+    ) {
+        return ApiResponse.<RejectPaymentResponse>builder()
+                .message("Reject payment receipt successfully")
+                .data(invoiceService.rejectPaymentReceipt(receiptId, request))
+                .build();
+    }
+
+    @Operation(summary = "Xác nhận thanh toán toán cho phiếu thanh toán bằng tiền mặt")
+    @PatchMapping("/payment-confirm/{receiptId}")
+    public ApiResponse<String> confirmCashPayment(@PathVariable("receiptId") String receiptId) {
+        invoiceService.confirmCashPayment(receiptId);
+
+        return ApiResponse.<String>builder()
+                .message("Confirm cash payment successfully")
+                .data("Confirmation of paid " + receiptId + " invoice")
                 .build();
     }
 

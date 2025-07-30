@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Khách từ chối thanh toán</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            padding: 20px;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #c0392b;
+        }
+        .section {
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <p>Xin chào <span class="highlight">{{name}}</span>,</p>
+
+        <p>Khách thuê <span class="highlight">{{tenant}}</span> đã <strong>từ chối thanh toán</strong> phiếu thanh toán sau:</p>
+
+        <div class="section">
+            <ul>
+                <li><b>Mã hóa đơn:</b> {{invoiceCode}}</li>
+                <li><b>Mã phiếu thanh toán:</b> {{receiptCode}}</li>
+                <li><b>Toà nhà:</b> {{building}}</li>
+                <li><b>Phòng:</b> {{room}}</li>
+                <li><b>Số tiền:</b> {{amount}}</li>
+                <li><b>Hạn thanh toán:</b> {{dueDate}}</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <p><b>Lý do từ chối:</b></p>
+            <p class="highlight">"{{reason}}"</p>
+        </div>
+
+        <p>Vui lòng kiểm tra và phản hồi với khách thuê nếu cần thiết.</p>
+
+        <p>Trân trọng,<br>
+            <b>Hệ thống Quản lý Nhà trọ - TroHub</b></p>
+    </div>
+</body>
+</html>

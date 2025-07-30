@@ -55,7 +55,7 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
 
         PaymentReceipt receipt = PaymentReceipt.builder()
                 .invoice(invoice)
-                .receiptCode(codeGeneratorService.generateReceiptCode(invoice))
+                .receiptCode(codeGeneratorService.generateReceiptCode())
                 .amount(invoice.getTotalAmount())
                 .paymentMethod(request.getPaymentMethod())
                 .paymentStatus(PaymentStatus.CHO_XAC_NHAN)
