@@ -52,16 +52,4 @@ public interface InvoiceService {
 
     PaginatedResponse<InvoiceResponse> getInvoicesForTenant(
             InvoiceFilter filter, int page, int size);
-
-    @Transactional
-    PaymentBatchResponse generateMonthlyPaymentRequests();
-
-    @Transactional
-    PaymentMethodResponse confirmPaymentMethod(String receiptId, PaymentMethodRequest request);
-
-    @Transactional
-    RejectPaymentResponse rejectPaymentReceipt(String receiptId, RejectPaymentRequest request);
-
-    @Transactional
-    void confirmCashPayment(String receiptId);
 }

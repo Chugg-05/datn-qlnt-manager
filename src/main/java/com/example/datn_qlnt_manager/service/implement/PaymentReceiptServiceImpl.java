@@ -1,21 +1,23 @@
 package com.example.datn_qlnt_manager.service.implement;
 
-import com.example.datn_qlnt_manager.common.Meta;
-import com.example.datn_qlnt_manager.common.Pagination;
-import com.example.datn_qlnt_manager.common.PaymentStatus;
+import com.example.datn_qlnt_manager.common.*;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.PaymentReceiptFilter;
-import com.example.datn_qlnt_manager.dto.request.paymentReceipt.PaymentReceiptCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.paymentReceipt.PaymentReceiptStatusUpdateRequest;
-import com.example.datn_qlnt_manager.dto.request.paymentReceipt.PaymentReceiptUpdateRequest;
+import com.example.datn_qlnt_manager.dto.request.paymentReceipt.*;
+import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentBatchResponse;
+import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentMethodResponse;
 import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentReceiptResponse;
+import com.example.datn_qlnt_manager.dto.response.paymentReceipt.RejectPaymentResponse;
 import com.example.datn_qlnt_manager.entity.Invoice;
 import com.example.datn_qlnt_manager.entity.PaymentReceipt;
+import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
+import com.example.datn_qlnt_manager.mapper.InvoiceMapper;
 import com.example.datn_qlnt_manager.mapper.PaymentReceiptMapper;
 import com.example.datn_qlnt_manager.repository.InvoiceRepository;
 import com.example.datn_qlnt_manager.repository.PaymentReceiptRepository;
+import com.example.datn_qlnt_manager.service.EmailService;
 import com.example.datn_qlnt_manager.service.PaymentReceiptService;
 import com.example.datn_qlnt_manager.service.UserService;
 import lombok.AccessLevel;
@@ -26,10 +28,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,8 +45,10 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
 
      InvoiceRepository invoiceRepository;
      PaymentReceiptRepository paymentReceiptRepository;
+     InvoiceMapper invoiceMapper;
      CodeGeneratorService codeGeneratorService;
      UserService userService;
+     EmailService emailService;
      PaymentReceiptMapper paymentReceiptMapper;
 
     @Override
@@ -109,27 +117,6 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
                 .build();
     }
 
-    @Override
-    public PaymentReceiptResponse updatePaymentReceipt(String id, PaymentReceiptUpdateRequest request) {
-        PaymentReceipt receipt = paymentReceiptRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_RECEIPT_NOT_FOUND));
-
-        // Không cho cập nhật nếu trạng thái đã xác nhận
-        if (receipt.getPaymentStatus() == PaymentStatus.DA_THANH_TOAN) {
-            throw new AppException(ErrorCode.PAYMENT_RECEIPT_CANNOT_BE_UPDATED);
-        }
-
-        if (request.getPaymentMethod() != null) {
-            receipt.setPaymentMethod(request.getPaymentMethod());
-        }
-
-        if (request.getNote() != null) {
-            receipt.setNote(request.getNote().isBlank() ? "Không có ghi chú!" : request.getNote());
-        }
-        receipt.setUpdatedAt(Instant.now());
-
-        return paymentReceiptMapper.toResponse(paymentReceiptRepository.save(receipt));
-    }
 
     @Override
     public void deletePaymentReceipt(String paymentReceiptId) {
@@ -139,40 +126,162 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         paymentReceiptRepository.deleteById(paymentReceiptId);
     }
 
+    @Transactional
     @Override
-    public PaymentReceiptResponse updatePaymentReceiptStatus(String paymentReceiptId, PaymentReceiptStatusUpdateRequest request) {
-        PaymentReceipt receipt = paymentReceiptRepository.findById(paymentReceiptId)
-                .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_RECEIPT_NOT_FOUND));
+    public PaymentBatchResponse generateMonthlyPaymentRequests() {
+        YearMonth current = YearMonth.now();
 
-        if (receipt.getPaymentStatus() == PaymentStatus.DA_THANH_TOAN) {
-            throw new AppException(ErrorCode.PAYMENT_RECEIPT_CANNOT_BE_UPDATED);
+        List<Invoice> invoices = invoiceRepository.findAllByStatusAndMonth(
+                InvoiceStatus.CHUA_THANH_TOAN,
+                current.getMonthValue(),
+                current.getYear()
+        );
+
+        if (invoices.isEmpty()) {
+            throw new AppException(ErrorCode.NO_PENDING_INVOICES);
         }
 
-        receipt.setPaymentStatus(request.getPaymentStatus());
+        int created = 0;
+        Set<String> notifiedEmails = new HashSet<>();
 
-        // Nếu trạng thái là ĐÃ XÁC NHẬN thì cập nhật PaymentDate = now
-        if (PaymentStatus.DA_THANH_TOAN.equals(request.getPaymentStatus())) {
-            receipt.setPaymentDate(LocalDateTime.now());
+        for (Invoice invoice : invoices) {
+
+            boolean exists = paymentReceiptRepository.existsByInvoiceId(invoice.getId());
+            if (exists) {
+                continue;
+            }
+
+            //Tạo phiếu thanh toán
+            PaymentReceipt receipt = PaymentReceipt.builder()
+                    .invoice(invoice)
+                    .receiptCode(codeGeneratorService.generateReceiptCode())
+                    .amount(invoice.getTotalAmount())
+                    .paymentMethod(PaymentMethod.CHON_PHUONG_THUC)
+                    .paymentStatus(PaymentStatus.CHO_THANH_TOAN)
+                    .collectedBy(userService.getCurrentUser().getFullName())
+                    .paymentDate(null)
+                    .note("Phiếu thanh toán cho hóa đơn " + invoice.getInvoiceCode() + " đã được tạo")
+                    .build();
+
+            paymentReceiptRepository.save(receipt);
+            created++;
+
+            //Cập nhật trạng thái hóa đơn
+            invoice.setInvoiceStatus(InvoiceStatus.CHO_THANH_TOAN);
+            invoice.setUpdatedAt(Instant.now());
+            invoiceRepository.save(invoice);
+
+            //Gửi email tới tất cả khách thuê có tài khoản
+            invoice.getContract().getTenants().forEach(tenant -> {
+                User user = tenant.getUser();
+                if (user != null && user.getEmail() != null) {
+                    emailService.sendPaymentNotificationToTenant(
+                            user.getEmail(),
+                            user.getFullName(),
+                            invoice,
+                            receipt
+                    );
+                    notifiedEmails.add(user.getEmail());
+                }
+            });
         }
-        receipt.setUpdatedAt(Instant.now());
-        return paymentReceiptMapper.toResponse(paymentReceiptRepository.save(receipt));
+
+        if (created == 0) {
+            throw new AppException(ErrorCode.ALL_INVOICES_ALREADY_HAVE_RECEIPTS);
+        }
+
+        return PaymentBatchResponse.builder()
+                .totalInvoices(invoices.size())
+                .createdReceipts(created)
+                .notifiedUsers(notifiedEmails.size())
+                .build();
     }
 
+    @Transactional
     @Override
-    public PaymentReceiptResponse confirmPaymentReceipt(String paymentReceiptId) {
-        PaymentReceipt receipt = paymentReceiptRepository.findById(paymentReceiptId)
+    public PaymentMethodResponse confirmPaymentMethod(String receiptId, PaymentMethodRequest request) {
+        PaymentReceipt receipt = paymentReceiptRepository.findById(receiptId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_RECEIPT_NOT_FOUND));
 
-        if (receipt.getPaymentStatus() != PaymentStatus.CHO_XAC_NHAN) {
-            throw new AppException(ErrorCode.INVALID_PAYMENT_STATUS_CHANGE);
+        if (request.getPaymentMethod() == PaymentMethod.CHON_PHUONG_THUC) {
+            throw new AppException(ErrorCode.INVALID_PAYMENT_METHOD);
         }
+
+        switch (request.getPaymentMethod()) {
+            case TIEN_MAT -> {
+                receipt.setPaymentMethod(request.getPaymentMethod());
+                receipt.setPaymentStatus(PaymentStatus.CHO_XAC_NHAN);
+                receipt.setUpdatedAt(Instant.now());
+                paymentReceiptRepository.save(receipt);
+                emailService.notifyOwnerForCashReceipt(receipt, invoiceMapper.getRepresentativeName(receipt.getInvoice()));
+            }
+            case CHUYEN_KHOAN, VNPAY, ZALOPAY, MOMO -> throw new AppException(ErrorCode.NOT_SUPPORTED_YET);
+
+            default -> throw new AppException(ErrorCode.INVALID_PAYMENT_METHOD);
+        }
+
+        return PaymentMethodResponse.builder()
+                .id(receipt.getId())
+                .paymentMethod(receipt.getPaymentMethod())
+                .build();
+    }
+
+    @Transactional
+    @Override
+    public RejectPaymentResponse rejectPaymentReceipt(String receiptId, RejectPaymentRequest request) {
+        PaymentReceipt receipt = paymentReceiptRepository.findById(receiptId)
+                .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_RECEIPT_NOT_FOUND));
+
+        if (receipt.getPaymentStatus() != PaymentStatus.CHO_THANH_TOAN) {
+            throw new AppException(ErrorCode.CANNOT_REFUSE_PAYMENTS);
+        }
+
+        receipt.setPaymentStatus(PaymentStatus.TU_CHOI);
+        receipt.setNote(request.getReason());
+        receipt.setUpdatedAt(Instant.now());
+        paymentReceiptRepository.save(receipt);
+
+        Invoice invoice = receipt.getInvoice();
+        invoice.setInvoiceStatus(InvoiceStatus.CHUA_THANH_TOAN);
+        invoice.setUpdatedAt(Instant.now());
+        invoiceRepository.save(invoice);
+
+        String representativeName = invoiceMapper.getRepresentativeName(receipt.getInvoice());
+        emailService.notifyOwnerRejectedReceipt(receipt, representativeName);
+
+        return RejectPaymentResponse.builder()
+                .id(receipt.getId())
+                .paymentStatus(receipt.getPaymentStatus())
+                .build();
+    }
+
+    @Transactional
+    @Override
+    public void confirmCashPayment(String receiptId) {
+        PaymentReceipt receipt = paymentReceiptRepository.findById(receiptId)
+                .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_RECEIPT_NOT_FOUND));
+
+        if (receipt.getPaymentMethod() != PaymentMethod.TIEN_MAT) {
+            throw new AppException(ErrorCode.INVALID_PAYMENT_METHOD);
+        }
+
+        if (receipt.getPaymentStatus() != PaymentStatus.CHO_XAC_NHAN) {
+            throw new AppException(ErrorCode.INVALID_PAYMENT_STATUS);
+        }
+
 
         receipt.setPaymentStatus(PaymentStatus.DA_THANH_TOAN);
         receipt.setPaymentDate(LocalDateTime.now());
         receipt.setUpdatedAt(Instant.now());
-
         paymentReceiptRepository.save(receipt);
 
-        return paymentReceiptMapper.toResponse(receipt);
+        Invoice invoice = receipt.getInvoice();
+        invoice.setInvoiceStatus(InvoiceStatus.DA_THANH_TOAN);
+        invoice.setUpdatedAt(Instant.now());
+        invoiceRepository.save(invoice);
+
+        emailService.notifyTenantPaymentConfirmed(receipt);
     }
+
+
 }

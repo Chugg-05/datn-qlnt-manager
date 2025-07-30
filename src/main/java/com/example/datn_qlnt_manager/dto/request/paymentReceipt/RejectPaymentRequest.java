@@ -10,6 +10,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RejectPaymentRequest {
-    @NotBlank(message = "Lý do từ chối không được để trống")
+    @NotBlank(message = "REASON_CAN_NOT_BE_NULL")
     String reason;
 }

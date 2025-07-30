@@ -3,10 +3,11 @@ package com.example.datn_qlnt_manager.controller;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.PaymentReceiptFilter;
-import com.example.datn_qlnt_manager.dto.request.paymentReceipt.PaymentReceiptCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.paymentReceipt.PaymentReceiptStatusUpdateRequest;
-import com.example.datn_qlnt_manager.dto.request.paymentReceipt.PaymentReceiptUpdateRequest;
+import com.example.datn_qlnt_manager.dto.request.paymentReceipt.*;
+import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentBatchResponse;
+import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentMethodResponse;
 import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentReceiptResponse;
+import com.example.datn_qlnt_manager.dto.response.paymentReceipt.RejectPaymentResponse;
 import com.example.datn_qlnt_manager.service.PaymentReceiptService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,17 +47,6 @@ public class PaymentReceiptController {
                 .message("Show list of successful payment vouchers")
                 .data(paymentReceiptService.filterPaymentReceiptsByUserId(filter, page, size))
                 .build();
-        }
-
-    @Operation(summary = "Cập nhật phiếu thanh toán")
-    @PutMapping("/{paymentReceiptId}")
-    public ApiResponse<PaymentReceiptResponse> updatePaymentReceipt(
-            @PathVariable String paymentReceiptId,
-            @Valid @RequestBody PaymentReceiptUpdateRequest request) {
-        return ApiResponse.<PaymentReceiptResponse>builder()
-                .message("Payment receipt updated successfully")
-                .data(paymentReceiptService.updatePaymentReceipt(paymentReceiptId, request))
-                .build();
     }
 
     @Operation(summary = "Xóa phiếu thanh toán")
@@ -68,24 +58,48 @@ public class PaymentReceiptController {
                 .build();
     }
 
-    @Operation(summary = "Cập nhật trạng thái phiếu thanh toán")
-    @PutMapping("/status/{paymentReceiptId}")
-    public ApiResponse<PaymentReceiptResponse> updatePaymentReceiptStatus(
-            @PathVariable String paymentReceiptId,
-            @Valid @RequestBody PaymentReceiptStatusUpdateRequest request) {
-        return ApiResponse.<PaymentReceiptResponse>builder()
-                .message("Payment voucher status update successful")
-                .data(paymentReceiptService.updatePaymentReceiptStatus(paymentReceiptId, request))
+    @Operation(summary = "Gửi thông báo thanh toán hóa đơn tháng tới khách hàng")
+    @PostMapping("/send-payment-notice")
+    public ApiResponse<PaymentBatchResponse> generatePaymentReceiptsForCurrentMonth() {
+        PaymentBatchResponse response = paymentReceiptService.generateMonthlyPaymentRequests();
+        return ApiResponse.<PaymentBatchResponse>builder()
+                .message("Create and send payment receipt successfully")
+                .data(response)
                 .build();
     }
 
-    @Operation(summary = "Xác nhận phiếu thanh toán")
-    @PutMapping("/confirm/{paymentReceiptId}")
-    public ApiResponse<PaymentReceiptResponse> confirmPaymentReceipt(
-            @PathVariable String paymentReceiptId) {
-        return ApiResponse.<PaymentReceiptResponse>builder()
-                .message("Payment receipt confirmed successfully")
-                .data(paymentReceiptService.confirmPaymentReceipt(paymentReceiptId))
+    @Operation(summary = "Xác nhận phương thức thanh toán từ người khách thuê")
+    @PatchMapping("/confirm/{receiptId}")
+    public ApiResponse<PaymentMethodResponse> confirmPaymentMethod(
+            @PathVariable("receiptId") String receiptId,
+            @RequestBody PaymentMethodRequest request
+    ) {
+        return ApiResponse.<PaymentMethodResponse>builder()
+                .message("Confirm payment method successfully")
+                .data(paymentReceiptService.confirmPaymentMethod(receiptId, request))
                 .build();
     }
+
+    @Operation(summary = "Từ chối thanh toán")
+    @PatchMapping("/reject/{receiptId}")
+    public ApiResponse<RejectPaymentResponse> rejectPaymentReceipt(
+            @PathVariable("receiptId") String receiptId,
+            @RequestBody @Valid RejectPaymentRequest request
+    ) {
+        return ApiResponse.<RejectPaymentResponse>builder()
+                .message("Reject payment receipt successfully")
+                .data(paymentReceiptService.rejectPaymentReceipt(receiptId, request))
+                .build();
     }
+
+    @Operation(summary = "Xác nhận đã thanh toán toán cho phiếu thanh toán bằng tiền mặt")
+    @PatchMapping("/payment-confirm/{receiptId}")
+    public ApiResponse<String> confirmCashPayment(@PathVariable("receiptId") String receiptId) {
+        paymentReceiptService.confirmCashPayment(receiptId);
+
+        return ApiResponse.<String>builder()
+                .message("Confirm cash payment successfully")
+                .data("Confirmation of paid " + receiptId + " invoice")
+                .build();
+    }
+}
