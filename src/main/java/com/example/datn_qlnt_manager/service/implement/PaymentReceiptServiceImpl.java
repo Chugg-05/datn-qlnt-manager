@@ -163,6 +163,9 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
                     .note("Phiếu thanh toán cho hóa đơn " + invoice.getInvoiceCode() + " đã được tạo")
                     .build();
 
+            receipt.setCreatedAt(Instant.now());
+            receipt.setUpdatedAt(Instant.now());
+
             paymentReceiptRepository.save(receipt);
             created++;
 
