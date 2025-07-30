@@ -19,6 +19,7 @@ public interface InvoiceMapper {
 
     @Mapping(target = "roomId", source = "contract.room.id")
     @Mapping(source = "id", target = "id")
+    @Mapping(target = "paymentReceiptId", expression = "java(getFirstReceiptId(invoice))")
     @Mapping(source = "invoiceCode", target = "invoiceCode")
     @Mapping(source = "contract.room.floor.building.buildingName", target = "buildingName")
     @Mapping(source = "contract.room.roomCode", target = "roomCode")
@@ -84,4 +85,10 @@ public interface InvoiceMapper {
                 .description(detail.getDescription())
                 .build();
     }
+
+    default String getFirstReceiptId(Invoice invoice) {
+        if (invoice.getPaymentReceipts() == null || invoice.getPaymentReceipts().isEmpty()) return null;
+        return invoice.getPaymentReceipts().getFirst().getId();
+    }
+
 }

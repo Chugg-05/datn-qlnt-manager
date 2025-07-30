@@ -57,4 +57,7 @@ public class Invoice extends AbstractEntity {
 
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InvoiceDetail> details = new ArrayList<>();
+
+    @OneToMany(mappedBy = "invoice", fetch = FetchType.LAZY)
+    private List<PaymentReceipt> paymentReceipts;
 }
