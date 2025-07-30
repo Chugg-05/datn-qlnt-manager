@@ -3,6 +3,10 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.util.List;
 import java.util.Map;
 
+import com.example.datn_qlnt_manager.entity.Invoice;
+import com.example.datn_qlnt_manager.entity.PaymentReceipt;
+import com.example.datn_qlnt_manager.entity.Tenant;
+import com.example.datn_qlnt_manager.utils.FormatUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -123,4 +128,169 @@ public class EmailServiceImpl implements EmailService {
             throw new AppException(ErrorCode.EMAIL_SENDING_FAILED);
         }
     }
+
+    @Override
+    public void sendPaymentNotificationToTenant(
+            String recipientEmail,
+            String recipientName,
+            Invoice invoice,
+            PaymentReceipt receipt
+    ) {
+        String subject = String.format("Phiếu thanh toán tháng %d/%d đã được phát hành", invoice.getMonth(), invoice.getYear());
+
+        String content = EmailTemplateUtil.loadTemplate(
+                "tenant-payment-notification",
+                Map.of(
+                        "name", recipientName,
+                        "invoiceCode", invoice.getInvoiceCode(),
+                        "receiptCode", receipt.getReceiptCode(),
+                        "amount", FormatUtil.formatCurrency(invoice.getTotalAmount()),
+                        "dueDate", FormatUtil.formatDate(invoice.getPaymentDueDate()),
+                        "building", invoice.getContract().getRoom().getFloor().getBuilding().getBuildingName(),
+                        "room", invoice.getContract().getRoom().getRoomCode(),
+                        "invoiceType", FormatUtil.formatInvoiceType(invoice.getInvoiceType()),
+                        "note", invoice.getNote() != null ? invoice.getNote() : "Không có"
+                )
+        );
+
+        try {
+            sendEmail(SendEmailRequest.builder()
+                    .to(Recipient.builder()
+                            .email(recipientEmail)
+                            .name(recipientName)
+                            .build())
+                    .subject(subject)
+                    .htmlContent(content)
+                    .build());
+
+            log.info("Đã gửi email thông báo hóa đơn đến: {}", recipientEmail);
+        } catch (Exception e) {
+            log.error("Gửi email thông báo hóa đơn thất bại: {}", recipientEmail, e);
+            throw new AppException(ErrorCode.EMAIL_SENDING_FAILED);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void notifyOwnerForCashReceipt(PaymentReceipt receipt, String representativeName) {
+        Invoice invoice = receipt.getInvoice();
+        String ownerEmail = invoice.getContract().getRoom().getFloor().getBuilding().getUser().getEmail();
+        String ownerName = invoice.getContract().getRoom().getFloor().getBuilding().getUser().getFullName();
+
+        String subject = String.format("[THU TIỀN TRỰC TIẾP] Khách thuê đã chọn thanh toán tiền mặt - Hóa đơn %s", invoice.getInvoiceCode());
+
+        String content = EmailTemplateUtil.loadTemplate(
+                "notify-owner-cash-payment",
+                Map.of(
+                        "name", ownerName,
+                        "invoiceCode", invoice.getInvoiceCode(),
+                        "receiptCode", receipt.getReceiptCode(),
+                        "amount", FormatUtil.formatCurrency(receipt.getAmount()),
+                        "building", invoice.getContract().getRoom().getFloor().getBuilding().getBuildingName(),
+                        "room", invoice.getContract().getRoom().getRoomCode(),
+                        "tenant", representativeName != null ? representativeName : "Không rõ",
+                        "dueDate", FormatUtil.formatDate(invoice.getPaymentDueDate())
+                ));
+
+        try {
+            sendEmail(SendEmailRequest.builder()
+                    .to(Recipient.builder()
+                            .email(ownerEmail)
+                            .name(ownerName)
+                            .build())
+                    .subject(subject)
+                    .htmlContent(content)
+                    .build());
+
+            log.info("Thông báo thanh toán tiền mặt đã gửi tới chủ nhà: {}", ownerEmail);
+        } catch (Exception e) {
+            log.error("Gửi email thông báo chủ nhà thất bại: {}", ownerEmail, e);
+            throw new AppException(ErrorCode.EMAIL_SENDING_FAILED);
+        }
+
+    }
+
+    @Transactional
+    @Override
+    public void notifyOwnerRejectedReceipt(PaymentReceipt receipt, String representativeName) {
+        Invoice invoice = receipt.getInvoice();
+        String ownerEmail = invoice.getContract().getRoom().getFloor().getBuilding().getUser().getEmail();
+        String ownerName = invoice.getContract().getRoom().getFloor().getBuilding().getUser().getFullName();
+
+        String subject = String.format("[TỪ CHỐI THANH TOÁN] Khách thuê từ chối phiếu thanh toán - %s", receipt.getReceiptCode());
+
+        String content = EmailTemplateUtil.loadTemplate(
+                "notify-owner-rejected-payment",
+                Map.of(
+                        "name", ownerName,
+                        "invoiceCode", invoice.getInvoiceCode(),
+                        "receiptCode", receipt.getReceiptCode(),
+                        "amount", FormatUtil.formatCurrency(receipt.getAmount()),
+                        "building", invoice.getContract().getRoom().getFloor().getBuilding().getBuildingName(),
+                        "room", invoice.getContract().getRoom().getRoomCode(),
+                        "tenant", representativeName != null ? representativeName : "Không rõ",
+                        "dueDate", FormatUtil.formatDate(invoice.getPaymentDueDate()),
+                        "reason", receipt.getNote()
+                )
+        );
+
+        try {
+            sendEmail(SendEmailRequest.builder()
+                    .to(Recipient.builder()
+                            .email(ownerEmail)
+                            .name(ownerName)
+                            .build())
+                    .subject(subject)
+                    .htmlContent(content)
+                    .build());
+
+            log.info("Email từ chối thanh toán đã được gửi tới chủ nhà: {}", ownerEmail);
+        } catch (Exception e) {
+            log.error("Gửi email từ chối thanh toán thất bại: {}", ownerEmail, e);
+            throw new AppException(ErrorCode.EMAIL_SENDING_FAILED);
+        }
+    }
+
+    @Override
+    public void notifyTenantPaymentConfirmed(PaymentReceipt receipt) {
+        Invoice invoice = receipt.getInvoice();
+        Tenant representative = invoice.getContract().getTenants().stream()
+                .filter(t -> Boolean.TRUE.equals(t.getIsRepresentative()))
+                .findFirst()
+                .orElse(null);
+
+        if (representative == null || representative.getUser() == null || representative.getUser().getEmail() == null) {
+            log.warn("Không thể gửi email vì không tìm thấy đại diện hợp lệ.");
+            return;
+        }
+
+        String tenantEmail = representative.getUser().getEmail();
+        String tenantName = representative.getFullName();
+
+        String subject = String.format("Xác nhận thanh toán thành công - %s", receipt.getReceiptCode());
+
+        String content = EmailTemplateUtil.loadTemplate(
+                "payment-confirmed-to-tenant",
+                Map.of(
+                        "name", tenantName,
+                        "invoiceCode", invoice.getInvoiceCode(),
+                        "receiptCode", receipt.getReceiptCode(),
+                        "amount", FormatUtil.formatCurrency(receipt.getAmount()),
+                        "building", invoice.getContract().getRoom().getFloor().getBuilding().getBuildingName(),
+                        "room", invoice.getContract().getRoom().getRoomCode(),
+                        "paymentDate", FormatUtil.formatDateTime(receipt.getPaymentDate())
+                )
+        );
+
+        sendEmail(SendEmailRequest.builder()
+                .to(Recipient.builder()
+                        .email(tenantEmail)
+                        .name(tenantName)
+                        .build())
+                .subject(subject)
+                .htmlContent(content)
+                .build());
+    }
+
+
 }

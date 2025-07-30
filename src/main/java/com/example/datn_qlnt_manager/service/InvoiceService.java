@@ -2,6 +2,12 @@ package com.example.datn_qlnt_manager.service;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.PaymentMethod;
+import com.example.datn_qlnt_manager.dto.request.paymentReceipt.PaymentMethodRequest;
+import com.example.datn_qlnt_manager.dto.request.paymentReceipt.RejectPaymentRequest;
+import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentBatchResponse;
+import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentMethodResponse;
+import com.example.datn_qlnt_manager.dto.response.paymentReceipt.RejectPaymentResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -46,4 +52,16 @@ public interface InvoiceService {
 
     PaginatedResponse<InvoiceResponse> getInvoicesForTenant(
             InvoiceFilter filter, int page, int size);
+
+    @Transactional
+    PaymentBatchResponse generateMonthlyPaymentRequests();
+
+    @Transactional
+    PaymentMethodResponse confirmPaymentMethod(String receiptId, PaymentMethodRequest request);
+
+    @Transactional
+    RejectPaymentResponse rejectPaymentReceipt(String receiptId, RejectPaymentRequest request);
+
+    @Transactional
+    void confirmCashPayment(String receiptId);
 }
