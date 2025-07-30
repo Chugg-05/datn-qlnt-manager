@@ -219,6 +219,13 @@ public enum ErrorCode {
     ROOM_NOT_FOUND_IN_BUILDING(400, "Room not found in this building.", HttpStatus.BAD_REQUEST),
     ASSET_NOT_ACTIVE(400, "Asset is not active.", HttpStatus.BAD_REQUEST),
     SERVICE_NOT_ACTIVE(400, "Service is not active.", HttpStatus.BAD_REQUEST),
+    NO_PENDING_INVOICES(400, "There are no invoices to generate payment vouchers this month.", HttpStatus.BAD_REQUEST),
+    ALL_INVOICES_ALREADY_HAVE_RECEIPTS(400, "All invoices have payment vouchers this month.", HttpStatus.BAD_REQUEST),
+    INVALID_PAYMENT_METHOD(400, "Invalid payment method.", HttpStatus.BAD_REQUEST),
+    NOT_SUPPORTED_YET(400, "This payment method is not supported yet.", HttpStatus.BAD_REQUEST),
+    CANNOT_REFUSE_PAYMENTS(400, "You cannot refuse payment.", HttpStatus.BAD_REQUEST),
+    INVALID_PAYMENT_STATUS(400, "You can no longer confirm this invoice.", HttpStatus.BAD_REQUEST),
+    REASON_CAN_NOT_BE_NULL(400, "Reason cannot be null.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),

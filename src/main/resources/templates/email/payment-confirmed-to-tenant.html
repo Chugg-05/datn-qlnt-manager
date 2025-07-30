@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanh toán thành công</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            padding: 20px;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <p>Xin chào <span class="highlight">{{name}}</span>,</p>
+
+        <p>Chủ nhà xác nhận rằng bạn đã <strong>thanh toán thành công</strong> phiếu thanh toán của bạn:</p>
+
+        <ul>
+            <li><b>Mã hóa đơn:</b> {{invoiceCode}}</li>
+            <li><b>Mã phiếu thanh toán:</b> {{receiptCode}}</li>
+            <li><b>Toà nhà:</b> {{building}}</li>
+            <li><b>Phòng:</b> {{room}}</li>
+            <li><b>Số tiền:</b> {{amount}}</li>
+            <li><b>Ngày thanh toán:</b> {{paymentDate}}</li>
+        </ul>
+
+        <p>Xin cảm ơn quý khách đã thực hiện nghĩa vụ thanh toán đúng hạn.</p>
+
+        <p>Trân trọng,<br>
+            <b>Hệ thống Quản lý Nhà trọ - TroHub</b></p>
+    </div>
+</body>
+</html>

@@ -55,7 +55,7 @@ public class CodeGeneratorService {
         return jobCodeStrategy.generate(building);
     }
 
-    public String generateReceiptCode(Invoice invoice) {
-        return receiptCodeStrategy.generateReceiptCode(invoice);
+    public String generateReceiptCode() {
+        return receiptCodeStrategy.generateReceiptCode();
     }
 }
