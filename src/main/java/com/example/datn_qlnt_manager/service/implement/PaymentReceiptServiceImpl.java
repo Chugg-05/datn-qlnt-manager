@@ -7,17 +7,25 @@ import com.example.datn_qlnt_manager.dto.request.paymentReceipt.*;
 import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentBatchResponse;
 import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentMethodResponse;
 import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentReceiptResponse;
+
+import com.example.datn_qlnt_manager.entity.*;
+
 import com.example.datn_qlnt_manager.dto.response.paymentReceipt.RejectPaymentResponse;
 import com.example.datn_qlnt_manager.entity.Invoice;
 import com.example.datn_qlnt_manager.entity.PaymentReceipt;
 import com.example.datn_qlnt_manager.entity.User;
+
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.InvoiceMapper;
 import com.example.datn_qlnt_manager.mapper.PaymentReceiptMapper;
 import com.example.datn_qlnt_manager.repository.InvoiceRepository;
 import com.example.datn_qlnt_manager.repository.PaymentReceiptRepository;
+
+import com.example.datn_qlnt_manager.repository.TenantRepository;
+
 import com.example.datn_qlnt_manager.service.EmailService;
+
 import com.example.datn_qlnt_manager.service.PaymentReceiptService;
 import com.example.datn_qlnt_manager.service.UserService;
 import lombok.AccessLevel;
@@ -45,6 +53,7 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
 
      InvoiceRepository invoiceRepository;
      PaymentReceiptRepository paymentReceiptRepository;
+     TenantRepository tenantRepository;
      InvoiceMapper invoiceMapper;
      CodeGeneratorService codeGeneratorService;
      UserService userService;
@@ -79,10 +88,12 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
     @Override
     public PaginatedResponse<PaymentReceiptResponse> filterPaymentReceiptsByUserId(
             PaymentReceiptFilter filter, int page, int size) {
+        User user = userService.getCurrentUser();
 
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<PaymentReceipt> paymentPage = paymentReceiptRepository.filterPaymentReceipts(
+                user.getId(),
                 filter.getQuery(),
                 filter.getPaymentStatus(),
                 filter.getPaymentMethod(),
@@ -93,28 +104,30 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
                 pageable
         );
 
-        List<PaymentReceiptResponse> responses = paymentPage
-                .getContent()
-                .stream()
-                .map(paymentReceiptMapper::toResponse)
-                .collect(Collectors.toList());
+        return buildPaginatedPaymentReceiptResponse(paymentPage, page, size);
+    }
 
-        Pagination pagination = Pagination.builder()
-                .total(paymentPage.getTotalElements())
-                .count(paymentPage.getNumberOfElements())
-                .perPage(size)
-                .currentPage(page)
-                .totalPages(paymentPage.getTotalPages())
-                .build();
+    @Override
+    public PaginatedResponse<PaymentReceiptResponse> filterPaymentReceiptsByTenantId(PaymentReceiptFilter filter, int page, int size) {
+        User user = userService.getCurrentUser();
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
-        Meta<?> meta = Meta.builder()
-                .pagination(pagination)
-                .build();
+        Tenant tenant = tenantRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
 
-        return PaginatedResponse.<PaymentReceiptResponse>builder()
-                .data(responses)
-                .meta(meta)
-                .build();
+        Page<PaymentReceipt> paymentPage = paymentReceiptRepository.findAllByTenantId(
+                tenant.getId(),
+                filter.getQuery(),
+                filter.getPaymentStatus(),
+                filter.getPaymentMethod(),
+                filter.getFromAmount(),
+                filter.getToAmount(),
+                filter.getFromDate(),
+                filter.getToDate(),
+                pageable
+        );
+
+        return buildPaginatedPaymentReceiptResponse(paymentPage, page, size);
     }
 
 
@@ -286,5 +299,31 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         emailService.notifyTenantPaymentConfirmed(receipt);
     }
 
+    private PaginatedResponse<PaymentReceiptResponse> buildPaginatedPaymentReceiptResponse(
+            Page<PaymentReceipt> paymentPage, int page, int size) {
+
+        List<PaymentReceiptResponse> responses = paymentPage
+                .getContent()
+                .stream()
+                .map(paymentReceiptMapper::toResponse)
+                .collect(Collectors.toList());
+
+        Pagination pagination = Pagination.builder()
+                .total(paymentPage.getTotalElements())
+                .count(paymentPage.getNumberOfElements())
+                .perPage(size)
+                .currentPage(page)
+                .totalPages(paymentPage.getTotalPages())
+                .build();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(pagination)
+                .build();
+
+        return PaginatedResponse.<PaymentReceiptResponse>builder()
+                .data(responses)
+                .meta(meta)
+                .build();
+    }
 
 }
