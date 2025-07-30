@@ -46,7 +46,20 @@ public class PaymentReceiptController {
                 .message("Show list of successful payment vouchers")
                 .data(paymentReceiptService.filterPaymentReceiptsByUserId(filter, page, size))
                 .build();
-        }
+    }
+
+    @Operation(summary = "Hiển thị, lọc và tìm kiếm phiếu thanh toán của khách thuê đang login")
+    @GetMapping("/by-tenant")
+    public ApiResponse<PaginatedResponse<PaymentReceiptResponse>> findPaymentReceiptsByTenant(
+            @Valid @ModelAttribute PaymentReceiptFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+        return ApiResponse.<PaginatedResponse<PaymentReceiptResponse>>builder()
+                .message("Get a list of successful tenant payments")
+                .data(paymentReceiptService.filterPaymentReceiptsByTenantId(filter, page, size))
+                .build();
+    }
+
 
     @Operation(summary = "Cập nhật phiếu thanh toán")
     @PutMapping("/{paymentReceiptId}")

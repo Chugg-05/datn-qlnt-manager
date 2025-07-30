@@ -12,6 +12,8 @@ public interface PaymentReceiptService {
 
     PaginatedResponse<PaymentReceiptResponse> filterPaymentReceiptsByUserId( PaymentReceiptFilter filter, int page, int size);
 
+    PaginatedResponse<PaymentReceiptResponse> filterPaymentReceiptsByTenantId(PaymentReceiptFilter filter, int page, int size);
+
     PaymentReceiptResponse updatePaymentReceipt(String paymentReceiptId, PaymentReceiptUpdateRequest request);
 
     void deletePaymentReceipt(String paymentReceiptId);
