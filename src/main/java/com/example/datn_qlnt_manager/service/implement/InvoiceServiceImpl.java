@@ -53,6 +53,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     CodeGeneratorService codeGeneratorService;
     InvoiceMapper invoiceMapper;
     InvoiceDetailsMapper invoiceDetailsMapper;
+    PaymentReceiptRepository paymentReceiptRepository;
 
     @Override
     public PaginatedResponse<InvoiceResponse> getPageAndSearchAndFilterByUserId(
@@ -210,19 +211,29 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Transactional
     @Override
     public void toggleInvoiceStatus(String invoiceId) {
-        Invoice invoice =
-                invoiceRepository.findById(invoiceId).orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
-        if (invoice.getInvoiceStatus() == InvoiceStatus.CHUA_THANH_TOAN) {
-            invoice.setInvoiceStatus(InvoiceStatus.DA_THANH_TOAN);
-        } else if (invoice.getInvoiceStatus() == InvoiceStatus.HUY) {
-            invoice.setInvoiceStatus(InvoiceStatus.DA_THANH_TOAN);
-        } else {
+        Invoice invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
+
+        PaymentReceipt paymentReceipt = paymentReceiptRepository.findByInvoiceId(invoice.getId());
+
+        List<InvoiceStatus> validStatuses = List.of(
+                InvoiceStatus.CHUA_THANH_TOAN,
+                InvoiceStatus.CHO_THANH_TOAN,
+                InvoiceStatus.HUY
+        );
+
+        if (!validStatuses.contains(invoice.getInvoiceStatus())) {
             throw new AppException(ErrorCode.INVALID_INVOICE_STATUS);
         }
 
+        invoice.setInvoiceStatus(InvoiceStatus.DA_THANH_TOAN);
         invoice.setUpdatedAt(Instant.now());
 
+        paymentReceipt.setPaymentStatus(PaymentStatus.DA_THANH_TOAN);
+        paymentReceipt.setUpdatedAt(Instant.now());
+
         invoiceRepository.save(invoice);
+        paymentReceiptRepository.save(paymentReceipt);
     }
 
     @Transactional
@@ -632,7 +643,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         // Chỉ lấy những dịch vụ có đồng hồ đo (điện luôn có, nước có thể)
         return service.getServiceCalculation() == ServiceCalculation.TINH_THEO_SO
                 && (service.getServiceCategory() == ServiceCategory.DIEN
-                        || service.getServiceCategory() == ServiceCategory.NUOC);
+                || service.getServiceCategory() == ServiceCategory.NUOC);
     }
 
     private Contract getValidContract(String contractId) {

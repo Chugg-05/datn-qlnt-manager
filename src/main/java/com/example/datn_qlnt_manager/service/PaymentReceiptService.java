@@ -30,4 +30,6 @@ public interface PaymentReceiptService {
 
     @Transactional
     void confirmCashPayment(String receiptId);
+
+    PaymentReceiptResponse findPaymentReceiptByInvoiceId(String invoiceId);
 }

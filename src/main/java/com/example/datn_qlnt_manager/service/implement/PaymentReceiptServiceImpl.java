@@ -51,14 +51,14 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PaymentReceiptServiceImpl implements PaymentReceiptService {
 
-     InvoiceRepository invoiceRepository;
-     PaymentReceiptRepository paymentReceiptRepository;
-     TenantRepository tenantRepository;
-     InvoiceMapper invoiceMapper;
-     CodeGeneratorService codeGeneratorService;
-     UserService userService;
-     EmailService emailService;
-     PaymentReceiptMapper paymentReceiptMapper;
+    InvoiceRepository invoiceRepository;
+    PaymentReceiptRepository paymentReceiptRepository;
+    TenantRepository tenantRepository;
+    InvoiceMapper invoiceMapper;
+    CodeGeneratorService codeGeneratorService;
+    UserService userService;
+    EmailService emailService;
+    PaymentReceiptMapper paymentReceiptMapper;
 
     @Override
     public PaymentReceiptResponse createPaymentReceipt(PaymentReceiptCreationRequest request) {
@@ -77,11 +77,12 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
                 .paymentMethod(request.getPaymentMethod())
                 .paymentStatus(PaymentStatus.CHO_XAC_NHAN)
                 .collectedBy(userService.getCurrentUser().getFullName())
-                .note(request.getNote() != null && !request.getNote().isBlank() ? request.getNote() : "Không có ghi chú!")
+                .note(request.getNote() != null && !request.getNote().isBlank() ? request.getNote() : "Không có ghi " +
+                        "chú!")
                 .build();
 
-                receipt.setCreatedAt(Instant.now());
-                receipt.setUpdatedAt(Instant.now());
+        receipt.setCreatedAt(Instant.now());
+        receipt.setUpdatedAt(Instant.now());
         return paymentReceiptMapper.toResponse(paymentReceiptRepository.save(receipt));
     }
 
@@ -108,7 +109,8 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
     }
 
     @Override
-    public PaginatedResponse<PaymentReceiptResponse> filterPaymentReceiptsByTenantId(PaymentReceiptFilter filter, int page, int size) {
+    public PaginatedResponse<PaymentReceiptResponse> filterPaymentReceiptsByTenantId(PaymentReceiptFilter filter,
+                                                                                     int page, int size) {
         User user = userService.getCurrentUser();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
@@ -224,14 +226,16 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         }
 
         switch (request.getPaymentMethod()) {
-            case TIEN_MAT -> {
+            case TIEN_MAT, CHUYEN_KHOAN -> {
                 receipt.setPaymentMethod(request.getPaymentMethod());
                 receipt.setPaymentStatus(PaymentStatus.CHO_XAC_NHAN);
                 receipt.setUpdatedAt(Instant.now());
                 paymentReceiptRepository.save(receipt);
-                emailService.notifyOwnerForCashReceipt(receipt, invoiceMapper.getRepresentativeName(receipt.getInvoice()));
+                emailService.notifyOwnerForCashReceipt(receipt,
+                        invoiceMapper.getRepresentativeName(receipt.getInvoice()));
             }
-            case CHUYEN_KHOAN, VNPAY, ZALOPAY, MOMO -> throw new AppException(ErrorCode.NOT_SUPPORTED_YET);
+
+            case VNPAY, ZALOPAY, MOMO -> throw new AppException(ErrorCode.NOT_SUPPORTED_YET);
 
             default -> throw new AppException(ErrorCode.INVALID_PAYMENT_METHOD);
         }
@@ -297,6 +301,11 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         invoiceRepository.save(invoice);
 
         emailService.notifyTenantPaymentConfirmed(receipt);
+    }
+
+    @Override
+    public PaymentReceiptResponse findPaymentReceiptByInvoiceId(String invoiceId) {
+        return paymentReceiptMapper.toResponse(paymentReceiptRepository.findByInvoiceId(invoiceId));
     }
 
     private PaginatedResponse<PaymentReceiptResponse> buildPaginatedPaymentReceiptResponse(

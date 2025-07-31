@@ -72,4 +72,8 @@ public interface PaymentReceiptRepository extends JpaRepository<PaymentReceipt, 
             Pageable pageable
     );
 
+    @Query("""
+             SELECT r FROM PaymentReceipt r JOIN r.invoice i WHERE i.id = :invoiceId
+            """)
+    PaymentReceipt findByInvoiceId(String invoiceId);
 }

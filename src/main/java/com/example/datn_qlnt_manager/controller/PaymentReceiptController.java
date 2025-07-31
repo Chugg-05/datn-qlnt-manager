@@ -61,6 +61,16 @@ public class PaymentReceiptController {
                 .build();
     }
 
+
+    @Operation(summary = "Hiển thị, lọc và tìm kiếm phiếu thanh toán của khách thuê đang login")
+    @GetMapping("/{invoiceId}")
+    public ApiResponse<PaymentReceiptResponse> findPaymentReceiptByInvoiceId(@PathVariable String invoiceId) {
+        return ApiResponse.<PaymentReceiptResponse>builder()
+                .message("success")
+                .data(paymentReceiptService.findPaymentReceiptByInvoiceId(invoiceId))
+                .build();
+    }
+
     @Operation(summary = "Xóa phiếu thanh toán")
     @DeleteMapping("/{paymentReceiptId}")
     public ApiResponse<String> deletePaymentReceipt(@PathVariable String paymentReceiptId) {
