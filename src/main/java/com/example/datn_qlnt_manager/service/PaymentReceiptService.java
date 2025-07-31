@@ -7,6 +7,7 @@ import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentBatchRes
 import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentMethodResponse;
 import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentReceiptResponse;
 import com.example.datn_qlnt_manager.dto.response.paymentReceipt.RejectPaymentResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface PaymentReceiptService {
@@ -30,4 +31,9 @@ public interface PaymentReceiptService {
 
     @Transactional
     void confirmCashPayment(String receiptId);
+
+    PaymentReceiptResponse findPaymentReceiptByInvoiceId(String invoiceId);
+
+    @Transactional
+    String createPaymentUrl(PaymentCreationURL paymentCreationURL, HttpServletRequest request);
 }

@@ -272,7 +272,7 @@ public interface RoomRepository extends JpaRepository<Room, String> {
     JOIN Contract ctr ON ctr.room = r AND ctr.status = com.example.datn_qlnt_manager.common.ContractStatus.HIEU_LUC
     JOIN ctr.tenants tenant
     JOIN ctr.tenants rep ON rep.isRepresentative = true
-    WHERE r.id = :roomId AND tenant.id = :userId
+    WHERE r.id = :roomId AND tenant.user.id = :userId
 """)
 	Optional<RoomDetailsResponse> findRoomDetailsForTenant(@Param("roomId") String roomId, @Param("userId") String userId);
 }

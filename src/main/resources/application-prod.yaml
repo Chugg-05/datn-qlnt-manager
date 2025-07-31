@@ -71,3 +71,10 @@ logging:
       apache:
         tomcat: DEBUG
         catalina: DEBUG
+
+vnpay:
+  pay-url: ${VNPAY_PAY_URL}
+  return-url: ${VNPAY_RETURN_URL}
+  tmn-code: ${VNPAY_TMN_CODE}
+  secret: ${VNPAY_SECRET}
+  api-url: ${VNPAY_API_URL}
