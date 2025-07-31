@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import com.example.datn_qlnt_manager.common.*;
+import com.example.datn_qlnt_manager.configuration.VnpayConfig;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.PaymentReceiptFilter;
 import com.example.datn_qlnt_manager.dto.request.paymentReceipt.*;
@@ -28,6 +29,7 @@ import com.example.datn_qlnt_manager.service.EmailService;
 
 import com.example.datn_qlnt_manager.service.PaymentReceiptService;
 import com.example.datn_qlnt_manager.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -38,12 +40,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,6 +63,7 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
     UserService userService;
     EmailService emailService;
     PaymentReceiptMapper paymentReceiptMapper;
+    VnpayConfig vnpayConfig;
 
     @Override
     public PaymentReceiptResponse createPaymentReceipt(PaymentReceiptCreationRequest request) {
@@ -235,7 +240,21 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
                         invoiceMapper.getRepresentativeName(receipt.getInvoice()));
             }
 
-            case VNPAY, ZALOPAY, MOMO -> throw new AppException(ErrorCode.NOT_SUPPORTED_YET);
+            case VNPAY -> {
+                Invoice invoice = invoiceRepository.findById(receipt.getInvoice().getId())
+                                .orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
+                receipt.setPaymentMethod(request.getPaymentMethod());
+                receipt.setPaymentStatus(PaymentStatus.DA_THANH_TOAN);
+                receipt.setUpdatedAt(Instant.now());
+                receipt.setPaymentDate(LocalDateTime.now());
+                invoice.setInvoiceStatus(InvoiceStatus.DA_THANH_TOAN);
+                paymentReceiptRepository.save(receipt);
+                invoiceRepository.save(invoice);
+                emailService.notifyOwnerForCashReceipt(receipt,
+                        invoiceMapper.getRepresentativeName(receipt.getInvoice()));
+            }
+
+            case ZALOPAY, MOMO -> throw new AppException(ErrorCode.NOT_SUPPORTED_YET);
 
             default -> throw new AppException(ErrorCode.INVALID_PAYMENT_METHOD);
         }
@@ -308,6 +327,80 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         return paymentReceiptMapper.toResponse(paymentReceiptRepository.findByInvoiceId(invoiceId));
     }
 
+    @Override
+    public String createPaymentUrl(PaymentCreationURL paymentCreationURL, HttpServletRequest request) {
+        String version = "2.1.0";
+        String command = "pay";
+        String orderType = "other";
+        Long amount = paymentCreationURL.getAmount() * 100;
+        String bankCode = paymentCreationURL.getBankCode();
+
+        StringBuilder transactionReference = new StringBuilder();
+        transactionReference.append(paymentCreationURL.getTransactionReferenceCode())
+                .append("_").append(VnpayConfig.getRandomNumber(8));
+        String clientIdAddress = VnpayConfig.getIpAddress(request);
+
+        String terminalCode = vnpayConfig.vnp_TmnCode;
+
+        Map<String, String> params = new HashMap<>();
+        params.put("vnp_Version", version);
+        params.put("vnp_Command", command);
+        params.put("vnp_TmnCode", terminalCode);
+        params.put("vnp_Amount", String.valueOf(amount));
+        params.put("vnp_CurrCode", "VND");
+
+        if (bankCode != null && !bankCode.isEmpty()) {
+            params.put("vnp_BankCode", bankCode);
+        }
+        params.put("vnp_TxnRef", transactionReference.toString());
+        params.put("vnp_OrderInfo", "Thanh toan don hang:" + transactionReference);
+        params.put("vnp_OrderType", orderType);
+
+        String locate = paymentCreationURL.getLanguage();
+        if (locate != null && !locate.isEmpty()) {
+            params.put("vnp_Locale", locate);
+        } else {
+            params.put("vnp_Locale", "vn");
+        }
+        params.put("vnp_ReturnUrl", vnpayConfig.vnp_ReturnUrl);
+        params.put("vnp_IpAddr", clientIdAddress);
+
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        String createDate = formatter.format(cld.getTime());
+        params.put("vnp_CreateDate", createDate);
+
+        cld.add(Calendar.MINUTE, 15);
+        String expireDate = formatter.format(cld.getTime());
+        params.put("vnp_ExpireDate", expireDate);
+
+        List<String> sortedFieldNames = new ArrayList<>(params.keySet());
+        Collections.sort(sortedFieldNames);
+
+        StringBuilder hashData = new StringBuilder();
+        StringBuilder queryData = new StringBuilder();
+
+        for (Iterator<String> iterator = sortedFieldNames.iterator(); iterator.hasNext(); ) {
+            String fieldName = iterator.next();
+            String fieldValue = params.get(fieldName);
+
+            if (fieldValue != null && !fieldValue.isEmpty()) {
+                hashData.append(fieldName).append("=").append(URLEncoder.encode(fieldValue,
+                        StandardCharsets.US_ASCII));
+                queryData.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII)).append("=").append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+
+                if (iterator.hasNext()) {
+                    hashData.append("&");
+                    queryData.append("&");
+                }
+            }
+        }
+
+        String secureHash = VnpayConfig.hmacSHA512(vnpayConfig.secretKey, hashData.toString());
+        queryData.append("&vnp_SecureHash=").append(secureHash);
+        return vnpayConfig.vnp_PayUrl + "?" + queryData;
+    }
+
     private PaginatedResponse<PaymentReceiptResponse> buildPaginatedPaymentReceiptResponse(
             Page<PaymentReceipt> paymentPage, int page, int size) {
 
@@ -315,7 +408,7 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
                 .getContent()
                 .stream()
                 .map(paymentReceiptMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
 
         Pagination pagination = Pagination.builder()
                 .total(paymentPage.getTotalElements())
