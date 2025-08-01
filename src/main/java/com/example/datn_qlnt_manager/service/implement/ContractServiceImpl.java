@@ -121,7 +121,7 @@ public class ContractServiceImpl implements ContractService {
             throw new AppException(ErrorCode.VEHICLE_NOT_FOUND);
         }
 
-        if (request.getTenants().size() > request.getNumberOfPeople()) {
+        if (request.getTenants().size() != request.getNumberOfPeople()) {
             throw new AppException(ErrorCode.TENANTS_EXCEEDS_NUMBER_OF_PEOPLE);
         }
 
