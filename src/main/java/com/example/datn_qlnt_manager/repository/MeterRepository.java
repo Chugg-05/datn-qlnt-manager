@@ -2,7 +2,9 @@ package com.example.datn_qlnt_manager.repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
+import com.example.datn_qlnt_manager.entity.ServiceRoom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -136,4 +138,7 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
 			)
 		""")
     Long countRoomsWithoutMeterByUserId(@org.springframework.data.repository.query.Param("userId") String userId);
+
+	@Query("SELECT m FROM Meter m WHERE m.service = :serviceRoom")
+	Optional<Meter> findByServiceRoom(@Param("serviceRoom") ServiceRoom serviceRoom);
 }
