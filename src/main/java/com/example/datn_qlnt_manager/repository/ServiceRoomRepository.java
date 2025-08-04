@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.datn_qlnt_manager.dto.response.IdNamAndType;
+import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
 import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.common.RoomType;
 import com.example.datn_qlnt_manager.dto.projection.ServiceRoomView;
@@ -65,8 +65,9 @@ public interface ServiceRoomRepository extends JpaRepository<ServiceRoom, String
                     		SUM(CASE WHEN sr.serviceRoomStatus = 'TAM_DUNG' THEN 1 ELSE 0 END)
                     	FROM ServiceRoom sr
                     	WHERE sr.room.floor.building.user.id = :userId
+                        AND sr.room.floor.building.id = :buildingId
                     """)
-    ServiceRoomStatistics countByStatus(@Param("userId") String userId);
+    ServiceRoomStatistics countByStatus(@Param("userId") String userId, @Param("buildingId") String buildingId);
 
     @Query(
             """
@@ -80,7 +81,7 @@ public interface ServiceRoomRepository extends JpaRepository<ServiceRoom, String
             @Param("roomId") String roomId, @Param("startOfMonth") LocalDate startOfMonth);
 
     @Query("""
-            	SELECT new com.example.datn_qlnt_manager.dto.response.IdNamAndType(
+            	SELECT new com.example.datn_qlnt_manager.dto.response.IdNameAndType(
                         	sr.id,
                             CONCAT(sr.service.name, ' - ' ,CAST(sr.unitPrice as string ), ' VND') ,
                             CAST(sr.service.serviceCategory as string )
@@ -88,7 +89,7 @@ public interface ServiceRoomRepository extends JpaRepository<ServiceRoom, String
                     FROM ServiceRoom sr
             		WHERE sr.service.user.id = :userId AND sr.room.id = :roomId
             """)
-    List<IdNamAndType> getAllServiceRoomByUserId(@Param("userId") String userId, @Param("roomId") String roomId);
+    List<IdNameAndType> getAllServiceRoomByUserId(@Param("userId") String userId, @Param("roomId") String roomId);
 
     @Query("""    
         SELECT sr FROM ServiceRoom sr

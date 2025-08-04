@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class IdNamAndType {
+public class IdNameAndType {
 
     private String id;
     private String name;

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -78,14 +79,15 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
 
     @Query(
             """
-			SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(
+			SELECT new com.example.datn_qlnt_manager.dto.response.IdNameAndType(
 				s.id,
-				s.name
+				s.name,
+				cast(s.serviceCategory as string)
 			)
 			FROM Service s
 			WHERE s.user.id = :userId AND s.status != 'KHONG_SU_DUNG'
 			""")
-    List<IdAndName> getServiceInfoByUserId(@Param("userId") String userId);
+    List<IdNameAndType> getServiceInfoByUserId(@Param("userId") String userId);
 
     boolean existsByServiceCategoryAndUserId(ServiceCategory serviceCategory, String userId);
 }
