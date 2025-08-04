@@ -18,6 +18,8 @@ import lombok.experimental.FieldDefaults;
 public class AssetResponse {
     String id;
 
+    String buildingName;
+
     String nameAsset;
 
     AssetType assetType;
@@ -27,6 +29,8 @@ public class AssetResponse {
     AssetStatus assetStatus;
 
     BigDecimal price;
+
+    Integer quantity;
 
     String descriptionAsset;
 

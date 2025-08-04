@@ -24,7 +24,8 @@ import lombok.experimental.FieldDefaults;
 public class Asset extends AbstractEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    User user;
+    @JoinColumn(name = "toa_nha_id", nullable = false)
+    Building building;
 
     @Column(name = "ten_tai_san", nullable = false)
     String nameAsset;
@@ -43,6 +44,9 @@ public class Asset extends AbstractEntity {
 
     @Column(name = "gia_tien", nullable = false)
     BigDecimal price;
+
+    @Column(name = "so_luong", nullable = false)
+    Integer quantity;
 
     @Column(name = "mo_ta")
     String descriptionAsset;

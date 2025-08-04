@@ -17,4 +17,5 @@ public class AssetFilter {
     AssetType assetType;
     AssetBeLongTo assetBeLongTo;
     AssetStatus assetStatus;
+    String buildingId;
 }
