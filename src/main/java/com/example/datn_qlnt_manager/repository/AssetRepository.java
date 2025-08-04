@@ -18,14 +18,15 @@ import com.example.datn_qlnt_manager.entity.Asset;
 @Repository
 public interface AssetRepository extends JpaRepository<Asset, String> {
 
-	List<Asset> findByNameAssetIgnoreCase(String nameAsset);
+	List<Asset> findByNameAssetIgnoreCaseAndBuildingId(String nameAsset, String buildingId);
 
 	List<Asset> findByNameAssetIgnoreCaseAndIdNot(String nameAsset, String id);
 
 	@Query(
 			"""
                 SELECT a FROM Asset a
-                WHERE a.user.id = :userId
+                JOIN a.building b
+                WHERE a.building.id = :buildingId
                 AND (:name IS NULL OR a.nameAsset LIKE CONCAT('%', :name, '%'))
                 AND (:beLongTo IS NULL OR a.assetBeLongTo = :beLongTo)
                 AND (:assetType IS NULL OR a.assetType = :assetType)
@@ -36,16 +37,16 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
 			@Param("assetType") AssetType assetType,
 			@Param("beLongTo") AssetBeLongTo assetBeLongTo,
 			@Param("assetStatus") AssetStatus assetStatus,
-			@Param("userId") String userId,
+			@Param("buildingId") String buildingId,
 			Pageable pageable);
 
 	// hiển thị theo userId
 	@Query(
 			"""
                 SELECT a FROM Asset a
-                WHERE a.user.id = :userId
+                WHERE a.building.id = :buildingId
             """)
-	List<Asset> findAssetsByUserId(@Param("userId") String userId);
+	List<Asset> findAssetsByBuildingId(@Param("buildingId") String buildingId);
 
 	@Query("""
     SELECT new com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic(
@@ -57,7 +58,7 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
         SUM(CASE WHEN a.assetStatus = 'KHONG_SU_DUNG' THEN 1 ELSE 0 END)
     )
     FROM Asset a
-    WHERE a.user.id = :userId
+    WHERE a.building.id = :buildingId
 """)
-	AssetStatusStatistic getAssetStatisticsByUserId(@Param("userId") String userId);
+	AssetStatusStatistic getAssetStatisticsByBuildingId(@Param("buildingId") String buildingId);
 }

@@ -226,6 +226,8 @@ public enum ErrorCode {
     CANNOT_REFUSE_PAYMENTS(400, "You cannot refuse payment.", HttpStatus.BAD_REQUEST),
     INVALID_PAYMENT_STATUS(400, "You can no longer confirm this invoice.", HttpStatus.BAD_REQUEST),
     REASON_CAN_NOT_BE_NULL(400, "Reason cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_QUANTITY_NOT_NULL(400, "Quantity must not be null", HttpStatus.BAD_REQUEST),
+
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
