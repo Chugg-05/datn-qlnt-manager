@@ -148,4 +148,13 @@ public class FloorController {
                 .message("Statistics of rooms by floor successfully")
                 .build();
     }
+
+    @Operation(summary = "Khôi phục tầng đã xóa")
+    @PutMapping("/restore/{floorId}")
+    public ApiResponse<FloorResponse> restoreBuildingById(@PathVariable("floorId") String floorId) {
+        return ApiResponse.<FloorResponse>builder()
+                .data(floorService.restoreFloorById(floorId))
+                .message("success")
+                .build();
+    }
 }

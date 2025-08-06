@@ -50,7 +50,7 @@ public class RoomServiceImpl implements RoomService {
     BuildingRepository buildingRepository;
     UserService userService;
     CodeGeneratorService codeGeneratorService;
-    private final TenantRepository tenantRepository;
+    TenantRepository tenantRepository;
 
     @Override
     public PaginatedResponse<RoomResponse> getPageAndSearchAndFilterRoomByUserId(
@@ -251,5 +251,12 @@ public class RoomServiceImpl implements RoomService {
         String userId = userService.getCurrentUser().getId();
         return roomRepository.findRoomDetailsForTenant(roomId, userId)
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+    }
+
+    @Override
+    public RoomResponse restoreRoomById(String roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        room.setStatus(RoomStatus.TRONG);
+        return roomMapper.toRoomResponse(roomRepository.save(room));
     }
 }

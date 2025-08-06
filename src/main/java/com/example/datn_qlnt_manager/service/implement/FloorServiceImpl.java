@@ -198,4 +198,11 @@ public class FloorServiceImpl implements FloorService {
     public List<FloorRoomStatisticResponse> getRoomStatisticTextByFloor(String floorId) {
         return floorRepository.getRoomStatisticTextByFloor(floorId);
     }
+
+    @Override
+    public FloorResponse restoreFloorById(String floorId) {
+        Floor floor  = floorRepository.findById(floorId).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+        floor.setStatus(FloorStatus.HOAT_DONG);
+        return floorMapper.toResponse(floorRepository.save(floor));
+    }
 }

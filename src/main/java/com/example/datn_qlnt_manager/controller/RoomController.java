@@ -197,4 +197,13 @@ public class RoomController {
                 .data(response)
                 .build();
     }
+
+    @Operation(summary = "Khôi phục phòng đã xóa")
+    @PutMapping("/restore/{roomId}")
+    public ApiResponse<RoomResponse> restoreRoomById(@PathVariable("roomId") String roomId) {
+        return ApiResponse.<RoomResponse>builder()
+                .data(roomService.restoreRoomById(roomId))
+                .message("success")
+                .build();
+    }
 }

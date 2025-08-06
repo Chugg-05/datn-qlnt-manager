@@ -48,4 +48,6 @@ public interface RoomService {
     List<RoomNoServiceStatisticResponse> getRoomNoServiceStatistic(String buildingId);
 
     RoomDetailsResponse getRoomDetails(String roomId);
+
+    RoomResponse restoreRoomById(String roomId);
 }
