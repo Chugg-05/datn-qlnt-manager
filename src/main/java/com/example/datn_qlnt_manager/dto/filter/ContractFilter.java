@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContractFilter {
     String query;
+    String building;
     Gender gender;
     ContractStatus status;
 }

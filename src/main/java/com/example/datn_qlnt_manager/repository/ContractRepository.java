@@ -31,6 +31,7 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 		OR (:query IS NULL OR  t.phoneNumber LIKE  CONCAT('%', :query, '%') )
 		OR (:query IS NULL OR  t.identityCardNumber LIKE  CONCAT('%', :query, '%') )
 		OR (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%') ))
+		AND (:building IS NULL OR c.room.floor.building.id = :building)
 		AND (:gender IS NULL OR t.gender = :gender)
 		AND (:status IS NULL OR c.status = :status)
 		AND c.status != 'DA_HUY'
@@ -39,6 +40,7 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
     Page<Contract> getPageAndSearchAndFilterContractByUserId(
             @Param("userId") String userId,
             @Param("query") String query,
+            @Param("building") String building,
             @Param("gender") Gender gender,
             @Param("status") ContractStatus status,
             Pageable pageable);
@@ -54,6 +56,7 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 		OR (:query IS NULL OR  t.phoneNumber LIKE  CONCAT('%', :query, '%') )
 		OR (:query IS NULL OR  t.identityCardNumber LIKE  CONCAT('%', :query, '%') )
 		OR (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%') ))
+		AND (:building IS NULL OR c.room.floor.building.id = :building)
 		AND (:gender IS NULL OR t.gender = :gender)
 		AND c.status = 'DA_HUY'
 		ORDER BY c.updatedAt DESC
@@ -61,6 +64,7 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
     Page<Contract> getContractWithStatusCancelByUserId(
             @Param("userId") String userId,
             @Param("query") String query,
+			@Param("building") String building,
             @Param("gender") Gender gender,
             Pageable pageable);
 
