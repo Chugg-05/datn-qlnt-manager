@@ -207,4 +207,10 @@ public class AssetServiceImpl implements AssetService {
         asset.setAssetStatus(AssetStatus.HUY);
         assetRepository.save(asset);
     }
+
+    @Override
+    public List<AssetResponse> findAllAssets() {
+        List<Asset> assets = assetRepository.findAllAssets();
+        return assets.stream().map(assetMapper::toResponse).toList();
+    }
 }

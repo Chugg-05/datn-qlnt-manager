@@ -61,4 +61,11 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
     WHERE a.building.id = :buildingId
 """)
 	AssetStatusStatistic getAssetStatisticsByBuildingId(@Param("buildingId") String buildingId);
+
+	@Query("""
+    SELECT a FROM Asset a
+    WHERE a.assetStatus != com.example.datn_qlnt_manager.common.AssetStatus.HUY
+""")
+	List<Asset> findAllAssets();
 }
+
