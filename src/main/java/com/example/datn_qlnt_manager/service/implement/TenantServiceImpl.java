@@ -1,8 +1,14 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
+import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
+import com.example.datn_qlnt_manager.entity.Contract;
+import com.example.datn_qlnt_manager.mapper.ContractMapper;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -47,6 +53,7 @@ public class TenantServiceImpl implements TenantService {
     UserRepository userRepository;
     ContractRepository contractRepository;
     CodeGeneratorService codeGeneratorService;
+    private final ContractMapper contractMapper;
 
     @Override
     public PaginatedResponse<TenantResponse> getPageAndSearchAndFilterTenantByUserId(
@@ -190,8 +197,18 @@ public class TenantServiceImpl implements TenantService {
     @Override
     public List<TenantResponse> getAllTenantsByUserId() {
         User user = userService.getCurrentUser();
+
         List<Tenant> tenants = tenantRepository.findAllTenantsByUserId(user.getId());
-        return tenants.stream().map(tenantMapper::toTenantResponse).toList();
+
+        return tenants.stream()
+                .map(tenant -> {
+                    List<ContractResponse> contracts = contractRepository.findAllByTenantId(tenant.getId())
+                            .stream().map(contractMapper::toContractResponse).toList();
+                    TenantResponse tenantResponse = tenantMapper.toTenantResponse(tenant);
+                    tenantResponse.setContracts(contracts);
+                    return tenantResponse;
+                })
+                .toList();
     }
 
     @Override

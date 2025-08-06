@@ -2,10 +2,12 @@ package com.example.datn_qlnt_manager.dto.response.tenant;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 import com.example.datn_qlnt_manager.common.Gender;
 import com.example.datn_qlnt_manager.common.TenantStatus;
 
+import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -27,4 +29,5 @@ public class TenantResponse implements Serializable {
     Boolean isRepresentative;
     String address;
     String identificationNumber;
+    List<ContractResponse> contracts;
 }

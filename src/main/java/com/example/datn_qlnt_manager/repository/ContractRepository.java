@@ -110,7 +110,7 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 		JOIN r.floor f
 		JOIN f.building b
 		JOIN b.user u
-		WHERE u.id = :userId
+		WHERE u.id = :userId AND c.status = 'HIEU_LUC'
 		ORDER BY c.updatedAt DESC
 	""")
     List<Contract> findAllContractByUserId(@Param("userId") String userId);
@@ -172,4 +172,11 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 			@Param("status") ContractStatus status,
 			Pageable pageable
 	);
+
+	@Query("""
+        SELECT c FROM Contract c
+        JOIN c.tenants t
+        WHERE t.id = :tenantId
+    """)
+	List<Contract> findAllByTenantId(@Param("tenantId") String tenantId);
 }

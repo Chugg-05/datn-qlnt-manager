@@ -300,7 +300,7 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         PaymentReceipt receipt = paymentReceiptRepository.findById(receiptId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_RECEIPT_NOT_FOUND));
 
-        if (receipt.getPaymentMethod() != PaymentMethod.TIEN_MAT) {
+        if (receipt.getPaymentMethod() != PaymentMethod.TIEN_MAT && receipt.getPaymentMethod() != PaymentMethod.CHUYEN_KHOAN) {
             throw new AppException(ErrorCode.INVALID_PAYMENT_METHOD);
         }
 

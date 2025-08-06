@@ -8,7 +8,7 @@ import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreation
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForRoomRequest;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForServiceRequest;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
-import com.example.datn_qlnt_manager.dto.response.IdNamAndType;
+import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceUpdateUnitPriceResponse;
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomDetailResponse;
@@ -35,11 +35,11 @@ public interface ServiceRoomService {
 
     ServiceUpdateUnitPriceResponse updateServicePriceInBuilding(ServiceUpdateUnitPriceRequest request);
 
-    ServiceRoomStatistics getServiceRoomStatusStatistics();
+    ServiceRoomStatistics getServiceRoomStatusStatistics(String buildingId);
 
     void toggleServiceRoomStatus(String id);
 
     CreateRoomServiceInitResponse getServiceRoomInfoByUserId();
 
-    List<IdNamAndType> getAllServiceRoomByUserId(String roomId);
+    List<IdNameAndType> getAllServiceRoomByUserId(String roomId);
 }

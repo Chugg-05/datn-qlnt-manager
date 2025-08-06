@@ -52,8 +52,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public AssetResponse createAsset(AssetCreationRequest request) {
-        User user = userService.getCurrentUser();
-        List<Asset> duplicates = assetRepository.findByNameAssetIgnoreCase(request.getNameAsset());
+        List<Asset> duplicates = assetRepository.findByNameAssetIgnoreCaseAndBuildingId(request.getNameAsset(), request.getBuildingId());
         if (!duplicates.isEmpty()) {
             throw new AppException(ErrorCode.DUPLICATE_ASSET_NAME);
         }
@@ -62,10 +61,12 @@ public class AssetServiceImpl implements AssetService {
             throw new AppException(ErrorCode.INVALID_SECURITY_ASSET_LOCATION);
         }
 
-        Asset asset = assetMapper.toAsset(request);
+        Building building = buildingRepository.findById(request.getBuildingId())
+                .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
+        Asset asset = assetMapper.toAsset(request);
+        asset.setBuilding(building);
         asset.setAssetStatus(AssetStatus.HOAT_DONG);
-        asset.setUser(user);
         asset.setCreatedAt(Instant.now());
         asset.setUpdatedAt(Instant.now());
 
@@ -83,7 +84,6 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public PaginatedResponse<AssetResponse> getPageAndSearchAndFilterAssetByUserId(AssetFilter filter, int page,
                                                                                    int size) {
-        User currentUser = userService.getCurrentUser();
 
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by("updatedAt").descending());
 
@@ -92,7 +92,7 @@ public class AssetServiceImpl implements AssetService {
                 filter.getAssetType(),
                 filter.getAssetBeLongTo(),
                 filter.getAssetStatus(),
-                currentUser.getId(),
+                filter.getBuildingId(),
                 pageable);
 
         List<AssetResponse> assetResponses = pageAsset.getContent().stream().map(assetMapper::toResponse).toList();
@@ -118,9 +118,8 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public List<AssetResponse> findAssetsByCurrentUser() {
-        String currentUserId = userService.getCurrentUser().getId(); // đảm bảo lấy từ token
-        List<Asset> assets = assetRepository.findAssetsByUserId(currentUserId);
+    public List<AssetResponse> findAssetsByBuildingId(String buildingId) {
+        List<Asset> assets = assetRepository.findAssetsByBuildingId(buildingId);
         return assets.stream().map(assetMapper::toResponse).toList();
     }
 
@@ -197,9 +196,8 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public AssetStatusStatistic getAssetStatisticsByUserId() {
-        User user = userService.getCurrentUser();
-        return assetRepository.getAssetStatisticsByUserId(user.getId());
+    public AssetStatusStatistic getAssetStatisticsByBuildingId(String buildingId) {
+        return assetRepository.getAssetStatisticsByBuildingId(buildingId);
     }
 
     @Override

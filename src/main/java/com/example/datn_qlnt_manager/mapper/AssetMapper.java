@@ -13,6 +13,7 @@ public interface AssetMapper {
     Asset toAsset(AssetCreationRequest request);
 
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "buildingName", source = "building.buildingName")
     AssetResponse toResponse(Asset asset);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

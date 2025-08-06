@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 
+import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,6 +17,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateMeterInitResponse {
 
-    List<IdAndName> services;
+    List<IdNameAndType> services;
     List<IdAndName> rooms;
 }

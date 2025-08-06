@@ -2,7 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.IdNamAndType;
+import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
 import com.example.datn_qlnt_manager.dto.projection.ServiceRoomView;
 import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateUnitPriceRequest;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForBuildingRequest;
@@ -136,11 +136,11 @@ public class ServiceRoomController {
     }
 
     @Operation(summary = "Thống kê dịch vụ phòng theo trạng thái (theo người dùng hiện tại)")
-    @GetMapping("/statistics")
-    public ApiResponse<ServiceRoomStatistics> getStatisticsByStatus() {
+    @GetMapping("/statistics/{buildingId}")
+    public ApiResponse<ServiceRoomStatistics> getStatisticsByStatus(@PathVariable(name = "buildingId") String buildingId) {
         return ApiResponse.<ServiceRoomStatistics>builder()
                 .message("Statistics fetched successfully")
-                .data(serviceRoomService.getServiceRoomStatusStatistics())
+                .data(serviceRoomService.getServiceRoomStatusStatistics(buildingId))
                 .build();
     }
 
@@ -165,8 +165,8 @@ public class ServiceRoomController {
 
     @Operation(summary = "Hiển thị dịch vụ phòng theo phòng và chủ trọ đang đăng nhập")
     @GetMapping("/all/{roomId}")
-    public ApiResponse<List<IdNamAndType>> getAllServiceRoomByUserId(@PathVariable(name = "roomId") String roomId) {
-        return ApiResponse.<List<IdNamAndType>>builder()
+    public ApiResponse<List<IdNameAndType>> getAllServiceRoomByUserId(@PathVariable(name = "roomId") String roomId) {
+        return ApiResponse.<List<IdNameAndType>>builder()
                 .data(serviceRoomService.getAllServiceRoomByUserId(roomId))
                 .message("Service room has been found!")
                 .build();

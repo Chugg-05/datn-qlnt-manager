@@ -72,10 +72,10 @@ public class AssetController {
                 .build();
     }
 
-    @Operation(summary = "Hiển thị tài sản theo user đang đăng nhập")
+    @Operation(summary = "Hiển thị tài sản theo id tòa nhà")
     @GetMapping("/find-all")
-    public ApiResponse<List<AssetResponse>> getAssetsByCurrentUser() {
-        List<AssetResponse> data = assetService.findAssetsByCurrentUser();
+    public ApiResponse<List<AssetResponse>> getAssetsByBuildingId(@RequestParam String buildingId) {
+        List<AssetResponse> data = assetService.findAssetsByBuildingId(buildingId);
         return ApiResponse.<List<AssetResponse>>builder()
                 .data(data)
                 .message("Asset has been found!")
@@ -104,10 +104,10 @@ public class AssetController {
 
     @Operation(summary = "Thống kê tài sản theo trạng thái")
     @GetMapping("/statistics")
-    public ApiResponse<AssetStatusStatistic> getAssetStatistics() {
+    public ApiResponse<AssetStatusStatistic> getAssetStatistics(@RequestParam String buildingId) {
         return ApiResponse.<AssetStatusStatistic>builder()
                 .message("Asset statistics successfully")
-                .data(assetService.getAssetStatisticsByUserId())
+                .data(assetService.getAssetStatisticsByBuildingId(buildingId))
                 .build();
     }
 

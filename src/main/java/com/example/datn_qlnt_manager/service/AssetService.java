@@ -20,7 +20,7 @@ public interface AssetService {
 
     AssetResponse updateAssetById(String assetId, AssetUpdateRequest request);
 
-    List<AssetResponse> findAssetsByCurrentUser();
+    List<AssetResponse> findAssetsByBuildingId(String buildingId);
 
     void toggleAsseStatus(String assetId);
 
@@ -28,7 +28,7 @@ public interface AssetService {
 
     CreateAssetInit2Response getAssetsInfoByUserId2();
 
-    AssetStatusStatistic getAssetStatisticsByUserId();
+    AssetStatusStatistic getAssetStatisticsByBuildingId(String buildingId);
 
     void softDeleteAsset(String assetId);
 }

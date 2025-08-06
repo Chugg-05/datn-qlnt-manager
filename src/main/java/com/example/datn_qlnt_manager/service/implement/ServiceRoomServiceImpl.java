@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.datn_qlnt_manager.common.*;
-import com.example.datn_qlnt_manager.dto.response.IdNamAndType;
+import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
 import com.example.datn_qlnt_manager.dto.projection.ServiceRoomView;
 import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateUnitPriceRequest;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForBuildingRequest;
@@ -278,9 +278,9 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     }
 
     @Override
-    public ServiceRoomStatistics getServiceRoomStatusStatistics() {
+    public ServiceRoomStatistics getServiceRoomStatusStatistics(String buildingId) {
         User user = userService.getCurrentUser();
-        return serviceRoomRepository.countByStatus(user.getId());
+        return serviceRoomRepository.countByStatus(user.getId(), buildingId);
     }
 
     @Override
@@ -332,7 +332,7 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     }
 
     @Override
-    public List<IdNamAndType> getAllServiceRoomByUserId(String roomId) {
+    public List<IdNameAndType> getAllServiceRoomByUserId(String roomId) {
         return serviceRoomRepository.getAllServiceRoomByUserId(userService.getCurrentUser().getId(), roomId);
     }
 
