@@ -31,4 +31,6 @@ public interface AssetService {
     AssetStatusStatistic getAssetStatisticsByBuildingId(String buildingId);
 
     void softDeleteAsset(String assetId);
+
+    List<AssetResponse> findAllAssets();
 }
