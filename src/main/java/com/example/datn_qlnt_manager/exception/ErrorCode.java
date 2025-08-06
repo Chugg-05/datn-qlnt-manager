@@ -226,6 +226,9 @@ public enum ErrorCode {
     CANNOT_REFUSE_PAYMENTS(400, "You cannot refuse payment.", HttpStatus.BAD_REQUEST),
     INVALID_PAYMENT_STATUS(400, "You can no longer confirm this invoice.", HttpStatus.BAD_REQUEST),
     REASON_CAN_NOT_BE_NULL(400, "Reason cannot be null.", HttpStatus.BAD_REQUEST),
+    INVALID_SERVICE_CATEGORY(400, "Invalid service category.", HttpStatus.BAD_REQUEST),
+    MISSING_NUMBER_OF_PEOPLE_IN_CONTRACT(400, "Number of people in the contract is missing.", HttpStatus.BAD_REQUEST),
+    INVALID_VEHICLE_COUNT(400, "Invalid vehicle count.", HttpStatus.BAD_REQUEST),
     INVALID_QUANTITY_NOT_NULL(400, "Quantity must not be null", HttpStatus.BAD_REQUEST),
 
 

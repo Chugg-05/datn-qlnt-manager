@@ -61,7 +61,12 @@ public class ContractServiceImpl implements ContractService {
         var user = userService.getCurrentUser();
 
         Page<Contract> paging = contractRepository.getPageAndSearchAndFilterContractByUserId(
-                user.getId(), filter.getQuery(), filter.getGender(), filter.getStatus(), pageable);
+                user.getId(),
+                filter.getQuery(),
+                filter.getBuilding(),
+                filter.getGender(),
+                filter.getStatus(),
+                pageable);
 
         return buildPaginatedContractResponse(paging, page, size);
     }
@@ -73,7 +78,11 @@ public class ContractServiceImpl implements ContractService {
         var user = userService.getCurrentUser();
 
         Page<Contract> paging = contractRepository.getContractWithStatusCancelByUserId(
-                user.getId(), filter.getQuery(), filter.getGender(), pageable);
+                user.getId(),
+                filter.getQuery(),
+                filter.getBuilding(),
+                filter.getGender(),
+                pageable);
 
         return buildPaginatedContractResponse(paging, page, size);
     }
@@ -121,7 +130,7 @@ public class ContractServiceImpl implements ContractService {
             throw new AppException(ErrorCode.VEHICLE_NOT_FOUND);
         }
 
-        if (request.getTenants().size() > request.getNumberOfPeople()) {
+        if (request.getTenants().size() != request.getNumberOfPeople()) {
             throw new AppException(ErrorCode.TENANTS_EXCEEDS_NUMBER_OF_PEOPLE);
         }
 
