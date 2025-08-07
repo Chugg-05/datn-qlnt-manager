@@ -52,7 +52,8 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public AssetResponse createAsset(AssetCreationRequest request) {
-        List<Asset> duplicates = assetRepository.findByNameAssetIgnoreCaseAndBuildingId(request.getNameAsset(), request.getBuildingId());
+        List<Asset> duplicates = assetRepository.findByNameAssetIgnoreCaseAndBuildingId(request.getNameAsset(),
+                request.getBuildingId());
         if (!duplicates.isEmpty()) {
             throw new AppException(ErrorCode.DUPLICATE_ASSET_NAME);
         }
@@ -95,12 +96,7 @@ public class AssetServiceImpl implements AssetService {
                 filter.getBuildingId(),
                 pageable);
 
-        List<AssetResponse> assetResponses = pageAsset.getContent().stream().map(assetMapper::toResponse).toList();
-
-        Meta<?> meta =
-                Meta.builder().pagination(Pagination.builder().count(pageAsset.getNumberOfElements()).perPage(size).currentPage(page).totalPages(pageAsset.getTotalPages()).total(pageAsset.getTotalElements()).build()).build();
-
-        return PaginatedResponse.<AssetResponse>builder().data(assetResponses).meta(meta).build();
+        return getAssetResponsePaginatedResponse(page, size, pageAsset);
     }
 
     @Override
@@ -212,5 +208,40 @@ public class AssetServiceImpl implements AssetService {
     public List<AssetResponse> findAllAssets() {
         List<Asset> assets = assetRepository.findAllAssets();
         return assets.stream().map(assetMapper::toResponse).toList();
+    }
+
+    @Override
+    public AssetResponse restoreAssetById(String assetId) {
+        Asset asset = assetRepository.findById(assetId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
+        asset.setAssetStatus(AssetStatus.HOAT_DONG);
+        return assetMapper.toResponse(assetRepository.save(asset));
+    }
+
+    @Override
+    public PaginatedResponse<AssetResponse> getPageAndSearchAndFilterAssetByUserIdAndCancel(AssetFilter filter,
+                                                                                            int page,
+                                                                                            int size) {
+
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by("updatedAt").descending());
+
+        Page<Asset> pageAsset = assetRepository.findAllByFilterAndUserIdAndCancel(
+                filter.getNameAsset(),
+                filter.getAssetType(),
+                filter.getAssetBeLongTo(),
+                filter.getAssetStatus(),
+                filter.getBuildingId(),
+                pageable);
+
+        return getAssetResponsePaginatedResponse(page, size, pageAsset);
+    }
+
+    private PaginatedResponse<AssetResponse> getAssetResponsePaginatedResponse(int page, int size, Page<Asset> pageAsset) {
+        List<AssetResponse> assetResponses = pageAsset.getContent().stream().map(assetMapper::toResponse).toList();
+
+        Meta<?> meta =
+                Meta.builder().pagination(Pagination.builder().count(pageAsset.getNumberOfElements()).perPage(size).currentPage(page).totalPages(pageAsset.getTotalPages()).total(pageAsset.getTotalElements()).build()).build();
+
+        return PaginatedResponse.<AssetResponse>builder().data(assetResponses).meta(meta).build();
     }
 }

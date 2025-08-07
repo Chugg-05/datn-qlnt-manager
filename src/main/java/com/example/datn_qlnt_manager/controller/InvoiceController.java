@@ -203,4 +203,13 @@ public class InvoiceController {
                 .meta(result.getMeta())
                 .build();
     }
+
+    @Operation(summary = "Khôi phục hóa đơn đã xóa")
+    @PutMapping("/restore/{invoiceId}")
+    public ApiResponse<InvoiceResponse> restoreInvoiceById(@PathVariable("invoiceId") String invoiceId) {
+        return ApiResponse.<InvoiceResponse>builder()
+                .data(invoiceService.restoreInvoiceById(invoiceId))
+                .message("success")
+                .build();
+    }
 }

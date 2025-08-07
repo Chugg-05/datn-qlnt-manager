@@ -12,6 +12,9 @@ public interface ServiceService {
     PaginatedResponse<ServiceResponse> getPageAndSearchAndFilterService(
             ServiceFilter serviceFilter, int page, int size);
 
+    PaginatedResponse<ServiceResponse> getPageAndSearchAndFilterServiceAndCancel(
+            ServiceFilter serviceFilter, int page, int size);
+
     ServiceResponse createService(ServiceCreationRequest request);
 
     ServiceResponse updateService(String serviceId, ServiceUpdateRequest request);
@@ -23,4 +26,6 @@ public interface ServiceService {
     ServiceResponse toggleServiceStatus(String serviceId);
 
     ServiceCountResponse statisticsServiceByStatus();
+
+    ServiceResponse restoreServiceById(String serviceId);
 }

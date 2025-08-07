@@ -171,4 +171,13 @@ public class ContractController {
                 .build();
     }
 
+    @Operation(summary = "Khôi phục hợp đồng đã xóa")
+    @PutMapping("/restore/{contractId}")
+    public ApiResponse<ContractResponse> restoreContractById(@PathVariable("contractId") String contractId) {
+        return ApiResponse.<ContractResponse>builder()
+                .data(contractService.restoreContractById(contractId))
+                .message("success")
+                .build();
+    }
+
 }

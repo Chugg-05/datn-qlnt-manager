@@ -39,6 +39,7 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
 				AND (:maxPrice IS NULL OR s.price <= :maxPrice)
 				AND (:serviceStatus IS NULL OR s.status = :serviceStatus)
 				AND (:serviceCalculation IS NULL OR s.serviceCalculation = :serviceCalculation)
+				AND s.status != 'KHONG_SU_DUNG'
 			""")
     Page<Service> filterServicesPaging(
             @Param("userId") String userId,
@@ -49,6 +50,32 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
             @Param("serviceStatus") ServiceStatus serviceStatus,
             @Param("serviceCalculation") ServiceCalculation serviceCalculation,
             Pageable pageable);
+
+	@Query(
+			"""
+                SELECT s
+                FROM Service s
+                WHERE (
+                    :query IS NULL OR
+                    LOWER(s.name) LIKE LOWER(CONCAT('%', :query, '%')) OR
+                    LOWER(s.unit) LIKE LOWER(CONCAT('%', :query, '%'))
+                )
+                AND (:category IS NULL OR s.serviceCategory = :category)
+                AND (:userId IS NULL OR s.user.id = :userId)
+                AND (:minPrice IS NULL OR s.price >= :minPrice)
+                AND (:maxPrice IS NULL OR s.price <= :maxPrice)
+                AND (:serviceStatus IS NULL OR s.status = :serviceStatus)
+                AND s.status = 'KHONG_SU_DUNG'
+            """)
+	Page<Service> filterServicesPagingAndCancel(
+			@Param("userId") String userId,
+			@Param("query") String query,
+			@Param("category") ServiceCategory category,
+			@Param("minPrice") BigDecimal minPrice,
+			@Param("maxPrice") BigDecimal maxPrice,
+			@Param("serviceStatus") ServiceStatus serviceStatus,
+			@Param("serviceCalculation") ServiceCalculation serviceCalculation,
+			Pageable pageable);
 
     @Query(
             """

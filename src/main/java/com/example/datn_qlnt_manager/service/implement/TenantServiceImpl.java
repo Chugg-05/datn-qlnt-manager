@@ -53,7 +53,7 @@ public class TenantServiceImpl implements TenantService {
     UserRepository userRepository;
     ContractRepository contractRepository;
     CodeGeneratorService codeGeneratorService;
-    private final ContractMapper contractMapper;
+    ContractMapper contractMapper;
 
     @Override
     public PaginatedResponse<TenantResponse> getPageAndSearchAndFilterTenantByUserId(
@@ -277,6 +277,13 @@ public class TenantServiceImpl implements TenantService {
         return tenants.stream()
                 .map(tenantMapper::toTenantResponse)
                 .toList();
+    }
+
+    @Override
+    public TenantResponse restoreTenantById(String tenantId) {
+        Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+        tenant.setTenantStatus(TenantStatus.KHOI_PHUC);
+        return tenantMapper.toTenantResponse(tenantRepository.save(tenant));
     }
 
 }

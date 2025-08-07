@@ -52,4 +52,6 @@ public interface InvoiceService {
 
     PaginatedResponse<InvoiceResponse> getInvoicesForTenant(
             InvoiceFilter filter, int page, int size);
+
+    InvoiceResponse restoreInvoiceById(String invoiceId);
 }

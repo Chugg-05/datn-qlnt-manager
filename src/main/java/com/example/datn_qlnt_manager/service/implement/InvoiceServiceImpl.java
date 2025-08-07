@@ -304,6 +304,13 @@ public class InvoiceServiceImpl implements InvoiceService {
         return buildPaginatedInvoiceResponse(paging, page, size);
     }
 
+    @Override
+    public InvoiceResponse restoreInvoiceById(String invoiceId) {
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
+        invoice.setInvoiceStatus(InvoiceStatus.KHOI_PHUC);
+        return invoiceMapper.toInvoiceResponse(invoiceRepository.save(invoice));
+    }
+
     private List<InvoiceDetail> buildInvoiceDetailsItems(Invoice invoice, List<InvoiceItemResponse> items) {
         Room room = invoice.getContract().getRoom();
         List<Meter> meters = meterRepository.findByRoomId(room.getId());

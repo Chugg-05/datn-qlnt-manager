@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.example.datn_qlnt_manager.repository.RoomRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,7 +45,6 @@ public class VehicleServiceImpl implements VehicleService {
     VehicleMapper vehicleMapper;
     TenantRepository tenantRepository;
     UserService userService;
-    RoomRepository roomRepository;
 
     @Override
     public PaginatedResponse<VehicleResponse> getPageAndSearchAndFilterVehicleByUserId(
@@ -178,6 +176,14 @@ public class VehicleServiceImpl implements VehicleService {
             throw new IllegalStateException("Cannot toggle status for deleted vehicle");
         }
         vehicleRepository.save(vehicle);
+    }
+
+    @Override
+    public VehicleResponse restoreVehicleById(String vehicleId) {
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
+        vehicle.setVehicleStatus(VehicleStatus.SU_DUNG);
+        return vehicleMapper.toVehicleResponse(vehicleRepository.save(vehicle));
     }
 
     private PaginatedResponse<VehicleResponse> buildPaginatedVehicleResponse(Page<Vehicle> paging, int page, int size) {

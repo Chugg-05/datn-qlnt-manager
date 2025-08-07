@@ -5,5 +5,6 @@ public enum InvoiceStatus {
     CHO_THANH_TOAN,
     DA_THANH_TOAN,
     QUA_HAN,
-    HUY
+    HUY,
+    KHOI_PHUC,
 }

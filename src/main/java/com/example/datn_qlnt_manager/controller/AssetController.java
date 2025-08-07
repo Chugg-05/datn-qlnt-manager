@@ -1,6 +1,8 @@
 package com.example.datn_qlnt_manager.controller;
 
+import com.example.datn_qlnt_manager.common.AssetStatus;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
+
 import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
@@ -112,7 +114,7 @@ public class AssetController {
     }
 
     @Operation(summary = "Xóa mềm tài sản (chuyển trạng thái KHONG_SU_DUNG)")
-    @PutMapping("soft-delete/{assetId}")
+    @PutMapping("/soft-delete/{assetId}")
     public ApiResponse<Void> softDeleteAsset(@PathVariable String assetId) {
         assetService.softDeleteAsset(assetId);
         return ApiResponse.<Void>builder()
@@ -141,6 +143,28 @@ public class AssetController {
         return ApiResponse.<List<AssetResponse>>builder()
                 .data(data)
                 .message("All assets have been found!")
+                .build();
+    }
+
+    @Operation(summary = "Khôi phục tài sản đã xóa")
+    @PutMapping("/restore/{assetId}")
+    public ApiResponse<AssetResponse> restoreBuildingById(@PathVariable("assetId") String assetId) {
+        return ApiResponse.<AssetResponse>builder()
+                .data(assetService.restoreAssetById(assetId))
+                .message("success")
+                .build();
+    }
+
+    @Operation(summary = "Phân trang, tìm kiếm, lọc tòa nhà đã hủy hoạt động (status = HUY)")
+    @GetMapping("/cancel")
+    public ApiResponse<PaginatedResponse<AssetResponse>> getBuildingWithStatusCancel(
+            @Valid @ModelAttribute AssetFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+        filter.setAssetStatus(AssetStatus.HUY);
+        return ApiResponse.<PaginatedResponse<AssetResponse>>builder()
+                .message("Asset list loaded successfully")
+                .data(assetService.getPageAndSearchAndFilterAssetByUserIdAndCancel(filter, page, size))
                 .build();
     }
 }

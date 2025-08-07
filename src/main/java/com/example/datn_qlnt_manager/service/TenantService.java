@@ -35,4 +35,5 @@ public interface TenantService {
 
     List<TenantResponse> getTenantsByRoomId(String roomId);
 
+    TenantResponse restoreTenantById(String tenantId);
 }

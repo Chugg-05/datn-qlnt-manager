@@ -18,6 +18,8 @@ public interface AssetService {
 
     PaginatedResponse<AssetResponse> getPageAndSearchAndFilterAssetByUserId(AssetFilter filter, int page, int size);
 
+    PaginatedResponse<AssetResponse> getPageAndSearchAndFilterAssetByUserIdAndCancel(AssetFilter filter, int page, int size);
+
     AssetResponse updateAssetById(String assetId, AssetUpdateRequest request);
 
     List<AssetResponse> findAssetsByBuildingId(String buildingId);
@@ -33,4 +35,6 @@ public interface AssetService {
     void softDeleteAsset(String assetId);
 
     List<AssetResponse> findAllAssets();
+
+    AssetResponse restoreAssetById(String assetId);
 }

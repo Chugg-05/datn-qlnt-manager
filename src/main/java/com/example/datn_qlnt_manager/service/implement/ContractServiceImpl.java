@@ -388,5 +388,10 @@ public class ContractServiceImpl implements ContractService {
         return buildPaginatedContractResponse(paging, page, size);
     }
 
-
+    @Override
+    public ContractResponse restoreContractById(String contractId) {
+        Contract contract = contractRepository.findById(contractId).orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+        contract.setStatus(ContractStatus.CHO_KICH_HOAT);
+        return null;
+    }
 }

@@ -28,4 +28,6 @@ public interface VehicleService {
     VehicleStatistics getVehicleStatistics();
 
     void toggleStatus(String id);
+
+    VehicleResponse restoreVehicleById(String vehicleId);
 }

@@ -31,8 +31,27 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
                 AND (:beLongTo IS NULL OR a.assetBeLongTo = :beLongTo)
                 AND (:assetType IS NULL OR a.assetType = :assetType)
                 AND (:assetStatus IS NULL OR a.assetStatus = :assetStatus)
+                AND a.assetStatus != 'HUY'
             """)
 	Page<Asset> findAllByFilterAndUserId(
+			@Param("name") String nameAsset,
+			@Param("assetType") AssetType assetType,
+			@Param("beLongTo") AssetBeLongTo assetBeLongTo,
+			@Param("assetStatus") AssetStatus assetStatus,
+			@Param("buildingId") String buildingId,
+			Pageable pageable);
+
+	@Query(
+			"""
+                SELECT a FROM Asset a
+                JOIN a.building b
+                WHERE a.building.id = :buildingId
+                AND (:name IS NULL OR a.nameAsset LIKE CONCAT('%', :name, '%'))
+                AND (:beLongTo IS NULL OR a.assetBeLongTo = :beLongTo)
+                AND (:assetType IS NULL OR a.assetType = :assetType)
+                AND a.assetStatus = 'HUY'
+            """)
+	Page<Asset> findAllByFilterAndUserIdAndCancel(
 			@Param("name") String nameAsset,
 			@Param("assetType") AssetType assetType,
 			@Param("beLongTo") AssetBeLongTo assetBeLongTo,

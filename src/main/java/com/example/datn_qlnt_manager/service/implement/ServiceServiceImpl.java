@@ -63,6 +63,29 @@ public class ServiceServiceImpl implements ServiceService {
                 filter.getServiceCalculation(),
                 pageable);
 
+        return getServiceResponsePaginatedResponse(page, size, paging);
+    }
+
+    @Override
+    public PaginatedResponse<ServiceResponse> getPageAndSearchAndFilterServiceAndCancel(
+            ServiceFilter filter, int page, int size) {
+        User user = userService.getCurrentUser();
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Order.desc("updatedAt")));
+
+        Page<Service> paging = serviceRepository.filterServicesPagingAndCancel(
+                user.getId(),
+                filter.getQuery(),
+                filter.getServiceCategory(),
+                filter.getMinPrice(),
+                filter.getMaxPrice(),
+                filter.getServiceStatus(),
+                filter.getServiceCalculation(),
+                pageable);
+
+        return getServiceResponsePaginatedResponse(page, size, paging);
+    }
+
+    private PaginatedResponse<ServiceResponse> getServiceResponsePaginatedResponse(int page, int size, Page<Service> paging) {
         List<ServiceResponse> serviceResponses = paging.getContent().stream()
                 .map(serviceMapper::toServiceResponse)
                 .toList();
@@ -170,6 +193,13 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     public ServiceCountResponse statisticsServiceByStatus() {
         return serviceRepository.getServiceStats(userService.getCurrentUser().getId());
+    }
+
+    @Override
+    public ServiceResponse restoreServiceById(String serviceId) {
+        Service service = serviceRepository.findById(serviceId).orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+        service.setStatus(ServiceStatus.HOAT_DONG);
+        return serviceMapper.toServiceResponse(serviceRepository.save(service));
     }
 
     private static final Map<ServiceCalculation, Set<ServiceCategory>> validCategoryMap = Map.of(

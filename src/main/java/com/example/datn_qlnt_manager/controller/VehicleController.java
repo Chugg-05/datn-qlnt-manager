@@ -126,4 +126,13 @@ public class VehicleController {
                 .message("Status update successful!")
                 .build();
     }
+
+    @Operation(summary = "Khôi phục phương tiện đã xóa")
+    @PutMapping("/restore/{vehicleId}")
+    public ApiResponse<VehicleResponse> restoreVehicleById(@PathVariable("vehicleId") String vehicleId) {
+        return ApiResponse.<VehicleResponse>builder()
+                .data(vehicleService.restoreVehicleById(vehicleId))
+                .message("success")
+                .build();
+    }
 }
