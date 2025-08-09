@@ -5,5 +5,5 @@ public enum InvoiceItemType {
     NUOC,
     DICH_VU,
     TIEN_PHONG,
-    DEN_BU
+    DEN_BU,
 }

@@ -183,7 +183,7 @@ public enum ErrorCode {
     INVALID_INVOICE_STATUS(400, "Invalid invoice status.", HttpStatus.BAD_REQUEST),
     INVOICE_NOT_EDITABLE(400, "This invoice cannot be edited.", HttpStatus.BAD_REQUEST),
     INVALID_PAYMENT_DUE_DATE(
-            400, "The payment due date must be in the future and within this month only", HttpStatus.BAD_REQUEST),
+            400, "Payment due dates must be in the future and only in the current and next month.", HttpStatus.BAD_REQUEST),
     INVOICE_CAN_NOT_BE_DELETED(400, "This invoice cannot be deleted.", HttpStatus.BAD_REQUEST),
     INVALID_ASSETS_BLANK(400, "Assets cannot be blank.", HttpStatus.BAD_REQUEST),
     INVALID_ASSETS(400, "At least one asset must be selected.", HttpStatus.BAD_REQUEST),
@@ -230,6 +230,13 @@ public enum ErrorCode {
     MISSING_NUMBER_OF_PEOPLE_IN_CONTRACT(400, "Number of people in the contract is missing.", HttpStatus.BAD_REQUEST),
     INVALID_VEHICLE_COUNT(400, "Invalid vehicle count.", HttpStatus.BAD_REQUEST),
     INVALID_QUANTITY_NOT_NULL(400, "Quantity must not be null", HttpStatus.BAD_REQUEST),
+    CONTRACT_NOT_ELIGIBLE_FOR_INVOICE(400, "Contract not eligible for invoice issuance", HttpStatus.BAD_REQUEST),
+    INVALID_SERVICE_CALCULATION(400, "Invalid service calculation.", HttpStatus.BAD_REQUEST),
+    ERROR_IN_CALCULATION_OF_SERVICE(400, "Error in calculation of service.", HttpStatus.BAD_REQUEST),
+    PAYMENT_DUE_DATE_IN_PAST(400, "Payment due date cannot be in the past.", HttpStatus.BAD_REQUEST),
+    PAYMENT_DUE_DATE_TOO_FAR(400, "Payment due date cannot be more than 30 days in the future.", HttpStatus.BAD_REQUEST),
+    NO_ACTIVE_CONTRACT_FOUND(400, "There are no eligible rooms for billing in this building." +
+            " Please check your contract and usage index for each room..", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),

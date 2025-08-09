@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.example.datn_qlnt_manager.common.ServiceCalculation;
 import com.example.datn_qlnt_manager.common.ServiceCategory;
 
+import com.example.datn_qlnt_manager.entity.ServiceRoom;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvoiceItemResponse {
     String id;
+    String serviceRoomId; // optional
     String serviceName;
     ServiceCategory serviceCategory;
     ServiceCalculation serviceCalculation;

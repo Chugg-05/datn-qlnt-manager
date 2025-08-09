@@ -10,5 +10,6 @@ import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceItemResponse;
 
 @Mapper(componentModel = "spring")
 public interface InvoiceDetailsMapper {
+
     InvoiceDetailsResponse toResponse(InvoiceDetailView view, List<InvoiceItemResponse> items);
 }
