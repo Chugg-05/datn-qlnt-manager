@@ -229,6 +229,7 @@ public enum ErrorCode {
     INVALID_SERVICE_CATEGORY(400, "Invalid service category.", HttpStatus.BAD_REQUEST),
     MISSING_NUMBER_OF_PEOPLE_IN_CONTRACT(400, "Number of people in the contract is missing.", HttpStatus.BAD_REQUEST),
     INVALID_VEHICLE_COUNT(400, "Invalid vehicle count.", HttpStatus.BAD_REQUEST),
+    INVALID_QUANTITY_NOT_NULL(400, "Quantity must not be null", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
@@ -286,7 +287,7 @@ public enum ErrorCode {
     ASSET_STATUS_NOT_FOUND(404, "Asset status not found.", HttpStatus.NOT_FOUND),
     PAYMENT_RECEIPT_NOT_FOUND(404, "Payment receipt not found.", HttpStatus.NOT_FOUND),
     ASSET_ROOM_NOT_FOUND(404, "Asset room not found.", HttpStatus.NOT_FOUND),
-    
+
     // notification
     NOTIFICATION_TITLE_REQUIRED(404, "Title must not be blank", HttpStatus.NOT_FOUND),
     NOTIFICATION_CONTENT_REQUIRED(404, "Content must not be blank", HttpStatus.NOT_FOUND),

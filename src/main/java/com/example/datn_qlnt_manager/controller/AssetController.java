@@ -133,4 +133,14 @@ public class AssetController {
                 .build();
 
     }
+
+    @Operation(summary = "Hiển thị toàn bộ tài sản (bỏ lọc tòa nhà)")
+    @GetMapping("/find-all-no-buildingId")
+    public ApiResponse<List<AssetResponse>> getAllAssets() {
+        List<AssetResponse> data = assetService.findAllAssets();
+        return ApiResponse.<List<AssetResponse>>builder()
+                .data(data)
+                .message("All assets have been found!")
+                .build();
+    }
 }
