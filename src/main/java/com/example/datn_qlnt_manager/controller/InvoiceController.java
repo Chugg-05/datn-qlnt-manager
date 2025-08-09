@@ -80,7 +80,7 @@ public class InvoiceController {
     @Operation(summary = "Tạo hóa đơn theo hợp đồng")
     @PostMapping("/by-contract")
     public ApiResponse<InvoiceResponse> createInvoiceForContract(@Valid @RequestBody InvoiceCreationRequest request) {
-        InvoiceResponse response = invoiceService.createInvoiceForContract(request);
+        InvoiceResponse response = invoiceService.generateInvoiceForRoom(request);
 
         return ApiResponse.<InvoiceResponse>builder()
                 .message("Create invoice successfully")
@@ -92,34 +92,11 @@ public class InvoiceController {
     @PostMapping("/by-building")
     public ApiResponse<List<InvoiceResponse>> createInvoicesForBuilding(
             @Valid @RequestBody InvoiceBuildingCreationRequest request) {
-        List<InvoiceResponse> responses = invoiceService.createInvoicesForBuilding(request);
+        List<InvoiceResponse> responses = invoiceService.generateInvoicesForBuilding(request);
 
         return ApiResponse.<List<InvoiceResponse>>builder()
                 .message("Create invoice by building successfully")
                 .data(responses)
-                .build();
-    }
-
-    @Operation(summary = "Tạo hóa đơn theo tầng")
-    @PostMapping("/by-floor")
-    public ApiResponse<List<InvoiceResponse>> createInvoicesForFloor(
-            @Valid @RequestBody InvoiceFloorCreationRequest request) {
-        List<InvoiceResponse> responses = invoiceService.createInvoicesForFloor(request);
-
-        return ApiResponse.<List<InvoiceResponse>>builder()
-                .message("Create invoice by floor successfully")
-                .data(responses)
-                .build();
-    }
-
-    @Operation(summary = "Tạo hóa đơn cuối cùng")
-    @PostMapping("/finalize")
-    public ApiResponse<InvoiceResponse> createFinalInvoice(@Valid @RequestBody InvoiceCreationRequest request) {
-        InvoiceResponse response = invoiceService.createEndOfMonthInvoice(request);
-
-        return ApiResponse.<InvoiceResponse>builder()
-                .message("Create final invoice successfully")
-                .data(response)
                 .build();
     }
 

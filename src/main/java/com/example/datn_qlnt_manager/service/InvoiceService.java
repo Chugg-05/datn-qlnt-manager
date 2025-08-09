@@ -2,12 +2,6 @@ package com.example.datn_qlnt_manager.service;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.common.PaymentMethod;
-import com.example.datn_qlnt_manager.dto.request.paymentReceipt.PaymentMethodRequest;
-import com.example.datn_qlnt_manager.dto.request.paymentReceipt.RejectPaymentRequest;
-import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentBatchResponse;
-import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentMethodResponse;
-import com.example.datn_qlnt_manager.dto.response.paymentReceipt.RejectPaymentResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -27,13 +21,11 @@ public interface InvoiceService {
 
     InvoiceDetailsResponse getInvoiceDetails(String invoiceId);
 
-    InvoiceResponse createInvoiceForContract(InvoiceCreationRequest request);
+    @Transactional
+    InvoiceResponse generateInvoiceForRoom(InvoiceCreationRequest request);
 
-    List<InvoiceResponse> createInvoicesForBuilding(InvoiceBuildingCreationRequest request);
-
-    List<InvoiceResponse> createInvoicesForFloor(InvoiceFloorCreationRequest request);
-
-    InvoiceResponse createEndOfMonthInvoice(InvoiceCreationRequest request);
+    @Transactional
+    List<InvoiceResponse> generateInvoicesForBuilding(InvoiceBuildingCreationRequest request);
 
     @Transactional
     InvoiceResponse updateInvoice(String invoiceId, InvoiceUpdateRequest request);

@@ -48,7 +48,7 @@ public class InvoiceDetail extends AbstractEntity {
     @Column(name = "don_gia", nullable = false)
     BigDecimal unitPrice;
 
-    @Column(name = "thanh_tien", insertable = false, updatable = false)
+    @Column(name = "thanh_tien")
     BigDecimal amount;
 
     @Column(name = "mo_ta")

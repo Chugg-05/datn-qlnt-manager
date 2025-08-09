@@ -139,6 +139,7 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
 		""")
     Long countRoomsWithoutMeterByUserId(@org.springframework.data.repository.query.Param("userId") String userId);
 
-	@Query("SELECT m FROM Meter m WHERE m.service = :serviceRoom")
-	Optional<Meter> findByServiceRoom(@Param("serviceRoom") ServiceRoom serviceRoom);
+	Optional<Meter> findByRoomIdAndServiceId(String roomId, String serviceId);
+
+
 }

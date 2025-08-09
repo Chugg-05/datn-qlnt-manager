@@ -143,11 +143,6 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 	""")
 	Optional<Contract> findActiveContractByRoomId(@Param("roomId") String roomId);
 
-
-	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
-
-    boolean existsByTenants_Id(String tenantId);
-
 	@Query("""
     SELECT DISTINCT c
     FROM Contract c
@@ -179,4 +174,24 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
         WHERE t.id = :tenantId
     """)
 	List<Contract> findAllByTenantId(@Param("tenantId") String tenantId);
+
+	@Query("""
+		SELECT c
+		FROM Contract c
+		JOIN c.room r
+		JOIN r.floor f
+		JOIN f.building b
+		WHERE b.id = :buildingId
+		  AND c.startDate <= :endOfMonth
+		  AND (c.endDate IS NULL OR c.endDate >= :startOfMonth)
+	""")
+	List<Contract> findActiveContractsByBuildingAndMonthYear(
+			@Param("buildingId") String buildingId,
+			@Param("startOfMonth") LocalDateTime startOfMonth,
+			@Param("endOfMonth") LocalDateTime endOfMonth
+	);
+
+	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
+
+	boolean existsByTenants_Id(String tenantId);
 }
