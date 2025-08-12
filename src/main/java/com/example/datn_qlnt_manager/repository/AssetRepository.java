@@ -20,7 +20,7 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
 
 	List<Asset> findByNameAssetIgnoreCaseAndBuildingId(String nameAsset, String buildingId);
 
-	List<Asset> findByNameAssetIgnoreCaseAndIdNot(String nameAsset, String id);
+	List<Asset> findByNameAssetIgnoreCaseAndBuildingIdAndIdNot(String nameAsset, String buildingId, String id);
 
 	@Query(
 			"""
@@ -31,6 +31,7 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
                 AND (:beLongTo IS NULL OR a.assetBeLongTo = :beLongTo)
                 AND (:assetType IS NULL OR a.assetType = :assetType)
                 AND (:assetStatus IS NULL OR a.assetStatus = :assetStatus)
+                AND a.assetStatus != 'HUY'
             """)
 	Page<Asset> findAllByFilterAndUserId(
 			@Param("name") String nameAsset,
@@ -43,9 +44,10 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
 	// hiển thị theo userId
 	@Query(
 			"""
-                SELECT a FROM Asset a
-                WHERE a.building.id = :buildingId
-            """)
+				SELECT a FROM Asset a
+				WHERE a.building.id = :buildingId
+				AND a.assetStatus != 'HUY'
+			""")
 	List<Asset> findAssetsByBuildingId(@Param("buildingId") String buildingId);
 
 	@Query("""

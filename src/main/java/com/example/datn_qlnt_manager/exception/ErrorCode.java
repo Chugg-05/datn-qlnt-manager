@@ -239,6 +239,7 @@ public enum ErrorCode {
             " Please check your contract and usage index for each room..", HttpStatus.BAD_REQUEST),
     QUANTITY_MUST_BE_POSITIVE(400, "Quantity must be greater than 0.", HttpStatus.BAD_REQUEST),
     ASSET_QUANTITY_NOT_ENOUGH(400, "Asset quantity is not enough.", HttpStatus.BAD_REQUEST),
+    ASSET_PRICE_INVALID(400, "The price of the asset must be greater than 0.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
