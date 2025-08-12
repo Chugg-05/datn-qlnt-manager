@@ -15,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvoiceItemResponse {
     String id;
+    String serviceRoomId; // optional
     String serviceName;
     ServiceCategory serviceCategory;
     ServiceCalculation serviceCalculation;

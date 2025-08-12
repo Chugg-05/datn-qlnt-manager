@@ -6,5 +6,4 @@ public enum InvoiceStatus {
     DA_THANH_TOAN,
     QUA_HAN,
     HUY,
-    KHOI_PHUC,
 }

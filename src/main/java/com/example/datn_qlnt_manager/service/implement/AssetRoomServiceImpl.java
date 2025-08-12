@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -99,6 +100,19 @@ public class AssetRoomServiceImpl implements AssetRoomService {
         switch (request.getAssetBeLongTo()) {
             case PHONG -> {
                 Asset asset = getValidAssetForAssignment(request.getAssetId());
+
+                int usedQuantity = Optional.ofNullable(assetRoomRepository.sumQuantityByAssetId(asset.getId()))
+                        .orElse(0);
+
+                int availableQuantity = asset.getQuantity() - usedQuantity;
+
+                if (availableQuantity <= 0) {
+                    throw new AppException(ErrorCode.ASSET_QUANTITY_NOT_ENOUGH);
+                }
+                if (request.getQuantity() != null && request.getQuantity() > availableQuantity) {
+                    throw new AppException(ErrorCode.ASSET_QUANTITY_NOT_ENOUGH);
+                }
+
                 assetRoom = buildAssetRoom(
                         room,
                         asset,
@@ -158,6 +172,15 @@ public class AssetRoomServiceImpl implements AssetRoomService {
 
         if (rooms.size() != request.getRoomIds().size()) {
             throw new AppException(ErrorCode.ROOM_NOT_FOUND);
+        }
+
+        int usedQuantity = Optional.ofNullable(assetRoomRepository.sumQuantityByAssetId(asset.getId()))
+                .orElse(0);
+
+        int remaining = asset.getQuantity() - usedQuantity;
+
+        if (rooms.size() > remaining) {
+            throw new AppException(ErrorCode.ASSET_QUANTITY_NOT_ENOUGH);
         }
 
         assignAssetToRooms(asset, rooms);
@@ -236,8 +259,20 @@ public class AssetRoomServiceImpl implements AssetRoomService {
     }
 
     private void assignAssetToRooms(Asset asset, List<Room> rooms) {
+
+        int usedQuantity = Optional.ofNullable(assetRoomRepository.sumQuantityByAssetId(asset.getId()))
+                .orElse(0);
+
+        int availableQuantity = asset.getQuantity() - usedQuantity;
+
+        if (availableQuantity <= 0) {
+            throw new AppException(ErrorCode.ASSET_QUANTITY_NOT_ENOUGH);
+        }
+
         for (Room room : rooms) {
             if (assetRoomRepository.existsByRoomAndAsset(room, asset)) continue;
+
+            if (availableQuantity <= 0) break;
 
             AssetRoom assetRoom = buildAssetRoom(
                     room,
@@ -249,6 +284,8 @@ public class AssetRoomServiceImpl implements AssetRoomService {
             assetRoom.setUpdatedAt(Instant.now());
 
             assetRoomRepository.save(assetRoom);
+
+            availableQuantity--;
         }
     }
 
@@ -258,6 +295,7 @@ public class AssetRoomServiceImpl implements AssetRoomService {
                 .asset(asset)
                 .assetBeLongTo(belongTo)
                 .assetName(asset.getNameAsset())
+                .quantity(1)
                 .price(asset.getPrice())
                 .dateAdded(LocalDate.now())
                 .takeAwayDay(null)
@@ -270,6 +308,11 @@ public class AssetRoomServiceImpl implements AssetRoomService {
         if (!StringUtils.hasText(request.getAssetName())) {
             throw new AppException(ErrorCode.ASSET_NAME_NOT_BLANK);
         }
+
+        if (request.getQuantity() == null || request.getQuantity() <= 0) {
+            throw new AppException(ErrorCode.QUANTITY_MUST_BE_POSITIVE);
+        }
+
         if (request.getPrice() == null) {
             throw new AppException(ErrorCode.UNIT_PRICE_REQUIRED);
         }
@@ -320,6 +363,7 @@ public class AssetRoomServiceImpl implements AssetRoomService {
                         .id(ar.getId())
                         .assetName(ar.getAssetName())
                         .assetBeLongTo(ar.getAssetBeLongTo())
+                        .quantity(ar.getQuantity())
                         .price(ar.getPrice())
                         .assetStatus(ar.getAssetStatus())
                         .description(ar.getDescription())

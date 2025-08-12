@@ -147,8 +147,11 @@ public class ServiceServiceImpl implements ServiceService {
             servicePriceHistoryRepository.save(servicePriceHistory);
         }
 
+        String unit = getDefaultUnit(request.getServiceCalculation(), request.getServiceCategory(), request.getUnit());
+
         Service updated = serviceMapper.toServiceUpdate(request);
         updated.setId(existing.getId());
+        updated.setUnit(unit);
         updated.setCreatedAt(existing.getCreatedAt());
         updated.setUser(existing.getUser());
         updated.setUpdatedAt(Instant.now());

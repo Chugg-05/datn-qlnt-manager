@@ -128,6 +128,7 @@ public class RoomController {
                 .build();
     }
 
+    @Operation(summary = "Tạo phòng mới")
     @PostMapping
     public ApiResponse<RoomResponse> createRoom(@RequestBody @Valid RoomCreationRequest request) {
         return ApiResponse.<RoomResponse>builder()

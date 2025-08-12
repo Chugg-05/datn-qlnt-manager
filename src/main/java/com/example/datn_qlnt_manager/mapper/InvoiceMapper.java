@@ -56,6 +56,7 @@ public interface InvoiceMapper {
     default InvoiceItemResponse toItemResponse(InvoiceDetail detail) {
         ServiceCategory category = null;
         ServiceCalculation calculation = null;
+        String serviceRoomId = null;
         String unit = null;
 
         if (detail.getInvoiceItemType() == InvoiceItemType.TIEN_PHONG) {
@@ -64,6 +65,7 @@ public interface InvoiceMapper {
             unit = "phòng";
         } else if (detail.getServiceRoom() != null && detail.getServiceRoom().getService() != null) {
             var service = detail.getServiceRoom().getService();
+            serviceRoomId = detail.getServiceRoom().getId();
             category = service.getServiceCategory();
             calculation = service.getServiceCalculation();
             unit = service.getUnit();
@@ -74,6 +76,7 @@ public interface InvoiceMapper {
         return InvoiceItemResponse.builder()
                 .id(detail.getId())
                 .serviceName(detail.getServiceName())
+                .serviceRoomId(serviceRoomId)
                 .serviceCategory(category)
                 .serviceCalculation(calculation)
                 .oldIndex(detail.getOldIndex())

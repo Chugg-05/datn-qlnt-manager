@@ -140,4 +140,6 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
 
     @Query("SELECT m FROM Meter m WHERE m.service = :serviceRoom")
     Optional<Meter> findByServiceRoom(@Param("serviceRoom") ServiceRoom serviceRoom);
+
+    Optional<Meter> findByRoomIdAndServiceId(String roomId, String serviceId);
 }

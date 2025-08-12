@@ -20,19 +20,19 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
 
     List<Asset> findByNameAssetIgnoreCaseAndBuildingId(String nameAsset, String buildingId);
 
-    List<Asset> findByNameAssetIgnoreCaseAndIdNot(String nameAsset, String id);
+    List<Asset> findByNameAssetIgnoreCaseAndBuildingIdAndIdNot(String nameAsset, String buildingId, String id);
 
     @Query(
             """
-				SELECT a FROM Asset a
-				JOIN a.building b
-				WHERE a.building.id = :buildingId
-				AND (:name IS NULL OR a.nameAsset LIKE CONCAT('%', :name, '%'))
-				AND (:beLongTo IS NULL OR a.assetBeLongTo = :beLongTo)
-				AND (:assetType IS NULL OR a.assetType = :assetType)
-				AND (:assetStatus IS NULL OR a.assetStatus = :assetStatus)
-				AND a.assetStatus != 'HUY'
-			""")
+						SELECT a FROM Asset a
+						JOIN a.building b
+						WHERE a.building.id = :buildingId
+						AND (:name IS NULL OR a.nameAsset LIKE CONCAT('%', :name, '%'))
+						AND (:beLongTo IS NULL OR a.assetBeLongTo = :beLongTo)
+						AND (:assetType IS NULL OR a.assetType = :assetType)
+						AND (:assetStatus IS NULL OR a.assetStatus = :assetStatus)
+						AND a.assetStatus != 'HUY'
+					""")
     Page<Asset> findAllByFilterAndUserId(
             @Param("name") String nameAsset,
             @Param("assetType") AssetType assetType,
@@ -41,16 +41,25 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
             @Param("buildingId") String buildingId,
             Pageable pageable);
 
+    // hiển thị theo userId
     @Query(
             """
-				SELECT a FROM Asset a
-				JOIN a.building b
-				WHERE a.building.id = :buildingId
-				AND (:name IS NULL OR a.nameAsset LIKE CONCAT('%', :name, '%'))
-				AND (:beLongTo IS NULL OR a.assetBeLongTo = :beLongTo)
-				AND (:assetType IS NULL OR a.assetType = :assetType)
-				AND a.assetStatus = 'HUY'
-			""")
+						SELECT a FROM Asset a
+						WHERE a.building.id = :buildingId
+						AND a.assetStatus != 'HUY'
+					""")
+    List<Asset> findAssetsByBuildingId(@Param("buildingId") String buildingId);
+
+    @Query(
+            """
+						SELECT a FROM Asset a
+						JOIN a.building b
+						WHERE a.building.id = :buildingId
+						AND (:name IS NULL OR a.nameAsset LIKE CONCAT('%', :name, '%'))
+						AND (:beLongTo IS NULL OR a.assetBeLongTo = :beLongTo)
+						AND (:assetType IS NULL OR a.assetType = :assetType)
+						AND a.assetStatus = 'HUY'
+					""")
     Page<Asset> findAllByFilterAndUserIdAndCancel(
             @Param("name") String nameAsset,
             @Param("assetType") AssetType assetType,
@@ -59,31 +68,25 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
             @Param("buildingId") String buildingId,
             Pageable pageable);
 
-    // hiển thị theo userId
-    @Query("""
-				SELECT a FROM Asset a
-				WHERE a.building.id = :buildingId
-			""")
-    List<Asset> findAssetsByBuildingId(@Param("buildingId") String buildingId);
+    @Query(
+            """
+						SELECT new com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic(
+							COUNT(a),
+							SUM(CASE WHEN a.assetStatus = 'HOAT_DONG' THEN 1 ELSE 0 END),
+							SUM(CASE WHEN a.assetStatus = 'HU_HONG' THEN 1 ELSE 0 END),
+							SUM(CASE WHEN a.assetStatus = 'CAN_BAO_TRI' THEN 1 ELSE 0 END),
+							SUM(CASE WHEN a.assetStatus = 'THAT_LAC' THEN 1 ELSE 0 END),
+							SUM(CASE WHEN a.assetStatus = 'KHONG_SU_DUNG' THEN 1 ELSE 0 END)
+						)
+						FROM Asset a
+						WHERE a.building.id = :buildingId
+					""")
+    AssetStatusStatistic getAssetStatisticsByBuildingId(@Param("buildingId") String buildingId);
 
     @Query(
             """
-	SELECT new com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic(
-		COUNT(a),
-		SUM(CASE WHEN a.assetStatus = 'HOAT_DONG' THEN 1 ELSE 0 END),
-		SUM(CASE WHEN a.assetStatus = 'HU_HONG' THEN 1 ELSE 0 END),
-		SUM(CASE WHEN a.assetStatus = 'CAN_BAO_TRI' THEN 1 ELSE 0 END),
-		SUM(CASE WHEN a.assetStatus = 'THAT_LAC' THEN 1 ELSE 0 END),
-		SUM(CASE WHEN a.assetStatus = 'KHONG_SU_DUNG' THEN 1 ELSE 0 END)
-	)
-	FROM Asset a
-	WHERE a.building.id = :buildingId
-""")
-    AssetStatusStatistic getAssetStatisticsByBuildingId(@Param("buildingId") String buildingId);
-
-    @Query("""
-	SELECT a FROM Asset a
-	WHERE a.assetStatus != com.example.datn_qlnt_manager.common.AssetStatus.HUY
-""")
+				SELECT a FROM Asset a
+				WHERE a.assetStatus != com.example.datn_qlnt_manager.common.AssetStatus.HUY
+			""")
     List<Asset> findAllAssets();
 }

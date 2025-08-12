@@ -384,7 +384,7 @@ public class ContractServiceImpl implements ContractService {
         Contract contract = contractRepository
                 .findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-        contract.setStatus(ContractStatus.CHO_KICH_HOAT);
+        contract.setStatus(ContractStatus.HIEU_LUC);
         return null;
     }
 }

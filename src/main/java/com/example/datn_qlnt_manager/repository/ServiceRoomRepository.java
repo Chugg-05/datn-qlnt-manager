@@ -117,5 +117,7 @@ public interface ServiceRoomRepository extends JpaRepository<ServiceRoom, String
 
     boolean existsByRoomAndService(Room room, Service service);
 
+    List<ServiceRoom> findByRoomId(String roomId);
+
     List<ServiceRoom> findByRoomIdAndServiceRoomStatus(String roomId, ServiceRoomStatus serviceRoomStatus);
 }

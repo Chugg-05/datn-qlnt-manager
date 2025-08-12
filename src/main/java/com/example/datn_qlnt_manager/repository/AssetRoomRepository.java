@@ -24,7 +24,11 @@ public interface AssetRoomRepository extends JpaRepository<AssetRoom, String> {
 				SELECT new com.example.datn_qlnt_manager.dto.projection.AssetRoomView(
 					r.id,
 					r.roomCode,
-					SIZE(r.assetRooms),
+					(
+						SELECT COUNT(DISTINCT ar.asset.id)
+						FROM AssetRoom ar
+						WHERE ar.room.id = r.id
+					),
 					r.roomType,
 					r.status,
 					r.description )
@@ -70,6 +74,9 @@ public interface AssetRoomRepository extends JpaRepository<AssetRoom, String> {
 		WHERE ar.room.floor.building.id = :buildingId
 	""")
     AssetStatusStatistic getAssetStatisticsByBuildingId(@Param("buildingId") String buildingId);
+
+    @Query("SELECT SUM(ar.quantity) FROM AssetRoom ar WHERE ar.asset.id = :assetId")
+    Integer sumQuantityByAssetId(@Param("assetId") String assetId);
 
     boolean existsByRoomAndAsset(Room room, Asset asset);
 }

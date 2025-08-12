@@ -18,7 +18,6 @@ import com.example.datn_qlnt_manager.dto.filter.InvoiceFilter;
 import com.example.datn_qlnt_manager.dto.projection.InvoiceDetailView;
 import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceBuildingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceFloorCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceDetailsResponse;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceItemResponse;
@@ -30,6 +29,7 @@ import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.InvoiceDetailsMapper;
 import com.example.datn_qlnt_manager.mapper.InvoiceMapper;
 import com.example.datn_qlnt_manager.repository.*;
+import com.example.datn_qlnt_manager.service.InvoiceChargeCalculatorService;
 import com.example.datn_qlnt_manager.service.InvoiceService;
 import com.example.datn_qlnt_manager.service.UserService;
 
@@ -49,11 +49,13 @@ public class InvoiceServiceImpl implements InvoiceService {
     MeterReadingRepository meterReadingRepository;
     ServiceRoomRepository serviceRoomRepository;
     ContractRepository contractRepository;
+    BuildingRepository buildingRepository;
     UserService userService;
     CodeGeneratorService codeGeneratorService;
     InvoiceMapper invoiceMapper;
     InvoiceDetailsMapper invoiceDetailsMapper;
     PaymentReceiptRepository paymentReceiptRepository;
+    InvoiceChargeCalculatorService invoiceChargeCalculatorService;
 
     @Override
     public PaginatedResponse<InvoiceResponse> getPageAndSearchAndFilterByUserId(
@@ -108,72 +110,275 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .map(invoiceMapper::toItemResponse)
                 .toList();
 
-        InvoiceDetailsResponse response = invoiceDetailsMapper.toResponse(detailView, items);
-        response.setTotalAmount(calculateTotalAmount(items));
-        return response;
+        return invoiceDetailsMapper.toResponse(detailView, items);
     }
 
     @Transactional
     @Override
-    public InvoiceResponse createInvoiceForContract(InvoiceCreationRequest request) {
-        Contract contract = getValidContract(request.getContractId());
+    public InvoiceResponse generateInvoiceForRoom(InvoiceCreationRequest request) {
+        Contract contract = contractRepository
+                .findById(request.getContractId())
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        int month = getMonthOrDefault(request.getMonth());
-        int year = getYearOrDefault(request.getYear());
-        LocalDate paymentDueDate = getPaymentDueDateOrDefault(request.getPaymentDueDate(), month, year);
+        int month =
+                Optional.ofNullable(request.getMonth()).orElse(LocalDate.now().getMonthValue());
+        int year = Optional.ofNullable(request.getYear()).orElse(LocalDate.now().getYear());
 
-        validateContractForInvoice(contract, month, year);
-        validatePaymentDueDate(paymentDueDate, year, month);
+        if (!isContractActiveDuring(contract, month, year)) {
+            throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
+        }
 
-        List<InvoiceItemResponse> items = getInvoiceItemsByContext(contract, contract.getRoom(), month, year);
-        Invoice invoice = buildGenericInvoice(
-                contract, month, year, items, request.getNote(), paymentDueDate, InvoiceType.HANG_THANG);
+        InvoiceType invoiceType = resolveInvoiceType(contract, month, year);
+        LocalDate paymentDueDate = resolvePaymentDueDate(request, invoiceType);
 
-        return invoiceMapper.toInvoiceResponse(invoiceRepository.save(invoice));
+        List<InvoiceItemResponse> invoiceItems = invoiceChargeCalculatorService.generateInvoiceItems(
+                contract, month, year, invoiceType, Collections.emptyList());
+
+        BigDecimal totalAmount = invoiceItems.stream()
+                .map(InvoiceItemResponse::getAmount)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        InvoiceStatus status = totalAmount.compareTo(BigDecimal.ZERO) == 0
+                ? InvoiceStatus.DA_THANH_TOAN
+                : InvoiceStatus.CHUA_THANH_TOAN;
+
+        String invoiceCode = codeGeneratorService.generateInvoiceCode(contract.getRoom(), month, year);
+
+        String note = StringUtils.hasText(request.getNote())
+                ? request.getNote()
+                : "Hóa đơn tháng " + month + " năm " + year + " cho phòng "
+                        + contract.getRoom().getRoomCode();
+
+        Invoice invoice = Invoice.builder()
+                .contract(contract)
+                .invoiceCode(invoiceCode)
+                .totalAmount(totalAmount)
+                .month(month)
+                .year(year)
+                .paymentDueDate(paymentDueDate)
+                .invoiceStatus(status)
+                .invoiceType(invoiceType)
+                .note(note)
+                .build();
+
+        invoice.setCreatedAt(Instant.now());
+        invoice.setUpdatedAt(Instant.now());
+
+        invoiceRepository.save(invoice);
+
+        List<InvoiceDetail> invoiceDetails = invoiceItems.stream()
+                .map(item -> mapToInvoiceDetail(item, invoice))
+                .collect(Collectors.toList());
+
+        invoiceDetailsRepository.saveAll(invoiceDetails);
+        invoice.setDetails(invoiceDetails);
+
+        return invoiceMapper.toInvoiceResponse(invoice);
     }
 
     @Transactional
     @Override
-    public List<InvoiceResponse> createInvoicesForBuilding(InvoiceBuildingCreationRequest request) {
-        return createInvoicesByContracts(
-                getValidContractsByBuilding(request.getBuildingId(), request.getMonth(), request.getYear()),
-                request.getMonth(),
-                request.getYear(),
-                request.getPaymentDueDate(),
-                request.getNote());
+    public List<InvoiceResponse> generateInvoicesForBuilding(InvoiceBuildingCreationRequest request) {
+        Building building = buildingRepository
+                .findById(request.getBuildingId())
+                .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+
+        // Lấy month, year với giá trị mặc định nếu null
+        int month =
+                Optional.ofNullable(request.getMonth()).orElse(LocalDate.now().getMonthValue());
+        int year = Optional.ofNullable(request.getYear()).orElse(LocalDate.now().getYear());
+
+        YearMonth ym = YearMonth.of(year, month);
+        LocalDateTime startOfMonth = ym.atDay(1).atStartOfDay();
+        LocalDateTime endOfMonth = ym.atEndOfMonth().atTime(LocalTime.MAX);
+
+        List<Contract> activeContracts = contractRepository.findActiveContractsByBuildingAndMonthYear(
+                building.getId(), startOfMonth, endOfMonth);
+
+        LocalDate today = LocalDate.now();
+        LocalDate paymentDueDate =
+                Optional.ofNullable(request.getPaymentDueDate()).orElse(LocalDate.of(year, month, 5));
+
+        // Valid hạn thanh toán
+        YearMonth thisMonth = YearMonth.from(today);
+        YearMonth nextMonth = thisMonth.plusMonths(1);
+
+        if (paymentDueDate.isBefore(today)) {
+            throw new AppException(ErrorCode.PAYMENT_DUE_DATE_IN_PAST);
+        }
+        if (YearMonth.from(paymentDueDate).isAfter(nextMonth)) {
+            throw new AppException(ErrorCode.PAYMENT_DUE_DATE_TOO_FAR);
+        }
+
+        String note =
+                StringUtils.hasText(request.getNote()) ? request.getNote() : "Hóa đơn tháng " + month + " năm " + year;
+
+        if (activeContracts.isEmpty()) {
+            throw new AppException(ErrorCode.NO_ACTIVE_CONTRACT_FOUND);
+        }
+
+        List<InvoiceResponse> responses = new ArrayList<>();
+
+        for (Contract contract : activeContracts) {
+            // kiểm tra phòng có dịch vụ tính theo số và đã ghi chỉ số tháng này chưa
+            if (!hasAllMeterReadingsForMonth(contract, month, year)) {
+                continue; // chưa có thì bỏ qua phòng này
+            }
+
+            InvoiceCreationRequest roomRequest = InvoiceCreationRequest.builder()
+                    .contractId(contract.getId())
+                    .month(month)
+                    .year(year)
+                    .paymentDueDate(paymentDueDate)
+                    .note(note)
+                    .build();
+
+            try {
+                InvoiceResponse invoiceResponse = generateInvoiceForRoom(roomRequest);
+                responses.add(invoiceResponse);
+            } catch (AppException ex) {
+                log.warn(
+                        "Không thể tạo hóa đơn cho phòng {}: {}",
+                        contract.getRoom().getRoomCode(),
+                        ex.getMessage());
+            }
+        }
+
+        return responses;
     }
 
-    @Transactional
-    @Override
-    public List<InvoiceResponse> createInvoicesForFloor(InvoiceFloorCreationRequest request) {
-        return createInvoicesByContracts(
-                getValidContractsByFloor(request.getFloorId(), request.getMonth(), request.getYear()),
-                request.getMonth(),
-                request.getYear(),
-                request.getPaymentDueDate(),
-                request.getNote());
+    private InvoiceType resolveInvoiceType(Contract contract, int month, int year) {
+        boolean isLastMonth = isEndMonth(contract, month, year);
+
+        boolean monthlyInvoiceExists = invoiceRepository.existsByContractIdAndMonthAndYearAndInvoiceType(
+                contract.getId(), month, year, InvoiceType.HANG_THANG);
+
+        boolean finalInvoiceExists = invoiceRepository.existsByContractIdAndMonthAndYearAndInvoiceType(
+                contract.getId(), month, year, InvoiceType.CUOI_CUNG);
+
+        if (isLastMonth) {
+            if (!monthlyInvoiceExists) {
+                return InvoiceType.HANG_THANG;
+            } else {
+                if (finalInvoiceExists) {
+                    throw new AppException(ErrorCode.INVOICE_ALREADY_EXISTS);
+                }
+                return InvoiceType.CUOI_CUNG;
+            }
+        } else {
+            if (monthlyInvoiceExists) {
+                throw new AppException(ErrorCode.INVOICE_ALREADY_EXISTS);
+            }
+            return InvoiceType.HANG_THANG;
+        }
     }
 
-    @Transactional
-    @Override
-    public InvoiceResponse createEndOfMonthInvoice(InvoiceCreationRequest request) {
-        Contract contract = getValidContract(request.getContractId());
-        int month = getMonthOrDefault(request.getMonth());
-        int year = getYearOrDefault(request.getYear());
+    private InvoiceDetail mapToInvoiceDetail(InvoiceItemResponse item, Invoice invoice) {
 
-        validateEndOfContractMonth(contract, month, year);
-        ensureMainInvoiceExists(request.getContractId(), month, year);
-        ensureEndInvoiceNotExists(request.getContractId(), month, year);
+        ServiceRoom serviceRoom = null;
+        if (item.getServiceRoomId() != null) {
+            serviceRoom = serviceRoomRepository
+                    .findById(item.getServiceRoomId())
+                    .orElseThrow(() -> new AppException(ErrorCode.SERVICE_ROOM_NOT_FOUND));
+        }
 
-        LocalDate paymentDueDate = Optional.ofNullable(request.getPaymentDueDate())
-                .orElse(LocalDate.of(year, month, 1).with(TemporalAdjusters.lastDayOfMonth()));
-        validatePaymentDueDate(paymentDueDate, year, month);
+        InvoiceDetail detail = InvoiceDetail.builder()
+                .invoice(invoice)
+                .invoiceItemType(resolveInvoiceItemType(item.getServiceCategory()))
+                .serviceRoom(serviceRoom)
+                .serviceName(item.getServiceName())
+                .oldIndex(item.getOldIndex())
+                .newIndex(item.getNewIndex())
+                .quantity(item.getQuantity())
+                .unitPrice(item.getUnitPrice())
+                .amount(item.getAmount())
+                .description(item.getDescription())
+                .build();
 
-        List<InvoiceItemResponse> items = buildElectricWaterCharges(contract.getRoom(), contract, month, year);
-        Invoice invoice = buildGenericInvoice(
-                contract, month, year, items, request.getNote(), paymentDueDate, InvoiceType.CUOI_CUNG);
+        detail.setCreatedAt(Instant.now());
+        detail.setUpdatedAt(Instant.now());
 
-        return invoiceMapper.toInvoiceResponse(invoiceRepository.save(invoice));
+        return detail;
+    }
+
+    private InvoiceItemType resolveInvoiceItemType(ServiceCategory category) {
+        return switch (category) {
+            case DIEN -> InvoiceItemType.DIEN;
+            case NUOC -> InvoiceItemType.NUOC;
+            case TIEN_PHONG -> InvoiceItemType.TIEN_PHONG;
+            case DEN_BU -> InvoiceItemType.DEN_BU;
+            default -> InvoiceItemType.DICH_VU;
+        };
+    }
+
+    // kiểm tra xem hợp đồng có dịch vụ tính theo số và đã có chỉ số tháng này chưa
+    private boolean hasAllMeterReadingsForMonth(Contract contract, int month, int year) {
+        List<ServiceRoom> serviceRooms =
+                serviceRoomRepository.findByRoomId(contract.getRoom().getId());
+
+        for (ServiceRoom sr : serviceRooms) {
+            if (sr.getService().getServiceCalculation() == ServiceCalculation.TINH_THEO_SO) {
+                Optional<Meter> meterOpt = meterRepository.findByRoomIdAndServiceId(
+                        contract.getRoom().getId(), sr.getService().getId());
+                if (meterOpt.isEmpty()) {
+                    return false;
+                }
+
+                Optional<MeterReading> readingOpt = meterReadingRepository.findByMeterIdAndMonthAndYear(
+                        meterOpt.get().getId(), month, year);
+                if (readingOpt.isEmpty()) {
+                    return false; // chưa ghi chỉ số tháng này
+                }
+            }
+        }
+        return true; // tất cả dịch vụ tính theo số đã có chỉ số
+    }
+
+    private LocalDate resolvePaymentDueDate(InvoiceCreationRequest request, InvoiceType invoiceType) {
+        LocalDate now = LocalDate.now();
+
+        LocalDate dueDate;
+        if (request.getPaymentDueDate() != null) {
+            dueDate = request.getPaymentDueDate();
+        } else {
+            if (invoiceType == InvoiceType.HANG_THANG) {
+                dueDate = LocalDate.of(request.getYear(), request.getMonth(), 5);
+            } else { // CUOI_KY
+                dueDate = now;
+            }
+        }
+
+        if (dueDate.isBefore(now)) {
+            throw new AppException(ErrorCode.PAYMENT_DUE_DATE_IN_PAST);
+        }
+
+        YearMonth maxAllowed = YearMonth.from(now).plusMonths(1);
+        if (YearMonth.from(dueDate).isAfter(maxAllowed)) {
+            throw new AppException(ErrorCode.PAYMENT_DUE_DATE_TOO_FAR);
+        }
+
+        return dueDate;
+    }
+
+    private boolean isContractActiveDuring(Contract contract, int month, int year) {
+        if (contract.getStartDate() == null) return false;
+
+        LocalDate firstDay = LocalDate.of(year, month, 1);
+        LocalDate lastDay = firstDay.withDayOfMonth(firstDay.lengthOfMonth());
+
+        LocalDate start = contract.getStartDate().toLocalDate();
+        LocalDate end = contract.getEndDate() != null ? contract.getEndDate().toLocalDate() : null;
+
+        boolean startedBeforeEndOfMonth = !start.isAfter(lastDay);
+        boolean notEndedBeforeStartOfMonth = end == null || !end.isBefore(firstDay);
+
+        return startedBeforeEndOfMonth && notEndedBeforeStartOfMonth;
+    }
+
+    private boolean isEndMonth(Contract contract, int month, int year) {
+        if (contract.getEndDate() == null) return false;
+        return contract.getEndDate().getYear() == year && contract.getEndDate().getMonthValue() == month;
     }
 
     @Transactional
@@ -300,7 +505,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     public InvoiceResponse restoreInvoiceById(String invoiceId) {
         Invoice invoice =
                 invoiceRepository.findById(invoiceId).orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
-        invoice.setInvoiceStatus(InvoiceStatus.KHOI_PHUC);
+        invoice.setInvoiceStatus(InvoiceStatus.DA_THANH_TOAN);
         return invoiceMapper.toInvoiceResponse(invoiceRepository.save(invoice));
     }
 
@@ -585,13 +790,6 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .build();
     }
 
-    private BigDecimal calculateTotalAmount(List<InvoiceItemResponse> items) {
-        return items.stream()
-                .map(InvoiceItemResponse::getAmount)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
     private PaginatedResponse<InvoiceResponse> buildPaginatedInvoiceResponse(Page<Invoice> paging, int page, int size) {
 
         List<InvoiceResponse> invoices = paging.getContent().stream()
@@ -614,22 +812,6 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .build();
     }
 
-    private void validateContractForInvoice(Contract contract, int month, int year) {
-        LocalDate startOfMonth = LocalDate.of(year, month, 1);
-        LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
-
-        LocalDate contractStartDate = contract.getStartDate().toLocalDate();
-        LocalDate contractEndDate = contract.getEndDate().toLocalDate();
-
-        if (contractStartDate.isAfter(endOfMonth) || contractEndDate.isBefore(startOfMonth)) {
-            throw new AppException(ErrorCode.CONTRACT_EXPIRED);
-        }
-
-        if (invoiceRepository.existsByContractIdAndMonthAndYear(contract.getId(), month, year)) {
-            throw new AppException(ErrorCode.INVOICE_ALREADY_EXISTS);
-        }
-    }
-
     private void validatePaymentDueDate(LocalDate dueDate, int year, int month) {
         LocalDate startOfMonth = LocalDate.of(year, month, 1);
         LocalDate endOfNextMonth = startOfMonth.plusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
@@ -646,62 +828,11 @@ public class InvoiceServiceImpl implements InvoiceService {
                         || service.getServiceCategory() == ServiceCategory.NUOC);
     }
 
-    private Contract getValidContract(String contractId) {
-        return contractRepository
-                .findById(contractId)
-                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-    }
-
-    private int getMonthOrDefault(Integer month) {
-        return Optional.ofNullable(month).orElse(LocalDate.now().getMonthValue());
-    }
-
-    private int getYearOrDefault(Integer year) {
-        return Optional.ofNullable(year).orElse(LocalDate.now().getYear());
-    }
-
-    private LocalDate getPaymentDueDateOrDefault(LocalDate due, int month, int year) {
-        return Optional.ofNullable(due).orElse(LocalDate.of(year, month, 5));
-    }
-
-    private void validateEndOfContractMonth(Contract contract, int month, int year) {
-        LocalDate contractEnd = contract.getEndDate().toLocalDate();
-        if (contractEnd.getMonthValue() != month || contractEnd.getYear() != year) {
-            throw new AppException(ErrorCode.NOT_LAST_MONTH_OF_CONTRACT);
-        }
-    }
-
-    private void ensureMainInvoiceExists(String contractId, int month, int year) {
-        if (!invoiceRepository.existsByContractIdAndMonthAndYearAndInvoiceType(
-                contractId, month, year, InvoiceType.HANG_THANG)) {
-            throw new AppException(ErrorCode.MISSING_MAIN_INVOICE);
-        }
-    }
-
-    private void ensureEndInvoiceNotExists(String contractId, int month, int year) {
-        if (invoiceRepository.existsByContractIdAndMonthAndYearAndInvoiceType(
-                contractId, month, year, InvoiceType.CUOI_CUNG)) {
-            throw new AppException(ErrorCode.DUPLICATE_END_INVOICE);
-        }
-    }
-
     private String findServiceIdByItem(Map<String, ServiceRoom> serviceRoomMap, String serviceName) {
         return serviceRoomMap.values().stream()
                 .filter(sr -> sr.getService().getName().equals(serviceName))
                 .map(sr -> sr.getService().getId())
                 .findFirst()
                 .orElse(null);
-    }
-
-    private List<Contract> getValidContractsByBuilding(String buildingId, Integer month, Integer year) {
-        return getValidContracts(month, year).stream()
-                .filter(c -> c.getRoom().getFloor().getBuilding().getId().equals(buildingId))
-                .toList();
-    }
-
-    private List<Contract> getValidContractsByFloor(String floorId, Integer month, Integer year) {
-        return getValidContracts(month, year).stream()
-                .filter(c -> c.getRoom().getFloor().getId().equals(floorId))
-                .toList();
     }
 }

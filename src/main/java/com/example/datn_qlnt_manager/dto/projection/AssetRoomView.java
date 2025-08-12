@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 public class AssetRoomView {
     String id;
     String roomCode;
-    int totalAssets;
+    long totalAssets;
     RoomType roomType;
     RoomStatus status;
     String description;

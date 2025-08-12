@@ -20,7 +20,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @Table(name = "phong")
-@FieldDefaults(level = AccessLevel.PRIVATE) // khong can ghi all la private
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Room extends AbstractEntity {
 
     @Column(name = "ma_phong", nullable = false, length = 20)
