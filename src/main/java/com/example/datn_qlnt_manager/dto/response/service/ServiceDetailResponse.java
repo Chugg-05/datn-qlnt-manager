@@ -1,12 +1,13 @@
 package com.example.datn_qlnt_manager.dto.response.service;
 
-import com.example.datn_qlnt_manager.common.ServiceStatus;
-import com.example.datn_qlnt_manager.dto.response.room.RoomBasicResponse;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.math.BigDecimal;
 import java.util.List;
+
+import com.example.datn_qlnt_manager.common.ServiceStatus;
+import com.example.datn_qlnt_manager.dto.response.room.RoomBasicResponse;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder

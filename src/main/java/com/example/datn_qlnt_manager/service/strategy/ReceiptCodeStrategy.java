@@ -3,7 +3,6 @@ package com.example.datn_qlnt_manager.service.strategy;
 import java.time.YearMonth;
 import java.util.Random;
 
-import com.example.datn_qlnt_manager.entity.Invoice;
 import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;

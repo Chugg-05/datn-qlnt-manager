@@ -39,4 +39,6 @@ public interface BuildingService {
     List<BuildingOccupancyResponse> calculateOccupancyByUser();
 
     List<IdAndName> getAllBuildingByUserId();
+
+    BuildingResponse restoreBuildingById(String buildingId);
 }

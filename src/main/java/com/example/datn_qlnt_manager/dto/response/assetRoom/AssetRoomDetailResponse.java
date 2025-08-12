@@ -1,12 +1,13 @@
 package com.example.datn_qlnt_manager.dto.response.assetRoom;
 
+import java.util.List;
+
 import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.common.RoomType;
 import com.example.datn_qlnt_manager.dto.response.asset.AssetLittleResponse;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @Builder

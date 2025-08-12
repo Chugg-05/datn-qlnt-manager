@@ -11,7 +11,6 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.InvoiceFilter;
 import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceBuildingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceFloorCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceDetailsResponse;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceResponse;
@@ -171,13 +170,21 @@ public class InvoiceController {
             @ModelAttribute InvoiceFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
-        PaginatedResponse<InvoiceResponse> result =
-                invoiceService.getInvoicesForTenant(filter, page, size);
+        PaginatedResponse<InvoiceResponse> result = invoiceService.getInvoicesForTenant(filter, page, size);
 
         return ApiResponse.<List<InvoiceResponse>>builder()
                 .message("Get invoices for tenant successfully")
                 .data(result.getData())
                 .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Khôi phục hóa đơn đã xóa")
+    @PutMapping("/restore/{invoiceId}")
+    public ApiResponse<InvoiceResponse> restoreInvoiceById(@PathVariable("invoiceId") String invoiceId) {
+        return ApiResponse.<InvoiceResponse>builder()
+                .data(invoiceService.restoreInvoiceById(invoiceId))
+                .message("success")
                 .build();
     }
 }

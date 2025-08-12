@@ -154,4 +154,13 @@ public class BuildingController {
                 .message("Get occupancy rate successfully")
                 .build();
     }
+
+    @Operation(summary = "Khôi phục tòa nhà đã xóa")
+    @PutMapping("/restore/{buildingId}")
+    public ApiResponse<BuildingResponse> restoreBuildingById(@PathVariable("buildingId") String buildingId) {
+        return ApiResponse.<BuildingResponse>builder()
+                .data(buildingService.restoreBuildingById(buildingId))
+                .message("success")
+                .build();
+    }
 }

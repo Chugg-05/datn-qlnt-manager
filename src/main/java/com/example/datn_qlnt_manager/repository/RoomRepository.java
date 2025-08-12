@@ -3,8 +3,6 @@ package com.example.datn_qlnt_manager.repository;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse;
-import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
+import com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse;
+import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
 import com.example.datn_qlnt_manager.entity.Room;
 
 @Repository
@@ -141,86 +141,86 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 
     @Query(
             """
-                    	SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(
-                    		r.id,
-                    		CONCAT(r.roomCode, ' - ', f.nameFloor, ' - ', b.buildingName)
-                    	)
-                    	FROM Room r
-                    	LEFT JOIN r.floor f
-                    	LEFT JOIN f.building b
-                    	WHERE r.status != 'HUY_HOAT_DONG' AND b.user.id = :userId
-                    				AND b.id =:buildingId
-                    """)
+						SELECT new com.example.datn_qlnt_manager.dto.response.IdAndName(
+							r.id,
+							CONCAT(r.roomCode, ' - ', f.nameFloor, ' - ', b.buildingName)
+						)
+						FROM Room r
+						LEFT JOIN r.floor f
+						LEFT JOIN f.building b
+						WHERE r.status != 'HUY_HOAT_DONG' AND b.user.id = :userId
+									AND b.id =:buildingId
+					""")
     List<IdAndName> getRoomInfoByUserId(@Param("userId") String userId, @Param("buildingId") String buildingId);
 
-	@Query("""
-    SELECT DISTINCT c.room FROM Contract c
-    JOIN c.tenants t
-    WHERE t.id = :tenantId
+    @Query("""
+	SELECT DISTINCT c.room FROM Contract c
+	JOIN c.tenants t
+	WHERE t.id = :tenantId
 """)
-	List<Room> findRoomsByTenantId(@Param("tenantId") String tenantId);
+    List<Room> findRoomsByTenantId(@Param("tenantId") String tenantId);
 
-	List<Room> findByFloorBuildingId(String buildingId);
+    List<Room> findByFloorBuildingId(String buildingId);
 
-	@Query("""
-    SELECT r FROM Room r
-    JOIN r.floor f
-    JOIN f.building b
-    WHERE
-        r.floor.building.user.id = :userId
-        AND EXISTS (
-            SELECT c FROM Contract c
-            WHERE c.room = r AND c.status = 'HIEU_LUC'
-        )
-        AND NOT EXISTS (
-            SELECT sr FROM ServiceRoom sr
-            WHERE sr.room = r
-        )
-        AND (:buildingId IS NULL OR b.id = :buildingId)
+    @Query(
+            """
+	SELECT r FROM Room r
+	JOIN r.floor f
+	JOIN f.building b
+	WHERE
+		r.floor.building.user.id = :userId
+		AND EXISTS (
+			SELECT c FROM Contract c
+			WHERE c.room = r AND c.status = 'HIEU_LUC'
+		)
+		AND NOT EXISTS (
+			SELECT sr FROM ServiceRoom sr
+			WHERE sr.room = r
+		)
+		AND (:buildingId IS NULL OR b.id = :buildingId)
 """)
-	Page<Room> findActiveRoomsWithoutServiceRoomByUser(
-			@Param("userId") String userId,
-			@Param("buildingId") String buildingId,
-			Pageable pageable);
+    Page<Room> findActiveRoomsWithoutServiceRoomByUser(
+            @Param("userId") String userId, @Param("buildingId") String buildingId, Pageable pageable);
 
-	@Query("""
-        SELECT new com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse(
-            b.id, COUNT(r)
-        )
-        FROM Room r
-        JOIN r.floor f
-        JOIN f.building b
-        WHERE r.floor.building.user.id = :userId
-          AND EXISTS (
-              SELECT c FROM Contract c
-              WHERE c.room = r AND c.status = 'HIEU_LUC'
-          )
-          AND NOT EXISTS (
-              SELECT sr FROM ServiceRoom sr
-              WHERE sr.room = r
-          )
-          AND (:buildingId IS NULL OR b.id = :buildingId)
-        GROUP BY b.id
-    """)
-	List<RoomNoServiceStatisticResponse> countRoomsWithoutServiceByUser(
-			@Param("userId") String userId,
-			@Param("buildingId") String buildingId
-	);
+    @Query(
+            """
+		SELECT new com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse(
+			b.id, COUNT(r)
+		)
+		FROM Room r
+		JOIN r.floor f
+		JOIN f.building b
+		WHERE r.floor.building.user.id = :userId
+		AND EXISTS (
+			SELECT c FROM Contract c
+			WHERE c.room = r AND c.status = 'HIEU_LUC'
+		)
+		AND NOT EXISTS (
+			SELECT sr FROM ServiceRoom sr
+			WHERE sr.room = r
+		)
+		AND (:buildingId IS NULL OR b.id = :buildingId)
+		GROUP BY b.id
+	""")
+    List<RoomNoServiceStatisticResponse> countRoomsWithoutServiceByUser(
+            @Param("userId") String userId, @Param("buildingId") String buildingId);
 
-	@Query("""
-    	SELECT COUNT(r)
-    	FROM Room r
-    	JOIN r.floor f
-    	JOIN f.building b
-    	WHERE b.user.id = :userId
-    	AND r.status = 'TRONG'
-     	AND r.id NOT IN (
-        	SELECT c.room.id FROM Contract c
-    )
+    @Query(
+            """
+		SELECT COUNT(r)
+		FROM Room r
+		JOIN r.floor f
+		JOIN f.building b
+		WHERE b.user.id = :userId
+		AND r.status = 'TRONG'
+		AND r.id NOT IN (
+			SELECT c.room.id FROM Contract c
+	)
 """)
-	long statisticRoomsWithoutContract(@Param("userId") String userId);
+    long statisticRoomsWithoutContract(@Param("userId") String userId);
 
-	@Query("""
+    @Query(
+            """
 		SELECT r FROM Room r
 		JOIN r.floor f
 		JOIN f.building b
@@ -229,15 +229,13 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 		AND (r.status != 'HUY_HOAT_DONG')
 		AND r.id NOT IN (
 			SELECT ar.room.id FROM AssetRoom ar
-    	)
+		)
 """)
-	Page<Room> findRoomsWithoutAssetsByUserId(
-			@Param("userId") String userId,
-			@Param("buildingId") String buildingId,
-			Pageable pageable
-	);
+    Page<Room> findRoomsWithoutAssetsByUserId(
+            @Param("userId") String userId, @Param("buildingId") String buildingId, Pageable pageable);
 
-	@Query("""
+    @Query(
+            """
 		SELECT COUNT(r) FROM Room r
 		JOIN r.floor f
 		JOIN f.building b
@@ -248,31 +246,30 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 			SELECT ar.room.id FROM AssetRoom ar
 			)
 """)
-	long statisticRoomWithoutAssets(
-			@Param("userId") String userId,
-			@Param("buildingId") String buildingId
-			);
-         
-	@Query("""
-    SELECT new com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse(
-        b.buildingName, b.address, owner.fullName, owner.phoneNumber,
-        r.roomCode, r.acreage, r.maximumPeople, r.roomType, r.status, r.description,
-        ctr.contractCode, ctr.numberOfPeople,
-        rep.fullName, rep.phoneNumber,rep.dob,rep.identityCardNumber,
-        ctr.deposit, ctr.roomPrice, ctr.status, ctr.startDate, ctr.endDate,
-        CAST((SELECT COUNT(DISTINCT t.id) FROM Contract c1 JOIN c1.tenants t WHERE c1 = ctr) AS long),
-        CAST((SELECT COUNT(ar.id) FROM AssetRoom ar WHERE ar.room = r) AS long),
-        CAST((SELECT COUNT(DISTINCT s.id) FROM Contract c2 JOIN c2.services s WHERE c2 = ctr) AS long),
-        CAST((SELECT COUNT(DISTINCT v.id) FROM Contract c3 JOIN c3.vehicles v WHERE c3 = ctr) AS long)
-    )
-    FROM Room r
-    JOIN r.floor f
-    JOIN f.building b
-    JOIN b.user owner
-    JOIN Contract ctr ON ctr.room = r AND ctr.status = com.example.datn_qlnt_manager.common.ContractStatus.HIEU_LUC
-    JOIN ctr.tenants tenant
-    JOIN ctr.tenants rep ON rep.isRepresentative = true
-    WHERE r.id = :roomId AND tenant.user.id = :userId
+    long statisticRoomWithoutAssets(@Param("userId") String userId, @Param("buildingId") String buildingId);
+
+    @Query(
+            """
+	SELECT new com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse(
+		b.buildingName, b.address, owner.fullName, owner.phoneNumber,
+		r.roomCode, r.acreage, r.maximumPeople, r.roomType, r.status, r.description,
+		ctr.contractCode, ctr.numberOfPeople,
+		rep.fullName, rep.phoneNumber,rep.dob,rep.identityCardNumber,
+		ctr.deposit, ctr.roomPrice, ctr.status, ctr.startDate, ctr.endDate,
+		CAST((SELECT COUNT(DISTINCT t.id) FROM Contract c1 JOIN c1.tenants t WHERE c1 = ctr) AS long),
+		CAST((SELECT COUNT(ar.id) FROM AssetRoom ar WHERE ar.room = r) AS long),
+		CAST((SELECT COUNT(DISTINCT s.id) FROM Contract c2 JOIN c2.services s WHERE c2 = ctr) AS long),
+		CAST((SELECT COUNT(DISTINCT v.id) FROM Contract c3 JOIN c3.vehicles v WHERE c3 = ctr) AS long)
+	)
+	FROM Room r
+	JOIN r.floor f
+	JOIN f.building b
+	JOIN b.user owner
+	JOIN Contract ctr ON ctr.room = r AND ctr.status = com.example.datn_qlnt_manager.common.ContractStatus.HIEU_LUC
+	JOIN ctr.tenants tenant
+	JOIN ctr.tenants rep ON rep.isRepresentative = true
+	WHERE r.id = :roomId AND tenant.user.id = :userId
 """)
-	Optional<RoomDetailsResponse> findRoomDetailsForTenant(@Param("roomId") String roomId, @Param("userId") String userId);
+    Optional<RoomDetailsResponse> findRoomDetailsForTenant(
+            @Param("roomId") String roomId, @Param("userId") String userId);
 }

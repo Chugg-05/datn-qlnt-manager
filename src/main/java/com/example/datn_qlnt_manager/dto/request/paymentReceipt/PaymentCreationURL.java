@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.dto.request.paymentReceipt;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,6 +15,7 @@ public class PaymentCreationURL {
 
     @NotNull
     Long amount;
+
     @Builder.Default
     String bankCode = "NCB";
 

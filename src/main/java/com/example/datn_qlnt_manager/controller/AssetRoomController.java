@@ -1,5 +1,11 @@
 package com.example.datn_qlnt_manager.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.AssetRoomFilter;
@@ -10,16 +16,13 @@ import com.example.datn_qlnt_manager.dto.response.assetRoom.AssetRoomDetailRespo
 import com.example.datn_qlnt_manager.dto.response.assetRoom.AssetRoomResponse;
 import com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic;
 import com.example.datn_qlnt_manager.service.AssetRoomService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -57,9 +60,7 @@ public class AssetRoomController {
 
     @Operation(summary = "Thêm 1 tài sản vào phòng")
     @PostMapping
-    public ApiResponse<AssetRoomResponse> createAssetRoom(
-           @Valid @RequestBody AssetRoomCreationRequest request
-    ) {
+    public ApiResponse<AssetRoomResponse> createAssetRoom(@Valid @RequestBody AssetRoomCreationRequest request) {
         return ApiResponse.<AssetRoomResponse>builder()
                 .message("Asset Room created successfully")
                 .data(assetRoomService.createAssetRoom(request))
@@ -69,8 +70,7 @@ public class AssetRoomController {
     @Operation(summary = "Thêm 1 tài sản cho tất cả các phòng trong 1 tòa nhà")
     @PostMapping("/by-building")
     public ApiResponse<AssetDetailResponse> createRoomAssetForBuilding(
-            @Valid @RequestBody AssetRoomCreationForBuildingRequest request
-    ) {
+            @Valid @RequestBody AssetRoomCreationForBuildingRequest request) {
         return ApiResponse.<AssetDetailResponse>builder()
                 .message("This asset has been added to the building.!")
                 .data(assetRoomService.createAssetRoomForBuilding(request))
@@ -80,8 +80,7 @@ public class AssetRoomController {
     @Operation(summary = "Thêm 1 tài sản vào các phòng")
     @PostMapping("/by-asset")
     public ApiResponse<AssetDetailResponse> createRoomServiceForService(
-            @Valid @RequestBody AssetRoomCreationForAssetRequest request
-    ) {
+            @Valid @RequestBody AssetRoomCreationForAssetRequest request) {
         return ApiResponse.<AssetDetailResponse>builder()
                 .message("This asset has been added to the rooms!")
                 .data(assetRoomService.createAssetRoomForAsset(request))
@@ -91,8 +90,7 @@ public class AssetRoomController {
     @Operation(summary = "Thêm nhiều tài sản vào 1 phòng")
     @PostMapping("/by-room")
     public ApiResponse<AssetRoomDetailResponse> createAssetRoomForRoom(
-            @Valid @RequestBody AssetRoomCreationForRoomRequest request
-    ) {
+            @Valid @RequestBody AssetRoomCreationForRoomRequest request) {
         return ApiResponse.<AssetRoomDetailResponse>builder()
                 .message("Assets added to the room!")
                 .data(assetRoomService.createAssetRoomForRoom(request))
@@ -101,10 +99,9 @@ public class AssetRoomController {
 
     @Operation(summary = "Cập nhật thông tin tài sản trong phòng")
     @PutMapping("/{assetRoomId}")
-    public ApiResponse<AssetRoomResponse > updateAssetRoom(
-            @PathVariable("assetRoomId") String assetRoomId,
-            @RequestBody @Valid AssetRoomUpdateRequest request) {
-        AssetRoomResponse  response = assetRoomService.updateAssetRoom(assetRoomId, request);
+    public ApiResponse<AssetRoomResponse> updateAssetRoom(
+            @PathVariable("assetRoomId") String assetRoomId, @RequestBody @Valid AssetRoomUpdateRequest request) {
+        AssetRoomResponse response = assetRoomService.updateAssetRoom(assetRoomId, request);
 
         return ApiResponse.<AssetRoomResponse>builder()
                 .message("Asset room updated successfully")
@@ -124,8 +121,7 @@ public class AssetRoomController {
 
     @Operation(summary = "Chuyển trạng thái tài sản phòng HOAT_DONG <-> KHONG_SU_DUNG")
     @PutMapping("/toggle/{assetRoomId}")
-    public ApiResponse<String> updateAssetRoom(
-            @PathVariable("assetRoomId") String assetRoomId) {
+    public ApiResponse<String> updateAssetRoom(@PathVariable("assetRoomId") String assetRoomId) {
 
         assetRoomService.toggleAssetRoomStatus(assetRoomId);
 
@@ -133,7 +129,6 @@ public class AssetRoomController {
                 .message("Asset room toggle successfully")
                 .data("Asset room with ID " + assetRoomId + " has been toggled.")
                 .build();
-
     }
 
     @Operation(summary = "Xóa tài sản trong phòng")
@@ -146,7 +141,5 @@ public class AssetRoomController {
                 .message("Asset room deleted successfully")
                 .data("Asset room with ID " + assetRoomId + " has been deleted.")
                 .build();
-
     }
-
 }

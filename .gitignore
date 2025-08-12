@@ -15,6 +15,7 @@ target/
 
 ### IntelliJ IDEA ###
 .idea
+docker-compose.yml
 *.iws
 *.iml
 *.ipr

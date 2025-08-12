@@ -3,13 +3,6 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse;
-import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
-import com.example.datn_qlnt_manager.dto.statistics.RoomStatisticWithoutAssets;
-import com.example.datn_qlnt_manager.dto.statistics.StatisticRoomsWithoutContract;
-import com.example.datn_qlnt_manager.entity.*;
-import com.example.datn_qlnt_manager.repository.BuildingRepository;
-import com.example.datn_qlnt_manager.repository.TenantRepository;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -25,12 +18,19 @@ import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
+import com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
+import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
+import com.example.datn_qlnt_manager.dto.statistics.RoomStatisticWithoutAssets;
+import com.example.datn_qlnt_manager.dto.statistics.StatisticRoomsWithoutContract;
+import com.example.datn_qlnt_manager.entity.*;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.RoomMapper;
+import com.example.datn_qlnt_manager.repository.BuildingRepository;
 import com.example.datn_qlnt_manager.repository.FloorRepository;
 import com.example.datn_qlnt_manager.repository.RoomRepository;
+import com.example.datn_qlnt_manager.repository.TenantRepository;
 import com.example.datn_qlnt_manager.service.RoomService;
 import com.example.datn_qlnt_manager.service.UserService;
 
@@ -50,7 +50,7 @@ public class RoomServiceImpl implements RoomService {
     BuildingRepository buildingRepository;
     UserService userService;
     CodeGeneratorService codeGeneratorService;
-    private final TenantRepository tenantRepository;
+    TenantRepository tenantRepository;
 
     @Override
     public PaginatedResponse<RoomResponse> getPageAndSearchAndFilterRoomByUserId(
@@ -97,12 +97,11 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<RoomResponse> getRoomsByTenantId() {
         User user = userService.getCurrentUser();
-        Tenant tenant = tenantRepository.findByUserId(user.getId())
+        Tenant tenant = tenantRepository
+                .findByUserId(user.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
         List<Room> rooms = roomRepository.findRoomsByTenantId(tenant.getId());
-        return rooms.stream()
-                .map(roomMapper::toRoomResponse)
-                .toList();
+        return rooms.stream().map(roomMapper::toRoomResponse).toList();
     }
 
     @Override
@@ -190,10 +189,12 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public PaginatedResponse<RoomResponse> getRoomsWithoutServiceByUserId(RoomFilter filter, Integer page, Integer size) {
+    public PaginatedResponse<RoomResponse> getRoomsWithoutServiceByUserId(
+            RoomFilter filter, Integer page, Integer size) {
         User user = userService.getCurrentUser();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
-        Page<Room> paging = roomRepository.findActiveRoomsWithoutServiceRoomByUser(user.getId(), filter.getBuildingId(), pageable);
+        Page<Room> paging =
+                roomRepository.findActiveRoomsWithoutServiceRoomByUser(user.getId(), filter.getBuildingId(), pageable);
         return buildPaginatedRoomResponse(paging, page, size);
     }
 
@@ -212,7 +213,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public PaginatedResponse<RoomResponse> getRoomsWithoutAssets(String buildingId, Integer page, Integer size){
+    public PaginatedResponse<RoomResponse> getRoomsWithoutAssets(String buildingId, Integer page, Integer size) {
         User user = userService.getCurrentUser();
         if (!buildingRepository.existsById(buildingId)) {
             throw new AppException(ErrorCode.BUILDING_NOT_FOUND);
@@ -249,7 +250,15 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomDetailsResponse getRoomDetails(String roomId) {
         String userId = userService.getCurrentUser().getId();
-        return roomRepository.findRoomDetailsForTenant(roomId, userId)
+        return roomRepository
+                .findRoomDetailsForTenant(roomId, userId)
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+    }
+
+    @Override
+    public RoomResponse restoreRoomById(String roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        room.setStatus(RoomStatus.TRONG);
+        return roomMapper.toRoomResponse(roomRepository.save(room));
     }
 }

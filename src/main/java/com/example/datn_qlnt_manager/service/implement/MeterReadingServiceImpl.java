@@ -112,7 +112,6 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         return meterReadingMapper.toResponse(meterReading);
     }
 
-
     @Override
     public MeterReadingResponse updateMeterReading(String meterReadingId, MeterReadingUpdateRequest request) {
         MeterReading meterReading = meterReadingRepository

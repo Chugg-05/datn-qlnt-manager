@@ -124,7 +124,7 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         // Thiết lập các nguồn được phép truy cập
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173", "https://datn-qlnt-client.vercel.app"));
         corsConfiguration.addAllowedMethod("*"); // Cho phép tất cả các phương thức HTTP (GET, POST, PUT, DELETE, v.v.)
         corsConfiguration.addAllowedHeader("*"); // Cho phép tất cả các header
         corsConfiguration.setExposedHeaders(List.of("Authorization")); // Cho phép header Authorization được lộ ra ngoài

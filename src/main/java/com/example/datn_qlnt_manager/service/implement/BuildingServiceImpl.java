@@ -208,6 +208,16 @@ public class BuildingServiceImpl implements BuildingService {
                 userService.getCurrentUser().getId());
     }
 
+    @Override
+    public BuildingResponse restoreBuildingById(String buildingId) {
+        Building building = buildingRepository
+                .findById(buildingId)
+                .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+
+        building.setStatus(BuildingStatus.HOAT_DONG);
+        return buildingMapper.toBuildingResponse(buildingRepository.save(building));
+    }
+
     private PaginatedResponse<BuildingResponse> buildPaginatedBuildingResponse(
             Page<Building> paging, int page, int size) {
 

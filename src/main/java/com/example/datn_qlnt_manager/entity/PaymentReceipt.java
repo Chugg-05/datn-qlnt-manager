@@ -1,13 +1,15 @@
 package com.example.datn_qlnt_manager.entity;
 
-import com.example.datn_qlnt_manager.common.PaymentMethod;
-import com.example.datn_qlnt_manager.common.PaymentStatus;
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.*;
+
+import com.example.datn_qlnt_manager.common.PaymentMethod;
+import com.example.datn_qlnt_manager.common.PaymentStatus;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Getter
@@ -16,9 +18,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "phieu_thanh_toan", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "so_phieu")
-})
+@Table(
+        name = "phieu_thanh_toan",
+        uniqueConstraints = {@UniqueConstraint(columnNames = "so_phieu")})
 public class PaymentReceipt extends AbstractEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

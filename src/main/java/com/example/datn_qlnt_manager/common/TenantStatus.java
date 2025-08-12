@@ -6,4 +6,5 @@ public enum TenantStatus {
     TIEM_NANG,
     HUY_BO,
     KHOA,
+    KHOI_PHUC,
 }
