@@ -108,7 +108,7 @@ public class AssetServiceImpl implements AssetService {
         Asset asset = assetRepository.findById(assetId).orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
         assetMapper.updateAsset(asset, request);
         asset.setAssetStatus(request.getAssetStatus());
-        List<Asset> duplicates = assetRepository.findByNameAssetIgnoreCaseAndIdNot(request.getNameAsset(), assetId);
+        List<Asset> duplicates = assetRepository.findByNameAssetIgnoreCaseAndBuildingIdAndIdNot(request.getNameAsset(), asset.getBuilding().getId(), assetId);
         if (!duplicates.isEmpty()) {
             throw new AppException(ErrorCode.DUPLICATE_ASSET_NAME);
         }

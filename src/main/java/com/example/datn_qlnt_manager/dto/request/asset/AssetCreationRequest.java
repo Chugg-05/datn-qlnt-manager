@@ -33,7 +33,7 @@ public class AssetCreationRequest {
     AssetBeLongTo assetBeLongTo;
 
     @NotNull(message = "ASSET_PRICE_REQUIRED")
-    @DecimalMin(value = "0.0", message = "ASSET_PRICE_INVALID")
+    @DecimalMin(value = "1", message = "ASSET_PRICE_INVALID")
     BigDecimal price;
 
     @NotNull(message = "INVALID_QUANTITY_NOT_NULL")
