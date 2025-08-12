@@ -55,7 +55,7 @@ public class AssetRoomController {
                 .build();
     }
 
-    @Operation(summary = "Create Asset Room for Service")
+    @Operation(summary = "Thêm 1 tài sản vào phòng")
     @PostMapping
     public ApiResponse<AssetRoomResponse> createAssetRoom(
            @Valid @RequestBody AssetRoomCreationRequest request
@@ -88,7 +88,7 @@ public class AssetRoomController {
                 .build();
     }
 
-    @Operation(summary = "Thêm 1 tài sản vào các phòng")
+    @Operation(summary = "Thêm nhiều tài sản vào 1 phòng")
     @PostMapping("/by-room")
     public ApiResponse<AssetRoomDetailResponse> createAssetRoomForRoom(
             @Valid @RequestBody AssetRoomCreationForRoomRequest request
@@ -122,7 +122,7 @@ public class AssetRoomController {
                 .build();
     }
 
-    @Operation(summary = "Chuyển trạng thái tài sản phòng HOAT_DONG <-> HU_HONG")
+    @Operation(summary = "Chuyển trạng thái tài sản phòng HOAT_DONG <-> KHONG_SU_DUNG")
     @PutMapping("/toggle/{assetRoomId}")
     public ApiResponse<String> updateAssetRoom(
             @PathVariable("assetRoomId") String assetRoomId) {

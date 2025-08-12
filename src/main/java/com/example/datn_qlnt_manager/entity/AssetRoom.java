@@ -17,9 +17,7 @@ import java.time.LocalDate;
 @Builder
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(
-        name = "tai_san_phong",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"phong_id", "tai_san_id"})})
+@Table(name = "tai_san_phong")
 public class AssetRoom extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "phong_id", nullable = false)
@@ -35,6 +33,9 @@ public class AssetRoom extends AbstractEntity {
 
     @Column(name = "ten_tai_san", nullable = false)
     String assetName;
+
+    @Column(name = "so_luong", nullable = false)
+    Integer quantity;
 
     @Column(name = "gia_tien", nullable = false)
     BigDecimal price;

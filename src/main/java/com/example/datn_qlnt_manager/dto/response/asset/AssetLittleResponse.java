@@ -16,6 +16,7 @@ public class AssetLittleResponse {
     String id;
     String assetName;
     AssetBeLongTo assetBeLongTo;
+    Integer quantity;
     BigDecimal price;
     AssetStatus assetStatus;
     String description;

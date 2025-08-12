@@ -237,6 +237,8 @@ public enum ErrorCode {
     PAYMENT_DUE_DATE_TOO_FAR(400, "Payment due date cannot be more than 30 days in the future.", HttpStatus.BAD_REQUEST),
     NO_ACTIVE_CONTRACT_FOUND(400, "There are no eligible rooms for billing in this building." +
             " Please check your contract and usage index for each room..", HttpStatus.BAD_REQUEST),
+    QUANTITY_MUST_BE_POSITIVE(400, "Quantity must be greater than 0.", HttpStatus.BAD_REQUEST),
+    ASSET_QUANTITY_NOT_ENOUGH(400, "Asset quantity is not enough.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
