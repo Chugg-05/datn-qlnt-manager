@@ -85,7 +85,8 @@ public class ServiceServiceImpl implements ServiceService {
         return getServiceResponsePaginatedResponse(page, size, paging);
     }
 
-    private PaginatedResponse<ServiceResponse> getServiceResponsePaginatedResponse(int page, int size, Page<Service> paging) {
+    private PaginatedResponse<ServiceResponse> getServiceResponsePaginatedResponse(
+            int page, int size, Page<Service> paging) {
         List<ServiceResponse> serviceResponses = paging.getContent().stream()
                 .map(serviceMapper::toServiceResponse)
                 .toList();
@@ -197,7 +198,8 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public ServiceResponse restoreServiceById(String serviceId) {
-        Service service = serviceRepository.findById(serviceId).orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+        Service service =
+                serviceRepository.findById(serviceId).orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
         service.setStatus(ServiceStatus.HOAT_DONG);
         return serviceMapper.toServiceResponse(serviceRepository.save(service));
     }

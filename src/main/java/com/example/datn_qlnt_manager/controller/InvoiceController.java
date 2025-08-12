@@ -194,8 +194,7 @@ public class InvoiceController {
             @ModelAttribute InvoiceFilter filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
-        PaginatedResponse<InvoiceResponse> result =
-                invoiceService.getInvoicesForTenant(filter, page, size);
+        PaginatedResponse<InvoiceResponse> result = invoiceService.getInvoicesForTenant(filter, page, size);
 
         return ApiResponse.<List<InvoiceResponse>>builder()
                 .message("Get invoices for tenant successfully")

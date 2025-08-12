@@ -1,15 +1,16 @@
 package com.example.datn_qlnt_manager.utils;
 
-import com.example.datn_qlnt_manager.common.InvoiceStatus;
-import com.example.datn_qlnt_manager.common.InvoiceType;
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
-
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+
+import com.example.datn_qlnt_manager.common.InvoiceStatus;
+import com.example.datn_qlnt_manager.common.InvoiceType;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @UtilityClass
@@ -17,7 +18,6 @@ public class FormatUtil {
 
     private static final Locale VIETNAM_LOCALE = Locale.forLanguageTag("vi-VN");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
 
     public static String formatCurrency(Number amount) {
         NumberFormat formatter = NumberFormat.getCurrencyInstance(VIETNAM_LOCALE);
@@ -54,5 +54,4 @@ public class FormatUtil {
             case HUY -> "Đã hủy";
         };
     }
-
 }

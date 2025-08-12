@@ -3,7 +3,6 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.statistics.FloorRoomStatisticResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +18,7 @@ import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
+import com.example.datn_qlnt_manager.dto.statistics.FloorRoomStatisticResponse;
 import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.entity.Floor;
@@ -201,7 +201,7 @@ public class FloorServiceImpl implements FloorService {
 
     @Override
     public FloorResponse restoreFloorById(String floorId) {
-        Floor floor  = floorRepository.findById(floorId).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+        Floor floor = floorRepository.findById(floorId).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
         floor.setStatus(FloorStatus.HOAT_DONG);
         return floorMapper.toResponse(floorRepository.save(floor));
     }

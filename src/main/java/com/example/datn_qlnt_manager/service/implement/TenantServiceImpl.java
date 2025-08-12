@@ -1,14 +1,8 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
-import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
-import com.example.datn_qlnt_manager.entity.Contract;
-import com.example.datn_qlnt_manager.mapper.ContractMapper;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -23,6 +17,7 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.TenantFilter;
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantResponse;
 import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
@@ -30,6 +25,7 @@ import com.example.datn_qlnt_manager.entity.Tenant;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
+import com.example.datn_qlnt_manager.mapper.ContractMapper;
 import com.example.datn_qlnt_manager.mapper.TenantMapper;
 import com.example.datn_qlnt_manager.repository.ContractRepository;
 import com.example.datn_qlnt_manager.repository.TenantRepository;
@@ -202,8 +198,9 @@ public class TenantServiceImpl implements TenantService {
 
         return tenants.stream()
                 .map(tenant -> {
-                    List<ContractResponse> contracts = contractRepository.findAllByTenantId(tenant.getId())
-                            .stream().map(contractMapper::toContractResponse).toList();
+                    List<ContractResponse> contracts = contractRepository.findAllByTenantId(tenant.getId()).stream()
+                            .map(contractMapper::toContractResponse)
+                            .toList();
                     TenantResponse tenantResponse = tenantMapper.toTenantResponse(tenant);
                     tenantResponse.setContracts(contracts);
                     return tenantResponse;
@@ -274,16 +271,14 @@ public class TenantServiceImpl implements TenantService {
 
     public List<TenantResponse> getTenantsByRoomId(String roomId) {
         List<Tenant> tenants = tenantRepository.findAllTenantsByRoomId(roomId);
-        return tenants.stream()
-                .map(tenantMapper::toTenantResponse)
-                .toList();
+        return tenants.stream().map(tenantMapper::toTenantResponse).toList();
     }
 
     @Override
     public TenantResponse restoreTenantById(String tenantId) {
-        Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+        Tenant tenant =
+                tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
         tenant.setTenantStatus(TenantStatus.KHOI_PHUC);
         return tenantMapper.toTenantResponse(tenantRepository.save(tenant));
     }
-
 }

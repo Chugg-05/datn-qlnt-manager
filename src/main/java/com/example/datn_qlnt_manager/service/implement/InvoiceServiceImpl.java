@@ -211,16 +211,13 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Transactional
     @Override
     public void toggleInvoiceStatus(String invoiceId) {
-        Invoice invoice = invoiceRepository.findById(invoiceId)
-                .orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
+        Invoice invoice =
+                invoiceRepository.findById(invoiceId).orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
 
         PaymentReceipt paymentReceipt = paymentReceiptRepository.findByInvoiceId(invoice.getId());
 
-        List<InvoiceStatus> validStatuses = List.of(
-                InvoiceStatus.CHUA_THANH_TOAN,
-                InvoiceStatus.CHO_THANH_TOAN,
-                InvoiceStatus.HUY
-        );
+        List<InvoiceStatus> validStatuses =
+                List.of(InvoiceStatus.CHUA_THANH_TOAN, InvoiceStatus.CHO_THANH_TOAN, InvoiceStatus.HUY);
 
         if (!validStatuses.contains(invoice.getInvoiceStatus())) {
             throw new AppException(ErrorCode.INVALID_INVOICE_STATUS);
@@ -274,18 +271,13 @@ public class InvoiceServiceImpl implements InvoiceService {
         return invoices.stream().map(invoiceMapper::toInvoiceResponse).toList();
     }
 
-
     @Override
-    public PaginatedResponse<InvoiceResponse> getInvoicesForTenant(
-            InvoiceFilter filter, int page, int size) {
+    public PaginatedResponse<InvoiceResponse> getInvoicesForTenant(InvoiceFilter filter, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         var user = userService.getCurrentUser();
 
-        List<InvoiceStatus> statusList = List.of(
-                InvoiceStatus.CHO_THANH_TOAN,
-                InvoiceStatus.DA_THANH_TOAN,
-                InvoiceStatus.QUA_HAN
-        );
+        List<InvoiceStatus> statusList =
+                List.of(InvoiceStatus.CHO_THANH_TOAN, InvoiceStatus.DA_THANH_TOAN, InvoiceStatus.QUA_HAN);
 
         Page<Invoice> paging = invoiceRepository.getInvoicesForTenant(
                 user.getId(),
@@ -306,7 +298,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public InvoiceResponse restoreInvoiceById(String invoiceId) {
-        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
+        Invoice invoice =
+                invoiceRepository.findById(invoiceId).orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
         invoice.setInvoiceStatus(InvoiceStatus.KHOI_PHUC);
         return invoiceMapper.toInvoiceResponse(invoiceRepository.save(invoice));
     }
@@ -650,7 +643,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         // Chỉ lấy những dịch vụ có đồng hồ đo (điện luôn có, nước có thể)
         return service.getServiceCalculation() == ServiceCalculation.TINH_THEO_SO
                 && (service.getServiceCategory() == ServiceCategory.DIEN
-                || service.getServiceCategory() == ServiceCategory.NUOC);
+                        || service.getServiceCategory() == ServiceCategory.NUOC);
     }
 
     private Contract getValidContract(String contractId) {

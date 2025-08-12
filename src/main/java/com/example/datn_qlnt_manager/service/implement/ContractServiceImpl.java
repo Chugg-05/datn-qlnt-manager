@@ -78,11 +78,7 @@ public class ContractServiceImpl implements ContractService {
         var user = userService.getCurrentUser();
 
         Page<Contract> paging = contractRepository.getContractWithStatusCancelByUserId(
-                user.getId(),
-                filter.getQuery(),
-                filter.getBuilding(),
-                filter.getGender(),
-                pageable);
+                user.getId(), filter.getQuery(), filter.getBuilding(), filter.getGender(), pageable);
 
         return buildPaginatedContractResponse(paging, page, size);
     }
@@ -379,18 +375,15 @@ public class ContractServiceImpl implements ContractService {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
         Page<Contract> paging = contractRepository.getPageAndSearchAndFilterContractByTenantUserId(
-                userId,
-                filter.getQuery(),
-                filter.getGender(),
-                filter.getStatus(),
-                pageable
-        );
+                userId, filter.getQuery(), filter.getGender(), filter.getStatus(), pageable);
         return buildPaginatedContractResponse(paging, page, size);
     }
 
     @Override
     public ContractResponse restoreContractById(String contractId) {
-        Contract contract = contractRepository.findById(contractId).orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+        Contract contract = contractRepository
+                .findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
         contract.setStatus(ContractStatus.CHO_KICH_HOAT);
         return null;
     }

@@ -69,7 +69,7 @@ public enum ErrorCode {
     INVALID_OTP_FORMAT(400, "OTP code is not in correct format.", HttpStatus.BAD_REQUEST),
 
     REFRESH_TOKEN_INVALID(400, "Refresh token invalid.", HttpStatus.BAD_REQUEST),
-    BUILDING_ID_REQUIRED(400,"Building ID is required.", HttpStatus.BAD_REQUEST),
+    BUILDING_ID_REQUIRED(400, "Building ID is required.", HttpStatus.BAD_REQUEST),
     REFRESH_TOKEN_EXPIRED(400, "Refresh token expired.", HttpStatus.BAD_REQUEST),
     INVALID_OTP_CODE(400, "OTP code is incorrect or expired.", HttpStatus.BAD_REQUEST),
     INVALID_ISSUER(400, "Invalid issuer.", HttpStatus.BAD_REQUEST),
@@ -231,7 +231,6 @@ public enum ErrorCode {
     INVALID_VEHICLE_COUNT(400, "Invalid vehicle count.", HttpStatus.BAD_REQUEST),
     INVALID_QUANTITY_NOT_NULL(400, "Quantity must not be null", HttpStatus.BAD_REQUEST),
 
-
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     BUILDING_ID_NOT_FOUND(404, "Building ID not found.", HttpStatus.NOT_FOUND),
@@ -273,7 +272,7 @@ public enum ErrorCode {
     INVOICE_NOT_FOUND(404, "Invoice not found.", HttpStatus.NOT_FOUND),
     INVOICE_ID_REQUIRED(404, "Invoice ID must not be blank", HttpStatus.BAD_REQUEST),
     PAYMENT_METHOD_REQUIRED(404, "Payment method is required", HttpStatus.BAD_REQUEST),
-    PAYMENT_STATUS_REQUIRED(404,"Payment method is required",HttpStatus.BAD_REQUEST),
+    PAYMENT_STATUS_REQUIRED(404, "Payment method is required", HttpStatus.BAD_REQUEST),
 
     // feedback
     FEED_BACK_NOT_FOUND(404, "Feed back not found.", HttpStatus.NOT_FOUND),
@@ -288,7 +287,7 @@ public enum ErrorCode {
     ASSET_STATUS_NOT_FOUND(404, "Asset status not found.", HttpStatus.NOT_FOUND),
     PAYMENT_RECEIPT_NOT_FOUND(404, "Payment receipt not found.", HttpStatus.NOT_FOUND),
     ASSET_ROOM_NOT_FOUND(404, "Asset room not found.", HttpStatus.NOT_FOUND),
-    
+
     // notification
     NOTIFICATION_TITLE_REQUIRED(404, "Title must not be blank", HttpStatus.NOT_FOUND),
     NOTIFICATION_CONTENT_REQUIRED(404, "Content must not be blank", HttpStatus.NOT_FOUND),
@@ -322,12 +321,11 @@ public enum ErrorCode {
     NEW_INDEX_LESS_THAN_OLD(409, "New number must be less than old number", HttpStatus.BAD_REQUEST),
     METER_READING_EXISTED(409, "The meter reading has been recorded for this month.", HttpStatus.CONFLICT),
     DUPLICATE_SERVICE_CATEGORY(409, "Category already exists.", HttpStatus.BAD_REQUEST),
-    METER_NAME_ALREADY_EXISTS_IN_ROOM(409,"Meter name already exists in this room",HttpStatus.BAD_REQUEST),
-    METER_TYPE_ALREADY_EXISTS_IN_ROOM(409,"Meter type already exists in this room",HttpStatus.BAD_REQUEST),
+    METER_NAME_ALREADY_EXISTS_IN_ROOM(409, "Meter name already exists in this room", HttpStatus.BAD_REQUEST),
+    METER_TYPE_ALREADY_EXISTS_IN_ROOM(409, "Meter type already exists in this room", HttpStatus.BAD_REQUEST),
     PAYMENT_RECEIPT_CANNOT_BE_UPDATED(409, "Payment receipt cannot be updated", HttpStatus.BAD_REQUEST),
     INVALID_PAYMENT_STATUS_CHANGE(409, "Only confirmed if status is CHO_XAC_NHAN", HttpStatus.BAD_REQUEST),
     PAYMENT_RECEIPT_ALREADY_EXISTS(409, "Payment receipt already exists", HttpStatus.BAD_REQUEST),
-
     ;
 
     final int code;

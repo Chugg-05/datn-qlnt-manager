@@ -65,7 +65,7 @@ public class VehicleController {
 
     @Operation(summary = "Xem tất cả phương tiện có trong phòng")
     @GetMapping("/{roomId}")
-    public ApiResponse<List<VehicleResponse>> getVehiclesByRoomId (@PathVariable("roomId") String roomId) {
+    public ApiResponse<List<VehicleResponse>> getVehiclesByRoomId(@PathVariable("roomId") String roomId) {
         return ApiResponse.<List<VehicleResponse>>builder()
                 .data(vehicleService.getVehiclesByRoomId(roomId))
                 .message("Get all vehicle by room successfully")

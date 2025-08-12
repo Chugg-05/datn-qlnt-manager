@@ -2,10 +2,6 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse;
-import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
-import com.example.datn_qlnt_manager.dto.statistics.RoomStatisticWithoutAssets;
-import com.example.datn_qlnt_manager.dto.statistics.StatisticRoomsWithoutContract;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +12,11 @@ import com.example.datn_qlnt_manager.dto.filter.RoomFilter;
 import com.example.datn_qlnt_manager.dto.request.room.RoomCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.room.RoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.room.RoomCountResponse;
+import com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse;
 import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
+import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
+import com.example.datn_qlnt_manager.dto.statistics.RoomStatisticWithoutAssets;
+import com.example.datn_qlnt_manager.dto.statistics.StatisticRoomsWithoutContract;
 import com.example.datn_qlnt_manager.service.RoomService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -70,8 +70,7 @@ public class RoomController {
     public ApiResponse<List<RoomResponse>> getRoomsWithoutService(
             @ModelAttribute RoomFilter roomFilter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
+            @RequestParam(defaultValue = "15") int size) {
         PaginatedResponse<RoomResponse> result = roomService.getRoomsWithoutServiceByUserId(roomFilter, page, size);
         return ApiResponse.<List<RoomResponse>>builder()
                 .message("Get rooms without service successfully")
@@ -91,11 +90,10 @@ public class RoomController {
 
     @Operation(summary = "hiển thị danh sách phòng chưa có tài sản")
     @GetMapping("/rooms-without-assets")
-    public ApiResponse<List<RoomResponse>> getRoomsWithoutAssets (
+    public ApiResponse<List<RoomResponse>> getRoomsWithoutAssets(
             @RequestParam String buildingId,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
+            @RequestParam(defaultValue = "15") int size) {
         PaginatedResponse<RoomResponse> result = roomService.getRoomsWithoutAssets(buildingId, page, size);
         return ApiResponse.<List<RoomResponse>>builder()
                 .message("Get rooms without asset successfully")
@@ -123,7 +121,7 @@ public class RoomController {
 
     @Operation(summary = "thống kê số phòng chưa có tài sản")
     @GetMapping("/statistic-without-asset")
-    public ApiResponse<RoomStatisticWithoutAssets> statisticRoomsWithoutAsset(@RequestParam String buildingId){
+    public ApiResponse<RoomStatisticWithoutAssets> statisticRoomsWithoutAsset(@RequestParam String buildingId) {
         return ApiResponse.<RoomStatisticWithoutAssets>builder()
                 .message("Statistic rooms without asset successfully")
                 .data(roomService.statisticRoomsWithoutAssetByUserId(buildingId))

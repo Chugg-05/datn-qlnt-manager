@@ -257,7 +257,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         cookie.setMaxAge(jwtUtil.getRefreshableDuration().intValue()); // 2 weeks
         cookie.setPath("/");
         cookie.setSecure(true); // true nếu chỉ cho gửi qua HTTPS
-        cookie.setDomain("localhost");
+//        cookie.setDomain("localhost");
         return cookie;
     }
 
@@ -268,7 +268,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         cookie.setMaxAge(0);
         cookie.setPath("/");
         cookie.setSecure(true);
-        cookie.setDomain("localhost");
+//        cookie.setDomain("localhost");
         response.addCookie(cookie);
     }
 

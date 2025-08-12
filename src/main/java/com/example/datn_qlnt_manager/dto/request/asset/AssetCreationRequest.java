@@ -2,13 +2,13 @@ package com.example.datn_qlnt_manager.dto.request.asset;
 
 import java.math.BigDecimal;
 
-import com.example.datn_qlnt_manager.common.AssetType;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import com.example.datn_qlnt_manager.common.AssetBeLongTo;
+import com.example.datn_qlnt_manager.common.AssetType;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

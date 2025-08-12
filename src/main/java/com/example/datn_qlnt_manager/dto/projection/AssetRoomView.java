@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.dto.projection;
 
 import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.common.RoomType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

@@ -210,7 +210,8 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public BuildingResponse restoreBuildingById(String buildingId) {
-        Building building = buildingRepository.findById(buildingId)
+        Building building = buildingRepository
+                .findById(buildingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
         building.setStatus(BuildingStatus.HOAT_DONG);

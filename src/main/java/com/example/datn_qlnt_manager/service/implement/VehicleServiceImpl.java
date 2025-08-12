@@ -73,9 +73,7 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public List<VehicleResponse> getVehiclesByRoomId(String roomId) {
         List<Vehicle> vehicles = vehicleRepository.findActiveVehiclesByRoomId(roomId);
-        return vehicles.stream()
-                .map(vehicleMapper::toVehicleResponse)
-                .toList();
+        return vehicles.stream().map(vehicleMapper::toVehicleResponse).toList();
     }
 
     @Override
@@ -180,8 +178,8 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public VehicleResponse restoreVehicleById(String vehicleId) {
-        Vehicle vehicle = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
+        Vehicle vehicle =
+                vehicleRepository.findById(vehicleId).orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
         vehicle.setVehicleStatus(VehicleStatus.SU_DUNG);
         return vehicleMapper.toVehicleResponse(vehicleRepository.save(vehicle));
     }

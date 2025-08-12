@@ -152,8 +152,6 @@ public class ContractController {
                 .build();
     }
 
-
-
     @Operation(summary = "Khách thuê - Xem danh sách, tìm kiếm, lọc hợp đồng của họ")
     @GetMapping("/my-contracts")
     public ApiResponse<List<ContractResponse>> getContractsOfCurrentTenant(
@@ -161,8 +159,7 @@ public class ContractController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
 
-        PaginatedResponse<ContractResponse> result =
-                contractService.getContractsOfCurrentTenant(filter, page, size);
+        PaginatedResponse<ContractResponse> result = contractService.getContractsOfCurrentTenant(filter, page, size);
 
         return ApiResponse.<List<ContractResponse>>builder()
                 .message("Get contracts successfully")
@@ -179,5 +176,4 @@ public class ContractController {
                 .message("success")
                 .build();
     }
-
 }

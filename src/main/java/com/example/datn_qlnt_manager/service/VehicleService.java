@@ -1,13 +1,13 @@
 package com.example.datn_qlnt_manager.service;
 
+import java.util.List;
+
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.VehicleFilter;
 import com.example.datn_qlnt_manager.dto.request.vehicle.VehicleCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.vehicle.VehicleUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleResponse;
 import com.example.datn_qlnt_manager.dto.statistics.VehicleStatistics;
-
-import java.util.List;
 
 public interface VehicleService {
     PaginatedResponse<VehicleResponse> getPageAndSearchAndFilterVehicleByUserId(

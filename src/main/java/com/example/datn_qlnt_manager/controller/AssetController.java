@@ -1,23 +1,22 @@
 package com.example.datn_qlnt_manager.controller;
 
-import com.example.datn_qlnt_manager.common.AssetStatus;
-import com.example.datn_qlnt_manager.dto.ApiResponse;
-
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
-import com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic;
 import jakarta.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.datn_qlnt_manager.common.AssetStatus;
+import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.AssetFilter;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.asset.AssetUpdateRequest;
+import com.example.datn_qlnt_manager.dto.response.asset.AssetResponse;
 import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInit2Response;
 import com.example.datn_qlnt_manager.dto.response.asset.CreateAssetInitResponse;
+import com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic;
 import com.example.datn_qlnt_manager.service.AssetService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -124,8 +123,7 @@ public class AssetController {
 
     @Operation(summary = "Chuyển trạng thái tài sản phòng HOAT_DONG <-> KHONG_SU_DUNG")
     @PutMapping("/toggle/{assetId}")
-    public ApiResponse<String> updateAssetRoom(
-            @PathVariable("assetId") String assetId) {
+    public ApiResponse<String> updateAssetRoom(@PathVariable("assetId") String assetId) {
 
         assetService.toggleAsseStatus(assetId);
 
@@ -133,7 +131,6 @@ public class AssetController {
                 .message("Asset toggle successfully")
                 .data("Asset with ID " + assetId + " has been toggled.")
                 .build();
-
     }
 
     @Operation(summary = "Hiển thị toàn bộ tài sản (bỏ lọc tòa nhà)")

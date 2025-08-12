@@ -64,7 +64,7 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
     Page<Contract> getContractWithStatusCancelByUserId(
             @Param("userId") String userId,
             @Param("query") String query,
-			@Param("building") String building,
+            @Param("building") String building,
             @Param("gender") Gender gender,
             Pageable pageable);
 
@@ -136,47 +136,46 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
     List<Contract> findValidContractsInMonth(
             @Param("startOfMonth") LocalDateTime startOfMonth, @Param("endOfMonth") LocalDateTime endOfMonth);
 
-	@Query("""
+    @Query("""
 		SELECT c FROM Contract c
 		WHERE c.room.id = :roomId
 		AND c.status = 'HIEU_LUC'
 	""")
-	Optional<Contract> findActiveContractByRoomId(@Param("roomId") String roomId);
+    Optional<Contract> findActiveContractByRoomId(@Param("roomId") String roomId);
 
-
-	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
+    boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
 
     boolean existsByTenants_Id(String tenantId);
 
-	@Query("""
-    SELECT DISTINCT c
-    FROM Contract c
-    JOIN c.tenants t
-    JOIN t.user u
-    WHERE u.id = :userId
-      AND (:query IS NULL OR LOWER(c.contractCode) LIKE LOWER(CONCAT('%', :query, '%'))
-           OR LOWER(c.room.roomCode) LIKE LOWER(CONCAT('%', :query, '%'))
-           OR LOWER(t.fullName) LIKE LOWER(CONCAT('%', :query, '%'))
-           OR LOWER(t.phoneNumber) LIKE LOWER(CONCAT('%', :query, '%'))
-           OR LOWER(t.identityCardNumber) LIKE LOWER(CONCAT('%', :query, '%'))
-           OR LOWER(t.email) LIKE LOWER(CONCAT('%', :query, '%')))
-      AND (:gender IS NULL OR t.gender = :gender)
-      AND (:status IS NULL OR c.status = :status)
-      AND c.status != 'DA_HUY'
-    ORDER BY c.updatedAt DESC
+    @Query(
+            """
+	SELECT DISTINCT c
+	FROM Contract c
+	JOIN c.tenants t
+	JOIN t.user u
+	WHERE u.id = :userId
+	AND (:query IS NULL OR LOWER(c.contractCode) LIKE LOWER(CONCAT('%', :query, '%'))
+		OR LOWER(c.room.roomCode) LIKE LOWER(CONCAT('%', :query, '%'))
+		OR LOWER(t.fullName) LIKE LOWER(CONCAT('%', :query, '%'))
+		OR LOWER(t.phoneNumber) LIKE LOWER(CONCAT('%', :query, '%'))
+		OR LOWER(t.identityCardNumber) LIKE LOWER(CONCAT('%', :query, '%'))
+		OR LOWER(t.email) LIKE LOWER(CONCAT('%', :query, '%')))
+	AND (:gender IS NULL OR t.gender = :gender)
+	AND (:status IS NULL OR c.status = :status)
+	AND c.status != 'DA_HUY'
+	ORDER BY c.updatedAt DESC
 """)
-	Page<Contract> getPageAndSearchAndFilterContractByTenantUserId(
-			@Param("userId") String userId,
-			@Param("query") String query,
-			@Param("gender") Gender gender,
-			@Param("status") ContractStatus status,
-			Pageable pageable
-	);
+    Page<Contract> getPageAndSearchAndFilterContractByTenantUserId(
+            @Param("userId") String userId,
+            @Param("query") String query,
+            @Param("gender") Gender gender,
+            @Param("status") ContractStatus status,
+            Pageable pageable);
 
-	@Query("""
-        SELECT c FROM Contract c
-        JOIN c.tenants t
-        WHERE t.id = :tenantId
-    """)
-	List<Contract> findAllByTenantId(@Param("tenantId") String tenantId);
+    @Query("""
+		SELECT c FROM Contract c
+		JOIN c.tenants t
+		WHERE t.id = :tenantId
+	""")
+    List<Contract> findAllByTenantId(@Param("tenantId") String tenantId);
 }

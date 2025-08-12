@@ -11,6 +11,6 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FloorRoomStatisticResponse {
-     String floorId;
-     String statisticText;
+    String floorId;
+    String statisticText;
 }

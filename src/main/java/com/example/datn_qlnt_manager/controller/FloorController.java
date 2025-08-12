@@ -2,7 +2,6 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.statistics.FloorRoomStatisticResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +15,7 @@ import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
+import com.example.datn_qlnt_manager.dto.statistics.FloorRoomStatisticResponse;
 import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import com.example.datn_qlnt_manager.service.FloorService;
 

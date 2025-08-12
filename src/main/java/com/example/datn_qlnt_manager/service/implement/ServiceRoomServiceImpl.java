@@ -5,40 +5,40 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.datn_qlnt_manager.common.*;
-import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
-import com.example.datn_qlnt_manager.dto.projection.ServiceRoomView;
-import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateUnitPriceRequest;
-import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForBuildingRequest;
-import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForServiceRequest;
-import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
-import com.example.datn_qlnt_manager.dto.response.room.RoomBasicResponse;
-import com.example.datn_qlnt_manager.dto.response.service.ServiceDetailResponse;
-import com.example.datn_qlnt_manager.dto.response.service.ServiceUpdateUnitPriceResponse;
-import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomDetailResponse;
-import com.example.datn_qlnt_manager.dto.response.service.ServiceLittleResponse;
-import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
-import com.example.datn_qlnt_manager.entity.*;
-import com.example.datn_qlnt_manager.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.datn_qlnt_manager.common.*;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ServiceRoomFilter;
+import com.example.datn_qlnt_manager.dto.projection.ServiceRoomView;
+import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateUnitPriceRequest;
+import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForBuildingRequest;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForRoomRequest;
+import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForServiceRequest;
+import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
+import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
+import com.example.datn_qlnt_manager.dto.response.room.RoomBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceLittleResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceUpdateUnitPriceResponse;
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.CreateRoomServiceInitResponse;
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
 import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatistics;
+import com.example.datn_qlnt_manager.entity.*;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.ServiceRoomMapper;
+import com.example.datn_qlnt_manager.repository.*;
 import com.example.datn_qlnt_manager.service.ServiceRoomService;
 import com.example.datn_qlnt_manager.service.UserService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.transaction.annotation.Transactional;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
@@ -87,8 +87,7 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
 
     @Override
     public ServiceRoomDetailResponse getServiceRoomDetail(String roomId) {
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         List<ServiceRoom> serviceRooms = serviceRoomRepository.findAllByRoomWithService(room);
 
@@ -116,7 +115,8 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     @Transactional
     @Override
     public ServiceRoomDetailResponse createRoomServiceForRoom(ServiceRoomCreationForRoomRequest request) {
-        Room room = roomRepository.findById(request.getRoomId())
+        Room room = roomRepository
+                .findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         List<Service> services = serviceRepository.findAllById(request.getServiceIds());
@@ -142,7 +142,8 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     @Transactional
     @Override
     public ServiceDetailResponse createRoomServiceForService(ServiceRoomCreationForServiceRequest request) {
-        Service service = serviceRepository.findById(request.getServiceId())
+        Service service = serviceRepository
+                .findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
         if (service.getStatus() != ServiceStatus.HOAT_DONG) {
@@ -167,7 +168,8 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     @Transactional
     @Override
     public ServiceDetailResponse createRoomServiceForBuilding(ServiceRoomCreationForBuildingRequest request) {
-        Service service = serviceRepository.findById(request.getServiceId())
+        Service service = serviceRepository
+                .findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
         if (service.getStatus() != ServiceStatus.HOAT_DONG) {
@@ -193,10 +195,12 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     @Transactional
     @Override
     public ServiceRoomResponse createServiceRoom(ServiceRoomCreationRequest request) {
-        Room room = roomRepository.findById(request.getRoomId())
+        Room room = roomRepository
+                .findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
-        Service service = serviceRepository.findById(request.getServiceId())
+        Service service = serviceRepository
+                .findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
         if (service.getStatus() != ServiceStatus.HOAT_DONG) {
@@ -226,23 +230,26 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     @Transactional
     @Override
     public ServiceUpdateUnitPriceResponse updateServicePriceInBuilding(ServiceUpdateUnitPriceRequest request) {
-        Service service = serviceRepository.findById(request.getServiceId())
+        Service service = serviceRepository
+                .findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
-        Building building = buildingRepository.findById(request.getBuildingId())
+        Building building = buildingRepository
+                .findById(request.getBuildingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
-        List<ServiceRoom> serviceRooms = serviceRoomRepository
-                .findAllByServiceAndBuilding(service.getId(), building.getId());
+        List<ServiceRoom> serviceRooms =
+                serviceRoomRepository.findAllByServiceAndBuilding(service.getId(), building.getId());
 
         int updatedCount = 0;
 
         for (ServiceRoom sr : serviceRooms) {
 
-            if (service.getServiceCategory() == ServiceCategory.DIEN ||
-                    service.getServiceCategory() == ServiceCategory.NUOC) {
+            if (service.getServiceCategory() == ServiceCategory.DIEN
+                    || service.getServiceCategory() == ServiceCategory.NUOC) {
 
-                Optional<Contract> contractOpt = contractRepository.findActiveContractByRoomId(sr.getRoom().getId());
+                Optional<Contract> contractOpt = contractRepository.findActiveContractByRoomId(
+                        sr.getRoom().getId());
 
                 if (contractOpt.isPresent()) {
                     Contract contract = contractOpt.get();
@@ -311,10 +318,8 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
 
         Service service = serviceRoom.getService();
 
-        if (
-                service.getServiceCategory() == ServiceCategory.NUOC
-                        || service.getServiceCategory() == ServiceCategory.DIEN
-        ) {
+        if (service.getServiceCategory() == ServiceCategory.NUOC
+                || service.getServiceCategory() == ServiceCategory.DIEN) {
             throw new AppException(ErrorCode.SERVICE_ROOM_CANNOT_DELETE);
         }
 
@@ -333,7 +338,8 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
 
     @Override
     public List<IdNameAndType> getAllServiceRoomByUserId(String roomId) {
-        return serviceRoomRepository.getAllServiceRoomByUserId(userService.getCurrentUser().getId(), roomId);
+        return serviceRoomRepository.getAllServiceRoomByUserId(
+                userService.getCurrentUser().getId(), roomId);
     }
 
     private void assignServiceToRooms(Service service, List<Room> rooms) {
@@ -355,7 +361,4 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
             serviceRoomRepository.save(serviceRoom);
         }
     }
-
-
-
 }

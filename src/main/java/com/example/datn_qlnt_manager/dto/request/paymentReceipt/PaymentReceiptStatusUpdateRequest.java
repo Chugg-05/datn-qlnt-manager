@@ -1,8 +1,8 @@
 package com.example.datn_qlnt_manager.dto.request.paymentReceipt;
 
-import com.example.datn_qlnt_manager.common.PaymentStatus;
 import jakarta.validation.constraints.NotNull;
 
+import com.example.datn_qlnt_manager.common.PaymentStatus;
 
 import lombok.AccessLevel;
 import lombok.Data;

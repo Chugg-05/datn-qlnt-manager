@@ -1,5 +1,16 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import com.example.datn_qlnt_manager.common.*;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.AssetRoomFilter;
@@ -21,20 +32,11 @@ import com.example.datn_qlnt_manager.repository.BuildingRepository;
 import com.example.datn_qlnt_manager.repository.RoomRepository;
 import com.example.datn_qlnt_manager.service.AssetRoomService;
 import com.example.datn_qlnt_manager.service.UserService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -80,8 +82,7 @@ public class AssetRoomServiceImpl implements AssetRoomService {
 
     @Override
     public AssetRoomDetailResponse getAssetRoomDetail(String roomId) {
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         return buildAssetRoomDetailResponse(room);
     }
@@ -89,7 +90,8 @@ public class AssetRoomServiceImpl implements AssetRoomService {
     @Transactional
     @Override
     public AssetRoomResponse createAssetRoom(AssetRoomCreationRequest request) {
-        Room room = roomRepository.findById(request.getRoomId())
+        Room room = roomRepository
+                .findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         AssetRoom assetRoom;
@@ -97,7 +99,10 @@ public class AssetRoomServiceImpl implements AssetRoomService {
         switch (request.getAssetBeLongTo()) {
             case PHONG -> {
                 Asset asset = getValidAssetForAssignment(request.getAssetId());
-                assetRoom = buildAssetRoom(room, asset, AssetBeLongTo.PHONG,
+                assetRoom = buildAssetRoom(
+                        room,
+                        asset,
+                        AssetBeLongTo.PHONG,
                         "Đã thêm " + asset.getNameAsset() + " vào phòng " + room.getRoomCode());
             }
 
@@ -162,7 +167,8 @@ public class AssetRoomServiceImpl implements AssetRoomService {
     @Transactional
     @Override
     public AssetRoomDetailResponse createAssetRoomForRoom(AssetRoomCreationForRoomRequest request) {
-        Room room = roomRepository.findById(request.getRoomId())
+        Room room = roomRepository
+                .findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         List<Asset> assets = assetRepository.findAllById(request.getAssetIds());
@@ -181,7 +187,8 @@ public class AssetRoomServiceImpl implements AssetRoomService {
 
     @Override
     public AssetRoomResponse updateAssetRoom(String assetRoomId, AssetRoomUpdateRequest request) {
-        AssetRoom assetRoom = assetRoomRepository.findById(assetRoomId)
+        AssetRoom assetRoom = assetRoomRepository
+                .findById(assetRoomId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSET_ROOM_NOT_FOUND));
 
         assetRoomMapper.updateAssetRoomFromRequest(request, assetRoom);
@@ -193,14 +200,16 @@ public class AssetRoomServiceImpl implements AssetRoomService {
 
     @Override
     public AssetStatusStatistic getAssetStatisticsByBuildingId(String buildingId) {
-        Building building = buildingRepository.findById(buildingId)
+        Building building = buildingRepository
+                .findById(buildingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
         return assetRoomRepository.getAssetStatisticsByBuildingId(building.getId());
     }
 
     @Override
     public void toggleAssetRoomStatus(String assetRoomId) {
-        AssetRoom assetRoom = assetRoomRepository.findById(assetRoomId)
+        AssetRoom assetRoom = assetRoomRepository
+                .findById(assetRoomId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSET_ROOM_NOT_FOUND));
 
         AssetStatus assetRoomStatus = assetRoom.getAssetStatus();
@@ -230,7 +239,10 @@ public class AssetRoomServiceImpl implements AssetRoomService {
         for (Room room : rooms) {
             if (assetRoomRepository.existsByRoomAndAsset(room, asset)) continue;
 
-            AssetRoom assetRoom = buildAssetRoom(room, asset, asset.getAssetBeLongTo(),
+            AssetRoom assetRoom = buildAssetRoom(
+                    room,
+                    asset,
+                    asset.getAssetBeLongTo(),
                     "Tài sản " + asset.getNameAsset() + " đã được thêm vào phòng " + room.getRoomCode());
 
             assetRoom.setCreatedAt(Instant.now());
@@ -264,8 +276,7 @@ public class AssetRoomServiceImpl implements AssetRoomService {
     }
 
     private Asset getValidAssetForAssignment(String assetId) {
-        Asset asset = assetRepository.findById(assetId)
-                .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
+        Asset asset = assetRepository.findById(assetId).orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
         return getValidAssetForAssignment(asset);
     }
 
@@ -287,8 +298,8 @@ public class AssetRoomServiceImpl implements AssetRoomService {
                         .roomType(room.getRoomType())
                         .status(room.getStatus())
                         .description(room.getDescription())
-                        .build()
-                ).toList();
+                        .build())
+                .toList();
 
         return AssetDetailResponse.builder()
                 .id(asset.getId())
@@ -324,5 +335,4 @@ public class AssetRoomServiceImpl implements AssetRoomService {
                 .assets(assetResponses)
                 .build();
     }
-
 }

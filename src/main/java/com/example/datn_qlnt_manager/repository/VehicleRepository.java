@@ -59,7 +59,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
 
     Optional<Vehicle> findByIdAndVehicleStatusNot(String id, VehicleStatus vehicleStatus);
 
-	@Query("""
+    @Query(
+            """
 		SELECT v FROM Vehicle v
 		JOIN v.tenant t
 		JOIN t.contracts c
@@ -67,5 +68,5 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
 		AND (c.status = "HIEU_LUC"
 		OR c.status = "SAP_HET_HAN")
 """)
-	List<Vehicle> findActiveVehiclesByRoomId (@Param("roomId") String roomId);
+    List<Vehicle> findActiveVehiclesByRoomId(@Param("roomId") String roomId);
 }

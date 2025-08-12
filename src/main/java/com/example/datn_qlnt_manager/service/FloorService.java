@@ -47,5 +47,4 @@ public interface FloorService {
     List<FloorRoomStatisticResponse> getRoomStatisticTextByFloor(String floorId);
 
     FloorResponse restoreFloorById(String floorId);
-
 }

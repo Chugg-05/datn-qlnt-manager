@@ -90,5 +90,4 @@ public interface InvoiceMapper {
         if (invoice.getPaymentReceipts() == null || invoice.getPaymentReceipts().isEmpty()) return null;
         return invoice.getPaymentReceipts().getFirst().getId();
     }
-
 }
