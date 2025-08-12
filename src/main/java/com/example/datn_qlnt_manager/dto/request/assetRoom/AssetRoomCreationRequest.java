@@ -25,6 +25,8 @@ public class AssetRoomCreationRequest {
 
     String assetName;
 
+    Integer quantity;
+
     @DecimalMin(value = "0.0", inclusive = false, message = "PRICE_MUST_BE_POSITIVE")
     BigDecimal price;
 

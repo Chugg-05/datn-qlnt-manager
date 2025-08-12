@@ -23,6 +23,8 @@ public class AssetRoomResponse {
 
     String assetName;
 
+    Integer quantity;
+
     BigDecimal price;
 
     LocalDate dateAdded;
