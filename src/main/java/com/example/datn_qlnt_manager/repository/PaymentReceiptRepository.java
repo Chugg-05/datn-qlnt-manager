@@ -47,8 +47,8 @@ public interface PaymentReceiptRepository extends JpaRepository<PaymentReceipt, 
     SELECT r FROM PaymentReceipt r
     JOIN r.invoice i
     JOIN i.contract c
-    JOIN c.tenants t
-    WHERE t.id = :tenantId
+    JOIN c.contractTenants ct
+    WHERE ct.tenant.id = :tenantId
     AND (:query IS NULL OR LOWER(r.receiptCode) LIKE LOWER(CONCAT('%', :query, '%'))
                          OR LOWER(i.invoiceCode) LIKE LOWER(CONCAT('%', :query, '%')))
       AND (:paymentStatus IS NULL OR r.paymentStatus = :paymentStatus)

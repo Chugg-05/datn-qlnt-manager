@@ -24,40 +24,45 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
     @Query("""
         SELECT t FROM Tenant t
         WHERE (t.owner.id = :userId)
-        AND (:query IS NULL OR t.customerCode LIKE CONCAT('%', :query, '%'))
-        AND (:query IS NULL OR t.fullName LIKE CONCAT('%', :query, '%'))
-        AND (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%'))
-        AND (:query IS NULL OR t.phoneNumber LIKE CONCAT('%', :query, '%'))
-        AND (:query IS NULL OR t.identityCardNumber LIKE CONCAT('%', :query, '%'))
-        AND (:query IS NULL OR t.address LIKE CONCAT('%', :query, '%'))
+        AND ((:query IS NULL OR t.customerCode LIKE CONCAT('%', :query, '%') )
+        OR (:query IS NULL OR t.fullName LIKE CONCAT('%', :query, '%') )
+        OR (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%') )
+        OR (:query IS NULL OR t.phoneNumber LIKE CONCAT('%', :query, '%') )
+        OR (:query IS NULL OR t.identityCardNumber LIKE CONCAT('%', :query, '%') )
+        OR (:query IS NULL OR t.address LIKE CONCAT('%', :query, '%') ) )
         AND (:gender IS NULL OR t.gender = :gender)
         AND (:tenantStatus IS NULL OR t.tenantStatus = :tenantStatus)
         AND t.tenantStatus != 'HUY_BO'
         ORDER BY t.updatedAt DESC
     """)
-    Page<Tenant> getPageAndSearchAndFilterTenantByUserId(@Param("userId") String userId, @Param("query") String query,
-                                                         @Param("gender") Gender gender,
-                                                         @Param("tenantStatus") TenantStatus tenantStatus,
-                                                         Pageable pageable);
+    Page<Tenant> getPageAndSearchAndFilterTenantByUserId(
+             @Param("userId") String userId, @Param("query") String query,
+             @Param("gender") Gender gender,
+             @Param("tenantStatus") TenantStatus tenantStatus,
+             Pageable pageable);
 
     @Query("""
         SELECT t FROM Tenant t
         WHERE (t.owner.id = :userId)
-        AND (:query IS NULL OR t.customerCode LIKE CONCAT('%', :query, '%'))
-        AND (:query IS NULL OR t.fullName LIKE CONCAT('%', :query, '%'))
-        AND (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%'))
-        AND (:query IS NULL OR t.phoneNumber LIKE CONCAT('%', :query, '%'))
-        AND (:query IS NULL OR t.identityCardNumber LIKE CONCAT('%', :query, '%'))
-        AND (:query IS NULL OR t.address LIKE CONCAT('%', :query, '%'))
+        AND ((:query IS NULL OR t.customerCode LIKE CONCAT('%', :query, '%') )
+        OR (:query IS NULL OR t.fullName LIKE CONCAT('%', :query, '%') )
+        OR (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%') )
+        OR (:query IS NULL OR t.phoneNumber LIKE CONCAT('%', :query, '%') )
+        OR (:query IS NULL OR t.identityCardNumber LIKE CONCAT('%', :query, '%') )
+        OR (:query IS NULL OR t.address LIKE CONCAT('%', :query, '%') ))
         AND (:gender IS NULL OR t.gender = :gender)
         AND t.tenantStatus = 'HUY_BO'
         ORDER BY t.updatedAt DESC
     """)
-    Page<Tenant> getTenantWithStatusCancelByUserId(@Param("userId") String userId, @Param("query") String query,
-                                                   @Param("gender") Gender gender, Pageable pageable);
+    Page<Tenant> getTenantWithStatusCancelByUserId(
+            @Param("userId") String userId,
+            @Param("query") String query,
+            @Param("gender") Gender gender,
+            Pageable pageable);
 
     @Query("""
         SELECT COUNT(t),
+        SUM(CASE WHEN t.tenantStatus = 'CHO_TAO_HOP_DONG' THEN 1 ELSE 0 END),
         SUM(CASE WHEN t.tenantStatus = 'DANG_THUE' THEN 1 ELSE 0 END),
         SUM(CASE WHEN t.tenantStatus = 'DA_TRA_PHONG' THEN 1 ELSE 0 END),
         SUM(CASE WHEN t.tenantStatus = 'TIEM_NANG' THEN 1 ELSE 0 END),
@@ -70,29 +75,41 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
 
     @Query("""
         SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse(
-            t.id, t.customerCode, t.fullName, t.email, t.phoneNumber, t.isRepresentative
+            ct.id,
+            ct.tenant.customerCode,
+            ct.tenant.fullName,
+            ct.tenant.email,
+            ct.tenant.phoneNumber
         )
         FROM Contract c
-        JOIN c.tenants t
+        JOIN c.contractTenants ct
         WHERE c.id = :contractId
     """)
     List<TenantBasicResponse> findTenantsByContractId(@Param("contractId") String contractId);
 
     @Query("""
-                SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse(
-                    t.id, t.customerCode, b.buildingName, b.address,f.nameFloor ,r.roomCode, t.fullName, t.gender,
-                    t.dob, t.email, t.phoneNumber, t.user.profilePicture,t.identityCardNumber, t.address,
-                    c.contractCode, c.endDate, t.tenantStatus, t.isRepresentative,
-                    t.createdAt, t.updatedAt
-                )
-                FROM Tenant t
-                LEFT JOIN t.contracts c
-                LEFT JOIN c.room r
-                LEFT JOIN r.floor f
-                LEFT JOIN f.building b
-                WHERE t.id = :tenantId
-            """)
-    Optional<TenantDetailResponse> findTenantDetailById(@Param("tenantId") String tenantId);
+    SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse(
+        t.id,
+        t.customerCode,
+        t.fullName,
+        t.gender,
+        t.dob,
+        t.email,
+        t.phoneNumber,
+        t.user.profilePicture,
+        t.identityCardNumber,
+        t.address,
+        t.tenantStatus,
+        COUNT(DISTINCT( CASE WHEN ct.representative = true THEN c.id END)),
+        t.createdAt,
+        t.updatedAt
+    )
+    FROM Tenant t
+    LEFT JOIN t.contractTenants ct
+    LEFT JOIN ct.contract c
+    WHERE t.id = :tenantId
+    """)
+    TenantDetailResponse getTenantDetailById(@Param("tenantId") String tenantId);
 
     @Query("""
         SELECT t FROM Tenant t
@@ -101,21 +118,12 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
     """)
     List<Tenant> findAllTenantsByUserId(@Param("userId") String userId);
 
-    Optional<Tenant> findByUserId(String userId);
-
-    boolean existsByEmail(String email);
-
-    boolean existsByPhoneNumber(String phoneNumber);
-
-    boolean existsByIdentityCardNumber(String identityCardNumber);
-
     @Query("""
         SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantSelectResponse(t.id, t.fullName)
         FROM Tenant t
-        JOIN t.contracts c
+        JOIN t.contractTenants ct
         WHERE t.owner.id = :userId
-        AND t.isRepresentative = true
-        AND c.room IS NOT NULL AND c.room.id = :roomId
+        AND ct.contract.room IS NOT NULL AND ct.contract.room.id = :roomId
         AND t.tenantStatus != 'HUY_BO'
     """)
     List<TenantSelectResponse> findAllTenantsByOwnerIdAndRoomId(@Param("userId") String userId,
@@ -123,9 +131,17 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
 
     @Query("""
         SELECT DISTINCT t FROM Tenant t
-        JOIN t.contracts c
-        WHERE c.room.id = :roomId
-        AND (c.status = 'HIEU_LUC' OR c.status = 'SAP_HET_HAN')
+        JOIN t.contractTenants ct
+        WHERE ct.contract.room.id = :roomId
+        AND (ct.contract.status = 'HIEU_LUC' OR ct.contract.status = 'SAP_HET_HAN')
     """)
     List<Tenant> findAllTenantsByRoomId(@Param("roomId") String roomId);
+
+    Optional<Tenant> findByUserId(String userId);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    boolean existsByIdentityCardNumber(String identityCardNumber);
 }

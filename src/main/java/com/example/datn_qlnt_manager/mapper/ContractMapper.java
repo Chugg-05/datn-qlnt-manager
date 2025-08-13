@@ -14,7 +14,6 @@ public interface ContractMapper {
 
     @Mapping(target = "contractCode", ignore = true)
     @Mapping(target = "room", ignore = true)
-    @Mapping(target = "tenants", ignore = true)
     @Mapping(target = "status", constant = "HIEU_LUC")
     @Mapping(target = "assets", ignore = true)
     @Mapping(target = "services", ignore = true)
@@ -31,7 +30,7 @@ public interface ContractMapper {
     @Mapping(target = "roomPrice", ignore = true)
     @Mapping(target = "electricPrice", ignore = true)
     @Mapping(target = "waterPrice", ignore = true)
-    @Mapping(target = "tenants", ignore = true)
+    @Mapping(target = "contractTenants", ignore = true)
     @Mapping(target = "assets", ignore = true)
     @Mapping(target = "services", ignore = true)
     @Mapping(target = "vehicles", ignore = true)

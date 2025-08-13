@@ -23,16 +23,16 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
     @Query(
             """
 		SELECT c FROM Contract c
-		INNER JOIN c.tenants t
+		INNER JOIN c.contractTenants ct
 		WHERE (c.room.floor.building.user.id = :userId)
 		AND ((:query IS NULL OR c.contractCode LIKE CONCAT('%', :query, '%') )
 		OR (:query IS NULL OR  c.room.roomCode LIKE  CONCAT('%', :query, '%') )
-		OR (:query IS NULL OR  t.fullName LIKE  CONCAT('%', :query, '%') )
-		OR (:query IS NULL OR  t.phoneNumber LIKE  CONCAT('%', :query, '%') )
-		OR (:query IS NULL OR  t.identityCardNumber LIKE  CONCAT('%', :query, '%') )
-		OR (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%') ))
+		OR (:query IS NULL OR  ct.tenant.fullName LIKE  CONCAT('%', :query, '%') )
+		OR (:query IS NULL OR  ct.tenant.phoneNumber LIKE  CONCAT('%', :query, '%') )
+		OR (:query IS NULL OR  ct.tenant.identityCardNumber LIKE  CONCAT('%', :query, '%') )
+		OR (:query IS NULL OR ct.tenant.email LIKE CONCAT('%', :query, '%') ))
 		AND (:building IS NULL OR c.room.floor.building.id = :building)
-		AND (:gender IS NULL OR t.gender = :gender)
+		AND (:gender IS NULL OR ct.tenant.gender = :gender)
 		AND (:status IS NULL OR c.status = :status)
 		AND c.status != 'DA_HUY'
 		ORDER BY c.updatedAt DESC
@@ -48,16 +48,16 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
     @Query(
             """
 		SELECT c FROM Contract c
-		INNER JOIN c.tenants t
+		INNER JOIN c.contractTenants ct
 		WHERE (c.room.floor.building.user.id = :userId)
 		AND ((:query IS NULL OR c.contractCode LIKE CONCAT('%', :query, '%') )
 		OR (:query IS NULL OR  c.room.roomCode LIKE  CONCAT('%', :query, '%') )
-		OR (:query IS NULL OR  t.fullName LIKE  CONCAT('%', :query, '%') )
-		OR (:query IS NULL OR  t.phoneNumber LIKE  CONCAT('%', :query, '%') )
-		OR (:query IS NULL OR  t.identityCardNumber LIKE  CONCAT('%', :query, '%') )
-		OR (:query IS NULL OR t.email LIKE CONCAT('%', :query, '%') ))
+		OR (:query IS NULL OR  ct.tenant.fullName LIKE  CONCAT('%', :query, '%') )
+		OR (:query IS NULL OR  ct.tenant.phoneNumber LIKE  CONCAT('%', :query, '%') )
+		OR (:query IS NULL OR  ct.tenant.identityCardNumber LIKE  CONCAT('%', :query, '%') )
+		OR (:query IS NULL OR ct.tenant.email LIKE CONCAT('%', :query, '%') ))
 		AND (:building IS NULL OR c.room.floor.building.id = :building)
-		AND (:gender IS NULL OR t.gender = :gender)
+		AND (:gender IS NULL OR ct.tenant.gender = :gender)
 		AND c.status = 'DA_HUY'
 		ORDER BY c.updatedAt DESC
 	""")
@@ -76,11 +76,11 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 			r.roomCode,
 			owner.fullName,
 			owner.phoneNumber,
-			rep.fullName,
-			rep.email,
-			rep.phoneNumber,
-			rep.identityCardNumber,
-			rep.address,
+			ct.tenant.fullName,
+			ct.tenant.email,
+			ct.tenant.phoneNumber,
+			ct.tenant.identityCardNumber,
+			ct.tenant.address,
 			c.numberOfPeople,
 			c.startDate,
 			c.endDate,
@@ -98,8 +98,8 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 		JOIN r.floor f
 		JOIN f.building b
 		JOIN b.user owner
-		JOIN c.tenants rep
-		WHERE c.id = :contractId AND rep.isRepresentative = true
+		JOIN c.contractTenants ct
+		WHERE c.id = :contractId AND ct.tenant.hasAccount = true
 	""")
     Optional<ContractDetailResponse> findContractDetailById(@Param("contractId") String contractId);
 
@@ -146,16 +146,16 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 	@Query("""
     SELECT DISTINCT c
     FROM Contract c
-    JOIN c.tenants t
-    JOIN t.user u
+    JOIN c.contractTenants ct
+    JOIN ct.tenant.user u
     WHERE u.id = :userId
       AND (:query IS NULL OR LOWER(c.contractCode) LIKE LOWER(CONCAT('%', :query, '%'))
            OR LOWER(c.room.roomCode) LIKE LOWER(CONCAT('%', :query, '%'))
-           OR LOWER(t.fullName) LIKE LOWER(CONCAT('%', :query, '%'))
-           OR LOWER(t.phoneNumber) LIKE LOWER(CONCAT('%', :query, '%'))
-           OR LOWER(t.identityCardNumber) LIKE LOWER(CONCAT('%', :query, '%'))
-           OR LOWER(t.email) LIKE LOWER(CONCAT('%', :query, '%')))
-      AND (:gender IS NULL OR t.gender = :gender)
+           OR LOWER(ct.tenant.fullName) LIKE LOWER(CONCAT('%', :query, '%'))
+           OR LOWER(ct.tenant.phoneNumber) LIKE LOWER(CONCAT('%', :query, '%'))
+           OR LOWER(ct.tenant.identityCardNumber) LIKE LOWER(CONCAT('%', :query, '%'))
+           OR LOWER(ct.tenant.email) LIKE LOWER(CONCAT('%', :query, '%')))
+      AND (:gender IS NULL OR ct.tenant.gender = :gender)
       AND (:status IS NULL OR c.status = :status)
       AND c.status != 'DA_HUY'
     ORDER BY c.updatedAt DESC
@@ -170,8 +170,8 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 
 	@Query("""
         SELECT c FROM Contract c
-        JOIN c.tenants t
-        WHERE t.id = :tenantId
+        JOIN c.contractTenants ct
+        WHERE ct.tenant.id = :tenantId
     """)
 	List<Contract> findAllByTenantId(@Param("tenantId") String tenantId);
 
@@ -193,5 +193,4 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 
 	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
 
-	boolean existsByTenants_Id(String tenantId);
 }

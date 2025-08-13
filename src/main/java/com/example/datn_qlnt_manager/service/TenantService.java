@@ -15,9 +15,7 @@ public interface TenantService {
 
     PaginatedResponse<TenantResponse> getTenantWithStatusCancelByUserId(TenantFilter filter, int page, int size);
 
-    TenantResponse createTenantByOwner(TenantCreationRequest request);
-
-    TenantResponse createTenantByRepresentative(TenantCreationRequest request);
+    TenantResponse createTenant(TenantCreationRequest request);
 
     TenantResponse updateTenant(String tenantId, TenantUpdateRequest request);
 
@@ -26,8 +24,6 @@ public interface TenantService {
     TenantStatistics getTenantStatisticsByUserId();
 
     List<TenantResponse> getAllTenantsByUserId();
-
-    void toggleTenantStatusById(String tenantId);
 
     void softDeleteTenantById(String tenantId);
 

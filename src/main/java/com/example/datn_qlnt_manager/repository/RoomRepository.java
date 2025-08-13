@@ -155,8 +155,8 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 
 	@Query("""
     SELECT DISTINCT c.room FROM Contract c
-    JOIN c.tenants t
-    WHERE t.id = :tenantId
+    JOIN c.contractTenants ct
+    WHERE ct.tenant.id = :tenantId
 """)
 	List<Room> findRoomsByTenantId(@Param("tenantId") String tenantId);
 
@@ -258,9 +258,9 @@ public interface RoomRepository extends JpaRepository<Room, String> {
         b.buildingName, b.address, owner.fullName, owner.phoneNumber,
         r.roomCode, r.acreage, r.maximumPeople, r.roomType, r.status, r.description,
         ctr.contractCode, ctr.numberOfPeople,
-        rep.fullName, rep.phoneNumber,rep.dob,rep.identityCardNumber,
+        rep.tenant.fullName, rep.tenant.phoneNumber,rep.tenant.dob,rep.tenant.identityCardNumber,
         ctr.deposit, ctr.roomPrice, ctr.status, ctr.startDate, ctr.endDate,
-        CAST((SELECT COUNT(DISTINCT t.id) FROM Contract c1 JOIN c1.tenants t WHERE c1 = ctr) AS long),
+        CAST((SELECT COUNT(DISTINCT t.id) FROM Contract c1 JOIN c1.contractTenants t WHERE c1 = ctr) AS long),
         CAST((SELECT COUNT(ar.id) FROM AssetRoom ar WHERE ar.room = r) AS long),
         CAST((SELECT COUNT(DISTINCT s.id) FROM Contract c2 JOIN c2.services s WHERE c2 = ctr) AS long),
         CAST((SELECT COUNT(DISTINCT v.id) FROM Contract c3 JOIN c3.vehicles v WHERE c3 = ctr) AS long)
@@ -270,9 +270,9 @@ public interface RoomRepository extends JpaRepository<Room, String> {
     JOIN f.building b
     JOIN b.user owner
     JOIN Contract ctr ON ctr.room = r AND ctr.status = com.example.datn_qlnt_manager.common.ContractStatus.HIEU_LUC
-    JOIN ctr.tenants tenant
-    JOIN ctr.tenants rep ON rep.isRepresentative = true
-    WHERE r.id = :roomId AND tenant.user.id = :userId
+    JOIN ctr.contractTenants tenant
+    JOIN ctr.contractTenants rep ON rep.representative = true
+    WHERE r.id = :roomId AND tenant.tenant.id = :userId
 """)
 	Optional<RoomDetailsResponse> findRoomDetailsForTenant(@Param("roomId") String roomId, @Param("userId") String userId);
 }

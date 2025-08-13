@@ -27,9 +27,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
         JOIN FETCH c.room r
         JOIN FETCH r.floor f
         JOIN FETCH f.building b
-        JOIN FETCH c.tenants t
+        JOIN FETCH c.contractTenants ct
+        JOIN FETCH ct.tenant t
         WHERE b.user.id = :ownerId
-        AND t.isRepresentative = true
+        AND t.hasAccount = true
         AND (
         :query IS NULL
         OR i.invoiceCode LIKE CONCAT('%', :query, '%')
@@ -71,9 +72,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
         JOIN FETCH c.room r
         JOIN FETCH r.floor f
         JOIN FETCH f.building b
-        JOIN FETCH c.tenants t
+        JOIN FETCH c.contractTenants ct
+        JOIN FETCH ct.tenant t
         WHERE b.user.id = :ownerId
-        AND t.isRepresentative = true
+        AND t.hasAccount = true
         AND (
         :query IS NULL
         OR i.invoiceCode LIKE CONCAT('%', :query, '%')
@@ -129,9 +131,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
         JOIN c.room r
         JOIN r.floor f
         JOIN f.building b
-        JOIN c.tenants t
+        JOIN c.contractTenants ct
+        JOIN ct.tenant t
         WHERE i.id = :invoiceId
-        AND t.isRepresentative = true
+        AND t.hasAccount = true
     """)
 	Optional<InvoiceDetailView> getInvoiceDetailById(@Param("invoiceId") String invoiceId);
 
@@ -163,9 +166,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
         JOIN FETCH c.room r
         JOIN FETCH r.floor f
         JOIN FETCH f.building b
-        JOIN FETCH c.tenants t
+        JOIN FETCH c.contractTenants ct
+        JOIN FETCH ct.tenant t
         WHERE t.user.id = :userId
-        AND t.isRepresentative = true
+        AND t.hasAccount = true
         AND (
         :query IS NULL
         OR i.invoiceCode LIKE CONCAT('%', :query, '%')
@@ -203,7 +207,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
 	@Query("""
         SELECT i FROM Invoice i
         JOIN FETCH i.contract c
-        JOIN FETCH c.tenants t
+        JOIN FETCH c.contractTenants ct
+        JOIN FETCH ct.tenant t
         WHERE i.invoiceStatus = :status
         AND i.month = :month
         AND i.year = :year

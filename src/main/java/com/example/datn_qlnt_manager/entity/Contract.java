@@ -56,12 +56,8 @@ public class Contract extends AbstractEntity {
     @Column(name = "gia_nuoc")
     BigDecimal waterPrice;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "hop_dong_khach_thue",
-            joinColumns = @JoinColumn(name = "hop_dong_id"),
-            inverseJoinColumns = @JoinColumn(name = "khach_thue_id"))
-    Set<Tenant> tenants;
+    @OneToMany(mappedBy = "contract", fetch = FetchType.LAZY)
+    Set<ContractTenant> contractTenants;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

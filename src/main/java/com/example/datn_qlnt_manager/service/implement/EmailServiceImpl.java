@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.example.datn_qlnt_manager.entity.Invoice;
 import com.example.datn_qlnt_manager.entity.PaymentReceipt;
-import com.example.datn_qlnt_manager.entity.Tenant;
 import com.example.datn_qlnt_manager.utils.FormatUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -254,25 +253,25 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void notifyTenantPaymentConfirmed(PaymentReceipt receipt) {
         Invoice invoice = receipt.getInvoice();
-        Tenant representative = invoice.getContract().getTenants().stream()
-                .filter(t -> Boolean.TRUE.equals(t.getIsRepresentative()))
-                .findFirst()
-                .orElse(null);
+//        Tenant representative = invoice.getContract().getTenants().stream()
+//                .filter(t -> Boolean.TRUE.equals(t.getHasAccount()))
+//                .findFirst()
+//                .orElse(null);
 
-        if (representative == null || representative.getUser() == null || representative.getUser().getEmail() == null) {
-            log.warn("Không thể gửi email vì không tìm thấy đại diện hợp lệ.");
-            return;
-        }
-
-        String tenantEmail = representative.getUser().getEmail();
-        String tenantName = representative.getFullName();
+//        if (representative == null || representative.getUser() == null || representative.getUser().getEmail() == null) {
+//            log.warn("Không thể gửi email vì không tìm thấy đại diện hợp lệ.");
+//            return;
+//        }
+//
+//        String tenantEmail = representative.getUser().getEmail();
+//        String tenantName = representative.getFullName();
 
         String subject = String.format("Xác nhận thanh toán thành công - %s", receipt.getReceiptCode());
 
         String content = EmailTemplateUtil.loadTemplate(
                 "payment-confirmed-to-tenant",
                 Map.of(
-                        "name", tenantName,
+//                        "name", tenantName,
                         "invoiceCode", invoice.getInvoiceCode(),
                         "receiptCode", receipt.getReceiptCode(),
                         "amount", FormatUtil.formatCurrency(receipt.getAmount()),
@@ -284,8 +283,8 @@ public class EmailServiceImpl implements EmailService {
 
         sendEmail(SendEmailRequest.builder()
                 .to(Recipient.builder()
-                        .email(tenantEmail)
-                        .name(tenantName)
+//                        .email(tenantEmail)
+//                        .name(tenantName)
                         .build())
                 .subject(subject)
                 .htmlContent(content)

@@ -12,7 +12,6 @@ import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceItemResponse;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceResponse;
 import com.example.datn_qlnt_manager.entity.Invoice;
 import com.example.datn_qlnt_manager.entity.InvoiceDetail;
-import com.example.datn_qlnt_manager.entity.Tenant;
 
 @Mapper(componentModel = "spring")
 public interface InvoiceMapper {
@@ -31,7 +30,7 @@ public interface InvoiceMapper {
     @Mapping(source = "invoiceType", target = "invoiceType")
     @Mapping(source = "note", target = "note")
     @Mapping(source = "createdAt", target = "createdAt")
-    @Mapping(target = "tenantName", expression = "java(getRepresentativeName(invoice))")
+//    @Mapping(target = "tenantName", expression = "java(getRepresentativeName(invoice))")
     InvoiceResponse toInvoiceResponse(Invoice invoice);
 
     @Mapping(target = "id", ignore = true)
@@ -44,14 +43,14 @@ public interface InvoiceMapper {
     @Mapping(target = "invoiceType", ignore = true)
     void updateInvoice(InvoiceUpdateRequest request, @MappingTarget Invoice invoice);
 
-    default String getRepresentativeName(Invoice invoice) {
-        if (invoice.getContract() == null || invoice.getContract().getTenants() == null) return null;
-        return invoice.getContract().getTenants().stream()
-                .filter(t -> Boolean.TRUE.equals(t.getIsRepresentative()))
-                .map(Tenant::getFullName)
-                .findFirst()
-                .orElse(null);
-    }
+//    default String getRepresentativeName(Invoice invoice) {
+//        if (invoice.getContract() == null || invoice.getContract().getContractTenants() == null) return null;
+//        return invoice.getContract().getContractTenants().stream()
+//                .filter(t -> Boolean.TRUE.equals(t.getTenant().getHasAccount()))
+//                .map(ContractTen::getFullName)
+//                .findFirst()
+//                .orElse(null);
+//    }
 
     default InvoiceItemResponse toItemResponse(InvoiceDetail detail) {
         ServiceCategory category = null;

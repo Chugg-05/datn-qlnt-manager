@@ -21,7 +21,7 @@ import lombok.experimental.FieldDefaults;
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "khach_thue", indexes = @Index(name = "idx_ma_khach_thue", columnList = "ma_khach_thue"))
+@Table(name = "khach_thue")
 public class Tenant extends AbstractEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -62,12 +62,9 @@ public class Tenant extends AbstractEntity {
     @Column(name = "trang_thai", nullable = false)
     TenantStatus tenantStatus;
 
-    @Column(name = "la_dai_dien", nullable = false)
-    Boolean isRepresentative;
-
     @Column(name = "co_tai_khoan", nullable = false)
     Boolean hasAccount;
 
-    @ManyToMany(mappedBy = "tenants", fetch = FetchType.LAZY)
-    Set<Contract> contracts;
+    @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY)
+    Set<ContractTenant> contractTenants;
 }

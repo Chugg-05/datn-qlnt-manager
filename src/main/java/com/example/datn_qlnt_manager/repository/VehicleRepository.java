@@ -62,10 +62,10 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
 	@Query("""
 		SELECT v FROM Vehicle v
 		JOIN v.tenant t
-		JOIN t.contracts c
-		WHERE c.room.id = :roomId
-		AND (c.status = "HIEU_LUC"
-		OR c.status = "SAP_HET_HAN")
+		JOIN t.contractTenants ct
+		WHERE ct.contract.room.id = :roomId
+		AND (ct.contract.status = "HIEU_LUC"
+		OR ct.contract.status = "SAP_HET_HAN")
 """)
 	List<Vehicle> findActiveVehiclesByRoomId (@Param("roomId") String roomId);
 }

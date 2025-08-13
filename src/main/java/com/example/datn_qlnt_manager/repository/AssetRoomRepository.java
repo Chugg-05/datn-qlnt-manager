@@ -69,7 +69,7 @@ public interface AssetRoomRepository extends JpaRepository<AssetRoom, String> {
 			SUM(CASE WHEN ar.assetStatus = 'KHONG_SU_DUNG' THEN 1 ELSE 0 END)
 		)
 		FROM AssetRoom ar
-		WHERE ar.room.floor.building.id = :buildingId
+		WHERE ar.asset.building.id = :buildingId
 	""")
     AssetStatusStatistic getAssetStatisticsByBuildingId(@Param("buildingId") String buildingId);
 

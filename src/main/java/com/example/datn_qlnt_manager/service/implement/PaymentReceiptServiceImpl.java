@@ -193,18 +193,18 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
             invoiceRepository.save(invoice);
 
             //Gửi email tới tất cả khách thuê có tài khoản
-            invoice.getContract().getTenants().forEach(tenant -> {
-                User user = tenant.getUser();
-                if (user != null && user.getEmail() != null) {
-                    emailService.sendPaymentNotificationToTenant(
-                            user.getEmail(),
-                            user.getFullName(),
-                            invoice,
-                            receipt
-                    );
-                    notifiedEmails.add(user.getEmail());
-                }
-            });
+//            invoice.getContract().getTenants().forEach(tenant -> {
+//                User user = tenant.getUser();
+//                if (user != null && user.getEmail() != null) {
+//                    emailService.sendPaymentNotificationToTenant(
+//                            user.getEmail(),
+//                            user.getFullName(),
+//                            invoice,
+//                            receipt
+//                    );
+//                    notifiedEmails.add(user.getEmail());
+//                }
+//            });
         }
 
         if (created == 0) {
@@ -234,23 +234,23 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
                 receipt.setPaymentStatus(PaymentStatus.CHO_XAC_NHAN);
                 receipt.setUpdatedAt(Instant.now());
                 paymentReceiptRepository.save(receipt);
-                emailService.notifyOwnerForCashReceipt(receipt,
-                        invoiceMapper.getRepresentativeName(receipt.getInvoice()));
+//                emailService.notifyOwnerForCashReceipt(receipt,
+//                        invoiceMapper.getRepresentativeName(receipt.getInvoice()));
             }
 
-            case VNPAY -> {
-                Invoice invoice = invoiceRepository.findById(receipt.getInvoice().getId())
-                                .orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
-                receipt.setPaymentMethod(request.getPaymentMethod());
-                receipt.setPaymentStatus(PaymentStatus.DA_THANH_TOAN);
-                receipt.setUpdatedAt(Instant.now());
-                receipt.setPaymentDate(LocalDateTime.now());
-                invoice.setInvoiceStatus(InvoiceStatus.DA_THANH_TOAN);
-                paymentReceiptRepository.save(receipt);
-                invoiceRepository.save(invoice);
-                emailService.notifyOwnerForCashReceipt(receipt,
-                        invoiceMapper.getRepresentativeName(receipt.getInvoice()));
-            }
+//            case VNPAY -> {
+//                Invoice invoice = invoiceRepository.findById(receipt.getInvoice().getId())
+//                                .orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
+//                receipt.setPaymentMethod(request.getPaymentMethod());
+//                receipt.setPaymentStatus(PaymentStatus.DA_THANH_TOAN);
+//                receipt.setUpdatedAt(Instant.now());
+//                receipt.setPaymentDate(LocalDateTime.now());
+//                invoice.setInvoiceStatus(InvoiceStatus.DA_THANH_TOAN);
+//                paymentReceiptRepository.save(receipt);
+//                invoiceRepository.save(invoice);
+//                emailService.notifyOwnerForCashReceipt(receipt,
+//                        invoiceMapper.getRepresentativeName(receipt.getInvoice()));
+//            }
 
             case ZALOPAY, MOMO -> throw new AppException(ErrorCode.NOT_SUPPORTED_YET);
 
@@ -283,8 +283,8 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         invoice.setUpdatedAt(Instant.now());
         invoiceRepository.save(invoice);
 
-        String representativeName = invoiceMapper.getRepresentativeName(receipt.getInvoice());
-        emailService.notifyOwnerRejectedReceipt(receipt, representativeName);
+//        String representativeName = invoiceMapper.getRepresentativeName(receipt.getInvoice());
+//        emailService.notifyOwnerRejectedReceipt(receipt, representativeName);
 
         return RejectPaymentResponse.builder()
                 .id(receipt.getId())
