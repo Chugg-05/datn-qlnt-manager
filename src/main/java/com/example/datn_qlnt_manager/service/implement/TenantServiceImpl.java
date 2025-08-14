@@ -4,7 +4,9 @@ import java.time.Instant;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
+import com.example.datn_qlnt_manager.entity.Room;
 import com.example.datn_qlnt_manager.mapper.ContractMapper;
+import com.example.datn_qlnt_manager.repository.RoomRepository;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -44,6 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TenantServiceImpl implements TenantService {
 
     TenantRepository tenantRepository;
+    RoomRepository roomRepository;
     TenantMapper tenantMapper;
     UserService userService;
     ContractRepository contractRepository;
@@ -199,6 +202,18 @@ public class TenantServiceImpl implements TenantService {
         tenantRepository.deleteById(tenantId);
     }
 
+    @Override
+    public List<TenantResponse> getTenantsByRoomId(String roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+
+        List<Tenant> tenants = tenantRepository.findAllTenantsByRoomId(room.getId());
+
+        return tenants.stream()
+                .map(tenantMapper::toTenantResponse)
+                .toList();
+    }
+
     private void validateDuplicateTenant(TenantCreationRequest request) {
         if (tenantRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
@@ -230,13 +245,6 @@ public class TenantServiceImpl implements TenantService {
                 .data(tenants)
                 .meta(meta)
                 .build();
-    }
-
-    public List<TenantResponse> getTenantsByRoomId(String roomId) {
-        List<Tenant> tenants = tenantRepository.findAllTenantsByRoomId(roomId);
-        return tenants.stream()
-                .map(tenantMapper::toTenantResponse)
-                .toList();
     }
 
 }

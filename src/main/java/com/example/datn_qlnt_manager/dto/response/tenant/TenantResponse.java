@@ -26,7 +26,5 @@ public class TenantResponse implements Serializable {
     String phoneNumber;
     String pictureUrl;
     TenantStatus tenantStatus;
-    String address;
-    String identityCardNumber;
     List<ContractResponse> contracts;
 }

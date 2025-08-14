@@ -16,6 +16,7 @@ public interface TenantMapper {
     @Mapping(target = "owner", ignore = true)
     Tenant toTenant(TenantCreationRequest request);
 
+    @Mapping(target = "pictureUrl", source = "user.profilePicture")
     TenantResponse toTenantResponse(Tenant tenant);
 
     @Mapping(target = "user", ignore = true)

@@ -138,7 +138,7 @@ public class TenantController {
 
     @Operation(summary = "Hiển thị chi tiết khách thuê trong phòng")
     @GetMapping("/room-tenants/detail/{roomId}")
-    public ApiResponse<List<TenantResponse>> getTenantsByRoomId(@PathVariable String roomId) {
+    public ApiResponse<List<TenantResponse>> getTenantsByRoomId(@PathVariable("roomId") String roomId) {
         return ApiResponse.<List<TenantResponse>>builder()
                 .data(tenantService.getTenantsByRoomId(roomId))
                 .message("Get detailed list of guests in the same room successfully")

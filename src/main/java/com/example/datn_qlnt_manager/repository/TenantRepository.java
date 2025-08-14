@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import com.example.datn_qlnt_manager.common.Gender;
 import com.example.datn_qlnt_manager.common.TenantStatus;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse;
-import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantSelectResponse;
 import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
 import com.example.datn_qlnt_manager.entity.Tenant;
@@ -86,30 +85,6 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
         WHERE c.id = :contractId
     """)
     List<TenantBasicResponse> findTenantsByContractId(@Param("contractId") String contractId);
-
-    @Query("""
-    SELECT new com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse(
-        t.id,
-        t.customerCode,
-        t.fullName,
-        t.gender,
-        t.dob,
-        t.email,
-        t.phoneNumber,
-        t.user.profilePicture,
-        t.identityCardNumber,
-        t.address,
-        t.tenantStatus,
-        COUNT(DISTINCT( CASE WHEN ct.representative = true THEN c.id END)),
-        t.createdAt,
-        t.updatedAt
-    )
-    FROM Tenant t
-    LEFT JOIN t.contractTenants ct
-    LEFT JOIN ct.contract c
-    WHERE t.id = :tenantId
-    """)
-    TenantDetailResponse getTenantDetailById(@Param("tenantId") String tenantId);
 
     @Query("""
         SELECT t FROM Tenant t
