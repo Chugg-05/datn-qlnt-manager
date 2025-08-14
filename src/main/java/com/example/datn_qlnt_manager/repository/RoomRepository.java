@@ -19,8 +19,16 @@ import com.example.datn_qlnt_manager.entity.Room;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, String> {
+	@Query("""
+    SELECT r
+    FROM Room r
+    JOIN r.floor f
+    JOIN f.building b
+    WHERE b.id = :buildingId
+""")
+	List<Room> findByBuildingId(@Param("buildingId") String buildingId);
 
-    @Query(
+	@Query(
             """
 				SELECT r
 				FROM Room r
