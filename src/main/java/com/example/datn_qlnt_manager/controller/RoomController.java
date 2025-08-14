@@ -156,6 +156,16 @@ public class RoomController {
                 .code(200)
                 .build();
     }
+    @Operation(summary = "Hiển thị phòng theo id tòa nhà")
+    @GetMapping("/find-all")
+    public ApiResponse<List<RoomResponse>> getRoomsByBuildingId(@RequestParam String buildingId) {
+        List<RoomResponse> data = roomService.findRoomsByBuildingId(buildingId);
+        return ApiResponse.<List<RoomResponse>>builder()
+                .data(data)
+                .message("Rooms have been found!")
+                .code(200)
+                .build();
+    }
 
     @DeleteMapping("/delete/{id}")
     public ApiResponse<Void> deleteRoom(@PathVariable("id") String roomId) {

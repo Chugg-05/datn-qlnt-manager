@@ -38,4 +38,5 @@ public interface AssetService {
     List<AssetResponse> findAllAssets();
 
     AssetResponse restoreAssetById(String assetId);
+
 }

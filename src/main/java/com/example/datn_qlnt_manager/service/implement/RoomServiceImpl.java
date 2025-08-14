@@ -51,7 +51,6 @@ public class RoomServiceImpl implements RoomService {
     UserService userService;
     CodeGeneratorService codeGeneratorService;
     TenantRepository tenantRepository;
-
     @Override
     public PaginatedResponse<RoomResponse> getPageAndSearchAndFilterRoomByUserId(
             RoomFilter roomFilter, Integer page, Integer size) {
@@ -261,4 +260,12 @@ public class RoomServiceImpl implements RoomService {
         room.setStatus(RoomStatus.TRONG);
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }
+    @Override
+    public List<RoomResponse> findRoomsByBuildingId(String buildingId) {
+        List<Room> rooms = roomRepository.findByBuildingId(buildingId);
+        return rooms.stream()
+                .map(roomMapper::toRoomResponse)
+                .toList();
+    }
+
 }
