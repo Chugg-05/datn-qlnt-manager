@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
 
+import com.example.datn_qlnt_manager.service.SystemNotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.data.domain.Page;
@@ -59,6 +60,7 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
     EmailService emailService;
     PaymentReceiptMapper paymentReceiptMapper;
     VnpayConfig vnpayConfig;
+    SystemNotificationService systemNotificationService;
 
     @Override
     public PaymentReceiptResponse createPaymentReceipt(PaymentReceiptCreationRequest request) {
@@ -279,6 +281,14 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         String representativeName = invoiceMapper.getRepresentativeName(receipt.getInvoice());
         emailService.notifyOwnerRejectedReceipt(receipt, representativeName);
 
+        // Gửi thông báo hệ thống cho user hiện tại
+        User currentUser = userService.getCurrentUser();
+        systemNotificationService.createNotification(
+                currentUser.getId(),
+                "Thanh toán bị từ chối",
+                "Phiếu thanh toán " + receipt.getReceiptCode() + " đã bị từ chối. Lý do: " + request.getReason()
+        );
+
         return RejectPaymentResponse.builder()
                 .id(receipt.getId())
                 .paymentStatus(receipt.getPaymentStatus())
@@ -312,6 +322,14 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         invoiceRepository.save(invoice);
 
         emailService.notifyTenantPaymentConfirmed(receipt);
+
+        // Gửi thông báo hệ thống cho user hiện tại
+        User currentUser = userService.getCurrentUser();
+        systemNotificationService.createNotification(
+                currentUser.getId(),
+                "Thanh toán thành công",
+                "Phiếu thanh toán " + receipt.getReceiptCode() + " đã được xác nhận thành công."
+        );
     }
 
     @Override
