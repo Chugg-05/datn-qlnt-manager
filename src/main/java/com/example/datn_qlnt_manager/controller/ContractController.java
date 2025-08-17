@@ -176,4 +176,13 @@ public class ContractController {
                 .message("success")
                 .build();
     }
+
+    @Operation(summary = "Sửa nội dung hợp đồng")
+    @PutMapping("/content/{contractId}")
+    public ApiResponse<String> updateContent(@PathVariable("contractId") String contractId, @RequestBody String content) {
+        return ApiResponse.<String>builder()
+                .data(contractService.updateContent(contractId, content))
+                .message("success")
+                .build();
+    }
 }

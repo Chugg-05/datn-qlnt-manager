@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -38,4 +39,7 @@ public class ContractUpdateRequest {
     Set<String> services;
 
     Set<String> vehicles;
+
+    @NotBlank(message = "INVALID_CONTENT_IN_CONTRACT")
+    String content;
 }

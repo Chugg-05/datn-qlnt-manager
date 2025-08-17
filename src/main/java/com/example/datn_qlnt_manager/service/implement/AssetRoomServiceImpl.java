@@ -131,6 +131,7 @@ public class AssetRoomServiceImpl implements AssetRoomService {
                         .assetBeLongTo(AssetBeLongTo.CA_NHAN)
                         .assetName(request.getAssetName())
                         .price(request.getPrice())
+                        .quantity(request.getQuantity())
                         .assetStatus(AssetStatus.HOAT_DONG)
                         .dateAdded(LocalDate.now())
                         .description(description)
