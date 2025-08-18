@@ -151,11 +151,11 @@ public class ServiceRoomController {
 
     @Operation(summary = "Hiển thị thông tin liên quan để thêm mới và cập nhật tài sản phòng theo người đang đăng nhập")
     @GetMapping("/init")
-    public ApiResponse<CreateRoomServiceInitResponse> getServiceRoomInfoByUserId() {
-        CreateRoomServiceInitResponse data = serviceRoomService.getServiceRoomInfoByUserId();
+    public ApiResponse<CreateRoomServiceInitResponse> getServiceRoomInfoByUserId(@RequestParam String buildingId) {
+        CreateRoomServiceInitResponse data = serviceRoomService.getServiceRoomInfoByUserId(buildingId);
         return ApiResponse.<CreateRoomServiceInitResponse>builder()
                 .data(data)
-                .message(" has been found!")
+                .message("Service room has been found!")
                 .build();
     }
 

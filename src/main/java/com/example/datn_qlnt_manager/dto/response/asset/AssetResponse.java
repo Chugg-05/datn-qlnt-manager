@@ -32,6 +32,8 @@ public class AssetResponse {
 
     Integer quantity;
 
+    Integer remainingQuantity;
+
     String descriptionAsset;
 
     String createdAt;
