@@ -29,6 +29,9 @@ public class Notification {
     @Column(name = "noi_dung")
     String content;
 
+    @Column(name = "hinh_anh")
+    String image;
+
     @Column(name = "gui_toi_tat_ca")
     Boolean sendToAll;
 
