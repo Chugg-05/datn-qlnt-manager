@@ -1,10 +1,13 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.cloudinary.Cloudinary;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -36,6 +39,7 @@ import com.example.datn_qlnt_manager.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -47,13 +51,19 @@ public class NotificationServiceImpl implements NotificationService {
     UserRepository userRepository;
     UserService userService;
     NotificationMapper notificationMapper;
+    Cloudinary cloudinary;
 
     @Override
-    public NotificationResponse createNotification(NotificationCreationRequest request) {
+    public NotificationResponse createNotification(NotificationCreationRequest request, MultipartFile image) {
         if (!Boolean.TRUE.equals(request.getSendToAll())
                 && (request.getUsers() == null || request.getUsers().isEmpty())) {
             throw new AppException(ErrorCode.NOTIFICATION_USERS_REQUIRED);
         }
+
+        if (!image.isEmpty()) {
+            request.setImage(uploadImage(image));
+        }
+
         Notification notification = notificationMapper.toNotification(request);
         notification.setSentAt(LocalDateTime.now());
         notification.setUser(userService.getCurrentUser());
@@ -80,10 +90,14 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public NotificationResponse updateNotification(String notificationId, NotificationUpdateRequest request) {
+    public NotificationResponse updateNotification(String notificationId, NotificationUpdateRequest request, MultipartFile image) {
         Notification notification = notificationRepository
                 .findById(notificationId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
+
+        if (!image.isEmpty()) {
+            request.setImage(uploadImage(image));
+        }
 
         if (!Boolean.TRUE.equals(request.getSendToAll())
                 && (request.getUsers() == null || request.getUsers().isEmpty())) {
@@ -178,5 +192,20 @@ public class NotificationServiceImpl implements NotificationService {
             throw new AppException(ErrorCode.NOTIFICATION_NOT_FOUND);
         }
         notificationRepository.deleteById(notificationId);
+    }
+
+    private String uploadImage(MultipartFile file) {
+        try {
+            @SuppressWarnings("unchecked") // bỏ qua cảnh báo
+            Map<String, Object> uploadResult = (Map<String, Object>) cloudinary
+                    .uploader()
+                    .upload(
+                            file.getBytes(),
+                            Map.of("resource_type", "image", "upload_preset", "DATN_QLNT", "folder", "notification"));
+
+            return (String) uploadResult.get("secure_url");
+        } catch (IOException | AppException e) {
+            throw new AppException(ErrorCode.UPLOAD_FAILED);
+        }
     }
 }

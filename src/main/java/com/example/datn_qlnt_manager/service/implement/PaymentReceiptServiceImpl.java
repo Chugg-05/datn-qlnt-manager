@@ -213,6 +213,7 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
     @Transactional
     @Override
     public PaymentMethodResponse confirmPaymentMethod(String receiptId, PaymentMethodRequest request) {
+        var user = userService.getCurrentUser();
         PaymentReceipt receipt = paymentReceiptRepository
                 .findById(receiptId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_RECEIPT_NOT_FOUND));
@@ -229,6 +230,11 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
                 paymentReceiptRepository.save(receipt);
                 emailService.notifyOwnerForCashReceipt(
                         receipt, invoiceMapper.getRepresentativeName(receipt.getInvoice()));
+                systemNotificationService.createNotification(
+                        user.getId(),
+                        "Thanh toán thành công",
+                        "Phiếu thanh toán " + receipt.getReceiptCode() + " đã được xác nhận thành công."
+                );
             }
 
             case VNPAY -> {
@@ -244,6 +250,11 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
                 invoiceRepository.save(invoice);
                 emailService.notifyOwnerForCashReceipt(
                         receipt, invoiceMapper.getRepresentativeName(receipt.getInvoice()));
+                systemNotificationService.createNotification(
+                        user.getId(),
+                        "Thanh toán thành công",
+                        "Phiếu thanh toán " + receipt.getReceiptCode() + " đã được xác nhận thành công."
+                );
             }
 
             case ZALOPAY, MOMO -> throw new AppException(ErrorCode.NOT_SUPPORTED_YET);
