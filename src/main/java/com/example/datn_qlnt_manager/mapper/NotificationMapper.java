@@ -13,7 +13,6 @@ public interface NotificationMapper {
 
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.fullName", target = "fullName")
-    @Mapping(source = "user.fullName", target = "sender")
     NotificationResponse toResponse(Notification entity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

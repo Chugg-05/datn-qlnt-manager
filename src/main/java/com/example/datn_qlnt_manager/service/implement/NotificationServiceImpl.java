@@ -61,10 +61,6 @@ public class NotificationServiceImpl implements NotificationService {
             throw new AppException(ErrorCode.NOTIFICATION_USERS_REQUIRED);
         }
 
-        if (!image.isEmpty()) {
-            request.setImage(uploadImage(image));
-        }
-
         Notification notification = notificationMapper.toNotification(request);
         notification.setSentAt(LocalDateTime.now());
         notification.setUser(userService.getCurrentUser());
@@ -91,8 +87,6 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (image != null && !image.isEmpty()) {
             notification.setImage(uploadImage(image));
-        if (!image.isEmpty()) {
-            request.setImage(uploadImage(image));
         }
 
         if (!Boolean.TRUE.equals(request.getSendToAll())
@@ -189,13 +183,6 @@ public class NotificationServiceImpl implements NotificationService {
             Map<String, Object> uploadResult = (Map<String, Object>) cloudinary.uploader()
                     .upload(file.getBytes(),
                             Map.of("resource_type", "image", "upload_preset", "DATN_QLNT", "folder", "notification"));
-            @SuppressWarnings("unchecked") // bỏ qua cảnh báo
-            Map<String, Object> uploadResult = (Map<String, Object>) cloudinary
-                    .uploader()
-                    .upload(
-                            file.getBytes(),
-                            Map.of("resource_type", "image", "upload_preset", "DATN_QLNT", "folder", "notification"));
-
             return (String) uploadResult.get("secure_url");
         } catch (IOException | AppException e) {
             throw new AppException(ErrorCode.UPLOAD_FAILED);
