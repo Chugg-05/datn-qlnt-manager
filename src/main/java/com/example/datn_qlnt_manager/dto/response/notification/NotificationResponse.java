@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.common.NotificationType;
+import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -43,4 +44,9 @@ public class NotificationResponse {
         this.userId = userId;
         this.fullName = fullName;
     }
+}
+    // user
+//    String fullName;
+    List<IdAndName> sendToUsers;
+    String sender;
 }
