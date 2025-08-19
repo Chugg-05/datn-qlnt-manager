@@ -1,6 +1,8 @@
 package com.example.datn_qlnt_manager.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.*;
 
@@ -42,7 +44,10 @@ public class Notification {
     @Column(name = "ngay_gui")
     LocalDateTime sentAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
+
+    @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<NotificationUser> notificationUsers = new ArrayList<>();
 }

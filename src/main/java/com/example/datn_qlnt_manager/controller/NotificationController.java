@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +35,7 @@ public class NotificationController {
     NotificationService notificationService;
 
     @Operation(summary = "Thêm thông báo")
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<NotificationResponse> createNotification(
             @Valid @ModelAttribute NotificationCreationRequest request,
             @RequestParam(required = false) MultipartFile image) {
@@ -45,7 +46,7 @@ public class NotificationController {
     }
 
     @Operation(summary = "Cập nhật thông báo")
-    @PutMapping("/{notificationId}")
+    @PutMapping(value = "/{notificationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<NotificationResponse> updateNotification(
             @PathVariable String notificationId, @Valid @ModelAttribute NotificationUpdateRequest request,
             @RequestParam(required = false) MultipartFile image) {

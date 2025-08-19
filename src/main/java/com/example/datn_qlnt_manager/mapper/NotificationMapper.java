@@ -11,6 +11,8 @@ import com.example.datn_qlnt_manager.entity.Notification;
 public interface NotificationMapper {
     Notification toNotification(NotificationCreationRequest request);
 
+    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.fullName", target = "fullName")
     @Mapping(source = "user.fullName", target = "sender")
     NotificationResponse toResponse(Notification entity);
 

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.example.datn_qlnt_manager.dto.response.notification.SentToUsers;
 import com.cloudinary.Cloudinary;
 import jakarta.transaction.Transactional;
 
@@ -68,25 +69,18 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setSentAt(LocalDateTime.now());
         notification.setUser(userService.getCurrentUser());
 
-        List<User> users = new ArrayList<>();
-        if (Boolean.TRUE.equals(request.getSendToAll())) {
-            users = userRepository.findAll();
-        } else if (request.getUsers() != null) {
-            users = userRepository.findAllById(request.getUsers());
+        if (image != null && !image.isEmpty()) {
+            notification.setImage(uploadImage(image));
         }
+
+        List<User> users = getRecipientUsers(request.getSendToAll(), request.getUsers());
+
         notificationRepository.save(notification);
+        notificationUserRepository.saveAll(buildNotificationUserLinks(notification, users));
 
-        List<NotificationUser> notifyLinks = users.stream()
-                .map(user -> {
-                    NotificationUser nu = new NotificationUser();
-                    nu.setUser(user);
-                    nu.setNotification(notification);
-                    return nu;
-                })
-                .collect(Collectors.toList());
-
-        notificationUserRepository.saveAll(notifyLinks);
-        return notificationMapper.toResponse(notification);
+        NotificationResponse response = notificationMapper.toResponse(notification);
+        response.setSentToUsers(mapUsersToIdAndName(users));
+        return response;
     }
 
     @Override
@@ -95,6 +89,8 @@ public class NotificationServiceImpl implements NotificationService {
                 .findById(notificationId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
 
+        if (image != null && !image.isEmpty()) {
+            notification.setImage(uploadImage(image));
         if (!image.isEmpty()) {
             request.setImage(uploadImage(image));
         }
@@ -103,33 +99,23 @@ public class NotificationServiceImpl implements NotificationService {
                 && (request.getUsers() == null || request.getUsers().isEmpty())) {
             throw new AppException(ErrorCode.NOTIFICATION_USERS_REQUIRED);
         }
+
         notificationMapper.updateNotificationFromRequest(request, notification);
         notification.setSentAt(LocalDateTime.now());
 
-        notificationUserRepository.deleteByNotificationId(notificationId); // Xóa các liên kết cũ
+        notificationUserRepository.deleteByNotificationId(notificationId);
 
-        List<User> users = Boolean.TRUE.equals(request.getSendToAll())
-                ? userRepository.findAll()
-                : userRepository.findAllById(request.getUsers());
-
-        List<NotificationUser> notifyLinks = users.stream()
-                .map(user -> {
-                    NotificationUser nu = new NotificationUser();
-                    nu.setUser(user);
-                    nu.setNotification(notification);
-                    return nu;
-                })
-                .collect(Collectors.toList());
-
+        List<User> users = getRecipientUsers(request.getSendToAll(), request.getUsers());
         notificationRepository.save(notification);
-        notificationUserRepository.saveAll(notifyLinks);
+        notificationUserRepository.saveAll(buildNotificationUserLinks(notification, users));
 
-        return notificationMapper.toResponse(notification);
+        NotificationResponse response = notificationMapper.toResponse(notification);
+        response.setSentToUsers(mapUsersToIdAndName(users));
+        return response;
     }
 
     @Override
-    public PaginatedResponse<NotificationResponse> filterMyNotifications(
-            NotificationFilter filter, int page, int size) {
+    public PaginatedResponse<NotificationResponse> filterMyNotifications(NotificationFilter filter, int page, int size) {
         String userId = userService.getCurrentUser().getId();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "sentAt"));
 
@@ -140,6 +126,8 @@ public class NotificationServiceImpl implements NotificationService {
                 filter.getFromDate(),
                 filter.getToDate(),
                 pageable);
+
+        pageResult.forEach(res -> res.setSentToUsers(notificationUserRepository.findRecipients(res.getNotificationId())));
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
@@ -173,6 +161,7 @@ public class NotificationServiceImpl implements NotificationService {
             notificationUser.setReadAt(LocalDateTime.now());
             notificationUserRepository.saveAndFlush(notificationUser);
         }
+
         return NotificationDetailResponse.builder()
                 .notificationId(notification.getNotificationId())
                 .title(notification.getTitle())
@@ -196,6 +185,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     private String uploadImage(MultipartFile file) {
         try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> uploadResult = (Map<String, Object>) cloudinary.uploader()
+                    .upload(file.getBytes(),
+                            Map.of("resource_type", "image", "upload_preset", "DATN_QLNT", "folder", "notification"));
             @SuppressWarnings("unchecked") // bỏ qua cảnh báo
             Map<String, Object> uploadResult = (Map<String, Object>) cloudinary
                     .uploader()
@@ -206,6 +199,38 @@ public class NotificationServiceImpl implements NotificationService {
             return (String) uploadResult.get("secure_url");
         } catch (IOException | AppException e) {
             throw new AppException(ErrorCode.UPLOAD_FAILED);
+        }
+    }
+
+    // -------------------- Helper Methods --------------------
+
+    private List<NotificationUser> buildNotificationUserLinks(Notification notification, List<User> users) {
+        return users.stream()
+                .map(user -> {
+                    NotificationUser nu = new NotificationUser();
+                    nu.setUser(user);
+                    nu.setNotification(notification);
+                    return nu;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<SentToUsers> mapUsersToIdAndName(List<User> users) {
+        return users.stream()
+                .map(u -> SentToUsers.builder()
+                        .id(u.getId())
+                        .fullName(u.getFullName())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private List<User> getRecipientUsers(Boolean sendToAll, List<String> userIds) {
+        if (Boolean.TRUE.equals(sendToAll)) {
+            return userRepository.findAll();
+        } else if (userIds != null && !userIds.isEmpty()) {
+            return userRepository.findAllById(userIds);
+        } else {
+            return new ArrayList<>();
         }
     }
 }
