@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/notifications")
@@ -33,21 +35,23 @@ public class NotificationController {
     NotificationService notificationService;
 
     @Operation(summary = "Thêm thông báo")
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<NotificationResponse> createNotification(
-            @Valid @RequestBody NotificationCreationRequest request) {
+            @Valid @ModelAttribute NotificationCreationRequest request,
+            @RequestParam(required = false) MultipartFile image) {
         return ApiResponse.<NotificationResponse>builder()
-                .data(notificationService.createNotification(request))
+                .data(notificationService.createNotification(request, image))
                 .message("Create Notification successfully")
                 .build();
     }
 
     @Operation(summary = "Cập nhật thông báo")
-    @PutMapping("/{notificationId}")
+    @PutMapping(value = "/{notificationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<NotificationResponse> updateNotification(
-            @PathVariable String notificationId, @Valid @RequestBody NotificationUpdateRequest request) {
+            @PathVariable String notificationId, @Valid @ModelAttribute NotificationUpdateRequest request,
+            @RequestParam(required = false) MultipartFile image) {
         return ApiResponse.<NotificationResponse>builder()
-                .data(notificationService.updateNotification(notificationId, request))
+                .data(notificationService.updateNotification(notificationId, request, image))
                 .message("Update Notification successfully")
                 .build();
     }
