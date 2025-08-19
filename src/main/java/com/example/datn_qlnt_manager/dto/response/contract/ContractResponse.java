@@ -3,11 +3,8 @@ package com.example.datn_qlnt_manager.dto.response.contract;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import com.example.datn_qlnt_manager.common.ContractStatus;
-import com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -26,6 +23,6 @@ public class ContractResponse {
     BigDecimal deposit;
     BigDecimal roomPrice;
     ContractStatus status;
+    String content;
     Instant createdAt;
-    Set<TenantBasicResponse> tenants;
 }

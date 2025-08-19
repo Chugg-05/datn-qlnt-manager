@@ -45,6 +45,7 @@ public class ContractDetailResponse {
     Set<VehicleBasicResponse> vehicles;
     Instant createdAt;
     Instant updatedAt;
+    String content;
 
     public ContractDetailResponse(
             String id,

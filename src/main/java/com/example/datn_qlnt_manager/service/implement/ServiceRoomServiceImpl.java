@@ -327,10 +327,10 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
     }
 
     @Override
-    public CreateRoomServiceInitResponse getServiceRoomInfoByUserId() {
+    public CreateRoomServiceInitResponse getServiceRoomInfoByUserId(String buildingId) {
         return CreateRoomServiceInitResponse.builder()
-                .rooms(roomRepository.getServiceRoomInfoByUserId(
-                        userService.getCurrentUser().getId()))
+                .rooms(roomRepository.getServiceRoomInfoByUserIdAndBuildingId(
+                        userService.getCurrentUser().getId(), buildingId))
                 .services(serviceRepository.findAllByUserId(
                         userService.getCurrentUser().getId()))
                 .build();

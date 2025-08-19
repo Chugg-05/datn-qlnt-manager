@@ -137,6 +137,7 @@ public class ContractServiceImpl implements ContractService {
         contract.setAssets(assets);
         contract.setServices(services);
         contract.setVehicles(vehicles);
+        contract.setContent(request.getContent());
         contract.setContractCode(codeGeneratorService.generateContractCode(room));
 
         applyUtilityPrices(contract);
@@ -200,6 +201,7 @@ public class ContractServiceImpl implements ContractService {
         contract.setAssets(assets);
         contract.setServices(services);
         contract.setVehicles(vehicles);
+        contract.setContent(request.getContent());
         contract.setUpdatedAt(Instant.now());
 
         contractRepository.save(contract);
@@ -250,6 +252,7 @@ public class ContractServiceImpl implements ContractService {
                         .build())
                 .collect(Collectors.toSet());
         detail.setVehicles(vehicleResponses);
+        detail.setContent(contract.getContent());
 
         return detail;
     }
@@ -386,5 +389,14 @@ public class ContractServiceImpl implements ContractService {
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
         contract.setStatus(ContractStatus.HIEU_LUC);
         return null;
+    }
+
+    @Override
+    public String updateContent(String contractId, String content) {
+        Contract contract = contractRepository
+                .findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+        contract.setContent(content);
+        return contractRepository.save(contract).getContent();
     }
 }

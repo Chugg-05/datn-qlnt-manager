@@ -42,4 +42,7 @@ public class ContractCreationRequest {
     Set<String> services;
 
     Set<String> vehicles;
+
+    @NotBlank(message = "INVALID_CONTENT_IN_CONTRACT")
+    String content;
 }

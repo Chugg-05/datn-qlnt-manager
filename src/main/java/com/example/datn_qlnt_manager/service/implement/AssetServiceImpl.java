@@ -71,6 +71,7 @@ public class AssetServiceImpl implements AssetService {
         asset.setAssetStatus(AssetStatus.HOAT_DONG);
         asset.setCreatedAt(Instant.now());
         asset.setUpdatedAt(Instant.now());
+        asset.setRemainingQuantity(request.getQuantity());
 
         return assetMapper.toResponse(assetRepository.save(asset));
     }

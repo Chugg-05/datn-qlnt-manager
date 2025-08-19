@@ -48,6 +48,9 @@ public class Asset extends AbstractEntity {
     @Column(name = "so_luong", nullable = false)
     Integer quantity;
 
+    @Column(name = "con_lai", nullable = false)
+    Integer remainingQuantity;
+
     @Column(name = "mo_ta")
     String descriptionAsset;
 

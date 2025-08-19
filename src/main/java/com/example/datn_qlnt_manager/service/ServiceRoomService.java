@@ -39,7 +39,7 @@ public interface ServiceRoomService {
 
     void toggleServiceRoomStatus(String id);
 
-    CreateRoomServiceInitResponse getServiceRoomInfoByUserId();
+    CreateRoomServiceInitResponse getServiceRoomInfoByUserId(String buildingId);
 
     List<IdNameAndType> getAllServiceRoomByUserId(String roomId);
 }

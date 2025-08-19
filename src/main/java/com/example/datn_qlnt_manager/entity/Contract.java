@@ -56,6 +56,9 @@ public class Contract extends AbstractEntity {
     @Column(name = "gia_nuoc")
     BigDecimal waterPrice;
 
+    @Column(name = "noi_dung", nullable = false)
+    String content;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "hop_dong_khach_thue",
