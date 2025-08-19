@@ -26,13 +26,4 @@ public interface NotificationUserRepository extends JpaRepository<NotificationUs
     @Query("DELETE FROM NotificationUser nu WHERE nu.notification.notificationId = :notificationId")
     void deleteByNotificationId(@Param("notificationId") String notificationId);
 
-    @Query("""
-        SELECT new com.example.datn_qlnt_manager.dto.response.notification.IdAndName(
-            u.id, u.fullName
-        )
-        FROM NotificationUser nu
-        JOIN nu.user u
-        WHERE nu.notification.notificationId = :notificationId
-    """)
-    List<IdAndName> findRecipients(@Param("notificationId") String notificationId);
 }

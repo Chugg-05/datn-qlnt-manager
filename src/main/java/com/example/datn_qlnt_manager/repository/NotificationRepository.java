@@ -21,12 +21,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
             n.notificationId,
             n.title,
             n.content,
-            n.image,
             n.notificationType,
             n.sendToAll,
             n.sentAt,
-            u.fullName,
-            u.id
+            u.fullName
         )
         FROM Notification n
         JOIN n.user u

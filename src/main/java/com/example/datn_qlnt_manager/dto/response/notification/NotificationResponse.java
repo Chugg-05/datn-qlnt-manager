@@ -17,30 +17,26 @@ public class NotificationResponse {
     String notificationId;
     String title;
     String content;
-    String image;
     NotificationType notificationType;
     Boolean sendToAll;
     LocalDateTime sentAt;
 
     // user - người gửi
-    String userId;
     String fullName;
 
     // người nhận
     List<IdAndName> sentToUsers;
 
     @Builder
-    public NotificationResponse(String notificationId, String title, String content, String image,
+    public NotificationResponse(String notificationId, String title, String content,
                                 NotificationType notificationType, Boolean sendToAll, LocalDateTime sentAt,
-                                String userId, String fullName) {
+                                 String fullName) {
         this.notificationId = notificationId;
         this.title = title;
         this.content = content;
-        this.image = image;
         this.notificationType = notificationType;
         this.sendToAll = sendToAll;
         this.sentAt = sentAt;
-        this.userId = userId;
         this.fullName = fullName;
     }
 }

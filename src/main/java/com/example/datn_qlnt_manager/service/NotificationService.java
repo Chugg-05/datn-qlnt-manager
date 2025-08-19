@@ -9,9 +9,9 @@ import com.example.datn_qlnt_manager.dto.response.notification.NotificationRespo
 import org.springframework.web.multipart.MultipartFile;
 
 public interface NotificationService {
-    NotificationResponse createNotification(NotificationCreationRequest request, MultipartFile image);
+    NotificationResponse createNotification(NotificationCreationRequest request);
 
-    NotificationResponse updateNotification(String notificationId, NotificationUpdateRequest request, MultipartFile image);
+    NotificationResponse updateNotification(String notificationId, NotificationUpdateRequest request);
 
     PaginatedResponse<NotificationResponse> filterMyNotifications(NotificationFilter filter, int page, int size);
 

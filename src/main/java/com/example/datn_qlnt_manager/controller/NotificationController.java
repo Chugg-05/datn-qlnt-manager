@@ -35,23 +35,23 @@ public class NotificationController {
     NotificationService notificationService;
 
     @Operation(summary = "Thêm thông báo")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping
     public ApiResponse<NotificationResponse> createNotification(
-            @Valid @ModelAttribute NotificationCreationRequest request,
-            @RequestParam(required = false) MultipartFile image) {
+            @Valid @ModelAttribute NotificationCreationRequest request
+           ) {
         return ApiResponse.<NotificationResponse>builder()
-                .data(notificationService.createNotification(request, image))
+                .data(notificationService.createNotification(request))
                 .message("Create Notification successfully")
                 .build();
     }
 
     @Operation(summary = "Cập nhật thông báo")
-    @PutMapping(value = "/{notificationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping( "/{notificationId}")
     public ApiResponse<NotificationResponse> updateNotification(
-            @PathVariable String notificationId, @Valid @ModelAttribute NotificationUpdateRequest request,
-            @RequestParam(required = false) MultipartFile image) {
+            @PathVariable String notificationId, @Valid @ModelAttribute NotificationUpdateRequest request)
+            {
         return ApiResponse.<NotificationResponse>builder()
-                .data(notificationService.updateNotification(notificationId, request, image))
+                .data(notificationService.updateNotification(notificationId, request))
                 .message("Update Notification successfully")
                 .build();
     }
