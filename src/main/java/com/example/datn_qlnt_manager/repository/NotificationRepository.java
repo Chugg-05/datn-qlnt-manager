@@ -21,10 +21,12 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
             n.notificationId,
             n.title,
             n.content,
+            n.image,
             n.notificationType,
             n.sendToAll,
             n.sentAt,
-            u.fullName
+            u.fullName,
+            u.id
         )
         FROM Notification n
         JOIN n.user u
@@ -44,4 +46,3 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
             @Param("to") LocalDateTime to,
             Pageable pageable);
 }
-

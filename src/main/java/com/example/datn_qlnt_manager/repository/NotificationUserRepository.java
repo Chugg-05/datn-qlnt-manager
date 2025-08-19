@@ -3,7 +3,7 @@ package com.example.datn_qlnt_manager.repository;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.datn_qlnt_manager.dto.response.notification.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.notification.SentToUsers;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,4 +26,13 @@ public interface NotificationUserRepository extends JpaRepository<NotificationUs
     @Query("DELETE FROM NotificationUser nu WHERE nu.notification.notificationId = :notificationId")
     void deleteByNotificationId(@Param("notificationId") String notificationId);
 
+    @Query("""
+        SELECT new com.example.datn_qlnt_manager.dto.response.notification.IdAndName(
+            u.id, u.fullName
+        )
+        FROM NotificationUser nu
+        JOIN nu.user u
+        WHERE nu.notification.notificationId = :notificationId
+    """)
+    List<SentToUsers> findRecipients(@Param("notificationId") String notificationId);
 }

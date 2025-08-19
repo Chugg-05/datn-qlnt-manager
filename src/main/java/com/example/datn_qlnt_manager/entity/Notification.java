@@ -31,6 +31,9 @@ public class Notification {
     @Column(name = "noi_dung")
     String content;
 
+    @Column(name = "hinh_anh")
+    String image;
+
     @Column(name = "gui_toi_tat_ca")
     Boolean sendToAll;
 
@@ -45,4 +48,6 @@ public class Notification {
     @JoinColumn(name = "user_id")
     User user;
 
+    @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<NotificationUser> notificationUsers = new ArrayList<>();
 }
