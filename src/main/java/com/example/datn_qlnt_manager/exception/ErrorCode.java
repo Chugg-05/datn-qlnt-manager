@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.exception;
 
+import com.example.datn_qlnt_manager.configuration.Translator;
 import org.springframework.http.HttpStatus;
 
 import lombok.AccessLevel;
@@ -152,7 +153,7 @@ public enum ErrorCode {
             400, "Content cannot be blank.", HttpStatus.BAD_REQUEST),
     TENANT_HAS_NO_CONTRACT(400, "Tenant has no contract", HttpStatus.BAD_REQUEST),
     CANNOT_ADD_MORE_FLOORS(
-            400, "Cannot add more floors than building's real number of floors.", HttpStatus.BAD_REQUEST),
+            400, Translator.toLocale("cannot.add.more.floors"), HttpStatus.BAD_REQUEST),
     CANNOT_TOGGLE_SERVICE_STATUS(400, "Unable to change status for this service", HttpStatus.BAD_REQUEST),
     CANNOT_TOGGLE_ASSET_STATUS(400, "Unable to change status for this asset", HttpStatus.BAD_REQUEST),
 
@@ -258,8 +259,8 @@ public enum ErrorCode {
     PERMISSION_NOT_FOUND(404, "Permission not found.", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND(404, "Role not found.", HttpStatus.NOT_FOUND),
     EMAIL_NOT_FOUND(404, "Email not found.", HttpStatus.NOT_FOUND),
-    BUILDING_NOT_FOUND(404, "Building not found.", HttpStatus.NOT_FOUND),
-    FLOOR_NOT_FOUND(404, "floor not found.", HttpStatus.NOT_FOUND),
+    BUILDING_NOT_FOUND(404, Translator.toLocale("building.not.found"), HttpStatus.NOT_FOUND),
+    FLOOR_NOT_FOUND(404, Translator.toLocale("floor.not.found"), HttpStatus.NOT_FOUND),
     ROOM_NOT_FOUND(404, "Room not found", HttpStatus.NOT_FOUND),
     TENANT_NOT_FOUND(404, "Tenant not found", HttpStatus.NOT_FOUND),
     METER_READING_NOT_FOUND(404, "Meter reading not found", HttpStatus.NOT_FOUND),
@@ -323,7 +324,7 @@ public enum ErrorCode {
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
     PHONE_NUMBER_EXISTED(409, "Phone already existed.", HttpStatus.CONFLICT),
     FlOOR_EXISTED(409, "Floor already existed.", HttpStatus.CONFLICT),
-    FLOOR_ALREADY_EXISTS(409, "Floor name already exists in this building.", HttpStatus.CONFLICT),
+    FLOOR_ALREADY_EXISTS(409, Translator.toLocale("floor.already.exists"), HttpStatus.CONFLICT),
     PERMISSION_EXISTED(409, "Permission already existed.", HttpStatus.BAD_REQUEST),
     ROLE_EXISTED(409, "Role already existed.", HttpStatus.BAD_REQUEST),
     BUILDING_CODE_EXISTED(409, "Building Code already existed.", HttpStatus.CONFLICT),
