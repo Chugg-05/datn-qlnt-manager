@@ -357,6 +357,25 @@ public class ContractServiceImpl implements ContractService {
         return room;
     }
 
+    @Override
+    public ContractResponse restoreContractById(String contractId) {
+        Contract contract = contractRepository
+                .findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+        contract.setStatus(ContractStatus.HIEU_LUC);
+        return null;
+    }
+
+
+    @Override
+    public String updateContent(String contractId, String content) {
+        Contract contract = contractRepository
+                .findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+        contract.setContent(content);
+        return contractRepository.save(contract).getContent();
+    }
+
     private void validateContractUpdate(Contract contract, ContractUpdateRequest request) {
         if (!contract.getStartDate().isBefore(request.getEndDate())) {
             throw new AppException(ErrorCode.END_DATE_BEFORE_START_DATE);

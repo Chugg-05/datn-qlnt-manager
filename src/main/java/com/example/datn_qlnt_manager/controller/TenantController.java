@@ -145,12 +145,4 @@ public class TenantController {
                 .build();
     }
 
-    @Operation(summary = "Khôi phục khách thuê đã xóa")
-    @PutMapping("/restore/{tenantId}")
-    public ApiResponse<TenantResponse> restoreTenantById(@PathVariable("tenantId") String tenantId) {
-        return ApiResponse.<TenantResponse>builder()
-                .data(tenantService.restoreTenantById(tenantId))
-                .message("success")
-                .build();
-    }
 }

@@ -23,7 +23,6 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.TenantFilter;
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.tenant.TenantUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantResponse;
 import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
@@ -31,7 +30,6 @@ import com.example.datn_qlnt_manager.entity.Tenant;
 import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
-import com.example.datn_qlnt_manager.mapper.ContractMapper;
 import com.example.datn_qlnt_manager.mapper.TenantMapper;
 import com.example.datn_qlnt_manager.repository.ContractRepository;
 import com.example.datn_qlnt_manager.repository.TenantRepository;
@@ -249,7 +247,6 @@ public class TenantServiceImpl implements TenantService {
         }
     }
 
-
     private void validateDuplicateTenant(TenantCreationRequest request) {
         if (tenantRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
@@ -283,16 +280,4 @@ public class TenantServiceImpl implements TenantService {
                 .build();
     }
 
-    public List<TenantResponse> getTenantsByRoomId(String roomId) {
-        List<Tenant> tenants = tenantRepository.findAllTenantsByRoomId(roomId);
-        return tenants.stream().map(tenantMapper::toTenantResponse).toList();
-    }
-
-    @Override
-    public TenantResponse restoreTenantById(String tenantId) {
-        Tenant tenant =
-                tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
-        tenant.setTenantStatus(TenantStatus.KHOI_PHUC);
-        return tenantMapper.toTenantResponse(tenantRepository.save(tenant));
-    }
 }

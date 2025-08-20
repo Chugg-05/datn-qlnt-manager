@@ -50,12 +50,12 @@ public class Contract extends AbstractEntity {
     @Column(name = "gia_nuoc")
     BigDecimal waterPrice;
 
+    @Column(name = "noi_dung")
+    String content;
+
     @OneToMany(mappedBy = "contract", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ContractTenant> contractTenants;
 
     @OneToMany(mappedBy = "contract", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ContractVehicle> contractVehicles;
-
-    @Column(name = "noi_dung")
-    String content;
 }

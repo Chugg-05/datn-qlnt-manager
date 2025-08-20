@@ -670,7 +670,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private List<InvoiceItemResponse> getInvoiceItemsByContext(Contract contract, Room room, int month, int year) {
         List<InvoiceItemResponse> items = new ArrayList<>();
 
-        LocalDate contractStart = contract.getStartDate().toLocalDate();
+        LocalDate contractStart = contract.getStartDate();
         // tháng đầu tiên không tính tiền điện, nước (dịch vụ tính theo số)
         boolean isFirstMonth = contractStart.getMonthValue() == month && contractStart.getYear() == year;
 
@@ -709,9 +709,9 @@ public class InvoiceServiceImpl implements InvoiceService {
     private List<InvoiceItemResponse> buildNonMeterServiceCharges(Room room, Contract contract, int month, int year) {
         List<InvoiceItemResponse> items = new ArrayList<>();
 
-        int numberOfPeople = contract.getNumberOfPeople();
+        int numberOfPeople = contract.getContractTenants().size();
         int vehicleNumber =
-                contract.getVehicles() != null ? contract.getVehicles().size() : 0;
+                contract.getContractVehicles() != null ? contract.getContractVehicles().size() : 0;
 
         List<ServiceRoom> serviceRooms =
                 serviceRoomRepository.findActiveByRoomIdAndMonth(room.getId(), LocalDate.of(year, month, 1));

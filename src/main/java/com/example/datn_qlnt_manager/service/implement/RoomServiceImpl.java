@@ -248,4 +248,18 @@ public class RoomServiceImpl implements RoomService {
 //                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
         return null;
     }
+
+    @Override
+    public RoomResponse restoreRoomById(String roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        room.setStatus(RoomStatus.TRONG);
+        return roomMapper.toRoomResponse(roomRepository.save(room));
+    }
+    @Override
+    public List<RoomResponse> findRoomsByBuildingId(String buildingId) {
+        List<Room> rooms = roomRepository.findByBuildingId(buildingId);
+        return rooms.stream()
+                .map(roomMapper::toRoomResponse)
+                .toList();
+    }
 }
