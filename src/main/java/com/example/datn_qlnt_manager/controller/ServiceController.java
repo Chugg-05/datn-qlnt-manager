@@ -102,4 +102,30 @@ public class ServiceController {
                 .code(200)
                 .build();
     }
+
+    @Operation(summary = "Khôi phục dịch vụ đã xóa")
+    @PutMapping("/restore/{serviceId}")
+    public ApiResponse<ServiceResponse> restoreBuildingById(@PathVariable("serviceId") String serviceId) {
+        return ApiResponse.<ServiceResponse>builder()
+                .data(serviceService.restoreServiceById(serviceId))
+                .message("success")
+                .build();
+    }
+
+    @Operation(summary = "Phân trang danh sách dịch vụ")
+    @GetMapping("/cancel")
+    public ApiResponse<List<ServiceResponse>> getPageAndSearchAndFilterServicesAndCancel(
+            @ModelAttribute ServiceFilter serviceFilter,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "15") Integer size) {
+
+        PaginatedResponse<ServiceResponse> result =
+                serviceService.getPageAndSearchAndFilterServiceAndCancel(serviceFilter, page, size);
+
+        return ApiResponse.<List<ServiceResponse>>builder()
+                .message("Lấy danh sách dịch vụ thành công")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
 }

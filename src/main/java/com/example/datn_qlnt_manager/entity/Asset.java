@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.example.datn_qlnt_manager.common.AssetType;
 import jakarta.persistence.*;
 
 import com.example.datn_qlnt_manager.common.AssetBeLongTo;
 import com.example.datn_qlnt_manager.common.AssetStatus;
+import com.example.datn_qlnt_manager.common.AssetType;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -47,6 +47,9 @@ public class Asset extends AbstractEntity {
 
     @Column(name = "so_luong", nullable = false)
     Integer quantity;
+
+    @Column(name = "con_lai", nullable = false)
+    Integer remainingQuantity;
 
     @Column(name = "mo_ta")
     String descriptionAsset;

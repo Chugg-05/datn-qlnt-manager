@@ -1,14 +1,15 @@
 package com.example.datn_qlnt_manager.dto.response.room;
 
-import com.example.datn_qlnt_manager.common.ContractStatus;
-import com.example.datn_qlnt_manager.common.RoomStatus;
-import com.example.datn_qlnt_manager.common.RoomType;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.example.datn_qlnt_manager.common.ContractStatus;
+import com.example.datn_qlnt_manager.common.RoomStatus;
+import com.example.datn_qlnt_manager.common.RoomType;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -80,8 +81,7 @@ public class RoomDetailsResponse {
             Long memberInRoomCount,
             Long assetInRoomCount,
             Long serviceInRoomCount,
-            Long vehicleInRoomCount
-    ) {
+            Long vehicleInRoomCount) {
         this.buildingName = buildingName;
         this.buildingAddress = buildingAddress;
         this.ownerName = ownerName;

@@ -1,5 +1,17 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import com.example.datn_qlnt_manager.common.*;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.AssetRoomFilter;
@@ -21,21 +33,11 @@ import com.example.datn_qlnt_manager.repository.BuildingRepository;
 import com.example.datn_qlnt_manager.repository.RoomRepository;
 import com.example.datn_qlnt_manager.service.AssetRoomService;
 import com.example.datn_qlnt_manager.service.UserService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -81,8 +83,7 @@ public class AssetRoomServiceImpl implements AssetRoomService {
 
     @Override
     public AssetRoomDetailResponse getAssetRoomDetail(String roomId) {
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         return buildAssetRoomDetailResponse(room);
     }
@@ -90,7 +91,8 @@ public class AssetRoomServiceImpl implements AssetRoomService {
     @Transactional
     @Override
     public AssetRoomResponse createAssetRoom(AssetRoomCreationRequest request) {
-        Room room = roomRepository.findById(request.getRoomId())
+        Room room = roomRepository
+                .findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         AssetRoom assetRoom;
@@ -99,9 +101,8 @@ public class AssetRoomServiceImpl implements AssetRoomService {
             case PHONG -> {
                 Asset asset = getValidAssetForAssignment(request.getAssetId());
 
-                int usedQuantity = Optional.ofNullable(
-                        assetRoomRepository.sumQuantityByAssetId(asset.getId())
-                ).orElse(0);
+                int usedQuantity = Optional.ofNullable(assetRoomRepository.sumQuantityByAssetId(asset.getId()))
+                        .orElse(0);
 
                 int availableQuantity = asset.getQuantity() - usedQuantity;
 
@@ -112,8 +113,16 @@ public class AssetRoomServiceImpl implements AssetRoomService {
                     throw new AppException(ErrorCode.ASSET_QUANTITY_NOT_ENOUGH);
                 }
 
-                assetRoom = buildAssetRoom(room, asset, AssetBeLongTo.PHONG,
+                assetRoom = buildAssetRoom(
+                        room,
+                        asset,
+                        AssetBeLongTo.PHONG,
                         "Đã thêm " + asset.getNameAsset() + " vào phòng " + room.getRoomCode());
+
+                if (!assetRoomRepository.existsByRoomAndAsset(room, asset)) {
+                    asset.setRemainingQuantity(Math.max(asset.getRemainingQuantity() - 1, 0));
+                    assetRepository.save(asset);
+                }
             }
 
             case CA_NHAN -> {
@@ -126,8 +135,8 @@ public class AssetRoomServiceImpl implements AssetRoomService {
                         .room(room)
                         .assetBeLongTo(AssetBeLongTo.CA_NHAN)
                         .assetName(request.getAssetName())
-                        .quantity(request.getQuantity())
                         .price(request.getPrice())
+                        .quantity(request.getQuantity())
                         .assetStatus(AssetStatus.HOAT_DONG)
                         .dateAdded(LocalDate.now())
                         .description(description)
@@ -156,7 +165,11 @@ public class AssetRoomServiceImpl implements AssetRoomService {
             throw new AppException(ErrorCode.ROOM_NOT_FOUND_IN_BUILDING);
         }
 
-        assignAssetToRooms(asset, rooms);
+        int countAsset = assignAssetToRooms(asset, rooms);
+        if (countAsset > 0) {
+            asset.setRemainingQuantity(Math.max(asset.getRemainingQuantity() - countAsset, 0));
+            assetRepository.save(asset);
+        }
         return buildAssetDetailResponse(asset, rooms);
     }
 
@@ -171,9 +184,8 @@ public class AssetRoomServiceImpl implements AssetRoomService {
             throw new AppException(ErrorCode.ROOM_NOT_FOUND);
         }
 
-        int usedQuantity = Optional.ofNullable(
-                assetRoomRepository.sumQuantityByAssetId(asset.getId())
-        ).orElse(0);
+        int usedQuantity = Optional.ofNullable(assetRoomRepository.sumQuantityByAssetId(asset.getId()))
+                .orElse(0);
 
         int remaining = asset.getQuantity() - usedQuantity;
 
@@ -181,14 +193,19 @@ public class AssetRoomServiceImpl implements AssetRoomService {
             throw new AppException(ErrorCode.ASSET_QUANTITY_NOT_ENOUGH);
         }
 
-        assignAssetToRooms(asset, rooms);
+        int countAsset = assignAssetToRooms(asset, rooms);
+        if (countAsset > 0) {
+            asset.setRemainingQuantity(Math.max(asset.getRemainingQuantity() - countAsset, 0));
+            assetRepository.save(asset);
+        }
         return buildAssetDetailResponse(asset, rooms);
     }
 
     @Transactional
     @Override
     public AssetRoomDetailResponse createAssetRoomForRoom(AssetRoomCreationForRoomRequest request) {
-        Room room = roomRepository.findById(request.getRoomId())
+        Room room = roomRepository
+                .findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         List<Asset> assets = assetRepository.findAllById(request.getAssetIds());
@@ -199,15 +216,20 @@ public class AssetRoomServiceImpl implements AssetRoomService {
 
         for (Asset asset : assets) {
             getValidAssetForAssignment(asset); // validate từng asset
-            assignAssetToRooms(asset, List.of(room));
+            int countAsset = assignAssetToRooms(asset, List.of(room));
+            if (countAsset > 0) {
+                asset.setRemainingQuantity(Math.max(asset.getRemainingQuantity() - countAsset, 0));
+            }
         }
 
+        assetRepository.saveAll(assets);
         return buildAssetRoomDetailResponse(room);
     }
 
     @Override
     public AssetRoomResponse updateAssetRoom(String assetRoomId, AssetRoomUpdateRequest request) {
-        AssetRoom assetRoom = assetRoomRepository.findById(assetRoomId)
+        AssetRoom assetRoom = assetRoomRepository
+                .findById(assetRoomId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSET_ROOM_NOT_FOUND));
 
         assetRoomMapper.updateAssetRoomFromRequest(request, assetRoom);
@@ -219,14 +241,16 @@ public class AssetRoomServiceImpl implements AssetRoomService {
 
     @Override
     public AssetStatusStatistic getAssetStatisticsByBuildingId(String buildingId) {
-        Building building = buildingRepository.findById(buildingId)
+        Building building = buildingRepository
+                .findById(buildingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
         return assetRoomRepository.getAssetStatisticsByBuildingId(building.getId());
     }
 
     @Override
     public void toggleAssetRoomStatus(String assetRoomId) {
-        AssetRoom assetRoom = assetRoomRepository.findById(assetRoomId)
+        AssetRoom assetRoom = assetRoomRepository
+                .findById(assetRoomId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSET_ROOM_NOT_FOUND));
 
         AssetStatus assetRoomStatus = assetRoom.getAssetStatus();
@@ -245,18 +269,22 @@ public class AssetRoomServiceImpl implements AssetRoomService {
 
     @Override
     public void deleteAssetRoom(String assetRoomId) {
-        if (!assetRoomRepository.existsById(assetRoomId)) {
-            throw new AppException(ErrorCode.ASSET_ROOM_NOT_FOUND);
-        }
+        AssetRoom assetRoom = assetRoomRepository.findById(assetRoomId).
+                orElseThrow(() -> new AppException(ErrorCode.ASSET_ROOM_NOT_FOUND));
 
-        assetRoomRepository.deleteById(assetRoomId);
+        assetRoomRepository.delete(assetRoom);
+
+        if (assetRoom.getAssetBeLongTo() == AssetBeLongTo.PHONG) {
+            Asset asset = assetRoom.getAsset();
+            asset.setRemainingQuantity(asset.getRemainingQuantity() + 1);
+            assetRepository.save(asset);
+        }
     }
 
-    private void assignAssetToRooms(Asset asset, List<Room> rooms) {
+    private int assignAssetToRooms(Asset asset, List<Room> rooms) {
 
-        int usedQuantity = Optional.ofNullable(
-                assetRoomRepository.sumQuantityByAssetId(asset.getId())
-        ).orElse(0);
+        int usedQuantity = Optional.ofNullable(assetRoomRepository.sumQuantityByAssetId(asset.getId()))
+                .orElse(0);
 
         int availableQuantity = asset.getQuantity() - usedQuantity;
 
@@ -264,12 +292,17 @@ public class AssetRoomServiceImpl implements AssetRoomService {
             throw new AppException(ErrorCode.ASSET_QUANTITY_NOT_ENOUGH);
         }
 
+        int countAsset = 0;
+
         for (Room room : rooms) {
             if (assetRoomRepository.existsByRoomAndAsset(room, asset)) continue;
 
             if (availableQuantity <= 0) break;
 
-            AssetRoom assetRoom = buildAssetRoom(room, asset, asset.getAssetBeLongTo(),
+            AssetRoom assetRoom = buildAssetRoom(
+                    room,
+                    asset,
+                    asset.getAssetBeLongTo(),
                     "Tài sản " + asset.getNameAsset() + " đã được thêm vào phòng " + room.getRoomCode());
 
             assetRoom.setCreatedAt(Instant.now());
@@ -277,8 +310,11 @@ public class AssetRoomServiceImpl implements AssetRoomService {
 
             assetRoomRepository.save(assetRoom);
 
+            countAsset ++;
             availableQuantity--;
         }
+
+        return countAsset;
     }
 
     private AssetRoom buildAssetRoom(Room room, Asset asset, AssetBeLongTo belongTo, String description) {
@@ -311,8 +347,7 @@ public class AssetRoomServiceImpl implements AssetRoomService {
     }
 
     private Asset getValidAssetForAssignment(String assetId) {
-        Asset asset = assetRepository.findById(assetId)
-                .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
+        Asset asset = assetRepository.findById(assetId).orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
         return getValidAssetForAssignment(asset);
     }
 
@@ -334,8 +369,8 @@ public class AssetRoomServiceImpl implements AssetRoomService {
                         .roomType(room.getRoomType())
                         .status(room.getStatus())
                         .description(room.getDescription())
-                        .build()
-                ).toList();
+                        .build())
+                .toList();
 
         return AssetDetailResponse.builder()
                 .id(asset.getId())
@@ -372,5 +407,4 @@ public class AssetRoomServiceImpl implements AssetRoomService {
                 .assets(assetResponses)
                 .build();
     }
-
 }

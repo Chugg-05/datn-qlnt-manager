@@ -1,5 +1,11 @@
 package com.example.datn_qlnt_manager.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.PaymentReceiptFilter;
@@ -9,17 +15,12 @@ import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentMethodRe
 import com.example.datn_qlnt_manager.dto.response.paymentReceipt.PaymentReceiptResponse;
 import com.example.datn_qlnt_manager.dto.response.paymentReceipt.RejectPaymentResponse;
 import com.example.datn_qlnt_manager.service.PaymentReceiptService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequestMapping("/payment-receipts")
@@ -33,7 +34,8 @@ public class PaymentReceiptController {
 
     @Operation(summary = "Tạo phiếu thanh toán")
     @PostMapping
-    public ApiResponse<PaymentReceiptResponse> createPaymentReceipt(@Valid @RequestBody PaymentReceiptCreationRequest request) {
+    public ApiResponse<PaymentReceiptResponse> createPaymentReceipt(
+            @Valid @RequestBody PaymentReceiptCreationRequest request) {
         return ApiResponse.<PaymentReceiptResponse>builder()
                 .data(paymentReceiptService.createPaymentReceipt(request))
                 .message("Payment receipt created successfully")
@@ -64,7 +66,6 @@ public class PaymentReceiptController {
                 .build();
     }
 
-
     @Operation(summary = "Hiển thị phiếu thanh toán của khách thuê đang login")
     @GetMapping("/{invoiceId}")
     public ApiResponse<PaymentReceiptResponse> findPaymentReceiptByInvoiceId(@PathVariable String invoiceId) {
@@ -83,7 +84,6 @@ public class PaymentReceiptController {
                 .build();
     }
 
-
     @Operation(summary = "Gửi thông báo thanh toán hóa đơn tháng tới khách hàng")
     @PostMapping("/send-payment-notice")
     public ApiResponse<PaymentBatchResponse> generatePaymentReceiptsForCurrentMonth() {
@@ -97,9 +97,7 @@ public class PaymentReceiptController {
     @Operation(summary = "Xác nhận phương thức thanh toán từ người khách thuê")
     @PatchMapping("/confirm/{receiptId}")
     public ApiResponse<PaymentMethodResponse> confirmPaymentMethod(
-            @PathVariable("receiptId") String receiptId,
-            @RequestBody PaymentMethodRequest request
-    ) {
+            @PathVariable("receiptId") String receiptId, @RequestBody PaymentMethodRequest request) {
         return ApiResponse.<PaymentMethodResponse>builder()
                 .message("Confirm payment method successfully")
                 .data(paymentReceiptService.confirmPaymentMethod(receiptId, request))
@@ -109,9 +107,7 @@ public class PaymentReceiptController {
     @Operation(summary = "Từ chối thanh toán")
     @PatchMapping("/reject/{receiptId}")
     public ApiResponse<RejectPaymentResponse> rejectPaymentReceipt(
-            @PathVariable("receiptId") String receiptId,
-            @RequestBody @Valid RejectPaymentRequest request
-    ) {
+            @PathVariable("receiptId") String receiptId, @RequestBody @Valid RejectPaymentRequest request) {
         return ApiResponse.<RejectPaymentResponse>builder()
                 .message("Reject payment receipt successfully")
                 .data(paymentReceiptService.rejectPaymentReceipt(receiptId, request))
@@ -131,8 +127,8 @@ public class PaymentReceiptController {
 
     @Operation(summary = "Tạo đường dẫn tới thanh toán bằng VNPAY")
     @PostMapping("/create-payment-url")
-    public ApiResponse<String> createPaymentUrl(@Valid @RequestBody PaymentCreationURL paymentCreationURL,
-                                                HttpServletRequest httpServletRequest) {
+    public ApiResponse<String> createPaymentUrl(
+            @Valid @RequestBody PaymentCreationURL paymentCreationURL, HttpServletRequest httpServletRequest) {
         return ApiResponse.<String>builder()
                 .message("Payment creation url successfully")
                 .data(paymentReceiptService.createPaymentUrl(paymentCreationURL, httpServletRequest))

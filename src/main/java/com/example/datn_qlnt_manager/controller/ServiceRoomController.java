@@ -2,16 +2,6 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
-import com.example.datn_qlnt_manager.dto.projection.ServiceRoomView;
-import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateUnitPriceRequest;
-import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForBuildingRequest;
-import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForServiceRequest;
-import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
-import com.example.datn_qlnt_manager.dto.response.service.ServiceDetailResponse;
-import com.example.datn_qlnt_manager.dto.response.service.ServiceUpdateUnitPriceResponse;
-import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomDetailResponse;
-import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +9,18 @@ import org.springframework.web.bind.annotation.*;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ServiceRoomFilter;
+import com.example.datn_qlnt_manager.dto.projection.ServiceRoomView;
+import com.example.datn_qlnt_manager.dto.request.service.ServiceUpdateUnitPriceRequest;
+import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForBuildingRequest;
 import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForRoomRequest;
+import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationForServiceRequest;
+import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreationRequest;
+import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceUpdateUnitPriceResponse;
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.CreateRoomServiceInitResponse;
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
 import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatistics;
 import com.example.datn_qlnt_manager.service.ServiceRoomService;
 
@@ -58,8 +58,7 @@ public class ServiceRoomController {
     @Operation(summary = "Thêm các dịch vụ vào phòng cho 1 phòng")
     @PostMapping("/by-room")
     public ApiResponse<ServiceRoomDetailResponse> createRoomServiceForRoom(
-            @Valid @RequestBody ServiceRoomCreationForRoomRequest request
-    ) {
+            @Valid @RequestBody ServiceRoomCreationForRoomRequest request) {
         return ApiResponse.<ServiceRoomDetailResponse>builder()
                 .message("Services added to the room!")
                 .data(serviceRoomService.createRoomServiceForRoom(request))
@@ -69,8 +68,7 @@ public class ServiceRoomController {
     @Operation(summary = "Thêm 1 dịch vụ vào các phòng")
     @PostMapping("/by-service")
     public ApiResponse<ServiceDetailResponse> createRoomServiceForService(
-            @Valid @RequestBody ServiceRoomCreationForServiceRequest request
-    ) {
+            @Valid @RequestBody ServiceRoomCreationForServiceRequest request) {
         return ApiResponse.<ServiceDetailResponse>builder()
                 .message("This service has been added to the rooms!")
                 .data(serviceRoomService.createRoomServiceForService(request))
@@ -80,8 +78,7 @@ public class ServiceRoomController {
     @Operation(summary = "Thêm 1 dịch vụ cho tất cả các phòng trong 1 tòa nhà")
     @PostMapping("/by-building")
     public ApiResponse<ServiceDetailResponse> createRoomServiceForBuilding(
-            @Valid @RequestBody ServiceRoomCreationForBuildingRequest request
-    ) {
+            @Valid @RequestBody ServiceRoomCreationForBuildingRequest request) {
         return ApiResponse.<ServiceDetailResponse>builder()
                 .message("This service has been added to the building.!")
                 .data(serviceRoomService.createRoomServiceForBuilding(request))
@@ -90,9 +87,7 @@ public class ServiceRoomController {
 
     @Operation(summary = "Thêm 1 dịch vụ cho 1 phòng")
     @PostMapping
-    public ApiResponse<ServiceRoomResponse> createRoomService(
-            @Valid @RequestBody ServiceRoomCreationRequest request
-    ) {
+    public ApiResponse<ServiceRoomResponse> createRoomService(@Valid @RequestBody ServiceRoomCreationRequest request) {
         return ApiResponse.<ServiceRoomResponse>builder()
                 .message("Service room has been created!")
                 .data(serviceRoomService.createServiceRoom(request))
@@ -137,7 +132,8 @@ public class ServiceRoomController {
 
     @Operation(summary = "Thống kê dịch vụ phòng theo trạng thái (theo người dùng hiện tại)")
     @GetMapping("/statistics/{buildingId}")
-    public ApiResponse<ServiceRoomStatistics> getStatisticsByStatus(@PathVariable(name = "buildingId") String buildingId) {
+    public ApiResponse<ServiceRoomStatistics> getStatisticsByStatus(
+            @PathVariable(name = "buildingId") String buildingId) {
         return ApiResponse.<ServiceRoomStatistics>builder()
                 .message("Statistics fetched successfully")
                 .data(serviceRoomService.getServiceRoomStatusStatistics(buildingId))
@@ -155,11 +151,11 @@ public class ServiceRoomController {
 
     @Operation(summary = "Hiển thị thông tin liên quan để thêm mới và cập nhật tài sản phòng theo người đang đăng nhập")
     @GetMapping("/init")
-    public ApiResponse<CreateRoomServiceInitResponse> getServiceRoomInfoByUserId() {
-        CreateRoomServiceInitResponse data = serviceRoomService.getServiceRoomInfoByUserId();
+    public ApiResponse<CreateRoomServiceInitResponse> getServiceRoomInfoByUserId(@RequestParam String buildingId) {
+        CreateRoomServiceInitResponse data = serviceRoomService.getServiceRoomInfoByUserId(buildingId);
         return ApiResponse.<CreateRoomServiceInitResponse>builder()
                 .data(data)
-                .message(" has been found!")
+                .message("Service room has been found!")
                 .build();
     }
 

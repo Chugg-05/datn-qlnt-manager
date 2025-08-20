@@ -8,7 +8,6 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.InvoiceFilter;
 import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceBuildingCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceFloorCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.invoice.InvoiceUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceDetailsResponse;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceResponse;
@@ -42,6 +41,7 @@ public interface InvoiceService {
 
     List<InvoiceResponse> getAllInvoicesByUserId();
 
-    PaginatedResponse<InvoiceResponse> getInvoicesForTenant(
-            InvoiceFilter filter, int page, int size);
+    PaginatedResponse<InvoiceResponse> getInvoicesForTenant(InvoiceFilter filter, int page, int size);
+
+    InvoiceResponse restoreInvoiceById(String invoiceId);
 }

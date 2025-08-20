@@ -2,7 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
-import com.example.datn_qlnt_manager.dto.statistics.FloorRoomStatisticResponse;
+import com.example.datn_qlnt_manager.configuration.Translator;
 import jakarta.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +16,7 @@ import com.example.datn_qlnt_manager.dto.request.floor.FloorUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.floor.FloorResponse;
+import com.example.datn_qlnt_manager.dto.statistics.FloorRoomStatisticResponse;
 import com.example.datn_qlnt_manager.dto.statistics.FloorStatistics;
 import com.example.datn_qlnt_manager.service.FloorService;
 
@@ -39,7 +40,7 @@ public class FloorController {
     @PostMapping
     public ApiResponse<FloorResponse> createFloor(@Valid @RequestBody FloorCreationRequest request) {
         return ApiResponse.<FloorResponse>builder()
-                .message("Floor has been created!")
+                .message(Translator.toLocale("floor.create.success"))
                 .data(floorService.createFloor(request))
                 .build();
     }
@@ -54,7 +55,7 @@ public class FloorController {
         PaginatedResponse<FloorResponse> result =
                 floorService.getPageAndSearchAndFilterFloorByUserId(filter, page, size);
         return ApiResponse.<List<FloorResponse>>builder()
-                .message("Floor data retrieved successfully")
+                .message(Translator.toLocale("floor.retrieved.success"))
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -69,7 +70,7 @@ public class FloorController {
 
         PaginatedResponse<FloorResponse> result = floorService.getTenantWithStatusCancelByUserId(filter, page, size);
         return ApiResponse.<List<FloorResponse>>builder()
-                .message("Floor cancel data retrieved successfully")
+                .message(Translator.toLocale("floor.cancel.retrieved.success"))
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -80,7 +81,7 @@ public class FloorController {
     public ApiResponse<Void> softDeleteFloor(@PathVariable("floorId") String floorId) {
         floorService.softDeleteFloorById(floorId);
         return ApiResponse.<Void>builder()
-                .message("Floor deleted successfully.")
+                .message(Translator.toLocale("floor.soft.delete.success"))
                 .build();
     }
 
@@ -89,7 +90,7 @@ public class FloorController {
     public ApiResponse<FloorResponse> updateFloor(
             @PathVariable("floorId") String floorId, @Valid @RequestBody FloorUpdateRequest request) {
         return ApiResponse.<FloorResponse>builder()
-                .message("Floor has been updated!")
+                .message(Translator.toLocale("floor.update.success"))
                 .data(floorService.updateFloor(floorId, request))
                 .build();
     }
@@ -98,14 +99,14 @@ public class FloorController {
     @DeleteMapping("/{floorId}")
     public ApiResponse<String> deleteFloor(@PathVariable("floorId") String floorId) {
         floorService.deleteFloor(floorId);
-        return ApiResponse.<String>builder().data("Floor deleted successfully.").build();
+        return ApiResponse.<String>builder().data(Translator.toLocale("floor.delete.success")).build();
     }
 
     @Operation(summary = "Thống kê (tổng tầng, trạng thái: HOAT_DONG, KHONG_SU_DUNG)")
     @GetMapping("/floor-statistics")
     public ApiResponse<FloorStatistics> countFloorsByBuildingId(@RequestParam String buildingId) {
         return ApiResponse.<FloorStatistics>builder()
-                .message("Floor count fetched successfully")
+                .message(Translator.toLocale("floor.count.fetched.success"))
                 .data(floorService.getFloorCountByBuildingId(buildingId))
                 .build();
     }
@@ -115,7 +116,7 @@ public class FloorController {
     public ApiResponse<String> toggleStatus(@PathVariable("id") String id) {
         floorService.toggleStatus(id);
         return ApiResponse.<String>builder()
-                .message("Status update successful!")
+                .message(Translator.toLocale("floor.status.update.success"))
                 .build();
     }
 
@@ -127,7 +128,7 @@ public class FloorController {
         List<FloorBasicResponse> response = floorService.getFloorBasicByBuildingId(buildingId);
 
         return ApiResponse.<List<FloorBasicResponse>>builder()
-                .message("Display floors successfully")
+                .message(Translator.toLocale("floor.display.success"))
                 .data(response)
                 .build();
     }
@@ -136,7 +137,7 @@ public class FloorController {
     @GetMapping("/all")
     public ApiResponse<List<IdAndName>> getFloorsByUserId() {
         return ApiResponse.<List<IdAndName>>builder()
-                .message("Display floors successfully")
+                .message(Translator.toLocale("floor.display.by.user.success"))
                 .data(floorService.getFloorsByUserId())
                 .build();
     }
@@ -145,7 +146,16 @@ public class FloorController {
     public ApiResponse<List<FloorRoomStatisticResponse>> getRoomStatisticTextByFloor(@PathVariable String floorId) {
         return ApiResponse.<List<FloorRoomStatisticResponse>>builder()
                 .data(floorService.getRoomStatisticTextByFloor(floorId))
-                .message("Statistics of rooms by floor successfully")
+                .message(Translator.toLocale("floor.statistics.of.rooms.success"))
+                .build();
+    }
+
+    @Operation(summary = "Khôi phục tầng đã xóa")
+    @PutMapping("/restore/{floorId}")
+    public ApiResponse<FloorResponse> restoreBuildingById(@PathVariable("floorId") String floorId) {
+        return ApiResponse.<FloorResponse>builder()
+                .data(floorService.restoreFloorById(floorId))
+                .message(Translator.toLocale("floor.restore.success"))
                 .build();
     }
 }

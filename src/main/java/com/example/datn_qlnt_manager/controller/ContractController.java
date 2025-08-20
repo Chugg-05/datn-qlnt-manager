@@ -152,8 +152,6 @@ public class ContractController {
                 .build();
     }
 
-
-
     @Operation(summary = "Khách thuê - Xem danh sách, tìm kiếm, lọc hợp đồng của họ")
     @GetMapping("/my-contracts")
     public ApiResponse<List<ContractResponse>> getContractsOfCurrentTenant(
@@ -161,8 +159,7 @@ public class ContractController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
 
-        PaginatedResponse<ContractResponse> result =
-                contractService.getContractsOfCurrentTenant(filter, page, size);
+        PaginatedResponse<ContractResponse> result = contractService.getContractsOfCurrentTenant(filter, page, size);
 
         return ApiResponse.<List<ContractResponse>>builder()
                 .message("Get contracts successfully")
@@ -171,4 +168,21 @@ public class ContractController {
                 .build();
     }
 
+    @Operation(summary = "Khôi phục hợp đồng đã xóa")
+    @PutMapping("/restore/{contractId}")
+    public ApiResponse<ContractResponse> restoreContractById(@PathVariable("contractId") String contractId) {
+        return ApiResponse.<ContractResponse>builder()
+                .data(contractService.restoreContractById(contractId))
+                .message("success")
+                .build();
+    }
+
+    @Operation(summary = "Sửa nội dung hợp đồng")
+    @PutMapping("/content/{contractId}")
+    public ApiResponse<String> updateContent(@PathVariable("contractId") String contractId, @RequestBody String content) {
+        return ApiResponse.<String>builder()
+                .data(contractService.updateContent(contractId, content))
+                .message("success")
+                .build();
+    }
 }

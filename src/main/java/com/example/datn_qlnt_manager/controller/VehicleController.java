@@ -65,7 +65,7 @@ public class VehicleController {
 
     @Operation(summary = "Xem tất cả phương tiện có trong phòng")
     @GetMapping("/{roomId}")
-    public ApiResponse<List<VehicleResponse>> getVehiclesByRoomId (@PathVariable("roomId") String roomId) {
+    public ApiResponse<List<VehicleResponse>> getVehiclesByRoomId(@PathVariable("roomId") String roomId) {
         return ApiResponse.<List<VehicleResponse>>builder()
                 .data(vehicleService.getVehiclesByRoomId(roomId))
                 .message("Get all vehicle by room successfully")
@@ -124,6 +124,15 @@ public class VehicleController {
         vehicleService.toggleStatus(id);
         return ApiResponse.<String>builder()
                 .message("Status update successful!")
+                .build();
+    }
+
+    @Operation(summary = "Khôi phục phương tiện đã xóa")
+    @PutMapping("/restore/{vehicleId}")
+    public ApiResponse<VehicleResponse> restoreVehicleById(@PathVariable("vehicleId") String vehicleId) {
+        return ApiResponse.<VehicleResponse>builder()
+                .data(vehicleService.restoreVehicleById(vehicleId))
+                .message("success")
                 .build();
     }
 }

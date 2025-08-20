@@ -36,4 +36,8 @@ public interface ContractService {
     void deleteContractById(String contractId);
 
     PaginatedResponse<ContractResponse> getContractsOfCurrentTenant(ContractFilter filter, int page, int size);
+
+    ContractResponse restoreContractById(String contractId);
+
+    String updateContent(String contractId, String content);
 }

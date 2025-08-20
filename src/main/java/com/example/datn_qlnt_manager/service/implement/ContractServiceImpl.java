@@ -78,11 +78,7 @@ public class ContractServiceImpl implements ContractService {
         var user = userService.getCurrentUser();
 
         Page<Contract> paging = contractRepository.getContractWithStatusCancelByUserId(
-                user.getId(),
-                filter.getQuery(),
-                filter.getBuilding(),
-                filter.getGender(),
-                pageable);
+                user.getId(), filter.getQuery(), filter.getBuilding(), filter.getGender(), pageable);
 
         return buildPaginatedContractResponse(paging, page, size);
     }
@@ -141,6 +137,7 @@ public class ContractServiceImpl implements ContractService {
         contract.setAssets(assets);
         contract.setServices(services);
         contract.setVehicles(vehicles);
+        contract.setContent(request.getContent());
         contract.setContractCode(codeGeneratorService.generateContractCode(room));
 
         applyUtilityPrices(contract);
@@ -204,6 +201,7 @@ public class ContractServiceImpl implements ContractService {
         contract.setAssets(assets);
         contract.setServices(services);
         contract.setVehicles(vehicles);
+        contract.setContent(request.getContent());
         contract.setUpdatedAt(Instant.now());
 
         contractRepository.save(contract);
@@ -254,6 +252,7 @@ public class ContractServiceImpl implements ContractService {
                         .build())
                 .collect(Collectors.toSet());
         detail.setVehicles(vehicleResponses);
+        detail.setContent(contract.getContent());
 
         return detail;
     }
@@ -379,14 +378,25 @@ public class ContractServiceImpl implements ContractService {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
         Page<Contract> paging = contractRepository.getPageAndSearchAndFilterContractByTenantUserId(
-                userId,
-                filter.getQuery(),
-                filter.getGender(),
-                filter.getStatus(),
-                pageable
-        );
+                userId, filter.getQuery(), filter.getGender(), filter.getStatus(), pageable);
         return buildPaginatedContractResponse(paging, page, size);
     }
 
+    @Override
+    public ContractResponse restoreContractById(String contractId) {
+        Contract contract = contractRepository
+                .findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+        contract.setStatus(ContractStatus.HIEU_LUC);
+        return null;
+    }
 
+    @Override
+    public String updateContent(String contractId, String content) {
+        Contract contract = contractRepository
+                .findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+        contract.setContent(content);
+        return contractRepository.save(contract).getContent();
+    }
 }

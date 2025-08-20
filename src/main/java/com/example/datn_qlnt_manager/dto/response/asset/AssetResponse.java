@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 
 import com.example.datn_qlnt_manager.common.AssetBeLongTo;
 import com.example.datn_qlnt_manager.common.AssetStatus;
-
 import com.example.datn_qlnt_manager.common.AssetType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -31,6 +31,8 @@ public class AssetResponse {
     BigDecimal price;
 
     Integer quantity;
+
+    Integer remainingQuantity;
 
     String descriptionAsset;
 

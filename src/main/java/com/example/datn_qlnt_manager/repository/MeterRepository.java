@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.datn_qlnt_manager.entity.ServiceRoom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +17,7 @@ import com.example.datn_qlnt_manager.dto.response.IdAndName;
 import com.example.datn_qlnt_manager.dto.response.meter.MeterResponse;
 import com.example.datn_qlnt_manager.dto.response.meter.RoomNoMeterResponse;
 import com.example.datn_qlnt_manager.entity.Meter;
+import com.example.datn_qlnt_manager.entity.ServiceRoom;
 
 import feign.Param;
 
@@ -26,10 +26,9 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
 
     boolean existsByMeterCode(String meterCode);
 
-	boolean existsByRoomIdAndMeterName(String roomId, String meterName);
+    boolean existsByRoomIdAndMeterName(String roomId, String meterName);
 
-	boolean existsByRoomIdAndMeterType(String roomId, MeterType meterType);
-
+    boolean existsByRoomIdAndMeterType(String roomId, MeterType meterType);
 
     @Query(
             """
@@ -139,7 +138,8 @@ public interface MeterRepository extends JpaRepository<Meter, String> {
 		""")
     Long countRoomsWithoutMeterByUserId(@org.springframework.data.repository.query.Param("userId") String userId);
 
-	Optional<Meter> findByRoomIdAndServiceId(String roomId, String serviceId);
+    @Query("SELECT m FROM Meter m WHERE m.service = :serviceRoom")
+    Optional<Meter> findByServiceRoom(@Param("serviceRoom") ServiceRoom serviceRoom);
 
-
+    Optional<Meter> findByRoomIdAndServiceId(String roomId, String serviceId);
 }

@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.exception;
 
+import com.example.datn_qlnt_manager.configuration.Translator;
 import org.springframework.http.HttpStatus;
 
 import lombok.AccessLevel;
@@ -69,7 +70,7 @@ public enum ErrorCode {
     INVALID_OTP_FORMAT(400, "OTP code is not in correct format.", HttpStatus.BAD_REQUEST),
 
     REFRESH_TOKEN_INVALID(400, "Refresh token invalid.", HttpStatus.BAD_REQUEST),
-    BUILDING_ID_REQUIRED(400,"Building ID is required.", HttpStatus.BAD_REQUEST),
+    BUILDING_ID_REQUIRED(400, "Building ID is required.", HttpStatus.BAD_REQUEST),
     REFRESH_TOKEN_EXPIRED(400, "Refresh token expired.", HttpStatus.BAD_REQUEST),
     INVALID_OTP_CODE(400, "OTP code is incorrect or expired.", HttpStatus.BAD_REQUEST),
     INVALID_ISSUER(400, "Invalid issuer.", HttpStatus.BAD_REQUEST),
@@ -148,9 +149,11 @@ public enum ErrorCode {
     IS_REPRESENTATIVE_REQUIRED(400, "Is Representative is required.", HttpStatus.BAD_REQUEST),
     TENANT_ALREADY_IN_CONTRACT(
             400, "This tenant already has a lease. Information cannot be changed.", HttpStatus.BAD_REQUEST),
+    INVALID_CONTENT_IN_CONTRACT(
+            400, "Content cannot be blank.", HttpStatus.BAD_REQUEST),
     TENANT_HAS_NO_CONTRACT(400, "Tenant has no contract", HttpStatus.BAD_REQUEST),
     CANNOT_ADD_MORE_FLOORS(
-            400, "Cannot add more floors than building's real number of floors.", HttpStatus.BAD_REQUEST),
+            400, Translator.toLocale("cannot.add.more.floors"), HttpStatus.BAD_REQUEST),
     CANNOT_TOGGLE_SERVICE_STATUS(400, "Unable to change status for this service", HttpStatus.BAD_REQUEST),
     CANNOT_TOGGLE_ASSET_STATUS(400, "Unable to change status for this asset", HttpStatus.BAD_REQUEST),
 
@@ -183,7 +186,9 @@ public enum ErrorCode {
     INVALID_INVOICE_STATUS(400, "Invalid invoice status.", HttpStatus.BAD_REQUEST),
     INVOICE_NOT_EDITABLE(400, "This invoice cannot be edited.", HttpStatus.BAD_REQUEST),
     INVALID_PAYMENT_DUE_DATE(
-            400, "Payment due dates must be in the future and only in the current and next month.", HttpStatus.BAD_REQUEST),
+            400,
+            "Payment due dates must be in the future and only in the current and next month.",
+            HttpStatus.BAD_REQUEST),
     INVOICE_CAN_NOT_BE_DELETED(400, "This invoice cannot be deleted.", HttpStatus.BAD_REQUEST),
     INVALID_ASSETS_BLANK(400, "Assets cannot be blank.", HttpStatus.BAD_REQUEST),
     INVALID_ASSETS(400, "At least one asset must be selected.", HttpStatus.BAD_REQUEST),
@@ -234,11 +239,16 @@ public enum ErrorCode {
     INVALID_SERVICE_CALCULATION(400, "Invalid service calculation.", HttpStatus.BAD_REQUEST),
     ERROR_IN_CALCULATION_OF_SERVICE(400, "Error in calculation of service.", HttpStatus.BAD_REQUEST),
     PAYMENT_DUE_DATE_IN_PAST(400, "Payment due date cannot be in the past.", HttpStatus.BAD_REQUEST),
-    PAYMENT_DUE_DATE_TOO_FAR(400, "Payment due date cannot be more than 30 days in the future.", HttpStatus.BAD_REQUEST),
-    NO_ACTIVE_CONTRACT_FOUND(400, "There are no eligible rooms for billing in this building." +
-            " Please check your contract and usage index for each room..", HttpStatus.BAD_REQUEST),
+    PAYMENT_DUE_DATE_TOO_FAR(
+            400, "Payment due date cannot be more than 30 days in the future.", HttpStatus.BAD_REQUEST),
+    NO_ACTIVE_CONTRACT_FOUND(
+            400,
+            "There are no eligible rooms for billing in this building."
+                    + " Please check your contract and usage index for each room..",
+            HttpStatus.BAD_REQUEST),
     QUANTITY_MUST_BE_POSITIVE(400, "Quantity must be greater than 0.", HttpStatus.BAD_REQUEST),
     ASSET_QUANTITY_NOT_ENOUGH(400, "Asset quantity is not enough.", HttpStatus.BAD_REQUEST),
+    ASSET_PRICE_INVALID(400, "The price of the asset must be greater than 0.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
@@ -249,8 +259,8 @@ public enum ErrorCode {
     PERMISSION_NOT_FOUND(404, "Permission not found.", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND(404, "Role not found.", HttpStatus.NOT_FOUND),
     EMAIL_NOT_FOUND(404, "Email not found.", HttpStatus.NOT_FOUND),
-    BUILDING_NOT_FOUND(404, "Building not found.", HttpStatus.NOT_FOUND),
-    FLOOR_NOT_FOUND(404, "floor not found.", HttpStatus.NOT_FOUND),
+    BUILDING_NOT_FOUND(404, Translator.toLocale("building.not.found"), HttpStatus.NOT_FOUND),
+    FLOOR_NOT_FOUND(404, Translator.toLocale("floor.not.found"), HttpStatus.NOT_FOUND),
     ROOM_NOT_FOUND(404, "Room not found", HttpStatus.NOT_FOUND),
     TENANT_NOT_FOUND(404, "Tenant not found", HttpStatus.NOT_FOUND),
     METER_READING_NOT_FOUND(404, "Meter reading not found", HttpStatus.NOT_FOUND),
@@ -281,7 +291,7 @@ public enum ErrorCode {
     INVOICE_NOT_FOUND(404, "Invoice not found.", HttpStatus.NOT_FOUND),
     INVOICE_ID_REQUIRED(404, "Invoice ID must not be blank", HttpStatus.BAD_REQUEST),
     PAYMENT_METHOD_REQUIRED(404, "Payment method is required", HttpStatus.BAD_REQUEST),
-    PAYMENT_STATUS_REQUIRED(404,"Payment method is required",HttpStatus.BAD_REQUEST),
+    PAYMENT_STATUS_REQUIRED(404, "Payment method is required", HttpStatus.BAD_REQUEST),
 
     // feedback
     FEED_BACK_NOT_FOUND(404, "Feed back not found.", HttpStatus.NOT_FOUND),
@@ -314,7 +324,7 @@ public enum ErrorCode {
     EMAIL_EXISTED(409, "Email already existed.", HttpStatus.CONFLICT),
     PHONE_NUMBER_EXISTED(409, "Phone already existed.", HttpStatus.CONFLICT),
     FlOOR_EXISTED(409, "Floor already existed.", HttpStatus.CONFLICT),
-    FLOOR_ALREADY_EXISTS(409, "Floor name already exists in this building.", HttpStatus.CONFLICT),
+    FLOOR_ALREADY_EXISTS(409, Translator.toLocale("floor.already.exists"), HttpStatus.CONFLICT),
     PERMISSION_EXISTED(409, "Permission already existed.", HttpStatus.BAD_REQUEST),
     ROLE_EXISTED(409, "Role already existed.", HttpStatus.BAD_REQUEST),
     BUILDING_CODE_EXISTED(409, "Building Code already existed.", HttpStatus.CONFLICT),
@@ -330,12 +340,11 @@ public enum ErrorCode {
     NEW_INDEX_LESS_THAN_OLD(409, "New number must be less than old number", HttpStatus.BAD_REQUEST),
     METER_READING_EXISTED(409, "The meter reading has been recorded for this month.", HttpStatus.CONFLICT),
     DUPLICATE_SERVICE_CATEGORY(409, "Category already exists.", HttpStatus.BAD_REQUEST),
-    METER_NAME_ALREADY_EXISTS_IN_ROOM(409,"Meter name already exists in this room",HttpStatus.BAD_REQUEST),
-    METER_TYPE_ALREADY_EXISTS_IN_ROOM(409,"Meter type already exists in this room",HttpStatus.BAD_REQUEST),
+    METER_NAME_ALREADY_EXISTS_IN_ROOM(409, "Meter name already exists in this room", HttpStatus.BAD_REQUEST),
+    METER_TYPE_ALREADY_EXISTS_IN_ROOM(409, "Meter type already exists in this room", HttpStatus.BAD_REQUEST),
     PAYMENT_RECEIPT_CANNOT_BE_UPDATED(409, "Payment receipt cannot be updated", HttpStatus.BAD_REQUEST),
     INVALID_PAYMENT_STATUS_CHANGE(409, "Only confirmed if status is CHO_XAC_NHAN", HttpStatus.BAD_REQUEST),
     PAYMENT_RECEIPT_ALREADY_EXISTS(409, "Payment receipt already exists", HttpStatus.BAD_REQUEST),
-
     ;
 
     final int code;

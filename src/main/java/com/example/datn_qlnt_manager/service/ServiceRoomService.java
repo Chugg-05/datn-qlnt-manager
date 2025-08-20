@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.service;
 
+import java.util.List;
+
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ServiceRoomFilter;
 import com.example.datn_qlnt_manager.dto.projection.ServiceRoomView;
@@ -11,12 +13,10 @@ import com.example.datn_qlnt_manager.dto.request.serviceRoom.ServiceRoomCreation
 import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceUpdateUnitPriceResponse;
-import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.CreateRoomServiceInitResponse;
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
 import com.example.datn_qlnt_manager.dto.statistics.ServiceRoomStatistics;
-
-import java.util.List;
 
 public interface ServiceRoomService {
     PaginatedResponse<ServiceRoomView> getServiceRoomsPaging(ServiceRoomFilter filter, int page, int size);
@@ -39,7 +39,7 @@ public interface ServiceRoomService {
 
     void toggleServiceRoomStatus(String id);
 
-    CreateRoomServiceInitResponse getServiceRoomInfoByUserId();
+    CreateRoomServiceInitResponse getServiceRoomInfoByUserId(String buildingId);
 
     List<IdNameAndType> getAllServiceRoomByUserId(String roomId);
 }

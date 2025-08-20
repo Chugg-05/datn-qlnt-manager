@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import com.example.datn_qlnt_manager.common.ServiceCalculation;
 import com.example.datn_qlnt_manager.common.ServiceCategory;
 
-import com.example.datn_qlnt_manager.entity.ServiceRoom;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -27,5 +26,4 @@ public class InvoiceItemResponse {
     BigDecimal unitPrice;
     BigDecimal amount;
     String description;
-
 }

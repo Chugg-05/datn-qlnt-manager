@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +14,7 @@ import com.example.datn_qlnt_manager.common.ServiceCalculation;
 import com.example.datn_qlnt_manager.common.ServiceCategory;
 import com.example.datn_qlnt_manager.common.ServiceStatus;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
+import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceCountResponse;
 import com.example.datn_qlnt_manager.entity.Service;
 import com.example.datn_qlnt_manager.entity.User;
@@ -39,8 +39,35 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
 				AND (:maxPrice IS NULL OR s.price <= :maxPrice)
 				AND (:serviceStatus IS NULL OR s.status = :serviceStatus)
 				AND (:serviceCalculation IS NULL OR s.serviceCalculation = :serviceCalculation)
+				AND s.status != 'KHONG_SU_DUNG'
 			""")
     Page<Service> filterServicesPaging(
+            @Param("userId") String userId,
+            @Param("query") String query,
+            @Param("category") ServiceCategory category,
+            @Param("minPrice") BigDecimal minPrice,
+            @Param("maxPrice") BigDecimal maxPrice,
+            @Param("serviceStatus") ServiceStatus serviceStatus,
+            @Param("serviceCalculation") ServiceCalculation serviceCalculation,
+            Pageable pageable);
+
+    @Query(
+            """
+				SELECT s
+				FROM Service s
+				WHERE (
+					:query IS NULL OR
+					LOWER(s.name) LIKE LOWER(CONCAT('%', :query, '%')) OR
+					LOWER(s.unit) LIKE LOWER(CONCAT('%', :query, '%'))
+				)
+				AND (:category IS NULL OR s.serviceCategory = :category)
+				AND (:userId IS NULL OR s.user.id = :userId)
+				AND (:minPrice IS NULL OR s.price >= :minPrice)
+				AND (:maxPrice IS NULL OR s.price <= :maxPrice)
+				AND (:serviceStatus IS NULL OR s.status = :serviceStatus)
+				AND s.status = 'KHONG_SU_DUNG'
+			""")
+    Page<Service> filterServicesPagingAndCancel(
             @Param("userId") String userId,
             @Param("query") String query,
             @Param("category") ServiceCategory category,

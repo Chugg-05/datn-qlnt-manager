@@ -1,18 +1,17 @@
 package com.example.datn_qlnt_manager.mapper;
 
-import com.example.datn_qlnt_manager.dto.response.room.RoomBasicResponse;
-import com.example.datn_qlnt_manager.dto.response.service.ServiceLittleResponse;
-import com.example.datn_qlnt_manager.dto.response.service.ServiceDetailResponse;
-import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomDetailResponse;
-import com.example.datn_qlnt_manager.entity.Room;
-import com.example.datn_qlnt_manager.entity.Service;
-import org.mapstruct.*;
-
-import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
-import com.example.datn_qlnt_manager.entity.ServiceRoom;
-
 import java.util.List;
 
+import org.mapstruct.*;
+
+import com.example.datn_qlnt_manager.dto.response.room.RoomBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceLittleResponse;
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomDetailResponse;
+import com.example.datn_qlnt_manager.dto.response.serviceRoom.ServiceRoomResponse;
+import com.example.datn_qlnt_manager.entity.Room;
+import com.example.datn_qlnt_manager.entity.Service;
+import com.example.datn_qlnt_manager.entity.ServiceRoom;
 
 @Mapper(componentModel = "spring")
 public interface ServiceRoomMapper {

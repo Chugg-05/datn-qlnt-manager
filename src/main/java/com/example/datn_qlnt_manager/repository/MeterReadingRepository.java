@@ -3,8 +3,6 @@ package com.example.datn_qlnt_manager.repository;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.datn_qlnt_manager.entity.Meter;
-import com.example.datn_qlnt_manager.entity.ServiceRoom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -71,5 +69,5 @@ public interface MeterReadingRepository extends JpaRepository<MeterReading, Stri
     List<MeterReadingMonthlyStatsResponse> getMonthlyStats(
             @Param("roomId") String roomId, @Param("userId") String userId);
 
-	boolean existsByMeterIdAndMonthAndYear(String meterId, int month, int year);
+    boolean existsByMeterIdAndMonthAndYear(String meterId, int month, int year);
 }

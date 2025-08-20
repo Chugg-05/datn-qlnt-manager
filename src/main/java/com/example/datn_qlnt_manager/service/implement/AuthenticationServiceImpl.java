@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import com.example.datn_qlnt_manager.service.SystemNotificationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -60,6 +61,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     RedisService redisService;
     OtpService otpService;
     GoogleClient googleClient;
+    SystemNotificationService systemNotificationService;
+
     static String KEY_COOKIE = "TRO_HUB_SERVICE";
     static String GRANT_TYPE = "authorization_code";
 
@@ -115,12 +118,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setCreatedAt(Instant.now());
             user.setUpdatedAt(Instant.now());
 
-            return getLoginResponse(response, user);
+            return getLoginResponse(response, user, true);
         }
         // Nếu người dùng đã tồn tại, lấy thông tin người dùng từ cơ sở dữ liệu
         User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         // Cập nhật thông tin người dùng nếu cần thiết
-        return getLoginResponse(response, user); // Trả về thông tin đăng nhập đã được cập nhật
+        return getLoginResponse(response, user, false); // Trả về thông tin đăng nhập đã được cập nhật
     }
 
     @Override
@@ -142,7 +145,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // Lấy thông tin người dùng từ Authentication
         User user = (User) authentication.getPrincipal();
 
-        return getLoginResponse(response, user);
+        return getLoginResponse(response, user, false);
     }
 
     @Override
@@ -257,7 +260,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         cookie.setMaxAge(jwtUtil.getRefreshableDuration().intValue()); // 2 weeks
         cookie.setPath("/");
         cookie.setSecure(true); // true nếu chỉ cho gửi qua HTTPS
-        cookie.setDomain("localhost");
+        //        cookie.setDomain("localhost");
         return cookie;
     }
 
@@ -268,16 +271,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         cookie.setMaxAge(0);
         cookie.setPath("/");
         cookie.setSecure(true);
-        cookie.setDomain("localhost");
+        //        cookie.setDomain("localhost");
         response.addCookie(cookie);
     }
 
-    private LoginResponse getLoginResponse(HttpServletResponse response, User user) {
+    private LoginResponse getLoginResponse(HttpServletResponse response, User user, boolean isGoogle) {
         String accessToken = tokenProvider.generateAccessToken(user);
         String refreshToken = tokenProvider.generateRefreshToken(user);
 
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
+
+        if (isGoogle) systemNotificationService.createNotification(user.getId(), "Cập nhật thông tin", "Vui lòng cập " +
+                "nhật đầy đủ thông tin để sử dụng.");
 
         Cookie cookie = setCookie(accessToken, refreshToken);
         response.addCookie(cookie);

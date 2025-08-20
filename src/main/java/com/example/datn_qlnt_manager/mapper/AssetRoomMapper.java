@@ -1,10 +1,10 @@
 package com.example.datn_qlnt_manager.mapper;
 
+import org.mapstruct.*;
+
 import com.example.datn_qlnt_manager.dto.request.assetRoom.AssetRoomUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.assetRoom.AssetRoomResponse;
 import com.example.datn_qlnt_manager.entity.AssetRoom;
-import org.mapstruct.*;
-
 
 @Mapper(componentModel = "spring")
 public interface AssetRoomMapper {
@@ -13,5 +13,4 @@ public interface AssetRoomMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateAssetRoomFromRequest(AssetRoomUpdateRequest request, @MappingTarget AssetRoom assetRoom);
-
 }
