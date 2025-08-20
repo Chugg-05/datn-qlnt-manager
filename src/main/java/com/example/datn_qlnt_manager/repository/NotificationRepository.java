@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
@@ -17,7 +18,7 @@ import com.example.datn_qlnt_manager.entity.Notification;
 public interface NotificationRepository extends JpaRepository<Notification, String> {
     @Query("""
     SELECT new com.example.datn_qlnt_manager.dto.response.notification.NotificationResponse(
-        n.notificationId,
+        n.id,
         n.title,
         n.content,
         n.image,
@@ -41,7 +42,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
             @Param("userId") String userId,
             @Param("query") String query,
             @Param("type") NotificationType type,
-            @Param("from") LocalDateTime from,
-            @Param("to") LocalDateTime to,
+            @Param("from") Instant from,
+            @Param("to") Instant to,
             Pageable pageable);
 }

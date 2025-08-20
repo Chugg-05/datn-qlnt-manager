@@ -17,13 +17,13 @@ import com.example.datn_qlnt_manager.entity.NotificationUser;
 @Repository
 public interface NotificationUserRepository extends JpaRepository<NotificationUser, String> {
     @Query("SELECT nu FROM NotificationUser nu " + "JOIN FETCH nu.notification n "
-            + "WHERE n.notificationId = :notificationId AND nu.user.id = :userId")
+            + "WHERE n.id = :notificationId AND nu.user.id = :userId")
     Optional<NotificationUser> findByNotificationIdAndUserId(
             @Param("notificationId") String notificationId, @Param("userId") String userId);
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM NotificationUser nu WHERE nu.notification.notificationId = :notificationId")
+    @Query("DELETE FROM NotificationUser nu WHERE nu.notification.id = :notificationId")
     void deleteByNotificationId(@Param("notificationId") String notificationId);
 
     @Query("""
@@ -32,7 +32,7 @@ public interface NotificationUserRepository extends JpaRepository<NotificationUs
         )
         FROM NotificationUser nu
         JOIN nu.user u
-        WHERE nu.notification.notificationId = :notificationId
+        WHERE nu.notification.id = :notificationId
     """)
     List<SentToUsers> findRecipients(@Param("notificationId") String notificationId);
 }

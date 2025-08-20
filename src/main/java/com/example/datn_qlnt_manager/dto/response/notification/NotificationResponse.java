@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.dto.response.notification;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,26 +15,27 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NotificationResponse {
-    String notificationId;
+    String id;
     String title;
     String content;
     String image;
     NotificationType notificationType;
     Boolean sendToAll;
-    LocalDateTime sentAt;
+    Instant sentAt;
 
     // user - người gửi
     String userId;
     String fullName;
+    String senderImage;
 
     // người nhận
     List<SentToUsers> sentToUsers;
 
     @Builder
-    public NotificationResponse(String notificationId, String title, String content, String image,
-                                NotificationType notificationType, Boolean sendToAll, LocalDateTime sentAt,
+    public NotificationResponse(String id, String title, String content, String image,
+                                NotificationType notificationType, Boolean sendToAll, Instant sentAt,
                                 String userId, String fullName) {
-        this.notificationId = notificationId;
+        this.id = id;
         this.title = title;
         this.content = content;
         this.image = image;
