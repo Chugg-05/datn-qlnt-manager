@@ -1,12 +1,17 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.example.datn_qlnt_manager.dto.request.ContractTenant.ContractTenantCreationRequest;
+import com.example.datn_qlnt_manager.dto.response.asset.AssetLittleResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceLittleResponse;
+import com.example.datn_qlnt_manager.dto.response.tenant.TenantLittleResponse;
+import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleBasicResponse;
+import com.example.datn_qlnt_manager.service.DepositService;
+import com.example.datn_qlnt_manager.service.TenantService;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -19,12 +24,8 @@ import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ContractFilter;
 import com.example.datn_qlnt_manager.dto.request.contract.ContractCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.contract.ContractUpdateRequest;
-import com.example.datn_qlnt_manager.dto.response.asset.AssetBasicResponse;
 import com.example.datn_qlnt_manager.dto.response.contract.ContractDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
-import com.example.datn_qlnt_manager.dto.response.service.ServiceBasicResponse;
-import com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse;
-import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleBasicResponse;
 import com.example.datn_qlnt_manager.dto.statistics.ContractStatistics;
 import com.example.datn_qlnt_manager.entity.*;
 import com.example.datn_qlnt_manager.exception.AppException;
@@ -47,12 +48,16 @@ public class ContractServiceImpl implements ContractService {
     RoomRepository roomRepository;
     ContractRepository contractRepository;
     TenantRepository tenantRepository;
-    CodeGeneratorService codeGeneratorService;
-    ContractMapper contractMapper;
-    UserService userService;
-    AssetRepository assetRepository;
-    ServiceRepository serviceRepository;
+    ContractTenantRepository contractTenantRepository;
+    ContractVehicleRepository contractVehicleRepository;
+    AssetRoomRepository assetRoomRepository;
+    ServiceRoomRepository serviceRoomRepository;
     VehicleRepository vehicleRepository;
+    ContractMapper contractMapper;
+    CodeGeneratorService codeGeneratorService;
+    UserService userService;
+    TenantService tenantService;
+    DepositService depositService;
 
     @Override
     public PaginatedResponse<ContractResponse> getPageAndSearchAndFilterTenantByUserId(
@@ -78,7 +83,11 @@ public class ContractServiceImpl implements ContractService {
         var user = userService.getCurrentUser();
 
         Page<Contract> paging = contractRepository.getContractWithStatusCancelByUserId(
-                user.getId(), filter.getQuery(), filter.getBuilding(), filter.getGender(), pageable);
+                user.getId(),
+                filter.getQuery(),
+                filter.getBuilding(),
+                filter.getGender(),
+                pageable);
 
         return buildPaginatedContractResponse(paging, page, size);
     }
@@ -86,60 +95,15 @@ public class ContractServiceImpl implements ContractService {
     @Transactional
     @Override
     public ContractResponse createContract(ContractCreationRequest request) {
-        Room room = roomRepository
-                .findById(request.getRoomId())
-                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        Room room = validateCreateContractRequest(request);
 
-        if (contractRepository.existsByRoomIdAndStatusIn(
-                room.getId(), List.of(ContractStatus.HIEU_LUC, ContractStatus.SAP_HET_HAN))) {
-            throw new AppException(ErrorCode.ROOM_ALREADY_HAS_CONTRACT);
-        }
-
-        validateRoomForContract(room, request);
-
-        Set<Tenant> tenants = new HashSet<>(tenantRepository.findAllById(request.getTenants()));
-        if (tenants.size() != request.getTenants().size()) {
-            throw new AppException(ErrorCode.TENANT_NOT_FOUND);
-        }
-
-        Set<Asset> assets = request.getAssets() != null && !request.getAssets().isEmpty()
-                ? new HashSet<>(assetRepository.findAllById(request.getAssets()))
-                : new HashSet<>();
-        if (assets.size() != request.getAssets().size()) {
-            throw new AppException(ErrorCode.ASSET_NOT_FOUND);
-        }
-
-        Set<com.example.datn_qlnt_manager.entity.Service> services =
-                request.getServices() != null && !request.getServices().isEmpty()
-                        ? new HashSet<>(serviceRepository.findAllById(request.getServices()))
-                        : new HashSet<>();
-        if (services.size() != request.getServices().size()) {
-            throw new AppException(ErrorCode.SERVICE_NOT_FOUND);
-        }
-
-        Set<Vehicle> vehicles =
-                request.getVehicles() != null && !request.getVehicles().isEmpty()
-                        ? new HashSet<>(vehicleRepository.findAllById(request.getVehicles()))
-                        : new HashSet<>();
-
-        if (vehicles.size() != request.getVehicles().size()) {
-            throw new AppException(ErrorCode.VEHICLE_NOT_FOUND);
-        }
-
-        if (request.getTenants().size() != request.getNumberOfPeople()) {
-            throw new AppException(ErrorCode.TENANTS_EXCEEDS_NUMBER_OF_PEOPLE);
-        }
+        String contractCode = codeGeneratorService.generateContractCode(room);
 
         Contract contract = contractMapper.toContract(request);
+
+        contract.setContractCode(contractCode);
         contract.setRoom(room);
         contract.setRoomPrice(room.getPrice());
-        contract.setTenants(tenants);
-        contract.setAssets(assets);
-        contract.setServices(services);
-        contract.setVehicles(vehicles);
-        contract.setContent(request.getContent());
-        contract.setContractCode(codeGeneratorService.generateContractCode(room));
-
         applyUtilityPrices(contract);
 
         contract.setCreatedAt(Instant.now());
@@ -147,112 +111,98 @@ public class ContractServiceImpl implements ContractService {
 
         contractRepository.save(contract);
 
+        room.setStatus(RoomStatus.DANG_THUE);
+        room.setUpdatedAt(Instant.now());
+
+        roomRepository.save(room);
+
+        Set<ContractTenant> contractTenants = request.getTenants().stream()
+                .map(ctRequest -> {
+                    Tenant tenant = tenantRepository.findById(ctRequest.getTenantId())
+                            .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+
+                    if (Boolean.TRUE.equals(ctRequest.getRepresentative())) {
+                        tenantService.ensureTenantHasActiveUser(tenant);
+                    }
+
+                    ContractTenant contractTenant = ContractTenant.builder()
+                            .contract(contract)
+                            .tenant(tenant)
+                            .representative(ctRequest.getRepresentative())
+                            .startDate(contract.getStartDate())
+                            .endDate(contract.getEndDate())
+                            .build();
+
+                    contractTenant.setCreatedAt(Instant.now());
+                    contractTenant.setUpdatedAt(Instant.now());
+
+                    return contractTenant;
+
+                })
+                .collect(Collectors.toSet());
+
+        if (!contractTenants.isEmpty()) {
+            contractTenantRepository.saveAll(contractTenants);
+        }
+
+        if (request.getVehicles() != null && !request.getVehicles().isEmpty()) {
+            List<Vehicle> vehicles = vehicleRepository.findAllById(request.getVehicles());
+            if (vehicles.size() != request.getVehicles().size()) {
+                throw new AppException(ErrorCode.VEHICLE_NOT_FOUND);
+            }
+            List<ContractVehicle> contractVehicles = vehicles.stream()
+                    .map(v -> {
+                        ContractVehicle contractVehicle = ContractVehicle.builder()
+                                .contract(contract)
+                                .vehicle(v)
+                                .startDate(contract.getStartDate())
+                                .endDate(contract.getEndDate())
+                                .build();
+
+                        contractVehicle.setCreatedAt(Instant.now());
+                        contractVehicle.setUpdatedAt(Instant.now());
+
+                        return contractVehicle;
+                    })
+                    .toList();
+
+            contractVehicleRepository.saveAll(contractVehicles);
+        }
+
         return contractMapper.toContractResponse(contract);
     }
 
     @Transactional
     @Override
     public ContractResponse updateContract(String contractId, ContractUpdateRequest request) {
-        Contract contract = contractRepository
-                .findById(contractId)
+        Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        if (request.getEndDate().isBefore(contract.getStartDate())) {
-            throw new AppException(ErrorCode.END_DATE_BEFORE_START_DATE);
-        }
-
-        if (request.getNumberOfPeople() > contract.getRoom().getMaximumPeople()) {
-            throw new AppException(ErrorCode.NUMBER_OF_PEOPLE_EXCEEDS_LIMIT);
-        }
-
-        if (request.getTenants().size() > request.getNumberOfPeople()) {
-            throw new AppException(ErrorCode.TENANTS_EXCEEDS_NUMBER_OF_PEOPLE);
-        }
-
-        Set<Tenant> tenants = new HashSet<>(tenantRepository.findAllById(request.getTenants()));
-        if (tenants.size() != request.getTenants().size()) {
-            throw new AppException(ErrorCode.TENANT_NOT_FOUND);
-        }
-
-        Set<Asset> assets = new HashSet<>(assetRepository.findAllById(request.getAssets()));
-        if (assets.size() != request.getAssets().size()) {
-            throw new AppException(ErrorCode.ASSET_NOT_FOUND);
-        }
-
-        Set<com.example.datn_qlnt_manager.entity.Service> services = new HashSet<>();
-        if (request.getServices() != null && !request.getServices().isEmpty()) {
-            services = new HashSet<>(serviceRepository.findAllById(request.getServices()));
-            if (services.size() != request.getServices().size()) {
-                throw new AppException(ErrorCode.SERVICE_NOT_FOUND);
-            }
-        }
-
-        Set<Vehicle> vehicles = new HashSet<>();
-        if (request.getVehicles() != null && !request.getVehicles().isEmpty()) {
-            vehicles = new HashSet<>(vehicleRepository.findAllById(request.getVehicles()));
-            if (vehicles.size() != request.getVehicles().size()) {
-                throw new AppException(ErrorCode.VEHICLE_NOT_FOUND);
-            }
-        }
+        validateContractUpdate(contract, request);
 
         contractMapper.updateContract(request, contract);
 
-        contract.setTenants(tenants);
-        contract.setAssets(assets);
-        contract.setServices(services);
-        contract.setVehicles(vehicles);
-        contract.setContent(request.getContent());
+        contract.setRoomPrice(contract.getRoom().getPrice());
         contract.setUpdatedAt(Instant.now());
 
-        contractRepository.save(contract);
-
-        return contractMapper.toContractResponse(contract);
+        return contractMapper.toContractResponse(contractRepository.save(contract));
     }
 
     @Override
-    public ContractDetailResponse getContractDetailById(String contractId) {
-        Contract contract = contractRepository
-                .findById(contractId)
-                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-
+    public ContractDetailResponse getContractDetail(String contractId) {
         ContractDetailResponse detail = contractRepository
                 .findContractDetailById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        List<TenantBasicResponse> tenants = tenantRepository.findTenantsByContractId(contractId);
-        detail.setTenants(new HashSet<>(tenants));
+        List<TenantLittleResponse> tenants = contractTenantRepository.findAllTenantLittleResponseByContractId(contractId);
+        List<AssetLittleResponse> assets = assetRoomRepository.findAllAssetLittleResponseByRoomId(detail.getRoomId());
+        List<ServiceLittleResponse> services = serviceRoomRepository.findAllServiceLittleResponseByRoomId(detail.getRoomId());
+        List<VehicleBasicResponse> vehicles = contractVehicleRepository.findAllVehicleBasicResponseByContractId(contractId);
 
-        Set<AssetBasicResponse> assetResponses = contract.getAssets().stream()
-                .map(asset -> AssetBasicResponse.builder()
-                        .id(asset.getId())
-                        .nameAsset(asset.getNameAsset())
-                        .assetType(asset.getAssetType())
-                        .description(asset.getDescriptionAsset())
-                        .build())
-                .collect(Collectors.toSet());
-        detail.setAssets(assetResponses);
-
-        Set<ServiceBasicResponse> serviceResponses = contract.getServices().stream()
-                .map(service -> ServiceBasicResponse.builder()
-                        .id(service.getId())
-                        .name(service.getName())
-                        .category(service.getServiceCategory())
-                        .unit(service.getUnit())
-                        .description(service.getDescription())
-                        .build())
-                .collect(Collectors.toSet());
-        detail.setServices(serviceResponses);
-
-        Set<VehicleBasicResponse> vehicleResponses = contract.getVehicles().stream()
-                .map(vehicle -> VehicleBasicResponse.builder()
-                        .id(vehicle.getId())
-                        .vehicleType(vehicle.getVehicleType())
-                        .licensePlate(vehicle.getLicensePlate())
-                        .description(vehicle.getDescribe())
-                        .build())
-                .collect(Collectors.toSet());
-        detail.setVehicles(vehicleResponses);
-        detail.setContent(contract.getContent());
+        detail.setServices(services);
+        detail.setAssets(assets);
+        detail.setTenants(tenants);
+        detail.setVehicles(vehicles);
 
         return detail;
     }
@@ -264,27 +214,22 @@ public class ContractServiceImpl implements ContractService {
         return contracts.stream().map(contractMapper::toContractResponse).toList();
     }
 
+
     @Override
-    public void toggleContractStatusById(String contractId) {
+    public void contractActivation(String contractId) {
         Contract contract = contractRepository
                 .findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        if (contract.getStatus() == ContractStatus.HIEU_LUC || contract.getStatus() == ContractStatus.SAP_HET_HAN) {
-            contract.setStatus(ContractStatus.DA_HUY);
-
-        } else if (contract.getStatus() == ContractStatus.DA_HUY) {
-            if (contract.getEndDate() != null && contract.getEndDate().isBefore(LocalDateTime.now())) {
-                throw new AppException(ErrorCode.CANNOT_REACTIVATE_EXPIRED_CONTRACT);
-            }
-
-            contract.setStatus(ContractStatus.HIEU_LUC);
-
-        } else {
-            throw new AppException(ErrorCode.CANNOT_TOGGLE_CONTRACT_STATUS);
+        if (contract.getStatus() != ContractStatus.CHO_KICH_HOAT) {
+            throw new AppException(ErrorCode.CANNOT_ACTIVATION_CONTRACT);
         }
 
+        contract.setStatus(ContractStatus.HIEU_LUC);
+        contract.setStartDate(LocalDate.now());
         contract.setUpdatedAt(Instant.now());
+
+        depositService.createDepositForContract(contract);
 
         contractRepository.save(contract);
     }
@@ -325,26 +270,153 @@ public class ContractServiceImpl implements ContractService {
         contractRepository.delete(contract);
     }
 
-    private void validateRoomForContract(Room room, ContractCreationRequest request) {
-        if (request.getNumberOfPeople() > room.getMaximumPeople()) {
-            throw new AppException(ErrorCode.NUMBER_OF_PEOPLE_EXCEEDS_LIMIT);
-        }
+    @Override
+    public PaginatedResponse<ContractResponse> getContractsOfCurrentTenant(ContractFilter filter, int page, int size) {
+        String userId = userService.getCurrentUser().getId();
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
-        if (request.getEndDate().isBefore(request.getStartDate())) {
-            throw new AppException(ErrorCode.END_DATE_BEFORE_START_DATE);
-        }
-
-        if (request.getTenants().size() > request.getNumberOfPeople()) {
-            throw new AppException(ErrorCode.TENANTS_EXCEEDS_NUMBER_OF_PEOPLE);
-        }
+        Page<Contract> paging = contractRepository.getPageAndSearchAndFilterContractByTenantUserId(
+                userId,
+                filter.getQuery(),
+                filter.getGender(),
+                filter.getStatus(),
+                pageable
+        );
+        return buildPaginatedContractResponse(paging, page, size);
     }
 
     private void applyUtilityPrices(Contract contract) {
-        for (com.example.datn_qlnt_manager.entity.Service service : contract.getServices()) {
-            if (service.getServiceCategory() == ServiceCategory.DIEN) {
-                contract.setElectricPrice(service.getPrice());
-            } else if (service.getServiceCategory() == ServiceCategory.NUOC) {
-                contract.setWaterPrice(service.getPrice());
+        Room room = contract.getRoom();
+        if (room != null && room.getServiceRooms() != null) {
+            for (ServiceRoom serviceRoom : room.getServiceRooms()) {
+                com.example.datn_qlnt_manager.entity.Service service = serviceRoom.getService();
+                if (service != null) {
+                    if (service.getServiceCategory() == ServiceCategory.DIEN) {
+                        contract.setElectricPrice(service.getPrice());
+                    } else if (service.getServiceCategory() == ServiceCategory.NUOC) {
+                        contract.setWaterPrice(service.getPrice());
+                    }
+                }
+            }
+        }
+    }
+
+    private Room validateCreateContractRequest(ContractCreationRequest request) {
+        Room room = roomRepository.findById(request.getRoomId())
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+
+        if (room.getStatus() != RoomStatus.TRONG) {
+            throw new AppException(ErrorCode.ROOM_NOT_AVAILABLE);
+        }
+
+        int requestedTenantCount = request.getTenants().size();
+        if (requestedTenantCount > room.getMaximumPeople()) {
+            throw new AppException(ErrorCode.NUMBER_OF_PEOPLE_EXCEEDS_LIMIT);
+        }
+
+        if (!request.getStartDate().isBefore(request.getEndDate())) {
+            throw new AppException(ErrorCode.END_DATE_BEFORE_START_DATE);
+        }
+
+        boolean hasActiveContract = contractRepository.existsByRoomIdAndEndDateAfter(
+                request.getRoomId(),
+                request.getStartDate()
+        );
+        if (hasActiveContract) {
+            throw new AppException(ErrorCode.ROOM_ALREADY_IN_CONTRACT);
+        }
+
+        Set<String> tenantIds = request.getTenants().stream()
+                .map(ContractTenantCreationRequest::getTenantId)
+                .collect(Collectors.toSet());
+        if (tenantIds.size() != requestedTenantCount) {
+            throw new AppException(ErrorCode.DUPLICATED_TENANTS_IN_REQUEST);
+        }
+
+        long representativeCount = request.getTenants().stream()
+                .filter(t -> Boolean.TRUE.equals(t.getRepresentative()))
+                .count();
+        if (representativeCount != 1) {
+            throw new AppException(ErrorCode.INVALID_REPRESENTATIVE_SELECTION);
+        }
+
+        if (!assetRoomRepository.existsByRoomId(room.getId())) {
+            throw new AppException(ErrorCode.ROOM_HAS_NO_ASSET);
+        }
+
+        if (request.getVehicles() != null && !request.getVehicles().isEmpty()) {
+            List<Vehicle> inUseVehicles = vehicleRepository.findActiveVehiclesInContracts(
+                    request.getVehicles(),
+                    request.getStartDate()
+            );
+            if (!inUseVehicles.isEmpty()) {
+                throw new AppException(ErrorCode.VEHICLE_ALREADY_IN_ACTIVE_CONTRACT);
+            }
+        }
+
+        return room;
+    }
+
+    @Override
+    public ContractResponse restoreContractById(String contractId) {
+        Contract contract = contractRepository
+                .findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+        contract.setStatus(ContractStatus.HIEU_LUC);
+        return null;
+    }
+
+
+    @Override
+    public String updateContent(String contractId, String content) {
+        Contract contract = contractRepository
+                .findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+        contract.setContent(content);
+        return contractRepository.save(contract).getContent();
+    }
+
+    private void validateContractUpdate(Contract contract, ContractUpdateRequest request) {
+        if (!contract.getStartDate().isBefore(request.getEndDate())) {
+            throw new AppException(ErrorCode.END_DATE_BEFORE_START_DATE);
+        }
+
+        if (contract.getContractTenants().size() > contract.getRoom().getMaximumPeople()) {
+            throw new AppException(ErrorCode.NUMBER_OF_PEOPLE_EXCEEDS_LIMIT);
+        }
+
+        Set<String> tenantIds = contract.getContractTenants().stream()
+                .map(ct -> ct.getTenant().getId())
+                .collect(Collectors.toSet());
+
+        if (tenantIds.size() != contract.getContractTenants().size()) {
+            throw new AppException(ErrorCode.DUPLICATED_TENANTS_IN_REQUEST);
+        }
+
+        long representativeCount = contract.getContractTenants().stream()
+                .filter(ct -> Boolean.TRUE.equals(ct.isRepresentative()))
+                .count();
+        if (representativeCount != 1) {
+            throw new AppException(ErrorCode.INVALID_REPRESENTATIVE_SELECTION);
+        }
+
+        if (!assetRoomRepository.existsByRoomId(contract.getRoom().getId())) {
+            throw new AppException(ErrorCode.ROOM_HAS_NO_ASSET);
+        }
+
+        Set<String> vehicleIds = contract.getContractVehicles().stream()
+                .map(cv -> cv.getVehicle().getId())
+                .collect(Collectors.toSet());
+
+        if (!vehicleIds.isEmpty()) {
+            List<Vehicle> inUseVehicles = vehicleRepository.findActiveVehiclesInOtherContracts(
+                    vehicleIds,
+                    contract.getId(),
+                    contract.getStartDate()
+            );
+
+            if (!inUseVehicles.isEmpty()) {
+                throw new AppException(ErrorCode.VEHICLE_ALREADY_IN_ACTIVE_CONTRACT);
             }
         }
     }
@@ -370,33 +442,5 @@ public class ContractServiceImpl implements ContractService {
                 .data(contracts)
                 .meta(meta)
                 .build();
-    }
-
-    @Override
-    public PaginatedResponse<ContractResponse> getContractsOfCurrentTenant(ContractFilter filter, int page, int size) {
-        String userId = userService.getCurrentUser().getId();
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
-
-        Page<Contract> paging = contractRepository.getPageAndSearchAndFilterContractByTenantUserId(
-                userId, filter.getQuery(), filter.getGender(), filter.getStatus(), pageable);
-        return buildPaginatedContractResponse(paging, page, size);
-    }
-
-    @Override
-    public ContractResponse restoreContractById(String contractId) {
-        Contract contract = contractRepository
-                .findById(contractId)
-                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-        contract.setStatus(ContractStatus.HIEU_LUC);
-        return null;
-    }
-
-    @Override
-    public String updateContent(String contractId, String content) {
-        Contract contract = contractRepository
-                .findById(contractId)
-                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-        contract.setContent(content);
-        return contractRepository.save(contract).getContent();
     }
 }

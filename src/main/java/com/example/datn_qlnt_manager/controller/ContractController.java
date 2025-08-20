@@ -90,8 +90,8 @@ public class ContractController {
 
     @Operation(summary = "Lấy chi tiết hợp đồng")
     @GetMapping("/{contractId}")
-    public ApiResponse<ContractDetailResponse> getDetail(@PathVariable String contractId) {
-        ContractDetailResponse response = contractService.getContractDetailById(contractId);
+    public ApiResponse<ContractDetailResponse> getContractDetail(@PathVariable String contractId) {
+        ContractDetailResponse response = contractService.getContractDetail(contractId);
 
         return ApiResponse.<ContractDetailResponse>builder()
                 .message("Contract detail retrieved successfully")
@@ -109,14 +109,14 @@ public class ContractController {
                 .build();
     }
 
-    @Operation(summary = "Chuyển đổi trạng thái hợp đồng")
-    @PutMapping("/toggle/{contractId}")
-    public ApiResponse<String> toggleContractStatus(@PathVariable("contractId") String contractId) {
-        contractService.toggleContractStatusById(contractId);
+    @Operation(summary = "Kích hoạt hợp đồng")
+    @PutMapping("/activate/{contractId}")
+    public ApiResponse<String> contractActivation(@PathVariable("contractId") String contractId) {
+        contractService.contractActivation(contractId);
 
         return ApiResponse.<String>builder()
-                .message("Contract status toggled successfully")
-                .data("Contract with ID " + contractId + " has been toggled.")
+                .message("Contract activation successfully")
+                .data("Contract with ID " + contractId + " has been activated.")
                 .build();
     }
 

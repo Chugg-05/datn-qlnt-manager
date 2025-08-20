@@ -27,8 +27,5 @@ public class TenantResponse implements Serializable {
     String phoneNumber;
     String pictureUrl;
     TenantStatus tenantStatus;
-    Boolean isRepresentative;
-    String address;
-    String identificationNumber;
     List<ContractResponse> contracts;
 }

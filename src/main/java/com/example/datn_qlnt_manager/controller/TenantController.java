@@ -65,22 +65,12 @@ public class TenantController {
                 .build();
     }
 
-    @Operation(summary = "Thêm khách hàng mới dành cho chủ nhà trọ")
-    @PostMapping("/owner")
-    public ApiResponse<TenantResponse> createTenantByOwner(@Valid @RequestBody TenantCreationRequest request) {
-        TenantResponse response = tenantService.createTenantByOwner(request);
+    @Operation(summary = "Thêm khách thuê")
+    @PostMapping
+    public ApiResponse<TenantResponse> createTenant(@Valid @RequestBody TenantCreationRequest request) {
+        TenantResponse response = tenantService.createTenant(request);
         return ApiResponse.<TenantResponse>builder()
-                .message("Tenant created successfully by owner")
-                .data(response)
-                .build();
-    }
-
-    @Operation(summary = "Thêm khách hàng mới dành cho khach hàng đại diện")
-    @PostMapping("/representative")
-    public ApiResponse<TenantResponse> createTenantByRepresentative(@Valid @RequestBody TenantCreationRequest request) {
-        TenantResponse response = tenantService.createTenantByRepresentative(request);
-        return ApiResponse.<TenantResponse>builder()
-                .message("Representative tenant created successfully")
+                .message("Tenant created successfully")
                 .data(response)
                 .build();
     }
@@ -96,12 +86,12 @@ public class TenantController {
                 .build();
     }
 
+    @Operation(summary = "Lấy chi tiết khách hàng theo ID")
     @GetMapping("/detail/{tenantId}")
     public ApiResponse<TenantDetailResponse> getTenantDetail(@PathVariable String tenantId) {
-        TenantDetailResponse response = tenantService.getTenantDetailById(tenantId);
         return ApiResponse.<TenantDetailResponse>builder()
                 .message("Tenant detail found successfully")
-                .data(response)
+                .data(tenantService.getTenantDetailById(tenantId))
                 .build();
     }
 
@@ -123,16 +113,6 @@ public class TenantController {
         return ApiResponse.<TenantStatistics>builder()
                 .message("Tenant statistics successfully")
                 .data(tenantService.getTenantStatisticsByUserId())
-                .build();
-    }
-
-    @Operation(summary = "Chuyển đổi trạng thái khách hàng")
-    @PutMapping("/toggle/{tenantId}")
-    public ApiResponse<String> toggleTenantStatus(@PathVariable("tenantId") String tenantId) {
-        tenantService.toggleTenantStatusById(tenantId);
-        return ApiResponse.<String>builder()
-                .message("Tenant status successfully")
-                .data("Tenant with ID " + tenantId + " status has been toggled.")
                 .build();
     }
 
@@ -158,19 +138,11 @@ public class TenantController {
 
     @Operation(summary = "Hiển thị chi tiết khách thuê trong phòng")
     @GetMapping("/room-tenants/detail/{roomId}")
-    public ApiResponse<List<TenantResponse>> getTenantsByRoomId(@PathVariable String roomId) {
+    public ApiResponse<List<TenantResponse>> getTenantsByRoomId(@PathVariable("roomId") String roomId) {
         return ApiResponse.<List<TenantResponse>>builder()
                 .data(tenantService.getTenantsByRoomId(roomId))
                 .message("Get detailed list of guests in the same room successfully")
                 .build();
     }
 
-    @Operation(summary = "Khôi phục khách thuê đã xóa")
-    @PutMapping("/restore/{tenantId}")
-    public ApiResponse<TenantResponse> restoreTenantById(@PathVariable("tenantId") String tenantId) {
-        return ApiResponse.<TenantResponse>builder()
-                .data(tenantService.restoreTenantById(tenantId))
-                .message("success")
-                .build();
-    }
 }

@@ -23,11 +23,11 @@ public interface ContractService {
     @Transactional
     ContractResponse createContract(ContractCreationRequest request);
 
-    ContractDetailResponse getContractDetailById(String contractId);
+    ContractDetailResponse getContractDetail(String contractId);
 
     List<ContractResponse> getAllContractsByUserId();
 
-    void toggleContractStatusById(String contractId);
+    void contractActivation(String contractId);
 
     ContractStatistics getContractStatisticsByUserId();
 

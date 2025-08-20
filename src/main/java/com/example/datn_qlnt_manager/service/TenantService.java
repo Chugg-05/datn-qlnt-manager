@@ -9,15 +9,15 @@ import com.example.datn_qlnt_manager.dto.request.tenant.TenantUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantResponse;
 import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
+import com.example.datn_qlnt_manager.entity.Tenant;
+import jakarta.transaction.Transactional;
 
 public interface TenantService {
     PaginatedResponse<TenantResponse> getPageAndSearchAndFilterTenantByUserId(TenantFilter filter, int page, int size);
 
     PaginatedResponse<TenantResponse> getTenantWithStatusCancelByUserId(TenantFilter filter, int page, int size);
 
-    TenantResponse createTenantByOwner(TenantCreationRequest request);
-
-    TenantResponse createTenantByRepresentative(TenantCreationRequest request);
+    TenantResponse createTenant(TenantCreationRequest request);
 
     TenantResponse updateTenant(String tenantId, TenantUpdateRequest request);
 
@@ -27,13 +27,12 @@ public interface TenantService {
 
     List<TenantResponse> getAllTenantsByUserId();
 
-    void toggleTenantStatusById(String tenantId);
-
     void softDeleteTenantById(String tenantId);
 
     void deleteTenantById(String tenantId);
 
     List<TenantResponse> getTenantsByRoomId(String roomId);
 
-    TenantResponse restoreTenantById(String tenantId);
+    @Transactional
+    void ensureTenantHasActiveUser(Tenant tenant);
 }

@@ -1,27 +1,23 @@
 package com.example.datn_qlnt_manager.service.implement;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.example.datn_qlnt_manager.common.*;
 import com.example.datn_qlnt_manager.dto.response.invoice.InvoiceItemResponse;
 import com.example.datn_qlnt_manager.entity.*;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
-import com.example.datn_qlnt_manager.repository.MeterReadingRepository;
-import com.example.datn_qlnt_manager.repository.MeterRepository;
-import com.example.datn_qlnt_manager.repository.ServiceRoomRepository;
+import com.example.datn_qlnt_manager.repository.*;
 import com.example.datn_qlnt_manager.service.InvoiceChargeCalculatorService;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Slf4j
 @org.springframework.stereotype.Service
@@ -39,7 +35,8 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
             int month,
             int year,
             InvoiceType invoiceType,
-            List<InvoiceItemResponse> additionalItems) {
+            List<InvoiceItemResponse> additionalItems
+    ) {
         List<InvoiceItemResponse> items = new ArrayList<>();
 
         boolean isFirstMonth = isFirstMonth(contract, month, year);
@@ -51,9 +48,7 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
                 items.add(roomCharge);
             }
 
-            // 2. Lấy các dịch vụ đang sử dụng
-            List<ServiceRoom> serviceRooms = serviceRoomRepository.findByRoomIdAndServiceRoomStatus(
-                    contract.getRoom().getId(), ServiceRoomStatus.DANG_SU_DUNG);
+            List<ServiceRoom> serviceRooms = serviceRoomRepository.findByRoomId(contract.getRoom().getId());
 
             for (ServiceRoom serviceRoom : serviceRooms) {
                 Service service = serviceRoom.getService();
@@ -61,14 +56,14 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
 
                 switch (calculation) {
                     case TINH_THEO_PHONG ->
-                        items.add(calculateByRoomService(service, serviceRoom, contract, month, year));
+                            items.add(calculateByRoomService(service, serviceRoom, contract, month, year));
                     case TINH_THEO_NGUOI ->
-                        items.add(calculateByPeopleService(service, serviceRoom, contract, month, year));
+                            items.add(calculateByPeopleService(service, serviceRoom, contract, month, year));
                     case TINH_THEO_PHUONG_TIEN ->
-                        items.add(calculateByVehicleService(service, serviceRoom, contract, month, year));
+                            items.add(calculateByVehicleService(service, serviceRoom, contract, month, year));
                     case TINH_THEO_SO -> {
                         if (isFirstMonth) {
-                            continue; // bỏ qua dịch vụ tính theo số ở tháng đầu tiên
+                            continue; //bỏ qua dịch vụ tính theo số ở tháng đầu tiên
                         }
                         MeterReading reading = getPreviousMonthReading(service, contract, month, year);
                         if (reading == null) {
@@ -76,26 +71,26 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
                         }
                         items.add(calculateByQuantityService(service, serviceRoom, contract, reading));
                     }
-                    default -> throw new AppException(ErrorCode.INVALID_SERVICE_CALCULATION);
+                    default ->
+                            throw new AppException(ErrorCode.INVALID_SERVICE_CALCULATION);
                 }
             }
         }
 
         // Hóa đơn cuối chỉ bao gồm dịch vụ tính theo số trong tháng hiện tại
         if (invoiceType == InvoiceType.CUOI_CUNG) {
-            List<ServiceRoom> serviceRooms =
-                    serviceRoomRepository.findByRoomId(contract.getRoom().getId());
+            List<ServiceRoom> serviceRooms = serviceRoomRepository.findByRoomId(contract.getRoom().getId());
             for (ServiceRoom serviceRoom : serviceRooms) {
                 Service service = serviceRoom.getService();
                 if (service.getServiceCalculation() != ServiceCalculation.TINH_THEO_SO) continue;
 
-                Meter meter = meterRepository
-                        .findByRoomIdAndServiceId(contract.getRoom().getId(), service.getId())
-                        .orElseThrow(() -> new AppException(ErrorCode.METER_NOT_FOUND));
+                Meter meter = meterRepository.findByRoomIdAndServiceId(
+                        contract.getRoom().getId(), service.getId()
+                ).orElseThrow(() -> new AppException(ErrorCode.METER_NOT_FOUND));
 
-                MeterReading reading = meterReadingRepository
-                        .findByMeterIdAndMonthAndYear(meter.getId(), month, year)
-                        .orElseThrow(() -> new AppException(ErrorCode.METER_READING_NOT_FOUND));
+                MeterReading reading = meterReadingRepository.findByMeterIdAndMonthAndYear(
+                        meter.getId(), month, year
+                ).orElseThrow(() -> new AppException(ErrorCode.METER_READING_NOT_FOUND));
 
                 items.add(calculateByQuantityService(service, serviceRoom, contract, reading));
             }
@@ -111,15 +106,16 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
 
     // Lấy chỉ số tháng trước
     private MeterReading getPreviousMonthReading(Service service, Contract contract, int month, int year) {
-        Meter meter = meterRepository
-                .findByRoomIdAndServiceId(contract.getRoom().getId(), service.getId())
+        Meter meter = meterRepository.findByRoomIdAndServiceId(contract.getRoom().getId(), service.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.METER_NOT_FOUND));
 
         YearMonth previousMonth = YearMonth.of(year, month).minusMonths(1);
 
-        return meterReadingRepository
-                .findByMeterIdAndMonthAndYear(meter.getId(), previousMonth.getMonthValue(), previousMonth.getYear())
-                .orElseThrow(() -> new AppException(ErrorCode.METER_READING_NOT_FOUND));
+        return meterReadingRepository.findByMeterIdAndMonthAndYear(
+                meter.getId(),
+                previousMonth.getMonthValue(),
+                previousMonth.getYear()
+        ).orElseThrow(() -> new AppException(ErrorCode.METER_READING_NOT_FOUND));
     }
 
     // Kiểm tra xem có phải là tháng đầu của hợp đồng không
@@ -140,7 +136,12 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
 
     // tính dịch vụ theo phòng
     private InvoiceItemResponse calculateByRoomService(
-            Service service, ServiceRoom serviceRoom, Contract contract, int month, int year) {
+            Service service,
+            ServiceRoom serviceRoom,
+            Contract contract,
+            int month,
+            int year
+    ) {
         // Lấy đơn giá từ ServiceRoom
         BigDecimal unitPrice = serviceRoom.getUnitPrice();
         if (unitPrice == null || unitPrice.compareTo(BigDecimal.ZERO) <= 0) {
@@ -165,24 +166,36 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
 
     // tính dịch vụ theo phương tiện
     private InvoiceItemResponse calculateByVehicleService(
-            Service service, ServiceRoom serviceRoom, Contract contract, int month, int year) {
-        int vehicleCount =
-                (contract.getVehicles() != null) ? contract.getVehicles().size() : 0;
-        return calculateByCountService(
-                service,
-                serviceRoom,
-                contract,
-                month,
-                year,
-                vehicleCount,
-                ErrorCode.INVALID_VEHICLE_COUNT,
-                ServiceCalculation.TINH_THEO_PHUONG_TIEN);
+            Service service,
+            ServiceRoom serviceRoom,
+            Contract contract,
+            int month,
+            int year
+    ) {
+//        int vehicleCount = (contract.getVehicles() != null) ? contract.getVehicles().size() : 0;
+//        return calculateByCountService(
+//                service,
+//                serviceRoom,
+//                contract,
+//                month,
+//                year,
+////                vehicleCount,
+//                ErrorCode.INVALID_VEHICLE_COUNT,
+//                ServiceCalculation.TINH_THEO_PHUONG_TIEN
+//        );
+
+        return null;
     }
 
-    // tính dịch vụ theo người
+    //tính dịch vụ theo người
     private InvoiceItemResponse calculateByPeopleService(
-            Service service, ServiceRoom serviceRoom, Contract contract, int month, int year) {
-        int peopleCount = (contract.getNumberOfPeople() != null) ? contract.getNumberOfPeople() : 0;
+            Service service,
+            ServiceRoom serviceRoom,
+            Contract contract,
+            int month,
+            int year
+    ) {
+        int peopleCount = (contract.getContractTenants() != null) ? contract.getContractTenants().size() : 0;
         return calculateByCountService(
                 service,
                 serviceRoom,
@@ -191,17 +204,22 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
                 year,
                 peopleCount,
                 ErrorCode.INVALID_NUMBER_OF_PEOPLE,
-                ServiceCalculation.TINH_THEO_NGUOI);
+                ServiceCalculation.TINH_THEO_NGUOI
+        );
     }
 
-    // dịch vụ tính theo số
-    public InvoiceItemResponse calculateByQuantityService(
-            Service service, ServiceRoom serviceRoom, Contract contract, MeterReading reading) {
+    //dịch vụ tính theo số
+    private InvoiceItemResponse calculateByQuantityService(
+            Service service,
+            ServiceRoom serviceRoom,
+            Contract contract,
+            MeterReading reading
+    ) {
         if (reading == null) {
             throw new AppException(ErrorCode.METER_READING_NOT_FOUND);
         }
 
-        // Lấy số lượng tiêu thụ
+        //Lấy số lượng tiêu thụ
         Integer quantity = reading.getQuantity();
         if (quantity == null) {
             quantity = reading.getNewIndex() - reading.getOldIndex();
@@ -231,13 +249,13 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
                 .unit(service.getUnit())
                 .unitPrice(unitPrice)
                 .amount(amount)
-                .description("Tiền " + service.getName() + " phòng "
-                        + contract.getRoom().getRoomCode())
-                .build();
+                .description("Tiền " + service.getName() + " phòng " + contract.getRoom().getRoomCode())
+        .build();
+
     }
 
     // tính tiền phòng
-    public InvoiceItemResponse calculateRoomPrice(Contract contract, int month, int year) {
+    private InvoiceItemResponse calculateRoomPrice(Contract contract, int month, int year) {
         BigDecimal roomPrice = contract.getRoomPrice();
         if (roomPrice == null || roomPrice.compareTo(BigDecimal.ZERO) <= 0) {
             return null;
@@ -269,7 +287,7 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
                 .build();
     }
 
-    // build dịch vụ tính theo số lượng
+    //build dịch vụ tính theo số lượng
     private InvoiceItemResponse calculateByCountService(
             Service service,
             ServiceRoom serviceRoom,
@@ -278,7 +296,8 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
             int year,
             int quantity,
             ErrorCode emptyErrorCode,
-            ServiceCalculation calculation) {
+            ServiceCalculation calculation
+    ) {
         if (quantity <= 0) {
             throw new AppException(emptyErrorCode);
         }
@@ -321,26 +340,23 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
         LocalDate firstDayOfMonth = LocalDate.of(year, month, 1);
         LocalDate lastDayOfMonth = firstDayOfMonth.withDayOfMonth(firstDayOfMonth.lengthOfMonth());
 
-        LocalDate contractStartDate = contract.getStartDate().toLocalDate();
-        LocalDate contractEndDate =
-                contract.getEndDate() != null ? contract.getEndDate().toLocalDate() : null;
+        LocalDate contractStartDate = contract.getStartDate();
+        LocalDate contractEndDate = contract.getEndDate() != null ? contract.getEndDate() : null;
 
         // Nếu hợp đồng bao phủ toàn bộ tháng thì không cần tính tỷ lệ
-        if ((contractStartDate.isBefore(firstDayOfMonth) || contractStartDate.isEqual(firstDayOfMonth))
-                && (contractEndDate == null
-                        || contractEndDate.isAfter(lastDayOfMonth)
-                        || contractEndDate.isEqual(lastDayOfMonth))) {
+        if ((contractStartDate.isBefore(firstDayOfMonth) || contractStartDate.isEqual(firstDayOfMonth)) &&
+                (contractEndDate == null || contractEndDate.isAfter(lastDayOfMonth) || contractEndDate.isEqual(lastDayOfMonth))) {
             return BigDecimal.ONE; // full tháng
         }
 
         // Tính số ngày thuê thực tế
         LocalDate from = contractStartDate.isAfter(firstDayOfMonth) ? contractStartDate : firstDayOfMonth;
-        LocalDate to =
-                contractEndDate != null && contractEndDate.isBefore(lastDayOfMonth) ? contractEndDate : lastDayOfMonth;
+        LocalDate to = contractEndDate != null && contractEndDate.isBefore(lastDayOfMonth) ? contractEndDate : lastDayOfMonth;
 
         int daysInMonth = (int) ChronoUnit.DAYS.between(firstDayOfMonth, lastDayOfMonth.plusDays(1));
         int rentedDays = (int) ChronoUnit.DAYS.between(from, to.plusDays(1));
 
-        return BigDecimal.valueOf(rentedDays).divide(BigDecimal.valueOf(daysInMonth), 4, RoundingMode.HALF_UP);
+        return BigDecimal.valueOf(rentedDays)
+                .divide(BigDecimal.valueOf(daysInMonth), 4, RoundingMode.HALF_UP);
     }
 }

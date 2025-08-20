@@ -54,9 +54,6 @@ public class Asset extends AbstractEntity {
     @Column(name = "mo_ta")
     String descriptionAsset;
 
-    @ManyToMany(mappedBy = "assets")
-    Set<Room> rooms = new HashSet<>();
-
     @Builder.Default
     @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL, orphanRemoval = true) // đã có assetRooms
     Set<AssetRoom> assetRooms = new HashSet<>();
