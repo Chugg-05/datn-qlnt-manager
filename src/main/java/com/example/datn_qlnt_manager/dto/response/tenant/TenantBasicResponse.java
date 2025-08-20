@@ -16,5 +16,4 @@ public class TenantBasicResponse implements Serializable {
     String fullName;
     String email;
     String phoneNumber;
-    Boolean isRepresentative;
 }

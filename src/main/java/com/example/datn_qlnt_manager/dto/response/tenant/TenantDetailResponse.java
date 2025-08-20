@@ -3,7 +3,6 @@ package com.example.datn_qlnt_manager.dto.response.tenant;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import com.example.datn_qlnt_manager.common.Gender;
 import com.example.datn_qlnt_manager.common.TenantStatus;
@@ -19,10 +18,6 @@ import lombok.experimental.FieldDefaults;
 public class TenantDetailResponse implements Serializable {
     String id;
     String customerCode;
-    String buildingName;
-    String buildingAddress;
-    String floorName;
-    String roomCode;
     String fullName;
     Gender gender;
     LocalDate dob;
@@ -31,10 +26,8 @@ public class TenantDetailResponse implements Serializable {
     String pictureUrl;
     String identityCardNumber;
     String address;
-    String contractCode;
-    LocalDateTime endDate;
     TenantStatus tenantStatus;
-    Boolean isRepresentative;
+    Long totalContract;
     Instant createdAt;
     Instant updatedAt;
 }

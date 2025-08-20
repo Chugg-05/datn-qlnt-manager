@@ -1,5 +1,7 @@
 package com.example.datn_qlnt_manager.repository;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,14 +61,39 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
 
     Optional<Vehicle> findByIdAndVehicleStatusNot(String id, VehicleStatus vehicleStatus);
 
-    @Query(
-            """
+	@Query("""
 		SELECT v FROM Vehicle v
 		JOIN v.tenant t
-		JOIN t.contracts c
-		WHERE c.room.id = :roomId
-		AND (c.status = "HIEU_LUC"
-		OR c.status = "SAP_HET_HAN")
+		JOIN t.contractTenants ct
+		WHERE ct.contract.room.id = :roomId
+		AND (ct.contract.status = "HIEU_LUC"
+		OR ct.contract.status = "SAP_HET_HAN")
 """)
-    List<Vehicle> findActiveVehiclesByRoomId(@Param("roomId") String roomId);
+	List<Vehicle> findActiveVehiclesByRoomId (@Param("roomId") String roomId);
+
+	@Query("""
+		SELECT DISTINCT v
+		FROM Contract c
+		JOIN c.contractVehicles cv
+		JOIN cv.vehicle v
+		WHERE v.id IN :vehicleIds
+		  AND c.endDate > :startDate
+	""")
+	List<Vehicle> findActiveVehiclesInContracts(@Param("vehicleIds") Collection<String> vehicleIds,
+											   @Param("startDate") LocalDate startDate);
+
+	@Query("""
+		SELECT v
+		FROM Contract c
+		JOIN c.contractVehicles cv
+		JOIN cv.vehicle v
+		WHERE v.id IN :vehicleIds
+		  AND c.id <> :currentContractId
+		  AND c.endDate > :startDate
+	""")
+	List<Vehicle> findActiveVehiclesInOtherContracts(@Param("vehicleIds") Collection<String> vehicleIds,
+													 @Param("currentContractId") String currentContractId,
+													 @Param("startDate") LocalDate startDate);
+
+
 }

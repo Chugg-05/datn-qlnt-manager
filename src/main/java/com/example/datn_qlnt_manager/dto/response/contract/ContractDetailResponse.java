@@ -2,13 +2,13 @@ package com.example.datn_qlnt_manager.dto.response.contract;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.List;
 
 import com.example.datn_qlnt_manager.common.ContractStatus;
-import com.example.datn_qlnt_manager.dto.response.asset.AssetBasicResponse;
-import com.example.datn_qlnt_manager.dto.response.service.ServiceBasicResponse;
-import com.example.datn_qlnt_manager.dto.response.tenant.TenantBasicResponse;
+import com.example.datn_qlnt_manager.dto.response.asset.AssetLittleResponse;
+import com.example.datn_qlnt_manager.dto.response.service.ServiceLittleResponse;
+import com.example.datn_qlnt_manager.dto.response.tenant.TenantLittleResponse;
 import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleBasicResponse;
 
 import lombok.*;
@@ -21,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContractDetailResponse {
     String id;
+    String roomId;
     String contractCode;
     String roomCode;
     String nameManager;
@@ -30,25 +31,25 @@ public class ContractDetailResponse {
     String phoneNumberUser;
     String identityCardUser;
     String addressUser;
-    Integer numberOfPeople;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
+    LocalDate startDate;
+    LocalDate endDate;
     BigDecimal deposit;
     BigDecimal roomPrice;
     String buildingAddress;
     ContractStatus status;
     BigDecimal electricPrice;
     BigDecimal waterPrice;
-    Set<TenantBasicResponse> tenants;
-    Set<AssetBasicResponse> assets;
-    Set<ServiceBasicResponse> services;
-    Set<VehicleBasicResponse> vehicles;
+    List<TenantLittleResponse> tenants;
+    List<AssetLittleResponse> assets;
+    List<ServiceLittleResponse> services;
+    List<VehicleBasicResponse> vehicles;
     Instant createdAt;
     Instant updatedAt;
     String content;
 
     public ContractDetailResponse(
             String id,
+            String roomId,
             String contractCode,
             String roomCode,
             String nameManager,
@@ -58,9 +59,8 @@ public class ContractDetailResponse {
             String phoneNumberUser,
             String identityCardUser,
             String addressUser,
-            Integer numberOfPeople,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
+            LocalDate startDate,
+            LocalDate endDate,
             BigDecimal deposit,
             BigDecimal roomPrice,
             String buildingAddress,
@@ -70,6 +70,7 @@ public class ContractDetailResponse {
             Instant createdAt,
             Instant updatedAt) {
         this.id = id;
+        this.roomId = roomId;
         this.contractCode = contractCode;
         this.roomCode = roomCode;
         this.nameManager = nameManager;
@@ -79,7 +80,6 @@ public class ContractDetailResponse {
         this.phoneNumberUser = phoneNumberUser;
         this.identityCardUser = identityCardUser;
         this.addressUser = addressUser;
-        this.numberOfPeople = numberOfPeople;
         this.startDate = startDate;
         this.endDate = endDate;
         this.deposit = deposit;

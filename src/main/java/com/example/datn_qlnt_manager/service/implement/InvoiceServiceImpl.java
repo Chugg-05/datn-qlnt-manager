@@ -367,8 +367,8 @@ public class InvoiceServiceImpl implements InvoiceService {
         LocalDate firstDay = LocalDate.of(year, month, 1);
         LocalDate lastDay = firstDay.withDayOfMonth(firstDay.lengthOfMonth());
 
-        LocalDate start = contract.getStartDate().toLocalDate();
-        LocalDate end = contract.getEndDate() != null ? contract.getEndDate().toLocalDate() : null;
+        LocalDate start = contract.getStartDate();
+        LocalDate end = contract.getEndDate() != null ? contract.getEndDate() : null;
 
         boolean startedBeforeEndOfMonth = !start.isAfter(lastDay);
         boolean notEndedBeforeStartOfMonth = end == null || !end.isBefore(firstDay);
@@ -670,7 +670,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private List<InvoiceItemResponse> getInvoiceItemsByContext(Contract contract, Room room, int month, int year) {
         List<InvoiceItemResponse> items = new ArrayList<>();
 
-        LocalDate contractStart = contract.getStartDate().toLocalDate();
+        LocalDate contractStart = contract.getStartDate();
         // tháng đầu tiên không tính tiền điện, nước (dịch vụ tính theo số)
         boolean isFirstMonth = contractStart.getMonthValue() == month && contractStart.getYear() == year;
 
@@ -709,9 +709,9 @@ public class InvoiceServiceImpl implements InvoiceService {
     private List<InvoiceItemResponse> buildNonMeterServiceCharges(Room room, Contract contract, int month, int year) {
         List<InvoiceItemResponse> items = new ArrayList<>();
 
-        int numberOfPeople = contract.getNumberOfPeople();
+        int numberOfPeople = contract.getContractTenants().size();
         int vehicleNumber =
-                contract.getVehicles() != null ? contract.getVehicles().size() : 0;
+                contract.getContractVehicles() != null ? contract.getContractVehicles().size() : 0;
 
         List<ServiceRoom> serviceRooms =
                 serviceRoomRepository.findActiveByRoomIdAndMonth(room.getId(), LocalDate.of(year, month, 1));

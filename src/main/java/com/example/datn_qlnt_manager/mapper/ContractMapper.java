@@ -14,11 +14,10 @@ public interface ContractMapper {
 
     @Mapping(target = "contractCode", ignore = true)
     @Mapping(target = "room", ignore = true)
-    @Mapping(target = "tenants", ignore = true)
-    @Mapping(target = "status", constant = "HIEU_LUC")
-    @Mapping(target = "assets", ignore = true)
-    @Mapping(target = "services", ignore = true)
-    @Mapping(target = "vehicles", ignore = true)
+    @Mapping(target = "status", constant = "CHO_KICH_HOAT")
+    @Mapping(target = "contractTenants", ignore = true)
+    @Mapping(target = "contractVehicles", ignore = true)
+    @Mapping(target = "content", ignore = true)
     Contract toContract(ContractCreationRequest request);
 
     @Mapping(source = "room.roomCode", target = "roomCode")
@@ -27,13 +26,10 @@ public interface ContractMapper {
     @Mapping(target = "contractCode", ignore = true)
     @Mapping(target = "room", ignore = true)
     @Mapping(target = "startDate", ignore = true)
-    @Mapping(target = "deposit", ignore = true)
-    @Mapping(target = "roomPrice", ignore = true)
     @Mapping(target = "electricPrice", ignore = true)
     @Mapping(target = "waterPrice", ignore = true)
-    @Mapping(target = "tenants", ignore = true)
-    @Mapping(target = "assets", ignore = true)
-    @Mapping(target = "services", ignore = true)
-    @Mapping(target = "vehicles", ignore = true)
+    @Mapping(target = "contractTenants", ignore = true)
+    @Mapping(target = "contractVehicles", ignore = true)
+    @Mapping(target = "content", ignore = true)
     void updateContract(ContractUpdateRequest request, @MappingTarget Contract contract);
 }

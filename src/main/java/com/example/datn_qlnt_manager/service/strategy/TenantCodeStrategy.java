@@ -24,6 +24,6 @@ public class TenantCodeStrategy {
         long index = redisService.increment(redisKey);
         long number = 100_000 + index - 1;
 
-        return prefix + "KH" + String.format("%06d", number);
+        return  "KH" + prefix + String.format("%06d", number);
     }
 }

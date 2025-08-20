@@ -10,9 +10,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContractStatistics {
     Long totalContracts;
+    Long totalWaitingContracts;
     Long totalActiveContracts;
-    Long totalExpiredContracts;
     Long totalAboutToExpireContracts;
-    Long totalLiquidatedContracts;
-    Long totalCancelledContracts;
+    Long totalCompletedOnTime;
+    Long totalTerminationsWithNotice;
+    Long totalUnilateralTermination;
 }
