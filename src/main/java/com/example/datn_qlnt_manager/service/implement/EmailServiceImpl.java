@@ -1,30 +1,25 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import com.example.datn_qlnt_manager.entity.Invoice;
-import com.example.datn_qlnt_manager.entity.PaymentReceipt;
+import com.example.datn_qlnt_manager.entity.*;
+import com.example.datn_qlnt_manager.repository.ContractTenantRepository;
 import com.example.datn_qlnt_manager.utils.FormatUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.example.datn_qlnt_manager.dto.request.EmailRequest;
 import com.example.datn_qlnt_manager.dto.request.Recipient;
 import com.example.datn_qlnt_manager.dto.request.SendEmailRequest;
 import com.example.datn_qlnt_manager.dto.request.Sender;
 import com.example.datn_qlnt_manager.dto.response.EmailResponse;
-import com.example.datn_qlnt_manager.entity.Invoice;
-import com.example.datn_qlnt_manager.entity.PaymentReceipt;
-import com.example.datn_qlnt_manager.entity.Tenant;
-import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.repository.client.EmailClient;
 import com.example.datn_qlnt_manager.service.EmailService;
 import com.example.datn_qlnt_manager.utils.EmailTemplateUtil;
-import com.example.datn_qlnt_manager.utils.FormatUtil;
 
 import feign.FeignException;
 import lombok.AccessLevel;
@@ -32,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -39,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmailServiceImpl implements EmailService {
     EmailClient emailClient;
+    ContractTenantRepository contractTenantRepository;
 
     @Value("${brevo.api.key}")
     @NonFinal
@@ -134,9 +131,12 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendPaymentNotificationToTenant(
-            String recipientEmail, String recipientName, Invoice invoice, PaymentReceipt receipt) {
-        String subject =
-                String.format("Phiếu thanh toán tháng %d/%d đã được phát hành", invoice.getMonth(), invoice.getYear());
+            String recipientEmail,
+            String recipientName,
+            Invoice invoice,
+            PaymentReceipt receipt
+    ) {
+        String subject = String.format("Phiếu thanh toán tháng %d/%d đã được phát hành", invoice.getMonth(), invoice.getYear());
 
         String content = EmailTemplateUtil.loadTemplate(
                 "tenant-payment-notification",
@@ -146,15 +146,12 @@ public class EmailServiceImpl implements EmailService {
                         "receiptCode", receipt.getReceiptCode(),
                         "amount", FormatUtil.formatCurrency(invoice.getTotalAmount()),
                         "dueDate", FormatUtil.formatDate(invoice.getPaymentDueDate()),
-                        "building",
-                        invoice.getContract()
-                                .getRoom()
-                                .getFloor()
-                                .getBuilding()
-                                .getBuildingName(),
+                        "building", invoice.getContract().getRoom().getFloor().getBuilding().getBuildingName(),
                         "room", invoice.getContract().getRoom().getRoomCode(),
                         "invoiceType", FormatUtil.formatInvoiceType(invoice.getInvoiceType()),
-                        "note", invoice.getNote() != null ? invoice.getNote() : "Không có"));
+                        "note", invoice.getNote() != null ? invoice.getNote() : "Không có"
+                )
+        );
 
         try {
             sendEmail(SendEmailRequest.builder()
@@ -175,103 +172,92 @@ public class EmailServiceImpl implements EmailService {
 
     @Transactional
     @Override
-    public void notifyOwnerForCashReceipt(PaymentReceipt receipt, String representativeName) {
+    public void notifyOwnerForCashReceipt(PaymentReceipt receipt) {
         Invoice invoice = receipt.getInvoice();
-        String ownerEmail = invoice.getContract()
-                .getRoom()
-                .getFloor()
-                .getBuilding()
-                .getUser()
-                .getEmail();
-        String ownerName = invoice.getContract()
-                .getRoom()
-                .getFloor()
-                .getBuilding()
-                .getUser()
-                .getFullName();
 
-        String subject = String.format(
-                "[THU TIỀN TRỰC TIẾP] Khách thuê đã chọn thanh toán tiền mặt - Hóa đơn %s", invoice.getInvoiceCode());
+        User owner = invoice.getContract().getRoom().getFloor().getBuilding().getUser();
+
+        ContractTenant representative = contractTenantRepository
+                .findByContractIdAndRepresentativeTrue(invoice.getContract().getId())
+                .orElseThrow(() -> new AppException(ErrorCode.REPRESENTATIVE_NOT_FOUND));
+
+        Tenant tenant = representative.getTenant();
+
+        String subject = String.format("[THU TIỀN TRỰC TIẾP] Khách thuê đã chọn thanh toán tiền mặt - Hóa đơn %s", invoice.getInvoiceCode());
 
         String content = EmailTemplateUtil.loadTemplate(
                 "notify-owner-cash-payment",
                 Map.of(
-                        "name", ownerName,
+                        "name", owner.getFullName(),
                         "invoiceCode", invoice.getInvoiceCode(),
                         "receiptCode", receipt.getReceiptCode(),
                         "amount", FormatUtil.formatCurrency(receipt.getAmount()),
-                        "building",
-                        invoice.getContract()
-                                .getRoom()
-                                .getFloor()
-                                .getBuilding()
-                                .getBuildingName(),
+                        "building", invoice.getContract().getRoom().getFloor().getBuilding().getBuildingName(),
                         "room", invoice.getContract().getRoom().getRoomCode(),
-                        "tenant", representativeName != null ? representativeName : "Không rõ",
-                        "dueDate", FormatUtil.formatDate(invoice.getPaymentDueDate())));
+                        "tenant", tenant.getFullName(),
+                        "dueDate", FormatUtil.formatDate(invoice.getPaymentDueDate())
+                ));
 
         try {
             sendEmail(SendEmailRequest.builder()
-                    .to(Recipient.builder().email(ownerEmail).name(ownerName).build())
+                    .to(Recipient.builder()
+                            .email(owner.getEmail())
+                            .name(owner.getFullName())
+                            .build())
                     .subject(subject)
                     .htmlContent(content)
                     .build());
 
-            log.info("Thông báo thanh toán tiền mặt đã gửi tới chủ nhà: {}", ownerEmail);
+            log.info("Thông báo thanh toán tiền mặt đã gửi tới chủ nhà: {}", owner.getEmail());
         } catch (Exception e) {
-            log.error("Gửi email thông báo chủ nhà thất bại: {}", ownerEmail, e);
+            log.error("Gửi email thông báo chủ nhà thất bại: {}", owner.getEmail(), e);
             throw new AppException(ErrorCode.EMAIL_SENDING_FAILED);
         }
+
     }
 
     @Transactional
     @Override
-    public void notifyOwnerRejectedReceipt(PaymentReceipt receipt, String representativeName) {
+    public void notifyOwnerRejectedReceipt(PaymentReceipt receipt) {
         Invoice invoice = receipt.getInvoice();
-        String ownerEmail = invoice.getContract()
-                .getRoom()
-                .getFloor()
-                .getBuilding()
-                .getUser()
-                .getEmail();
-        String ownerName = invoice.getContract()
-                .getRoom()
-                .getFloor()
-                .getBuilding()
-                .getUser()
-                .getFullName();
+        User owner = invoice.getContract().getRoom().getFloor().getBuilding().getUser();
 
-        String subject = String.format(
-                "[TỪ CHỐI THANH TOÁN] Khách thuê từ chối phiếu thanh toán - %s", receipt.getReceiptCode());
+        ContractTenant representative = contractTenantRepository
+                .findByContractIdAndRepresentativeTrue(invoice.getContract().getId())
+                .orElseThrow(() -> new AppException(ErrorCode.REPRESENTATIVE_NOT_FOUND));
+
+        Tenant tenant = representative.getTenant();
+
+        String subject = String.format("[TỪ CHỐI THANH TOÁN] Khách thuê từ chối phiếu thanh toán - %s", receipt.getReceiptCode());
 
         String content = EmailTemplateUtil.loadTemplate(
                 "notify-owner-rejected-payment",
                 Map.of(
-                        "name", ownerName,
+                        "name", owner.getFullName(),
                         "invoiceCode", invoice.getInvoiceCode(),
                         "receiptCode", receipt.getReceiptCode(),
                         "amount", FormatUtil.formatCurrency(receipt.getAmount()),
-                        "building",
-                        invoice.getContract()
-                                .getRoom()
-                                .getFloor()
-                                .getBuilding()
-                                .getBuildingName(),
+                        "building", invoice.getContract().getRoom().getFloor().getBuilding().getBuildingName(),
                         "room", invoice.getContract().getRoom().getRoomCode(),
-                        "tenant", representativeName != null ? representativeName : "Không rõ",
+                        "tenant", tenant.getFullName(),
                         "dueDate", FormatUtil.formatDate(invoice.getPaymentDueDate()),
-                        "reason", receipt.getNote()));
+                        "reason", receipt.getNote()
+                )
+        );
 
         try {
             sendEmail(SendEmailRequest.builder()
-                    .to(Recipient.builder().email(ownerEmail).name(ownerName).build())
+                    .to(Recipient.builder()
+                            .email(owner.getEmail())
+                            .name(owner.getFullName())
+                            .build())
                     .subject(subject)
                     .htmlContent(content)
                     .build());
 
-            log.info("Email từ chối thanh toán đã được gửi tới chủ nhà: {}", ownerEmail);
+            log.info("Email từ chối thanh toán đã được gửi tới chủ nhà: {}", owner.getEmail());
         } catch (Exception e) {
-            log.error("Gửi email từ chối thanh toán thất bại: {}", ownerEmail, e);
+            log.error("Gửi email từ chối thanh toán thất bại: {}", owner.getEmail(), e);
             throw new AppException(ErrorCode.EMAIL_SENDING_FAILED);
         }
     }
@@ -279,54 +265,146 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void notifyTenantPaymentConfirmed(PaymentReceipt receipt) {
         Invoice invoice = receipt.getInvoice();
-//        Tenant representative = invoice.getContract().getTenants().stream()
-//                .filter(t -> Boolean.TRUE.equals(t.getHasAccount()))
-//                .findFirst()
-//                .orElse(null);
 
-//        if (representative == null || representative.getUser() == null || representative.getUser().getEmail() == null) {
-//            log.warn("Không thể gửi email vì không tìm thấy đại diện hợp lệ.");
-//            return;
-//        }
-//
-//        String tenantEmail = representative.getUser().getEmail();
-//        String tenantName = representative.getFullName();
-        if (representative == null
-                || representative.getUser() == null
-                || representative.getUser().getEmail() == null) {
+        ContractTenant representative = contractTenantRepository
+                .findByContractIdAndRepresentativeTrue(invoice.getContract().getId())
+                .orElseThrow(() -> new AppException(ErrorCode.REPRESENTATIVE_NOT_FOUND));
+
+        Tenant tenant = representative.getTenant();
+
+        if (tenant == null || tenant.getUser() == null || tenant.getUser().getEmail() == null) {
             log.warn("Không thể gửi email vì không tìm thấy đại diện hợp lệ.");
             return;
         }
 
-        String tenantEmail = representative.getUser().getEmail();
-        String tenantName = representative.getFullName();
+        String email = tenant.getUser().getEmail();
+        String name = tenant.getFullName();
 
         String subject = String.format("Xác nhận thanh toán thành công - %s", receipt.getReceiptCode());
 
         String content = EmailTemplateUtil.loadTemplate(
                 "payment-confirmed-to-tenant",
                 Map.of(
-//                        "name", tenantName,
+                        "name", name,
                         "invoiceCode", invoice.getInvoiceCode(),
                         "receiptCode", receipt.getReceiptCode(),
                         "amount", FormatUtil.formatCurrency(receipt.getAmount()),
-                        "building",
-                        invoice.getContract()
-                                .getRoom()
-                                .getFloor()
-                                .getBuilding()
-                                .getBuildingName(),
+                        "building", invoice.getContract().getRoom().getFloor().getBuilding().getBuildingName(),
                         "room", invoice.getContract().getRoom().getRoomCode(),
-                        "paymentDate", FormatUtil.formatDateTime(receipt.getPaymentDate())));
+                        "paymentDate", FormatUtil.formatDateTime(receipt.getPaymentDate())
+                )
+        );
 
         sendEmail(SendEmailRequest.builder()
                 .to(Recipient.builder()
-//                        .email(tenantEmail)
-//                        .name(tenantName)
+                        .email(email)
+                        .name(name)
                         .build())
-                .to(Recipient.builder().email(tenantEmail).name(tenantName).build())
                 .subject(subject)
                 .htmlContent(content)
                 .build());
     }
+
+    @Override
+    public void notifyTenantDepositRefund(Deposit deposit) {
+        Contract contract = deposit.getContract();
+
+        ContractTenant representative = contractTenantRepository
+                .findByContractIdAndRepresentativeTrue(contract.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.REPRESENTATIVE_NOT_FOUND));
+
+        Tenant tenant = representative.getTenant();
+
+        if (tenant == null || tenant.getUser() == null || tenant.getUser().getEmail() == null) {
+            log.warn("Không tìm thấy đại diện hợp lệ.");
+            return;
+        }
+
+        String email = tenant.getUser().getEmail();
+        String name = tenant.getFullName();
+
+        String subject = String.format("Xác nhận hoàn tiền cọc - Hợp đồng %s", contract.getContractCode());
+
+        String content = EmailTemplateUtil.loadTemplate(
+                "deposit-refund-to-tenant",
+                Map.of(
+                        "name", name,
+                        "amount", FormatUtil.formatCurrency(deposit.getDepositAmount()),
+                        "building", contract.getRoom().getFloor().getBuilding().getBuildingName(),
+                        "room", contract.getRoom().getRoomCode(),
+                        "refundDate", FormatUtil.formatDateTime(deposit.getDepositRefundDate())
+                )
+        );
+
+        sendEmail(SendEmailRequest.builder()
+                .to(Recipient.builder().email(email).name(name).build())
+                .subject(subject)
+                .htmlContent(content)
+                .build());
+    }
+
+    @Override
+    public void notifyOwnerDepositReceived(Deposit deposit) {
+        Contract contract = deposit.getContract();
+        User owner = contract.getRoom().getFloor().getBuilding().getUser();
+
+        ContractTenant representative = contractTenantRepository
+                .findByContractIdAndRepresentativeTrue(contract.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.REPRESENTATIVE_NOT_FOUND));
+
+        Tenant tenant = representative.getTenant();
+
+        String subject = String.format("Khách thuê đã nhận lại tiền cọc - Hợp đồng %s", contract.getContractCode());
+
+        String content = EmailTemplateUtil.loadTemplate(
+                "deposit-received-to-owner",
+                Map.of(
+                        "ownerName", owner.getFullName(),
+                        "tenantName", tenant.getFullName(),
+                        "amount", FormatUtil.formatCurrency(deposit.getDepositAmount()),
+                        "building", contract.getRoom().getFloor().getBuilding().getBuildingName(),
+                        "room", contract.getRoom().getRoomCode(),
+                        "receivedDate", FormatUtil.formatDateTime(deposit.getSecurityDepositReturnDate())
+                )
+        );
+
+        sendEmail(SendEmailRequest.builder()
+                .to(Recipient.builder().email(owner.getEmail()).name(owner.getFullName()).build())
+                .subject(subject)
+                .htmlContent(content)
+                .build());
+    }
+
+    @Override
+    public void notifyOwnerDepositNotReceived(Deposit deposit) {
+        Contract contract = deposit.getContract();
+        User owner = contract.getRoom().getFloor().getBuilding().getUser();
+
+        ContractTenant representative = contractTenantRepository
+                .findByContractIdAndRepresentativeTrue(contract.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.REPRESENTATIVE_NOT_FOUND));
+
+        Tenant tenant = representative.getTenant();
+
+        String subject = String.format("Khách thuê báo chưa nhận tiền cọc - Hợp đồng %s", contract.getContractCode());
+
+        String content = EmailTemplateUtil.loadTemplate(
+                "deposit-not-received-to-owner",
+                Map.of(
+                        "ownerName", owner.getFullName(),
+                        "tenantName", tenant.getFullName(),
+                        "amount", FormatUtil.formatCurrency(deposit.getDepositAmount()),
+                        "building", contract.getRoom().getFloor().getBuilding().getBuildingName(),
+                        "room", contract.getRoom().getRoomCode(),
+                        "reportDate", FormatUtil.formatDateTime(LocalDateTime.now())
+                )
+        );
+
+        sendEmail(SendEmailRequest.builder()
+                .to(Recipient.builder().email(owner.getEmail()).name(owner.getFullName()).build())
+                .subject(subject)
+                .htmlContent(content)
+                .build());
+    }
+
 }

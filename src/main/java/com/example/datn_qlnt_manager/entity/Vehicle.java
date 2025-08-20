@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.entity;
 
 import java.util.Date;
+import java.util.Set;
 
 import jakarta.persistence.*;
 
@@ -43,4 +44,7 @@ public class Vehicle extends AbstractEntity {
 
     @Column(name = "mo_ta")
     String describe;
+
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<ContractVehicle> contractVehicles;
 }

@@ -56,17 +56,10 @@ public class Room extends AbstractEntity {
     Set<ServiceRoom> serviceRooms = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true) // đã có assetRooms
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<AssetRoom> assetRooms = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Contract> contracts = new HashSet<>();
-
-    @ManyToMany
-    @JoinTable(
-            name = "tai_san_phong",
-            joinColumns = @JoinColumn(name = "phong_id"),
-            inverseJoinColumns = @JoinColumn(name = "tai_san_id"))
-    Set<Asset> assets = new HashSet<>();
 }

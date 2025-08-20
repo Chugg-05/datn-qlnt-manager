@@ -17,10 +17,6 @@ import lombok.experimental.FieldDefaults;
 public class RoomUpdateRequest {
 
     @NotNull
-    String floorId;
-    //    @NotBlank
-    //    String roomCode;
-    @NotNull
     Double acreage;
 
     @NotNull

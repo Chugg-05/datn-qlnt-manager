@@ -33,7 +33,6 @@ public class RoomDetailsResponse {
 
     // 4. hợp đồng (thông tin cơ bản, thời hạn hợp đồng)
     String contractCode;
-    Integer numberOfPeople;
     String representativeName;
     String representativePhone;
     LocalDate dob;
@@ -68,7 +67,6 @@ public class RoomDetailsResponse {
             RoomStatus status,
             String description,
             String contractCode,
-            Integer numberOfPeople,
             String representativeName,
             String representativePhone,
             LocalDate dob,
@@ -95,7 +93,6 @@ public class RoomDetailsResponse {
         this.description = description;
 
         this.contractCode = contractCode;
-        this.numberOfPeople = numberOfPeople;
         this.representativeName = representativeName;
         this.representativePhone = representativePhone;
         this.dob = dob;

@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -69,19 +70,19 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
             Pageable pageable);
 
     @Query(
-            """
+	"""
 		SELECT new com.example.datn_qlnt_manager.dto.response.contract.ContractDetailResponse(
 			c.id,
+			r.id,
 			c.contractCode,
 			r.roomCode,
 			owner.fullName,
 			owner.phoneNumber,
-			ct.tenant.fullName,
-			ct.tenant.email,
-			ct.tenant.phoneNumber,
-			ct.tenant.identityCardNumber,
-			ct.tenant.address,
-			c.numberOfPeople,
+			t.fullName,
+			t.email,
+			t.phoneNumber,
+			t.identityCardNumber,
+			t.address,
 			c.startDate,
 			c.endDate,
 			c.deposit,
@@ -99,7 +100,9 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 		JOIN f.building b
 		JOIN b.user owner
 		JOIN c.contractTenants ct
-		WHERE c.id = :contractId AND ct.tenant.hasAccount = true
+		JOIN ct.tenant t
+		WHERE c.id = :contractId
+		AND ct.representative = true
 	""")
     Optional<ContractDetailResponse> findContractDetailById(@Param("contractId") String contractId);
 
@@ -118,10 +121,12 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
     @Query(
             """
 		SELECT COUNT(c),
+			SUM(CASE WHEN c.status = 'CHO_KICH_HOAT' THEN 1 ELSE 0 END),
 			SUM(CASE WHEN c.status = 'HIEU_LUC' THEN 1 ELSE 0 END),
 			SUM(CASE WHEN c.status = 'SAP_HET_HAN' THEN 1 ELSE 0 END),
-			SUM(CASE WHEN c.status = 'HET_HAN' THEN 1 ELSE 0 END),
-			SUM(CASE WHEN c.status = 'DA_THANH_LY' THEN 1 ELSE 0 END),
+			SUM(CASE WHEN c.status = 'KET_THUC_DUNG_HAN' THEN 1 ELSE 0 END),
+			SUM(CASE WHEN c.status = 'KET_THUC_CO_BAO_TRUOC' THEN 1 ELSE 0 END),
+			SUM(CASE WHEN c.status = 'TU_Y_HUY_BO' THEN 1 ELSE 0 END),
 			SUM(CASE WHEN c.status = 'DA_HUY' THEN 1 ELSE 0 END)
 		FROM Contract c
 		WHERE c.room.floor.building.user.id = :userId
@@ -191,6 +196,6 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 			@Param("endOfMonth") LocalDateTime endOfMonth
 	);
 
-	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
+	boolean existsByRoomIdAndEndDateAfter(String roomId, LocalDate startDate);
 
 }

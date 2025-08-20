@@ -1,7 +1,13 @@
 package com.example.datn_qlnt_manager.repository;
 
-import java.util.List;
-
+import com.example.datn_qlnt_manager.common.RoomStatus;
+import com.example.datn_qlnt_manager.common.RoomType;
+import com.example.datn_qlnt_manager.dto.projection.AssetRoomView;
+import com.example.datn_qlnt_manager.dto.response.asset.AssetLittleResponse;
+import com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic;
+import com.example.datn_qlnt_manager.entity.Asset;
+import com.example.datn_qlnt_manager.entity.AssetRoom;
+import com.example.datn_qlnt_manager.entity.Room;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,18 +15,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.datn_qlnt_manager.common.RoomStatus;
-import com.example.datn_qlnt_manager.common.RoomType;
-import com.example.datn_qlnt_manager.dto.projection.AssetRoomView;
-import com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic;
-import com.example.datn_qlnt_manager.entity.Asset;
-import com.example.datn_qlnt_manager.entity.AssetRoom;
-import com.example.datn_qlnt_manager.entity.Room;
+import java.util.List;
 
 @Repository
 public interface AssetRoomRepository extends JpaRepository<AssetRoom, String> {
-    @Query(
-            """
+	@Query(
+			"""
 				SELECT new com.example.datn_qlnt_manager.dto.projection.AssetRoomView(
 					r.id,
 					r.roomCode,
@@ -54,14 +54,13 @@ public interface AssetRoomRepository extends JpaRepository<AssetRoom, String> {
             Pageable pageable);
 
     @Query("""
-		SELECT ar FROM AssetRoom ar
-		LEFT JOIN ar.asset a
-		WHERE ar.room = :room
-	""")
+        SELECT ar FROM AssetRoom ar
+        LEFT JOIN ar.asset a
+        WHERE ar.room = :room
+    """)
     List<AssetRoom> findAllByRoomWithAsset(@Param("room") Room room);
 
-    @Query(
-            """
+    @Query("""
 		SELECT new com.example.datn_qlnt_manager.dto.statistics.AssetStatusStatistic(
 			COUNT(ar),
 			SUM(CASE WHEN ar.assetStatus = 'HOAT_DONG' THEN 1 ELSE 0 END),
@@ -75,8 +74,29 @@ public interface AssetRoomRepository extends JpaRepository<AssetRoom, String> {
 	""")
     AssetStatusStatistic getAssetStatisticsByBuildingId(@Param("buildingId") String buildingId);
 
-    @Query("SELECT SUM(ar.quantity) FROM AssetRoom ar WHERE ar.asset.id = :assetId")
-    Integer sumQuantityByAssetId(@Param("assetId") String assetId);
+	@Query("SELECT SUM(ar.quantity) FROM AssetRoom ar WHERE ar.asset.id = :assetId")
+	Integer sumQuantityByAssetId(@Param("assetId") String assetId);
 
-    boolean existsByRoomAndAsset(Room room, Asset asset);
+
+	@Query("""
+		SELECT new com.example.datn_qlnt_manager.dto.response.asset.AssetLittleResponse(
+		   ar.id,
+		   ar.assetName,
+		   ar.assetBeLongTo,
+		   ar.quantity,
+		   ar.price,
+		   ar.assetStatus,
+		   ar.description
+		)
+		FROM AssetRoom ar
+		JOIN ar.asset a
+		WHERE ar.room.id = :roomId
+	""")
+	List<AssetLittleResponse> findAllAssetLittleResponseByRoomId(@Param("roomId") String roomId);
+
+
+	boolean existsByRoomAndAsset(Room room, Asset asset);
+
+	boolean existsByRoomId(String roomId);
+
 }

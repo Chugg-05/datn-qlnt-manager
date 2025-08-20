@@ -9,6 +9,8 @@ import com.example.datn_qlnt_manager.dto.request.tenant.TenantUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantResponse;
 import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
+import com.example.datn_qlnt_manager.entity.Tenant;
+import jakarta.transaction.Transactional;
 
 public interface TenantService {
     PaginatedResponse<TenantResponse> getPageAndSearchAndFilterTenantByUserId(TenantFilter filter, int page, int size);
@@ -31,5 +33,6 @@ public interface TenantService {
 
     List<TenantResponse> getTenantsByRoomId(String roomId);
 
-    TenantResponse restoreTenantById(String tenantId);
+    @Transactional
+    void ensureTenantHasActiveUser(Tenant tenant);
 }

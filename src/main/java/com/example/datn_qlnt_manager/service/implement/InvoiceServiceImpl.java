@@ -367,8 +367,8 @@ public class InvoiceServiceImpl implements InvoiceService {
         LocalDate firstDay = LocalDate.of(year, month, 1);
         LocalDate lastDay = firstDay.withDayOfMonth(firstDay.lengthOfMonth());
 
-        LocalDate start = contract.getStartDate().toLocalDate();
-        LocalDate end = contract.getEndDate() != null ? contract.getEndDate().toLocalDate() : null;
+        LocalDate start = contract.getStartDate();
+        LocalDate end = contract.getEndDate() != null ? contract.getEndDate() : null;
 
         boolean startedBeforeEndOfMonth = !start.isAfter(lastDay);
         boolean notEndedBeforeStartOfMonth = end == null || !end.isBefore(firstDay);

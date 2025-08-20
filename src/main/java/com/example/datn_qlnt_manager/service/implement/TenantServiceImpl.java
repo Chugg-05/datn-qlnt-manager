@@ -3,10 +3,12 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.UserStatus;
 import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
 import com.example.datn_qlnt_manager.entity.Room;
 import com.example.datn_qlnt_manager.mapper.ContractMapper;
 import com.example.datn_qlnt_manager.repository.RoomRepository;
+import com.example.datn_qlnt_manager.repository.UserRepository;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -52,6 +54,7 @@ public class TenantServiceImpl implements TenantService {
     TenantMapper tenantMapper;
     UserService userService;
     ContractRepository contractRepository;
+    UserRepository userRepository;
     CodeGeneratorService codeGeneratorService;
     ContractMapper contractMapper;
 
@@ -216,6 +219,36 @@ public class TenantServiceImpl implements TenantService {
                 .map(tenantMapper::toTenantResponse)
                 .toList();
     }
+
+    @Transactional
+    @Override
+    public void ensureTenantHasActiveUser(Tenant tenant) {
+        if (tenant.getUser() == null) {
+            User user = userService.createUserForTenant(TenantCreationRequest.builder()
+                    .fullName(tenant.getFullName())
+                    .gender(tenant.getGender())
+                    .dob(tenant.getDob())
+                    .email(tenant.getEmail())
+                    .phoneNumber(tenant.getPhoneNumber())
+                    .identityCardNumber(tenant.getIdentityCardNumber())
+                    .address(tenant.getAddress())
+                    .build());
+
+            tenant.setUser(user);
+            tenant.setHasAccount(true);
+            user.setUpdatedAt(Instant.now());
+
+            tenantRepository.save(tenant);
+
+        } else {
+            User existingUser = tenant.getUser();
+            existingUser.setUserStatus(UserStatus.ACTIVE);
+            existingUser.setUpdatedAt(Instant.now());
+
+            userRepository.save(existingUser);
+        }
+    }
+
 
     private void validateDuplicateTenant(TenantCreationRequest request) {
         if (tenantRepository.existsByEmail(request.getEmail())) {
