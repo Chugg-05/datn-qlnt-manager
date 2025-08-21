@@ -1,7 +1,8 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.Instant;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 
 import com.example.datn_qlnt_manager.dto.response.notification.SentToUsers;
 import com.cloudinary.Cloudinary;
+
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -61,8 +63,10 @@ public class NotificationServiceImpl implements NotificationService {
             throw new AppException(ErrorCode.NOTIFICATION_USERS_REQUIRED);
         }
 
+        var sender = userService.getCurrentUser();
         Notification notification = notificationMapper.toNotification(request);
-        notification.setSentAt(LocalDateTime.now());
+        notification.setSentAt(Instant.now());
+        notification.setUser(sender);
         notification.setUser(userService.getCurrentUser());
 
         if (image != null && !image.isEmpty()) {
@@ -76,11 +80,13 @@ public class NotificationServiceImpl implements NotificationService {
 
         NotificationResponse response = notificationMapper.toResponse(notification);
         response.setSentToUsers(mapUsersToIdAndName(users));
+        response.setSenderImage(sender.getProfilePicture());
         return response;
     }
 
     @Override
-    public NotificationResponse updateNotification(String notificationId, NotificationUpdateRequest request, MultipartFile image) {
+    public NotificationResponse updateNotification(String notificationId, NotificationUpdateRequest request,
+                                                   MultipartFile image) {
         Notification notification = notificationRepository
                 .findById(notificationId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
@@ -95,7 +101,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         notificationMapper.updateNotificationFromRequest(request, notification);
-        notification.setSentAt(LocalDateTime.now());
+        notification.setSentAt(Instant.now());
 
         notificationUserRepository.deleteByNotificationId(notificationId);
 
@@ -105,23 +111,28 @@ public class NotificationServiceImpl implements NotificationService {
 
         NotificationResponse response = notificationMapper.toResponse(notification);
         response.setSentToUsers(mapUsersToIdAndName(users));
+        response.setSenderImage(notification.getUser().getProfilePicture());
         return response;
     }
 
     @Override
-    public PaginatedResponse<NotificationResponse> filterMyNotifications(NotificationFilter filter, int page, int size) {
-        String userId = userService.getCurrentUser().getId();
+    public PaginatedResponse<NotificationResponse> filterMyNotifications(NotificationFilter filter, int page,
+                                                                         int size) {
+        var sender = userService.getCurrentUser();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "sentAt"));
 
         Page<NotificationResponse> pageResult = notificationRepository.findAllByCurrentUserWithFilter(
-                userId,
+                sender.getId(),
                 filter.getQuery(),
                 filter.getNotificationType(),
                 filter.getFromDate(),
                 filter.getToDate(),
                 pageable);
 
-        pageResult.forEach(res -> res.setSentToUsers(notificationUserRepository.findRecipients(res.getNotificationId())));
+        pageResult.getContent().forEach(res -> {
+            res.setSentToUsers(notificationUserRepository.findRecipients(res.getId()));
+            res.setSenderImage(sender.getProfilePicture());
+        });
 
         Meta<?> meta = Meta.builder()
                 .pagination(Pagination.builder()
@@ -152,12 +163,12 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (notificationUser.getIsRead() == null || notificationUser.getReadAt() == null) {
             notificationUser.setIsRead(true);
-            notificationUser.setReadAt(LocalDateTime.now());
+            notificationUser.setReadAt(Instant.now());
             notificationUserRepository.saveAndFlush(notificationUser);
         }
 
         return NotificationDetailResponse.builder()
-                .notificationId(notification.getNotificationId())
+                .id(notification.getId())
                 .title(notification.getTitle())
                 .content(notification.getContent())
                 .notificationType(notification.getNotificationType())
@@ -219,5 +230,43 @@ public class NotificationServiceImpl implements NotificationService {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public PaginatedResponse<NotificationResponse> findAllByRecipientWithFilter(NotificationFilter filter, int page, int size) {
+        var currentUser = userService.getCurrentUser();
+
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "sentAt"));
+
+        Page<NotificationResponse> pageResult = notificationRepository.findAllByRecipientWithFilter(
+                currentUser.getId(),
+                filter.getQuery(),
+                filter.getNotificationType(),
+                filter.getFromDate(),
+                filter.getToDate(),
+                pageable
+        );
+
+        pageResult.getContent().forEach(res -> {
+            res.setSentToUsers(notificationUserRepository.findRecipients(res.getId()));
+            res.setSenderImage(userRepository.findById(res.getUserId())
+                    .map(User::getProfilePicture)
+                    .orElse(null));
+        });
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(pageResult.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(pageResult.getTotalPages())
+                        .total(pageResult.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<NotificationResponse>builder()
+                .data(pageResult.getContent())
+                .meta(meta)
+                .build();
     }
 }

@@ -1,6 +1,6 @@
 package com.example.datn_qlnt_manager.dto.filter;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import com.example.datn_qlnt_manager.common.NotificationType;
 
@@ -15,6 +15,6 @@ import lombok.experimental.FieldDefaults;
 public class NotificationFilter {
     private String query;
     private NotificationType notificationType;
-    private LocalDateTime fromDate;
-    private LocalDateTime toDate;
+    private Instant fromDate;
+    private Instant toDate;
 }
