@@ -1,6 +1,6 @@
 package com.example.datn_qlnt_manager.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    String notificationId;
+    String id;
 
     @Column(name = "tieu_de")
     String title;
@@ -42,7 +42,7 @@ public class Notification {
     NotificationType notificationType;
 
     @Column(name = "ngay_gui")
-    LocalDateTime sentAt;
+    Instant sentAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

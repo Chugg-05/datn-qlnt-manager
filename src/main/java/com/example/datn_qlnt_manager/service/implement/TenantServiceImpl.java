@@ -171,6 +171,7 @@ public class TenantServiceImpl implements TenantService {
                             .toList();
                     TenantResponse tenantResponse = tenantMapper.toTenantResponse(tenant);
                     tenantResponse.setContracts(contracts);
+                    tenantResponse.setUserId(tenant.getUser().getId());
                     return tenantResponse;
                 })
                 .toList();

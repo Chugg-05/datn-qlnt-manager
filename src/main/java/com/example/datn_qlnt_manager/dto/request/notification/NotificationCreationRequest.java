@@ -21,7 +21,6 @@ public class NotificationCreationRequest {
     @NotBlank(message = "NOTIFICATION_CONTENT_REQUIRED")
     String content;
 
-
     @NotNull(message = "NOTIFICATION_TYPE_REQUIRED")
     NotificationType notificationType;
 

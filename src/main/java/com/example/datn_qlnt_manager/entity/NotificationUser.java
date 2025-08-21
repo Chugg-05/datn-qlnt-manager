@@ -1,6 +1,6 @@
 package com.example.datn_qlnt_manager.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import jakarta.persistence.*;
 
@@ -33,5 +33,5 @@ public class NotificationUser {
     Boolean isRead;
 
     @Column(name = "thoi_gian_doc")
-    LocalDateTime readAt;
+    Instant readAt;
 }

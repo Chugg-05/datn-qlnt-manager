@@ -2,7 +2,6 @@ package com.example.datn_qlnt_manager.dto.response.room;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import com.example.datn_qlnt_manager.common.ContractStatus;
 import com.example.datn_qlnt_manager.common.RoomStatus;
@@ -13,7 +12,6 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoomDetailsResponse {
@@ -40,58 +38,34 @@ public class RoomDetailsResponse {
     BigDecimal deposit;
     BigDecimal roomPrice;
     ContractStatus contractStatus;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
+    LocalDate  startDate;
+    LocalDate  endDate;
 
     // 3. Số thành viên trong phòng
-    Long memberInRoomCount;
+    int memberInRoomCount;
 
     // 5. Số tài sản trong phòng
-    Long assetInRoomCount;
+    int assetInRoomCount;
 
     // 6. Số dịch vụ trong phòng đang sử dụng
-    Long serviceInRoomCount;
+    int serviceInRoomCount;
 
     // 7. Số phương tiện trong phòng
-    Long vehicleInRoomCount;
+    int vehicleInRoomCount;
 
-    public RoomDetailsResponse(
-            String buildingName,
-            String buildingAddress,
-            String ownerName,
-            String ownerPhone,
-            String roomCode,
-            BigDecimal acreage,
-            Integer maximumPeople,
-            RoomType roomType,
-            RoomStatus status,
-            String description,
-            String contractCode,
-            String representativeName,
-            String representativePhone,
-            LocalDate dob,
-            String identityCardNumber,
-            BigDecimal deposit,
-            BigDecimal roomPrice,
-            ContractStatus contractStatus,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
-            Long memberInRoomCount,
-            Long assetInRoomCount,
-            Long serviceInRoomCount,
-            Long vehicleInRoomCount) {
+    @Builder
+
+    public RoomDetailsResponse(String buildingName, String buildingAddress, String ownerName, String ownerPhone, String roomCode, BigDecimal acreage, Integer maximumPeople, RoomType roomType, RoomStatus status, String description, String contractCode, String representativeName, String representativePhone, LocalDate dob, String identityCardNumber, BigDecimal deposit, BigDecimal roomPrice, ContractStatus contractStatus, LocalDate startDate, LocalDate endDate, int memberInRoomCount, int assetInRoomCount, int serviceInRoomCount, int vehicleInRoomCount) {
         this.buildingName = buildingName;
         this.buildingAddress = buildingAddress;
         this.ownerName = ownerName;
         this.ownerPhone = ownerPhone;
-
         this.roomCode = roomCode;
         this.acreage = acreage;
         this.maximumPeople = maximumPeople;
         this.roomType = roomType;
         this.status = status;
         this.description = description;
-
         this.contractCode = contractCode;
         this.representativeName = representativeName;
         this.representativePhone = representativePhone;
@@ -102,7 +76,6 @@ public class RoomDetailsResponse {
         this.contractStatus = contractStatus;
         this.startDate = startDate;
         this.endDate = endDate;
-
         this.memberInRoomCount = memberInRoomCount;
         this.assetInRoomCount = assetInRoomCount;
         this.serviceInRoomCount = serviceInRoomCount;
