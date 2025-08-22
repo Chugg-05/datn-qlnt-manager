@@ -164,7 +164,7 @@ public enum ErrorCode {
 
     INVOICE_CREATION_FAILED(400, "Invoice creation failed.", HttpStatus.BAD_REQUEST),
     INVOICE_ALREADY_EXISTS(400, "Invoice already exists for this month and year.", HttpStatus.BAD_REQUEST),
-    CONTRACT_NOT_ACTIVE(400, "Contract expired.", HttpStatus.BAD_REQUEST),
+    CONTRACT_NOT_ACTIVE(400, "Contract is not eligible. Or has expired.", HttpStatus.BAD_REQUEST),
     INVALID_SERVICE_TYPE(400, "Invalid service type.", HttpStatus.BAD_REQUEST),
     METER_TYPE_NOT_FOUND(400, "Meter type not found.", HttpStatus.BAD_REQUEST),
     DUPLICATE_INVOICE_DETAIL(400, "Duplicate invoice detail for the same service type.", HttpStatus.BAD_REQUEST),
@@ -259,6 +259,8 @@ public enum ErrorCode {
     CONTRACT_NOT_ALLOW_CONFIRM_DEPOSIT(400, "This contract cannot confirm deposits.", HttpStatus.BAD_REQUEST),
     ROOM_NOT_AVAILABLE(400, "This room is not available. Please make sure the room is available before creating a contract.", HttpStatus.BAD_REQUEST),
     CANNOT_UPDATE_ROOM(400, "This room cannot be updated.", HttpStatus.BAD_REQUEST),
+    INVALID_CONTENT_IN_CONTRACT(400, "Content in contract must not be blank.", HttpStatus.BAD_REQUEST),
+    INVALID_CONTRACT_STATUS_FOR_INVOICE(400, "Contract status must be 'ACTIVE' to generate an invoice.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),

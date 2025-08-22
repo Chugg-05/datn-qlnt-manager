@@ -46,7 +46,7 @@ public interface InvoiceMapper {
 //    default String getRepresentativeName(Invoice invoice) {
 //        if (invoice.getContract() == null || invoice.getContract().getContractTenants() == null) return null;
 //        return invoice.getContract().getContractTenants().stream()
-//                .filter(t -> Boolean.TRUE.equals(t.getTenant().getHasAccount()))
+//                .filter(ct -> Boolean.TRUE.equals(ct.isRepresentative()))
 //                .map(ContractTen::getFullName)
 //                .findFirst()
 //                .orElse(null);
