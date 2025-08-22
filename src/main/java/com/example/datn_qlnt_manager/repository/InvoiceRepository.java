@@ -134,7 +134,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
         JOIN c.contractTenants ct
         JOIN ct.tenant t
         WHERE i.id = :invoiceId
-        AND t.hasAccount = true
+        AND ct.representative = true
     """)
 	Optional<InvoiceDetailView> getInvoiceDetailById(@Param("invoiceId") String invoiceId);
 
@@ -222,5 +222,4 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
 	boolean existsByContractIdAndMonthAndYearAndInvoiceType(
 			String contractId, int month, int year, InvoiceType invoiceType);
 
-	boolean existsByContractIdAndMonthAndYear(String contractId, Integer month, Integer year);
 }

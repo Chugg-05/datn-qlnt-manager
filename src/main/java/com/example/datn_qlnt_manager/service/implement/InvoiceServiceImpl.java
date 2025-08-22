@@ -120,8 +120,14 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .findById(request.getContractId())
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        int month =
-                Optional.ofNullable(request.getMonth()).orElse(LocalDate.now().getMonthValue());
+        ContractStatus contractStatus = contract.getStatus();
+        if (!(contractStatus == ContractStatus.HIEU_LUC
+                || contractStatus == ContractStatus.SAP_HET_HAN
+                || contractStatus == ContractStatus.TU_Y_HUY_BO)) {
+            throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
+        }
+
+        int month = Optional.ofNullable(request.getMonth()).orElse(LocalDate.now().getMonthValue());
         int year = Optional.ofNullable(request.getYear()).orElse(LocalDate.now().getYear());
 
         if (!isContractActiveDuring(contract, month, year)) {
@@ -139,9 +145,14 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        InvoiceStatus status = totalAmount.compareTo(BigDecimal.ZERO) == 0
-                ? InvoiceStatus.DA_THANH_TOAN
-                : InvoiceStatus.CHUA_THANH_TOAN;
+        InvoiceStatus status;
+        if (contract.getStatus() == ContractStatus.TU_Y_HUY_BO) {
+            status = InvoiceStatus.KHONG_THE_THANH_TOAN;
+        } else {
+            status = totalAmount.compareTo(BigDecimal.ZERO) == 0
+                    ? InvoiceStatus.DA_THANH_TOAN
+                    : InvoiceStatus.CHUA_THANH_TOAN;
+        }
 
         String invoiceCode = codeGeneratorService.generateInvoiceCode(contract.getRoom(), month, year);
 
@@ -220,13 +231,17 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         for (Contract contract : activeContracts) {
             try {
+                ContractStatus contractStatus = contract.getStatus();
+                if (!(contractStatus == ContractStatus.HIEU_LUC
+                        || contractStatus == ContractStatus.SAP_HET_HAN
+                        || contractStatus == ContractStatus.TU_Y_HUY_BO)) {
+                    continue;
+                }
+
                 InvoiceType invoiceType = resolveInvoiceType(contract, month, year);
 
                 if (!hasAllMeterReadingsForMonth(contract, month, year, invoiceType)) {
-                    log.warn("Phòng {} chưa có đủ chỉ số công tơ cho {} tháng {}/{}",
-                            contract.getRoom().getRoomCode(),
-                            invoiceType, month, year);
-                    continue;
+                    continue; // phòng không có chỉ số tháng này thì bỏ qua
                 }
 
                 InvoiceCreationRequest roomRequest = InvoiceCreationRequest.builder()
