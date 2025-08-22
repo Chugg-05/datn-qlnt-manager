@@ -30,7 +30,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
         JOIN FETCH c.contractTenants ct
         JOIN FETCH ct.tenant t
         WHERE b.user.id = :ownerId
-        AND t.hasAccount = true
+        AND  ct.representative = true
         AND (
         :query IS NULL
         OR i.invoiceCode LIKE CONCAT('%', :query, '%')
@@ -75,7 +75,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
         JOIN FETCH c.contractTenants ct
         JOIN FETCH ct.tenant t
         WHERE b.user.id = :ownerId
-        AND t.hasAccount = true
+        AND ct.representative = true
         AND (
         :query IS NULL
         OR i.invoiceCode LIKE CONCAT('%', :query, '%')
@@ -169,7 +169,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
         JOIN FETCH c.contractTenants ct
         JOIN FETCH ct.tenant t
         WHERE t.user.id = :userId
-        AND t.hasAccount = true
+        AND ct.representative = true
         AND (
         :query IS NULL
         OR i.invoiceCode LIKE CONCAT('%', :query, '%')
