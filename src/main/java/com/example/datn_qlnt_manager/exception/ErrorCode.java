@@ -259,6 +259,7 @@ public enum ErrorCode {
     CONTRACT_NOT_ALLOW_CONFIRM_DEPOSIT(400, "This contract cannot confirm deposits.", HttpStatus.BAD_REQUEST),
     ROOM_NOT_AVAILABLE(400, "This room is not available. Please make sure the room is available before creating a contract.", HttpStatus.BAD_REQUEST),
     CANNOT_UPDATE_ROOM(400, "This room cannot be updated.", HttpStatus.BAD_REQUEST),
+    INVALID_CONTENT_IN_CONTRACT(400, "Content in contract must not be blank.", HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),

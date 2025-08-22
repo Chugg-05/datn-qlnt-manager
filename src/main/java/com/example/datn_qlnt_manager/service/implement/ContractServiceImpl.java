@@ -105,6 +105,7 @@ public class ContractServiceImpl implements ContractService {
         contract.setRoom(room);
         contract.setRoomPrice(room.getPrice());
         applyUtilityPrices(contract);
+        contract.setContent(request.getContent());
 
         contract.setCreatedAt(Instant.now());
         contract.setUpdatedAt(Instant.now());

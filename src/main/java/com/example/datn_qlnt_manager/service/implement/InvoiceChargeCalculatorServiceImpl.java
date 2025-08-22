@@ -41,7 +41,6 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
 
         boolean isFirstMonth = isFirstMonth(contract, month, year);
 
-        // Tiền phòng và dịch vụ không tính theo số (chỉ có trong HANG_THANG)
         if (invoiceType == InvoiceType.HANG_THANG) {
             InvoiceItemResponse roomCharge = calculateRoomPrice(contract, month, year);
             if (roomCharge != null) {
@@ -143,13 +142,13 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
             int year
     ) {
         // Lấy đơn giá từ ServiceRoom
-        BigDecimal unitPrice = serviceRoom.getUnitPrice();
-        if (unitPrice == null || unitPrice.compareTo(BigDecimal.ZERO) <= 0) {
+        BigDecimal initialUnitPrice = serviceRoom.getUnitPrice();
+        if (initialUnitPrice == null || initialUnitPrice.compareTo(BigDecimal.ZERO) <= 0) {
             throw new AppException(ErrorCode.UNIT_PRICE_REQUIRED);
         }
 
         BigDecimal proportion = calculateProportion(contract, month, year);
-        BigDecimal amount = unitPrice.multiply(proportion).setScale(0, RoundingMode.HALF_UP);
+        BigDecimal actualUnitPrice = initialUnitPrice.multiply(proportion).setScale(0, RoundingMode.HALF_UP);
 
         return InvoiceItemResponse.builder()
                 .serviceRoomId(serviceRoom.getId())
@@ -158,8 +157,8 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
                 .serviceCalculation(ServiceCalculation.TINH_THEO_PHONG)
                 .quantity(1)
                 .unit(service.getUnit())
-                .unitPrice(unitPrice)
-                .amount(amount)
+                .unitPrice(actualUnitPrice)
+                .amount(actualUnitPrice)
                 .description(buildDescription(contract, month, year, service.getName()))
                 .build();
     }
@@ -172,19 +171,17 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
             int month,
             int year
     ) {
-//        int vehicleCount = (contract.getVehicles() != null) ? contract.getVehicles().size() : 0;
-//        return calculateByCountService(
-//                service,
-//                serviceRoom,
-//                contract,
-//                month,
-//                year,
-////                vehicleCount,
-//                ErrorCode.INVALID_VEHICLE_COUNT,
-//                ServiceCalculation.TINH_THEO_PHUONG_TIEN
-//        );
-
-        return null;
+        int vehicleCount = (contract.getContractVehicles() != null) ? contract.getContractVehicles().size() : 0;
+        return calculateByCountService(
+                service,
+                serviceRoom,
+                contract,
+                month,
+                year,
+                vehicleCount,
+                ErrorCode.INVALID_VEHICLE_COUNT,
+                ServiceCalculation.TINH_THEO_PHUONG_TIEN
+        );
     }
 
     //tính dịch vụ theo người
@@ -262,7 +259,7 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
         }
 
         BigDecimal proportion = calculateProportion(contract, month, year);
-        BigDecimal amount = roomPrice.multiply(proportion).setScale(0, RoundingMode.HALF_UP);
+        BigDecimal unitPrice = roomPrice.multiply(proportion).setScale(0, RoundingMode.HALF_UP);
 
         String description;
         if (isFirstMonth(contract, month, year)) {
@@ -271,7 +268,7 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
             description = "Tiền phòng tháng cuối tính theo số ngày thực tế thuê.";
         } else {
             description = "Tiền phòng " + contract.getRoom().getRoomCode() + " tháng " + month + "/" + year
-                    + "cho phòng " + contract.getRoom().getRoomCode();
+                    + " phòng " + contract.getRoom().getRoomCode();
         }
 
         return InvoiceItemResponse.builder()
@@ -281,13 +278,13 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
                 .serviceCalculation(ServiceCalculation.TINH_THEO_PHONG)
                 .quantity(1)
                 .unit("Phòng")
-                .unitPrice(roomPrice)
-                .amount(amount)
+                .unitPrice(unitPrice)
+                .amount(unitPrice)
                 .description(description)
                 .build();
     }
 
-    //build dịch vụ tính theo số lượng
+    // build dùng chung cho dịch vụ tính theo số lượng (người/xe)
     private InvoiceItemResponse calculateByCountService(
             Service service,
             ServiceRoom serviceRoom,
@@ -302,16 +299,15 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
             throw new AppException(emptyErrorCode);
         }
 
-        BigDecimal unitPrice = serviceRoom.getUnitPrice();
-        if (unitPrice == null) {
+        BigDecimal initialUnitPrice = serviceRoom.getUnitPrice();
+        if (initialUnitPrice == null) {
             throw new AppException(ErrorCode.UNIT_PRICE_REQUIRED);
         }
 
         BigDecimal proportion = calculateProportion(contract, month, year);
-        BigDecimal amount = unitPrice
-                .multiply(BigDecimal.valueOf(quantity))
-                .multiply(proportion)
-                .setScale(0, RoundingMode.HALF_UP);
+        BigDecimal actualUnitPrice = initialUnitPrice.multiply(proportion).setScale(0, RoundingMode.HALF_UP);
+
+        BigDecimal amount = actualUnitPrice.multiply(BigDecimal.valueOf(quantity));
 
         return InvoiceItemResponse.builder()
                 .serviceRoomId(serviceRoom.getId())
@@ -320,11 +316,12 @@ public class InvoiceChargeCalculatorServiceImpl implements InvoiceChargeCalculat
                 .serviceCalculation(calculation)
                 .quantity(quantity)
                 .unit(service.getUnit())
-                .unitPrice(unitPrice)
+                .unitPrice(actualUnitPrice)
                 .amount(amount)
                 .description(buildDescription(contract, month, year, service.getName()))
                 .build();
     }
+
 
     private String buildDescription(Contract contract, int month, int year, String serviceName) {
         if (isFirstMonth(contract, month, year)) {

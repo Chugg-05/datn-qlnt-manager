@@ -59,10 +59,4 @@ public class InvoiceDetail extends AbstractEntity {
             this.amount = unitPrice.multiply(BigDecimal.valueOf(quantity));
         }
     }
-
-    public void recalculateQuantityFromIndex() {
-        if (oldIndex != null && newIndex != null) {
-            this.quantity = newIndex - oldIndex;
-        }
-    }
 }
