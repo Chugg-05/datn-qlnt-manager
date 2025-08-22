@@ -20,6 +20,7 @@ import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.PaymentReceiptMapper;
 import com.example.datn_qlnt_manager.repository.InvoiceRepository;
+import com.example.datn_qlnt_manager.repository.PaymentHistoryRepository;
 import com.example.datn_qlnt_manager.repository.PaymentReceiptRepository;
 
 import com.example.datn_qlnt_manager.repository.TenantRepository;
@@ -55,11 +56,13 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
     InvoiceRepository invoiceRepository;
     PaymentReceiptRepository paymentReceiptRepository;
     TenantRepository tenantRepository;
+    PaymentHistoryRepository paymentHistoryRepository;
     CodeGeneratorService codeGeneratorService;
     UserService userService;
     EmailService emailService;
     PaymentReceiptMapper paymentReceiptMapper;
     VnpayConfig vnpayConfig;
+
 
     @Override
     public PaymentReceiptResponse createPaymentReceipt(PaymentReceiptCreationRequest request) {
@@ -279,6 +282,8 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         invoice.setUpdatedAt(Instant.now());
         invoiceRepository.save(invoice);
 
+        logPaymentHistory(receipt, PaymentAction.TU_CHOI, "Từ chối thanh toán: " + request.getReason());
+
         emailService.notifyOwnerRejectedReceipt(receipt);
 
         return RejectPaymentResponse.builder()
@@ -311,6 +316,8 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         invoice.setInvoiceStatus(InvoiceStatus.DA_THANH_TOAN);
         invoice.setUpdatedAt(Instant.now());
         invoiceRepository.save(invoice);
+
+        logPaymentHistory(receipt, PaymentAction.DA_THANH_TOAN, "Thanh toán thành công cho hóa đơn " + invoice.getInvoiceCode());
 
         emailService.notifyTenantPaymentConfirmed(receipt);
     }
@@ -419,6 +426,17 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
                 .data(responses)
                 .meta(meta)
                 .build();
+    }
+
+    private void logPaymentHistory(PaymentReceipt receipt, PaymentAction paymentAction, String note) {
+        PaymentHistory history = PaymentHistory.builder()
+                .paymentReceipt(receipt)
+                .time(LocalDateTime.now())
+                .paymentAction(paymentAction)
+                .note(note)
+                .build();
+
+        paymentHistoryRepository.save(history);
     }
 
 }

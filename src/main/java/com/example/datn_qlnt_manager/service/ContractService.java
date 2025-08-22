@@ -2,6 +2,8 @@ package com.example.datn_qlnt_manager.service;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.request.contract.ContractExtendRequest;
+import com.example.datn_qlnt_manager.dto.request.contract.TerminateContractRequest;
 import jakarta.transaction.Transactional;
 
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
@@ -40,4 +42,10 @@ public interface ContractService {
     ContractResponse restoreContractById(String contractId);
 
     String updateContent(String contractId, String content);
+
+    ContractResponse extendContract(String contractId, ContractExtendRequest request);
+
+    ContractResponse terminateContractWithNotice(String contractId, TerminateContractRequest request);
+
+    ContractResponse forceCancelContract(String contractId);
 }

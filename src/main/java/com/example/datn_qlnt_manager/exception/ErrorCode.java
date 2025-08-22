@@ -261,7 +261,9 @@ public enum ErrorCode {
     CANNOT_UPDATE_ROOM(400, "This room cannot be updated.", HttpStatus.BAD_REQUEST),
     INVALID_CONTENT_IN_CONTRACT(400, "Content in contract must not be blank.", HttpStatus.BAD_REQUEST),
     INVALID_CONTRACT_STATUS_FOR_INVOICE(400, "Contract status must be 'ACTIVE' to generate an invoice.", HttpStatus.BAD_REQUEST),
-
+    INVALID_END_DATE(400, "The new end date must be before or equal to the end date of the current contract.", HttpStatus.BAD_REQUEST),
+    END_DATE_BEFORE_CURRENT(400,"The new end date must be after the current end date",HttpStatus.BAD_REQUEST),
+    CONTRACT_NOT_ELIGIBLE_FOR_EXTENSION(400,"", HttpStatus.BAD_REQUEST),
     // Code: 404
     USER_NOT_FOUND(404, "User not found.", HttpStatus.NOT_FOUND),
     BUILDING_ID_NOT_FOUND(404, "Building ID not found.", HttpStatus.NOT_FOUND),
