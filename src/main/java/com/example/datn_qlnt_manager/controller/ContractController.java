@@ -2,6 +2,8 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.request.contract.ContractExtendRequest;
+import com.example.datn_qlnt_manager.dto.request.contract.TerminateContractRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -183,6 +185,41 @@ public class ContractController {
         return ApiResponse.<String>builder()
                 .data(contractService.updateContent(contractId, content))
                 .message("success")
+                .build();
+    }
+
+    @Operation(summary = "Gia hạn hợp đồng")
+    @PostMapping("/extend/{contractId}")
+    public ApiResponse<ContractResponse> extendContract(
+            @PathVariable("contractId") String contractId,
+            @Valid @RequestBody ContractExtendRequest request) {
+
+        return ApiResponse.<ContractResponse>builder()
+                .message("Extend contract successfully")
+                .data(contractService.extendContract(contractId, request))
+                .build();
+    }
+
+    @Operation(summary = "Xác thực hợp đồng kết thúc có báo trước")
+    @PostMapping("/terminate-with-notice/{contractId}")
+    public ApiResponse<ContractResponse> terminateContractWithNotice(
+            @PathVariable("contractId") String contractId,
+            @Valid @RequestBody TerminateContractRequest request) {
+
+        return ApiResponse.<ContractResponse>builder()
+                .message("Terminate contract with notice successfully")
+                .data(contractService.terminateContractWithNotice(contractId, request))
+                .build();
+    }
+
+    @Operation(summary = "Xác thực hợp đồng tự ý huỷ bỏ")
+    @PostMapping("/force-cancel/{contractId}")
+    public ApiResponse<ContractResponse> forceCancelContract(
+            @PathVariable("contractId") String contractId) {
+
+        return ApiResponse.<ContractResponse>builder()
+                .message("Force cancel contract successfully")
+                .data(contractService.forceCancelContract(contractId))
                 .build();
     }
 }
