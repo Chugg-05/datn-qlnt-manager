@@ -59,6 +59,7 @@ public interface ContractVehicleRepository extends JpaRepository<ContractVehicle
             v.id,
             v.vehicleType,
             v.licensePlate,
+            t.fullName,
             v.vehicleStatus,
             v.registrationDate,
             cv.startDate,

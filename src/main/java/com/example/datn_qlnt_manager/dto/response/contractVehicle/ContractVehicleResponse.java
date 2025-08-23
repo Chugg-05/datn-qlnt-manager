@@ -21,6 +21,7 @@ public class ContractVehicleResponse {
     String vehicleId;
     VehicleType vehicleType;
     String licensePlate;
+    String fullName;
     VehicleStatus vehicleStatus;
     Date registrationDate;
     LocalDate startDate;
