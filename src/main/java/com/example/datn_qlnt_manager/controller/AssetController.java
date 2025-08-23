@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.configuration.Translator;
 import jakarta.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
@@ -39,7 +40,7 @@ public class AssetController {
     @PostMapping
     public ApiResponse<AssetResponse> createAsset(@Valid @RequestBody AssetCreationRequest request) {
         return ApiResponse.<AssetResponse>builder()
-                .message("Asset has been created!")
+                .message(Translator.toLocale("asset.create.success"))
                 .data(assetService.createAsset(request))
                 .build();
     }
@@ -48,7 +49,7 @@ public class AssetController {
     @DeleteMapping("/{assetId}")
     public ApiResponse<String> deleteAssetById(@PathVariable String assetId) {
         assetService.deleteAssetById(assetId);
-        return ApiResponse.<String>builder().data("Asset has been deleted!").build();
+        return ApiResponse.<String>builder().data(Translator.toLocale("asset.delete.success")).build();
     }
 
     @Operation(summary = "Hiển thị danh sách tài sản có phân trang, lọc, tìm kiếm")
@@ -58,7 +59,7 @@ public class AssetController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
         return ApiResponse.<PaginatedResponse<AssetResponse>>builder()
-                .message("Asset list loaded successfully")
+                .message(Translator.toLocale("asset.list.loaded.success"))
                 .data(assetService.getPageAndSearchAndFilterAssetByUserId(filter, page, size))
                 .build();
     }
@@ -68,7 +69,7 @@ public class AssetController {
     public ApiResponse<AssetResponse> updateAsset(
             @PathVariable String assetId, @RequestBody @Valid AssetUpdateRequest request) {
         return ApiResponse.<AssetResponse>builder()
-                .message("Asset has been updated!")
+                .message(Translator.toLocale("asset.update.success"))
                 .data(assetService.updateAssetById(assetId, request))
                 .build();
     }
@@ -79,7 +80,7 @@ public class AssetController {
         List<AssetResponse> data = assetService.findAssetsByBuildingId(buildingId);
         return ApiResponse.<List<AssetResponse>>builder()
                 .data(data)
-                .message("Asset has been found!")
+                .message(Translator.toLocale("asset.find.all.success"))
                 .build();
     }
 
@@ -89,7 +90,7 @@ public class AssetController {
         CreateAssetInitResponse data = assetService.getInitDataForAssetCreation();
         return ApiResponse.<CreateAssetInitResponse>builder()
                 .data(data)
-                .message("Assets has been found!")
+                .message(Translator.toLocale("asset.info.by.userid"))
                 .build();
     }
 
@@ -99,7 +100,7 @@ public class AssetController {
         CreateAssetInit2Response data = assetService.getAssetsInfoByUserId2();
         return ApiResponse.<CreateAssetInit2Response>builder()
                 .data(data)
-                .message("Assets has been found!")
+                .message(Translator.toLocale("asset.info.by.userid"))
                 .build();
     }
 
@@ -107,7 +108,7 @@ public class AssetController {
     @GetMapping("/statistics")
     public ApiResponse<AssetStatusStatistic> getAssetStatistics(@RequestParam String buildingId) {
         return ApiResponse.<AssetStatusStatistic>builder()
-                .message("Asset statistics successfully")
+                .message(Translator.toLocale("asset.statistics.successfully"))
                 .data(assetService.getAssetStatisticsByBuildingId(buildingId))
                 .build();
     }
@@ -117,7 +118,7 @@ public class AssetController {
     public ApiResponse<Void> softDeleteAsset(@PathVariable String assetId) {
         assetService.softDeleteAsset(assetId);
         return ApiResponse.<Void>builder()
-                .message("Asset soft-deleted successfully")
+                .message(Translator.toLocale("asset.soft.delete.success"))
                 .build();
     }
 
@@ -128,7 +129,7 @@ public class AssetController {
         assetService.toggleAsseStatus(assetId);
 
         return ApiResponse.<String>builder()
-                .message("Asset toggle successfully")
+                .message(Translator.toLocale("asset.toggle.success"))
                 .data("Asset with ID " + assetId + " has been toggled.")
                 .build();
     }
@@ -139,7 +140,7 @@ public class AssetController {
         List<AssetResponse> data = assetService.findAllAssets();
         return ApiResponse.<List<AssetResponse>>builder()
                 .data(data)
-                .message("All assets have been found!")
+                .message(Translator.toLocale("get.all.assets"))
                 .build();
     }
 
@@ -148,7 +149,7 @@ public class AssetController {
     public ApiResponse<AssetResponse> restoreBuildingById(@PathVariable("assetId") String assetId) {
         return ApiResponse.<AssetResponse>builder()
                 .data(assetService.restoreAssetById(assetId))
-                .message("success")
+                .message(Translator.toLocale("asset.has.been.restored"))
                 .build();
     }
 
@@ -160,7 +161,7 @@ public class AssetController {
             @RequestParam(defaultValue = "15") int size) {
         filter.setAssetStatus(AssetStatus.HUY);
         return ApiResponse.<PaginatedResponse<AssetResponse>>builder()
-                .message("Asset list loaded successfully")
+                .message(Translator.toLocale("asset.list.loaded.success"))
                 .data(assetService.getPageAndSearchAndFilterAssetByUserIdAndCancel(filter, page, size))
                 .build();
     }
