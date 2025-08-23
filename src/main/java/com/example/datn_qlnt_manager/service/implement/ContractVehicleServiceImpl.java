@@ -1,5 +1,9 @@
 package com.example.datn_qlnt_manager.service.implement;
 
+import com.example.datn_qlnt_manager.common.Meta;
+import com.example.datn_qlnt_manager.common.Pagination;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.ContractVehicleFilter;
 import com.example.datn_qlnt_manager.dto.request.contractVehicle.AddVehicleToContractRequest;
 import com.example.datn_qlnt_manager.dto.response.contractVehicle.ContractVehicleResponse;
 import com.example.datn_qlnt_manager.entity.Contract;
@@ -15,11 +19,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -80,5 +88,43 @@ public class ContractVehicleServiceImpl implements ContractVehicleService {
 
         contractVehicleRepository.deleteById(contractVehicle.getId());
     }
+
+    @Override
+    public PaginatedResponse<ContractVehicleResponse> getVehiclesFromContract(
+            String contractId,
+            ContractVehicleFilter filter,
+            int page,
+            int size
+    ) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
+
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        Page<ContractVehicleResponse> paging = contractVehicleRepository.findAllVehiclesByContractId(
+                contract.getId(),
+                filter.getQuery(),
+                filter.getVehicleType(),
+                filter.getVehicleStatus(),
+                pageable);
+
+        List<ContractVehicleResponse> vehicles = paging.getContent();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<ContractVehicleResponse>builder()
+                .data(vehicles)
+                .meta(meta)
+                .build();
+    }
+
 
 }
