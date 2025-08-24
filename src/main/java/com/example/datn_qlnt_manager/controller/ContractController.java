@@ -2,6 +2,9 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.configuration.Translator;
+import com.example.datn_qlnt_manager.dto.request.contract.ContractExtendRequest;
+import com.example.datn_qlnt_manager.dto.request.contract.TerminateContractRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +47,7 @@ public class ContractController {
                 contractService.getPageAndSearchAndFilterTenantByUserId(filter, page, size);
 
         return ApiResponse.<List<ContractResponse>>builder()
-                .message("Get contracts successfully")
+                .message(Translator.toLocale("get.contracts.success"))
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -61,7 +64,7 @@ public class ContractController {
                 contractService.getContractWithStatusCancelByUserId(filter, page, size);
 
         return ApiResponse.<List<ContractResponse>>builder()
-                .message("Get cancelled contracts successfully")
+                .message(Translator.toLocale("get.cancelled.contracts.success"))
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -72,7 +75,7 @@ public class ContractController {
     public ApiResponse<ContractResponse> createContract(@Valid @RequestBody ContractCreationRequest request) {
 
         return ApiResponse.<ContractResponse>builder()
-                .message("Contract created successfully")
+                .message(Translator.toLocale("contract.created.success"))
                 .data(contractService.createContract(request))
                 .build();
     }
@@ -83,7 +86,7 @@ public class ContractController {
             @Valid @RequestBody ContractUpdateRequest request, @PathVariable("contractId") String contractId) {
 
         return ApiResponse.<ContractResponse>builder()
-                .message("Contract updated successfully")
+                .message(Translator.toLocale("contract.updated.success"))
                 .data(contractService.updateContract(contractId, request))
                 .build();
     }
@@ -94,7 +97,7 @@ public class ContractController {
         ContractDetailResponse response = contractService.getContractDetail(contractId);
 
         return ApiResponse.<ContractDetailResponse>builder()
-                .message("Contract detail retrieved successfully")
+                .message(Translator.toLocale("contract.detail.retrieved.success"))
                 .data(response)
                 .build();
     }
@@ -104,7 +107,7 @@ public class ContractController {
     public ApiResponse<List<ContractResponse>> getAllContractsByUserId() {
         List<ContractResponse> contracts = contractService.getAllContractsByUserId();
         return ApiResponse.<List<ContractResponse>>builder()
-                .message("Contracts retrieved successfully")
+                .message(Translator.toLocale("contracts.retrieved.success"))
                 .data(contracts)
                 .build();
     }
@@ -115,7 +118,7 @@ public class ContractController {
         contractService.contractActivation(contractId);
 
         return ApiResponse.<String>builder()
-                .message("Contract activation successfully")
+                .message(Translator.toLocale("contract.activation.success"))
                 .data("Contract with ID " + contractId + " has been activated.")
                 .build();
     }
@@ -125,7 +128,7 @@ public class ContractController {
     public ApiResponse<ContractStatistics> getContractStatistics() {
 
         return ApiResponse.<ContractStatistics>builder()
-                .message("Contract statistics retrieved successfully")
+                .message(Translator.toLocale("contract.statistics.retrieved.success"))
                 .data(contractService.getContractStatisticsByUserId())
                 .build();
     }
@@ -136,7 +139,7 @@ public class ContractController {
         contractService.softDeleteContractById(contractId);
 
         return ApiResponse.<String>builder()
-                .message("Contract soft deleted successfully")
+                .message(Translator.toLocale("contract.soft.deleted.success"))
                 .data("Contract with ID " + contractId + " has been soft deleted.")
                 .build();
     }
@@ -147,7 +150,7 @@ public class ContractController {
         contractService.deleteContractById(contractId);
 
         return ApiResponse.<String>builder()
-                .message("Contract deleted successfully")
+                .message(Translator.toLocale("contract.deleted.success"))
                 .data("Contract with ID " + contractId + " has been deleted.")
                 .build();
     }
@@ -162,7 +165,7 @@ public class ContractController {
         PaginatedResponse<ContractResponse> result = contractService.getContractsOfCurrentTenant(filter, page, size);
 
         return ApiResponse.<List<ContractResponse>>builder()
-                .message("Get contracts successfully")
+                .message(Translator.toLocale("get.contracts.success"))
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -173,7 +176,7 @@ public class ContractController {
     public ApiResponse<ContractResponse> restoreContractById(@PathVariable("contractId") String contractId) {
         return ApiResponse.<ContractResponse>builder()
                 .data(contractService.restoreContractById(contractId))
-                .message("success")
+                .message(Translator.toLocale("the.contract.has.been.restored"))
                 .build();
     }
 
@@ -182,7 +185,42 @@ public class ContractController {
     public ApiResponse<String> updateContent(@PathVariable("contractId") String contractId, @RequestBody String content) {
         return ApiResponse.<String>builder()
                 .data(contractService.updateContent(contractId, content))
-                .message("success")
+                .message(Translator.toLocale("contract.updated.success"))
+                .build();
+    }
+
+    @Operation(summary = "Gia hạn hợp đồng")
+    @PostMapping("/extend/{contractId}")
+    public ApiResponse<ContractResponse> extendContract(
+            @PathVariable("contractId") String contractId,
+            @Valid @RequestBody ContractExtendRequest request) {
+
+        return ApiResponse.<ContractResponse>builder()
+                .message("Extend contract successfully")
+                .data(contractService.extendContract(contractId, request))
+                .build();
+    }
+
+    @Operation(summary = "Xác thực hợp đồng kết thúc có báo trước")
+    @PostMapping("/terminate-with-notice/{contractId}")
+    public ApiResponse<ContractResponse> terminateContractWithNotice(
+            @PathVariable("contractId") String contractId,
+            @Valid @RequestBody TerminateContractRequest request) {
+
+        return ApiResponse.<ContractResponse>builder()
+                .message("Terminate contract with notice successfully")
+                .data(contractService.terminateContractWithNotice(contractId, request))
+                .build();
+    }
+
+    @Operation(summary = "Xác thực hợp đồng tự ý huỷ bỏ")
+    @PostMapping("/force-cancel/{contractId}")
+    public ApiResponse<ContractResponse> forceCancelContract(
+            @PathVariable("contractId") String contractId) {
+
+        return ApiResponse.<ContractResponse>builder()
+                .message("Force cancel contract successfully")
+                .data(contractService.forceCancelContract(contractId))
                 .build();
     }
 }

@@ -109,9 +109,6 @@ public class AssetRoomServiceImpl implements AssetRoomService {
                 if (availableQuantity <= 0) {
                     throw new AppException(ErrorCode.ASSET_QUANTITY_NOT_ENOUGH);
                 }
-                if (request.getQuantity() != null && request.getQuantity() > availableQuantity) {
-                    throw new AppException(ErrorCode.ASSET_QUANTITY_NOT_ENOUGH);
-                }
 
                 assetRoom = buildAssetRoom(
                         room,

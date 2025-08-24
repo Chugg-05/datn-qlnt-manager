@@ -35,6 +35,7 @@ public class NotificationResponse {
     public NotificationResponse(String id, String title, String content, String image,
                                 NotificationType notificationType, Boolean sendToAll, Instant sentAt,
                                 String userId, String fullName) {
+    public NotificationResponse(String id, String title, String content, String image, NotificationType notificationType, Boolean sendToAll, Instant sentAt, String userId, String fullName) {
         this.id = id;
         this.title = title;
         this.content = content;

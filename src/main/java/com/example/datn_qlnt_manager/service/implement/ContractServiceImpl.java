@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.example.datn_qlnt_manager.dto.request.ContractTenant.ContractTenantCreationRequest;
+import com.example.datn_qlnt_manager.dto.request.contract.ContractExtendRequest;
+import com.example.datn_qlnt_manager.dto.request.contract.TerminateContractRequest;
 import com.example.datn_qlnt_manager.dto.response.asset.AssetLittleResponse;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceLittleResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantLittleResponse;
@@ -377,6 +379,70 @@ public class ContractServiceImpl implements ContractService {
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
         contract.setContent(content);
         return contractRepository.save(contract).getContent();
+    }
+
+    // gia hạn
+    @Override
+    public ContractResponse extendContract(String contractId, ContractExtendRequest request) {
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        if (contract.getStatus() != ContractStatus.HIEU_LUC && contract.getStatus() != ContractStatus.SAP_HET_HAN) {
+            throw new AppException(ErrorCode.CONTRACT_NOT_ELIGIBLE_FOR_EXTENSION);
+        }
+
+        if (request.getNewEndDate().isBefore(contract.getEndDate())
+                || request.getNewEndDate().isEqual(contract.getEndDate())) {
+            throw new AppException(ErrorCode.END_DATE_BEFORE_CURRENT);
+        }
+
+        contract.setEndDate(request.getNewEndDate());
+        contract.setUpdatedAt(Instant.now());
+
+        contractRepository.save(contract);
+
+        return contractMapper.toContractResponse(contract);
+    }
+
+    // báo trước
+    @Override
+    public ContractResponse terminateContractWithNotice(String contractId, TerminateContractRequest request) {
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        if (!ContractStatus.HIEU_LUC.equals(contract.getStatus())) {
+            throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
+        }
+
+        if (request.getNewEndDate().isAfter(contract.getEndDate())) {
+            throw new AppException(ErrorCode.INVALID_END_DATE);
+        }
+
+        contract.setStatus(ContractStatus.KET_THUC_CO_BAO_TRUOC);
+        contract.setEndDate(request.getNewEndDate());
+        contract.setUpdatedAt(Instant.now());
+
+        Contract saved = contractRepository.save(contract);
+        return contractMapper.toContractResponse(saved);
+    }
+
+    // tự ý bỏ đi
+    @Override
+    public ContractResponse forceCancelContract(String contractId) {
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        if (!ContractStatus.HIEU_LUC.equals(contract.getStatus())) {
+            throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
+        }
+
+        contract.setStatus(ContractStatus.TU_Y_HUY_BO);
+        contract.setEndDate(LocalDate.now());
+        contract.setUpdatedAt(Instant.now());
+
+        contractRepository.save(contract);
+
+        return contractMapper.toContractResponse(contract);
     }
 
     private void validateContractUpdate(Contract contract, ContractUpdateRequest request) {

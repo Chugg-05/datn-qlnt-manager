@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.configuration.Translator;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,7 @@ public class BuildingController {
                 buildingService.getPageAndSearchAndFilterBuildingByUserId(filter, page, size);
 
         return ApiResponse.<List<BuildingResponse>>builder()
-                .message("Get building successfully")
+                .message(Translator.toLocale("building.retrieved.success"))
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -61,7 +62,7 @@ public class BuildingController {
                 buildingService.getBuildingWithStatusCancelByUserId(filter, page, size);
 
         return ApiResponse.<List<BuildingResponse>>builder()
-                .message("Get cancelled buildings successfully")
+                .message(Translator.toLocale("building.cancel.retrieved.success"))
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -71,7 +72,7 @@ public class BuildingController {
     @GetMapping("/cards")
     public ApiResponse<List<BuildingBasicResponse>> getBuildingCardsForCurrentUser() {
         return ApiResponse.<List<BuildingBasicResponse>>builder()
-                .message("Display building as card successfully")
+                .message(Translator.toLocale("building.card.retrieved.success"))
                 .data(buildingService.getBuildingBasicForCurrentUser())
                 .build();
     }
@@ -80,7 +81,7 @@ public class BuildingController {
     @GetMapping("/statistics")
     public ApiResponse<BuildingStatistics> statisticsBuildingByStatus() {
         return ApiResponse.<BuildingStatistics>builder()
-                .message("Count building success!")
+                .message(Translator.toLocale("building.statistic.success"))
                 .data(buildingService.statisticsBuildingByStatus())
                 .build();
     }
@@ -89,7 +90,7 @@ public class BuildingController {
     @PostMapping
     public ApiResponse<BuildingResponse> createBuilding(@Valid @RequestBody BuildingCreationRequest request) {
         return ApiResponse.<BuildingResponse>builder()
-                .message("Building has been created!")
+                .message(Translator.toLocale("building.create.success"))
                 .data(buildingService.createBuilding(request))
                 .build();
     }
@@ -99,7 +100,7 @@ public class BuildingController {
     public ApiResponse<BuildingResponse> updateBuilding(
             @Valid @RequestBody BuildingUpdateRequest request, @PathVariable("buildingId") String buildingId) {
         return ApiResponse.<BuildingResponse>builder()
-                .message("Building updated!")
+                .message(Translator.toLocale("building.update.success"))
                 .data(buildingService.updateBuilding(buildingId, request))
                 .build();
     }
@@ -109,7 +110,7 @@ public class BuildingController {
     public ApiResponse<String> toggleStatus(@PathVariable("id") String id) {
         buildingService.toggleStatus(id);
         return ApiResponse.<String>builder()
-                .message("Status update successful!")
+                .message(Translator.toLocale("building.status.update.success"))
                 .build();
     }
 
@@ -117,14 +118,14 @@ public class BuildingController {
     @PutMapping("/soft-delete/{buildingId}")
     public ApiResponse<String> softDeleteBuildingById(@PathVariable("buildingId") String buildingId) {
         buildingService.softDeleteBuildingById(buildingId);
-        return ApiResponse.<String>builder().data("Building has been deleted!").build();
+        return ApiResponse.<String>builder().data(Translator.toLocale("building.soft.delete.success")).build();
     }
 
     @Operation(summary = "Xóa tòa nhà")
     @DeleteMapping("/{buildingId}")
     public ApiResponse<String> deleteBuildingById(@PathVariable("buildingId") String buildingId) {
         buildingService.deleteBuildingById(buildingId);
-        return ApiResponse.<String>builder().data("Building has been deleted!").build();
+        return ApiResponse.<String>builder().data(Translator.toLocale("building.delete.success")).build();
     }
 
     @Operation(summary = "Lấy thông tin tòa nhà - tầng - phòng")
@@ -133,7 +134,7 @@ public class BuildingController {
         List<BuildingSelectResponse> data = buildingService.getBuildingsInfoByUserId();
         return ApiResponse.<List<BuildingSelectResponse>>builder()
                 .data(data)
-                .message("Get buildings info successfully")
+                .message(Translator.toLocale("get.buildings.info.success"))
                 .build();
     }
 
@@ -142,7 +143,7 @@ public class BuildingController {
     public ApiResponse<List<IdAndName>> getAllBuildingByUserId() {
         return ApiResponse.<List<IdAndName>>builder()
                 .data(buildingService.getAllBuildingByUserId())
-                .message("Get buildings successfully")
+                .message(Translator.toLocale("get.all.building.success"))
                 .build();
     }
 
@@ -151,7 +152,7 @@ public class BuildingController {
     public ApiResponse<List<BuildingOccupancyResponse>> getOccupancyRateByBuilding() {
         return ApiResponse.<List<BuildingOccupancyResponse>>builder()
                 .data(buildingService.calculateOccupancyByUser())
-                .message("Get occupancy rate successfully")
+                .message(Translator.toLocale("get.occupancy.rate.successfully"))
                 .build();
     }
 
@@ -160,7 +161,7 @@ public class BuildingController {
     public ApiResponse<BuildingResponse> restoreBuildingById(@PathVariable("buildingId") String buildingId) {
         return ApiResponse.<BuildingResponse>builder()
                 .data(buildingService.restoreBuildingById(buildingId))
-                .message("success")
+                .message(Translator.toLocale("building.restore.success"))
                 .build();
     }
 }

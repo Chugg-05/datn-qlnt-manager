@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.configuration.Translator;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,7 @@ public class RoomController {
                 roomService.getPageAndSearchAndFilterRoomByUserId(roomFilter, page, size);
 
         return ApiResponse.<List<RoomResponse>>builder()
-                .message("Get rooms successfully")
+                .message(Translator.toLocale("get.rooms.success"))
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -59,7 +60,7 @@ public class RoomController {
         PaginatedResponse<RoomResponse> result = roomService.getRoomWithStatusCancelByUserId(roomFilter, page, size);
 
         return ApiResponse.<List<RoomResponse>>builder()
-                .message("Get rooms with status cancel successfully")
+                .message(Translator.toLocale("get.rooms.with.status.cancel.success"))
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -73,7 +74,7 @@ public class RoomController {
             @RequestParam(defaultValue = "15") int size) {
         PaginatedResponse<RoomResponse> result = roomService.getRoomsWithoutServiceByUserId(roomFilter, page, size);
         return ApiResponse.<List<RoomResponse>>builder()
-                .message("Get rooms without service successfully")
+                .message(Translator.toLocale("get.rooms.without.service.success"))
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -84,7 +85,7 @@ public class RoomController {
     public ApiResponse<List<RoomResponse>> getRoomsByTenant() {
         return ApiResponse.<List<RoomResponse>>builder()
                 .data(roomService.getRoomsByTenantId())
-                .message("Get all room list by tenant successfully")
+                .message(Translator.toLocale("get.all.room.list.by.tenant.success"))
                 .build();
     }
 
@@ -96,7 +97,7 @@ public class RoomController {
             @RequestParam(defaultValue = "15") int size) {
         PaginatedResponse<RoomResponse> result = roomService.getRoomsWithoutAssets(buildingId, page, size);
         return ApiResponse.<List<RoomResponse>>builder()
-                .message("Get rooms without asset successfully")
+                .message(Translator.toLocale("get.rooms.without.asset.success"))
                 .data(result.getData())
                 .meta(result.getMeta())
                 .build();
@@ -105,7 +106,7 @@ public class RoomController {
     @GetMapping("/statistics")
     public ApiResponse<RoomCountResponse> statisticsRoomByStatus(@RequestParam String buildingId) {
         return ApiResponse.<RoomCountResponse>builder()
-                .message("Count room success!")
+                .message(Translator.toLocale("count.room.success"))
                 .data(roomService.statisticsRoomByStatus(buildingId))
                 .build();
     }
@@ -114,7 +115,7 @@ public class RoomController {
     @GetMapping("/statistic-without-contract")
     public ApiResponse<StatisticRoomsWithoutContract> statisticRoomsWithoutContract() {
         return ApiResponse.<StatisticRoomsWithoutContract>builder()
-                .message("Statistic rooms without contract successfully")
+                .message(Translator.toLocale("statistic.rooms.without.contract.success"))
                 .data(roomService.statisticRoomsWithoutContractByUserId())
                 .build();
     }
@@ -123,7 +124,7 @@ public class RoomController {
     @GetMapping("/statistic-without-asset")
     public ApiResponse<RoomStatisticWithoutAssets> statisticRoomsWithoutAsset(@RequestParam String buildingId) {
         return ApiResponse.<RoomStatisticWithoutAssets>builder()
-                .message("Statistic rooms without asset successfully")
+                .message(Translator.toLocale("statistic.rooms.without.asset.success"))
                 .data(roomService.statisticRoomsWithoutAssetByUserId(buildingId))
                 .build();
     }
@@ -133,7 +134,7 @@ public class RoomController {
     public ApiResponse<RoomResponse> createRoom(@RequestBody @Valid RoomCreationRequest request) {
         return ApiResponse.<RoomResponse>builder()
                 .data(roomService.createRoom(request))
-                .message("Add room success")
+                .message(Translator.toLocale("room.create.success"))
                 .build();
     }
 
@@ -142,7 +143,7 @@ public class RoomController {
             @PathVariable("id") String roomId, @RequestBody @Valid RoomUpdateRequest request) {
         return ApiResponse.<RoomResponse>builder()
                 .data(roomService.updateRoom(roomId, request))
-                .message("Update room success")
+                .message(Translator.toLocale("room.update.success"))
                 .code(200)
                 .build();
     }
@@ -152,7 +153,7 @@ public class RoomController {
     public ApiResponse<List<RoomResponse>> getAllRooms() {
         return ApiResponse.<List<RoomResponse>>builder()
                 .data(roomService.getAllRoomsByUserId())
-                .message("Get all rooms success")
+                .message(Translator.toLocale("get.all.rooms.success"))
                 .code(200)
                 .build();
     }
@@ -162,7 +163,7 @@ public class RoomController {
         List<RoomResponse> data = roomService.findRoomsByBuildingId(buildingId);
         return ApiResponse.<List<RoomResponse>>builder()
                 .data(data)
-                .message("Rooms have been found!")
+                .message(Translator.toLocale("rooms.have.been.found"))
                 .code(200)
                 .build();
     }
@@ -171,7 +172,7 @@ public class RoomController {
     public ApiResponse<Void> deleteRoom(@PathVariable("id") String roomId) {
         return ApiResponse.<Void>builder()
                 .data(roomService.deleteRoom(roomId))
-                .message("Delete room success")
+                .message(Translator.toLocale("room.delete.success"))
                 .code(200)
                 .build();
     }
@@ -180,7 +181,7 @@ public class RoomController {
     public ApiResponse<Void> softDeleteRoom(@PathVariable("id") String id) {
         roomService.softDeleteRoomById(id);
         return ApiResponse.<Void>builder()
-                .message("Delete room success.")
+                .message(Translator.toLocale("room.delete.success"))
                 .code(200)
                 .build();
     }
@@ -192,7 +193,7 @@ public class RoomController {
         List<RoomNoServiceStatisticResponse> data = roomService.getRoomNoServiceStatistic(buildingId);
 
         return ApiResponse.<List<RoomNoServiceStatisticResponse>>builder()
-                .message("Statistics of rooms with no successful service")
+                .message(Translator.toLocale("statistics.of.rooms.with.no.service.successful"))
                 .data(data)
                 .build();
     }
@@ -202,7 +203,7 @@ public class RoomController {
     public ApiResponse<RoomDetailsResponse> getRoomDetails(@PathVariable String roomId) {
         RoomDetailsResponse response = roomService.getRoomDetails(roomId);
         return ApiResponse.<RoomDetailsResponse>builder()
-                .message("Get room details successfully")
+                .message(Translator.toLocale("get.room.details.successfully"))
                 .data(response)
                 .build();
     }
@@ -212,7 +213,7 @@ public class RoomController {
     public ApiResponse<RoomResponse> restoreRoomById(@PathVariable("roomId") String roomId) {
         return ApiResponse.<RoomResponse>builder()
                 .data(roomService.restoreRoomById(roomId))
-                .message("success")
+                .message(Translator.toLocale("room.has.been.restored"))
                 .build();
     }
 }

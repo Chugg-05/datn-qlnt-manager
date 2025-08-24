@@ -1,7 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -139,7 +138,7 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 		AND c.endDate >= :startOfMonth
 	""")
     List<Contract> findValidContractsInMonth(
-            @Param("startOfMonth") LocalDateTime startOfMonth, @Param("endOfMonth") LocalDateTime endOfMonth);
+            @Param("startOfMonth") LocalDate startOfMonth, @Param("endOfMonth") LocalDate endOfMonth);
 
 	@Query("""
 		SELECT c FROM Contract c
@@ -192,8 +191,8 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 	""")
 	List<Contract> findActiveContractsByBuildingAndMonthYear(
 			@Param("buildingId") String buildingId,
-			@Param("startOfMonth") LocalDateTime startOfMonth,
-			@Param("endOfMonth") LocalDateTime endOfMonth
+			@Param("startOfMonth") LocalDate startOfMonth,
+			@Param("endOfMonth") LocalDate endOfMonth
 	);
 
 	boolean existsByRoomIdAndEndDateAfter(String roomId, LocalDate startDate);

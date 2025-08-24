@@ -178,6 +178,7 @@ public class TenantServiceImpl implements TenantService {
                     } else {
                         tenantResponse.setUserId(null);
                     }
+                    tenantResponse.setUserId(tenant.getUser().getId());
                     return tenantResponse;
                 })
                 .toList();

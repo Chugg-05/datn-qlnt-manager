@@ -1,7 +1,9 @@
 package com.example.datn_qlnt_manager.repository;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse;
 import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -279,30 +281,34 @@ public interface RoomRepository extends JpaRepository<Room, String> {
             """)
 	List<IdAndName> getServiceRoomInfoByUserIdAndBuildingId(@Param("userId") String userId,
 															@Param("buildingId") String buildingId);
-         
-//	@Query("""
-//    SELECT new com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse(
-//        b.buildingName, b.address,
-//		owner.fullName, owner.phoneNumber,
-//        r.roomCode, r.acreage, r.maximumPeople, r.roomType, r.status, r.description,
-//        c.contractCode,
-//        t.fullName, t.phoneNumber, t.dob, t.identityCardNumber,
-//        c.deposit, c.roomPrice, c.status, c.startDate, c.endDate,
-//        CAST((SELECT COUNT(DISTINCT ct2.tenant.id) FROM ContractTenant ct2  WHERE ct2.contract.id = c.id) AS long),
-//        CAST((SELECT COUNT(DISTINCT ar.asset.id) FROM AssetRoom ar WHERE ar.room.id = r.id) AS long),
-//        CAST((SELECT COUNT(DISTINCT sr.service.id) FROM ServiceRoom sr WHERE sr.room.id = r.id) AS long),
-//        CAST((SELECT COUNT(DISTINCT cv.vehicle.id) FROM ContractVehicle cv WHERE cv.contract.id = c.id) AS long)
-//    )
-//    FROM Room r
-//    JOIN r.floor f
-//    JOIN f.building b
-//    JOIN b.user owner
-//    JOIN Contract c ON c.room = r
-//    AND c.status = 'HIEU_LUC'
-//    JOIN c.contractTenants ct
-//    JOIN ct.tenant t ON ct.representative = true
-//    WHERE r.id = :roomId
-//    AND t.id = :userId
-//""")
-//	Optional<RoomDetailsResponse> findRoomDetailsForTenant(@Param("roomId") String roomId, @Param("userId") String userId);
+
+	@Query("""
+    SELECT new com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse(
+        b.buildingName, b.address,
+        owner.fullName, owner.phoneNumber,
+        r.roomCode, r.acreage, r.maximumPeople, r.roomType, r.status, r.description,
+        c.contractCode,
+        t.fullName, t.phoneNumber, t.dob, t.identityCardNumber,
+        c.deposit, c.roomPrice, c.status, c.startDate, c.endDate,
+        size(c.contractTenants),
+        size(r.assetRooms),
+        size(r.serviceRooms),
+        size(c.contractVehicles)
+    )
+    FROM Room r
+    JOIN r.floor f
+    JOIN f.building b
+    JOIN b.user owner
+    JOIN Contract c ON c.room = r AND c.status = com.example.datn_qlnt_manager.common.ContractStatus.HIEU_LUC
+    JOIN c.contractTenants ct
+    JOIN ct.tenant t
+    WHERE r.id = :roomId
+      AND t.user.id = :userId
+      AND ct.representative = true
+""")
+	Optional<RoomDetailsResponse> findRoomDetailsForTenant(
+			@Param("roomId") String roomId,
+			@Param("userId") String userId
+	);
+
 }

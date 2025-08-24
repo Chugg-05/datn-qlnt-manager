@@ -2,7 +2,6 @@ package com.example.datn_qlnt_manager.repository;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -45,4 +44,35 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
             @Param("from") Instant from,
             @Param("to") Instant to,
             Pageable pageable);
+
+    @Query("""
+    SELECT new com.example.datn_qlnt_manager.dto.response.notification.NotificationResponse(
+        n.id,
+        n.title,
+        n.content,
+        n.image,
+        n.notificationType,
+        n.sendToAll,
+        n.sentAt,
+        sender.id,
+        sender.fullName
+    )
+    FROM Notification n
+    JOIN n.notificationUsers nu
+    JOIN n.user sender
+    WHERE nu.user.id = :userId
+      AND (:query IS NULL OR LOWER(n.title) LIKE LOWER(CONCAT('%', :query, '%'))
+                        OR LOWER(n.content) LIKE LOWER(CONCAT('%', :query, '%')))
+      AND (:type IS NULL OR n.notificationType = :type)
+      AND (:from IS NULL OR n.sentAt >= :from)
+      AND (:to IS NULL OR n.sentAt <= :to)
+    ORDER BY n.sentAt DESC
+""")
+    Page<NotificationResponse> findAllByRecipientWithFilter(
+            @Param("userId") String userId,
+            @Param("query") String query,
+            @Param("type") NotificationType type,
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            
 }

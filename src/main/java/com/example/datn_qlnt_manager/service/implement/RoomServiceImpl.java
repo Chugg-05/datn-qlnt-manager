@@ -244,9 +244,8 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomDetailsResponse getRoomDetails(String roomId) {
         String userId = userService.getCurrentUser().getId();
-//        return roomRepository.findRoomDetailsForTenant(roomId, userId)
-//                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-        return null;
+        return roomRepository.findRoomDetailsForTenant(roomId, userId)
+               .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
     }
 
     @Override

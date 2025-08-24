@@ -50,6 +50,7 @@ public class FormatUtil {
             case DA_THANH_TOAN -> "Đã thanh toán";
             case QUA_HAN -> "Quá hạn";
             case CHUA_THANH_TOAN -> "Chưa thanh toán";
+            case KHONG_THE_THANH_TOAN -> "Không thể thanh toán";
             case HUY -> "Đã hủy";
         };
     }

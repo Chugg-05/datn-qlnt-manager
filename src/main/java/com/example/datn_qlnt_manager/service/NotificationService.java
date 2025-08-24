@@ -6,7 +6,10 @@ import com.example.datn_qlnt_manager.dto.request.notification.NotificationCreati
 import com.example.datn_qlnt_manager.dto.request.notification.NotificationUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.notification.NotificationDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.notification.NotificationResponse;
+import com.example.datn_qlnt_manager.entity.Notification;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface NotificationService {
     NotificationResponse createNotification(NotificationCreationRequest request, MultipartFile image);
@@ -18,4 +21,7 @@ public interface NotificationService {
     NotificationDetailResponse getNotificationDetail(String notificationId);
 
     void deleteNotificationById(String notificationId);
+
+    PaginatedResponse<NotificationResponse> findAllByRecipientWithFilter(NotificationFilter filter, int page, int size);
+
 }

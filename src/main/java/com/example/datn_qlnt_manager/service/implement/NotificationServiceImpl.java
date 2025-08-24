@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 import com.example.datn_qlnt_manager.dto.response.notification.SentToUsers;
 import com.cloudinary.Cloudinary;
+
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -67,6 +69,7 @@ public class NotificationServiceImpl implements NotificationService {
         Notification notification = notificationMapper.toNotification(request);
         notification.setSentAt(Instant.now());
         notification.setUser(sender);
+        notification.setUser(userService.getCurrentUser());
 
         if (image != null && !image.isEmpty()) {
             notification.setImage(uploadImage(image));
@@ -229,5 +232,43 @@ public class NotificationServiceImpl implements NotificationService {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public PaginatedResponse<NotificationResponse> findAllByRecipientWithFilter(NotificationFilter filter, int page, int size) {
+        var currentUser = userService.getCurrentUser();
+
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "sentAt"));
+
+        Page<NotificationResponse> pageResult = notificationRepository.findAllByRecipientWithFilter(
+                currentUser.getId(),
+                filter.getQuery(),
+                filter.getNotificationType(),
+                filter.getFromDate(),
+                filter.getToDate(),
+                pageable
+        );
+
+        pageResult.getContent().forEach(res -> {
+            res.setSentToUsers(notificationUserRepository.findRecipients(res.getId()));
+            res.setSenderImage(userRepository.findById(res.getUserId())
+                    .map(User::getProfilePicture)
+                    .orElse(null));
+        });
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(pageResult.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(pageResult.getTotalPages())
+                        .total(pageResult.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<NotificationResponse>builder()
+                .data(pageResult.getContent())
+                .meta(meta)
+                .build();
     }
 }

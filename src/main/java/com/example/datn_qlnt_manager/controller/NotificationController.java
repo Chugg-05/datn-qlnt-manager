@@ -87,4 +87,19 @@ public class NotificationController {
                 .message("Notification deleted successfully")
                 .build();
     }
+
+    @Operation(summary = "Khách thuê xem thông báo của họ")
+    @GetMapping("/my-recipient")
+    public ApiResponse<List<NotificationResponse>> findAllByRecipientWithFilter(
+            @Valid @ModelAttribute NotificationFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size) {
+        PaginatedResponse<NotificationResponse> result = notificationService.findAllByRecipientWithFilter(filter, page, size);
+        return ApiResponse.<List<NotificationResponse>>builder()
+                .message("Notification data retrieved successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
 }
