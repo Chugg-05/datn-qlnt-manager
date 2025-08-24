@@ -1,7 +1,6 @@
 package com.example.datn_qlnt_manager.dto.response.notification;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.common.NotificationType;
@@ -35,7 +34,6 @@ public class NotificationResponse {
     public NotificationResponse(String id, String title, String content, String image,
                                 NotificationType notificationType, Boolean sendToAll, Instant sentAt,
                                 String userId, String fullName) {
-    public NotificationResponse(String id, String title, String content, String image, NotificationType notificationType, Boolean sendToAll, Instant sentAt, String userId, String fullName) {
         this.id = id;
         this.title = title;
         this.content = content;
