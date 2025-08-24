@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.example.datn_qlnt_manager.common.UserStatus;
 import com.example.datn_qlnt_manager.dto.response.contract.ContractResponse;
+import com.example.datn_qlnt_manager.entity.Role;
 import com.example.datn_qlnt_manager.entity.Room;
 import com.example.datn_qlnt_manager.mapper.ContractMapper;
-import com.example.datn_qlnt_manager.repository.RoomRepository;
-import com.example.datn_qlnt_manager.repository.UserRepository;
+import com.example.datn_qlnt_manager.repository.*;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -31,8 +31,6 @@ import com.example.datn_qlnt_manager.entity.User;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.TenantMapper;
-import com.example.datn_qlnt_manager.repository.ContractRepository;
-import com.example.datn_qlnt_manager.repository.TenantRepository;
 import com.example.datn_qlnt_manager.service.TenantService;
 import com.example.datn_qlnt_manager.service.UserService;
 
@@ -53,6 +51,7 @@ public class TenantServiceImpl implements TenantService {
     UserService userService;
     ContractRepository contractRepository;
     UserRepository userRepository;
+    RoleRepository roleRepository;
     CodeGeneratorService codeGeneratorService;
     ContractMapper contractMapper;
 
@@ -229,8 +228,10 @@ public class TenantServiceImpl implements TenantService {
     @Transactional
     @Override
     public void ensureTenantHasActiveUser(Tenant tenant) {
+        User user;
+
         if (tenant.getUser() == null) {
-            User user = userService.createUserForTenant(TenantCreationRequest.builder()
+            user = userService.createUserForTenant(TenantCreationRequest.builder()
                     .fullName(tenant.getFullName())
                     .gender(tenant.getGender())
                     .dob(tenant.getDob())
@@ -247,11 +248,16 @@ public class TenantServiceImpl implements TenantService {
             tenantRepository.save(tenant);
 
         } else {
-            User existingUser = tenant.getUser();
-            existingUser.setUserStatus(UserStatus.ACTIVE);
-            existingUser.setUpdatedAt(Instant.now());
+            user = tenant.getUser();
+            user.setUserStatus(UserStatus.ACTIVE);
+            user.setUpdatedAt(Instant.now());
 
-            userRepository.save(existingUser);
+            Role tenantRole = roleRepository.findByName("USER")
+                    .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+            user.getRoles().add(tenantRole);
+
+            userRepository.save(user);
         }
     }
 

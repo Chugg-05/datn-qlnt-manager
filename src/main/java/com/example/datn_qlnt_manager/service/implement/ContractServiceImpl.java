@@ -124,6 +124,16 @@ public class ContractServiceImpl implements ContractService {
                     Tenant tenant = tenantRepository.findById(ctRequest.getTenantId())
                             .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
 
+                    if (tenant.getTenantStatus() == TenantStatus.KHOA || tenant.getTenantStatus() == TenantStatus.HUY_BO) {
+                        throw new AppException(ErrorCode.TENANT_NOT_ELIGIBLE_FOR_CONTRACT);
+                    }
+
+                    if (tenant.getTenantStatus() != TenantStatus.DANG_THUE) {
+                        tenant.setTenantStatus(TenantStatus.DANG_THUE);
+                        tenant.setUpdatedAt(Instant.now());
+                        tenantRepository.save(tenant);
+                    }
+
                     if (Boolean.TRUE.equals(ctRequest.getRepresentative())) {
                         tenantService.ensureTenantHasActiveUser(tenant);
                     }
