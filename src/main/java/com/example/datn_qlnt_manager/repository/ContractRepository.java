@@ -91,7 +91,8 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 			c.electricPrice,
 			c.waterPrice,
 			c.createdAt,
-			c.updatedAt
+			c.updatedAt,
+			c.content
 		)
 		FROM Contract c
 		JOIN c.room r
@@ -125,8 +126,7 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 			SUM(CASE WHEN c.status = 'SAP_HET_HAN' THEN 1 ELSE 0 END),
 			SUM(CASE WHEN c.status = 'KET_THUC_DUNG_HAN' THEN 1 ELSE 0 END),
 			SUM(CASE WHEN c.status = 'KET_THUC_CO_BAO_TRUOC' THEN 1 ELSE 0 END),
-			SUM(CASE WHEN c.status = 'TU_Y_HUY_BO' THEN 1 ELSE 0 END),
-			SUM(CASE WHEN c.status = 'DA_HUY' THEN 1 ELSE 0 END)
+			SUM(CASE WHEN c.status = 'TU_Y_HUY_BO' THEN 1 ELSE 0 END)
 		FROM Contract c
 		WHERE c.room.floor.building.user.id = :userId
 	""")

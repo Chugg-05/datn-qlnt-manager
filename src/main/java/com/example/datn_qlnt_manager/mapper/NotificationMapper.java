@@ -9,7 +9,6 @@ import com.example.datn_qlnt_manager.entity.Notification;
 
 @Mapper(componentModel = "spring")
 public interface NotificationMapper {
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "sentAt", ignore = true)
     @Mapping(target = "image", ignore = true)

@@ -22,6 +22,7 @@ public class ContractResponse {
     LocalDate endDate;
     BigDecimal deposit;
     BigDecimal roomPrice;
+    String content;
     ContractStatus status;
     Instant createdAt;
 }

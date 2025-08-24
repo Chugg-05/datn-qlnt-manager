@@ -171,8 +171,9 @@ public class ContractServiceImpl implements ContractService {
 
             contractVehicleRepository.saveAll(contractVehicles);
         }
-
-        return contractMapper.toContractResponse(contract);
+        var res = contractMapper.toContractResponse(contract);
+        res.setContent(contract.getContent());
+        return res;
     }
 
     @Transactional
@@ -206,6 +207,7 @@ public class ContractServiceImpl implements ContractService {
         detail.setAssets(assets);
         detail.setTenants(tenants);
         detail.setVehicles(vehicles);
+        detail.setContent(detail.getContent());
 
         return detail;
     }
