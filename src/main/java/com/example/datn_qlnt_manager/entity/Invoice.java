@@ -32,6 +32,24 @@ public class Invoice extends AbstractEntity {
     @Column(name = "ma_hoa_don", nullable = false)
     String invoiceCode;
 
+    @Column(name = "so_dien_thoai_chu", nullable = false)
+    String ownerPhoneNumber;
+
+    @Column(name = "ten_toa_nha", nullable = false)
+    String buildingName;
+
+    @Column(name = "dia_chi", nullable = false)
+    String buildingAddress;
+
+    @Column(name = "ma_phong", nullable = false)
+    String roomCode;
+
+    @Column(name = "ten_khach_hang", nullable = false)
+    String tenantName;
+
+    @Column(name = "so_dien_thoai_khach", nullable = false)
+    String tenantPhoneNumber;
+
     @Column(name = "tong_tien", nullable = false)
     BigDecimal totalAmount;
 

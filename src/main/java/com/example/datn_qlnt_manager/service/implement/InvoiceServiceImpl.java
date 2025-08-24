@@ -51,6 +51,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     ContractRepository contractRepository;
     BuildingRepository buildingRepository;
     PaymentReceiptRepository paymentReceiptRepository;
+    ContractTenantRepository contractTenantRepository;
     UserService userService;
     CodeGeneratorService codeGeneratorService;
     InvoiceMapper invoiceMapper;
@@ -156,6 +157,18 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         String invoiceCode = codeGeneratorService.generateInvoiceCode(contract.getRoom(), month, year);
 
+        String  ownerPhoneNumber = contract.getRoom().getFloor().getBuilding().getUser().getPhoneNumber();
+
+        Building building = contract.getRoom().getFloor().getBuilding();
+
+        String roomCode = contract.getRoom().getRoomCode();
+
+        ContractTenant contractTenant = contractTenantRepository
+                .findByContractIdAndRepresentativeTrue(contract.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.REPRESENTATIVE_NOT_FOUND));
+
+        Tenant representative = contractTenant.getTenant();
+
         String note = StringUtils.hasText(request.getNote())
                 ? request.getNote()
                 : "Hóa đơn tháng " + month + " năm " + year + " cho phòng "
@@ -164,6 +177,12 @@ public class InvoiceServiceImpl implements InvoiceService {
         Invoice invoice = Invoice.builder()
                 .contract(contract)
                 .invoiceCode(invoiceCode)
+                .ownerPhoneNumber(ownerPhoneNumber)
+                .buildingName(building.getBuildingName())
+                .buildingAddress(building.getAddress())
+                .roomCode(roomCode)
+                .tenantName(representative.getFullName())
+                .tenantPhoneNumber(representative.getPhoneNumber())
                 .totalAmount(totalAmount)
                 .month(month)
                 .year(year)

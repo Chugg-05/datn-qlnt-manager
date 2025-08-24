@@ -108,41 +108,45 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
 			Pageable pageable);
 
 	@Query(
-			"""
-        SELECT new com.example.datn_qlnt_manager.dto.projection.InvoiceDetailView(
-            i.id,
-            i.invoiceCode,
-            i.month,
-            i.year,
-            i.paymentDueDate,
-            i.invoiceStatus,
-            i.invoiceType,
-            i.totalAmount,
-            i.note,
-            i.createdAt,
-            i.updatedAt,
-            b.buildingName,
-            r.roomCode,
-            t.fullName,
-            t.phoneNumber
-        )
-        FROM Invoice i
-        JOIN i.contract c
-        JOIN c.room r
-        JOIN r.floor f
-        JOIN f.building b
-        JOIN c.contractTenants ct
-        JOIN ct.tenant t
-        WHERE i.id = :invoiceId
-        AND ct.representative = true
-    """)
+	"""
+		SELECT new com.example.datn_qlnt_manager.dto.projection.InvoiceDetailView(
+			i.id,
+			i.invoiceCode,
+			i.ownerPhoneNumber,
+			i.buildingName,
+			i.buildingAddress,
+			i.roomCode,
+			i.tenantName,
+			i.tenantPhoneNumber,
+			i.month,
+			i.year,
+			i.paymentDueDate,
+			i.invoiceStatus,
+			i.invoiceType,
+			i.totalAmount,
+			i.note,
+			i.createdAt,
+			i.updatedAt
+		)
+		FROM Invoice i
+		JOIN i.contract c
+		JOIN c.room r
+		JOIN r.floor f
+		JOIN f.building b
+		JOIN c.contractTenants ct
+		JOIN ct.tenant t
+		WHERE i.id = :invoiceId
+		AND ct.representative = true
+	""")
 	Optional<InvoiceDetailView> getInvoiceDetailById(@Param("invoiceId") String invoiceId);
 
 	@Query(
 			"""
                 SELECT COUNT(i),
                     SUM(CASE WHEN i.invoiceStatus = 'CHUA_THANH_TOAN' THEN 1 ELSE 0 END),
+                    SUM(CASE WHEN i.invoiceStatus = 'CHO_THANH_TOAN' THEN 1 ELSE 0 END),
                     SUM(CASE WHEN i.invoiceStatus = 'DA_THANH_TOAN' THEN 1 ELSE 0 END),
+                    SUM(CASE WHEN i.invoiceStatus = 'KHONG_THE_THANH_TOAN' THEN 1 ELSE 0 END),
                     SUM(CASE WHEN i.invoiceStatus = 'QUA_HAN' THEN 1 ELSE 0 END),
                     SUM(CASE WHEN i.invoiceStatus = 'HUY' THEN 1 ELSE 0 END)
                 FROM Invoice i

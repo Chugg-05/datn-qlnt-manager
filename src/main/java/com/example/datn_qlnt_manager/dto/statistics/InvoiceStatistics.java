@@ -10,8 +10,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvoiceStatistics {
     Long total;
-    Long totalPaid;
     Long totalNotYetPaid;
+    Long totalWaitingForPayment;
+    Long totalPaid;
+    Long totalCannotBePaid;
     Long totalOverdue;
     Long totalCancelled;
 }

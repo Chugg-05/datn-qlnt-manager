@@ -17,11 +17,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvoiceResponse {
     String id;
+    String roomId;
     String paymentReceiptId;
     String invoiceCode;
     String buildingName;
     String roomCode;
-    String roomId;
     String tenantName;
     Integer month;
     Integer year;
