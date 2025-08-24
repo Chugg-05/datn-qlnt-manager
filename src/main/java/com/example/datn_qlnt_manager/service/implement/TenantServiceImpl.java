@@ -169,9 +169,15 @@ public class TenantServiceImpl implements TenantService {
                     List<ContractResponse> contracts = contractRepository.findAllByTenantId(tenant.getId()).stream()
                             .map(contractMapper::toContractResponse)
                             .toList();
+
                     TenantResponse tenantResponse = tenantMapper.toTenantResponse(tenant);
                     tenantResponse.setContracts(contracts);
-                    tenantResponse.setUserId(tenant.getUser().getId());
+
+                    if (tenant.getUser() != null) {
+                        tenantResponse.setUserId(tenant.getUser().getId());
+                    } else {
+                        tenantResponse.setUserId(null);
+                    }
                     return tenantResponse;
                 })
                 .toList();

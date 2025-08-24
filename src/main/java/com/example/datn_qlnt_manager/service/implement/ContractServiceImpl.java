@@ -105,6 +105,7 @@ public class ContractServiceImpl implements ContractService {
         contract.setRoom(room);
         contract.setRoomPrice(room.getPrice());
         applyUtilityPrices(contract);
+        contract.setContent(request.getContent());
 
         contract.setCreatedAt(Instant.now());
         contract.setUpdatedAt(Instant.now());
@@ -168,8 +169,9 @@ public class ContractServiceImpl implements ContractService {
 
             contractVehicleRepository.saveAll(contractVehicles);
         }
-
-        return contractMapper.toContractResponse(contract);
+        var res = contractMapper.toContractResponse(contract);
+        res.setContent(contract.getContent());
+        return res;
     }
 
     @Transactional
@@ -203,6 +205,7 @@ public class ContractServiceImpl implements ContractService {
         detail.setAssets(assets);
         detail.setTenants(tenants);
         detail.setVehicles(vehicles);
+        detail.setContent(detail.getContent());
 
         return detail;
     }

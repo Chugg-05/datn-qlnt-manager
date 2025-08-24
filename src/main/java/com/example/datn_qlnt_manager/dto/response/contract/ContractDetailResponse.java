@@ -68,7 +68,8 @@ public class ContractDetailResponse {
             BigDecimal electricPrice,
             BigDecimal waterPrice,
             Instant createdAt,
-            Instant updatedAt) {
+            Instant updatedAt,
+            String content) {
         this.id = id;
         this.roomId = roomId;
         this.contractCode = contractCode;
@@ -90,5 +91,6 @@ public class ContractDetailResponse {
         this.waterPrice = waterPrice;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.content = content;
     }
 }
