@@ -16,21 +16,37 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvoiceDetailView {
-    String invoiceId;
+    String id;
+
     String invoiceCode;
-    Integer month;
-    Integer year;
-    LocalDate paymentDueDate;
-    InvoiceStatus invoiceStatus;
-    InvoiceType invoiceType;
-    BigDecimal totalAmount;
-    String note;
-    Instant createdAt;
-    Instant updatedAt;
+
+    String ownerPhone;
 
     String buildingName;
+
+    String address;
+
     String roomCode;
 
     String tenantName;
+
     String tenantPhone;
+
+    Integer month;
+
+    Integer year;
+
+    LocalDate paymentDueDate;
+
+    InvoiceStatus invoiceStatus;
+
+    InvoiceType invoiceType;
+
+    BigDecimal totalAmount;
+
+    String note;
+
+    Instant createdAt;
+
+    Instant updatedAt;
 }
