@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.configuration.Translator;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,7 @@ public class MeterReadingController {
         return ApiResponse.<List<MeterReadingResponse>>builder()
                 .data(result.getData())
                 .meta(result.getMeta())
-                .message("Filter meter readings success")
+                .message(Translator.toLocale("filter.meter.readings.success"))
                 .build();
     }
 
@@ -50,7 +51,7 @@ public class MeterReadingController {
     public ApiResponse<MeterReadingResponse> create(@Valid @RequestBody MeterReadingCreationRequest request) {
         return ApiResponse.<MeterReadingResponse>builder()
                 .data(meterReadingService.createMeterReading(request))
-                .message("Add meter reading success")
+                .message(Translator.toLocale("meter.reading.create.success"))
                 .build();
     }
 
@@ -60,7 +61,7 @@ public class MeterReadingController {
             @PathVariable String meterReadingId, @RequestBody @Valid MeterReadingUpdateRequest request) {
         return ApiResponse.<MeterReadingResponse>builder()
                 .data(meterReadingService.updateMeterReading(meterReadingId, request))
-                .message("Update meter reading success")
+                .message(Translator.toLocale("update.meter.reading.success"))
                 .build();
     }
 
@@ -69,7 +70,7 @@ public class MeterReadingController {
     public ApiResponse<Void> delete(@PathVariable String meterReadingId) {
         meterReadingService.deleteMeterReading(meterReadingId);
         return ApiResponse.<Void>builder()
-                .message("Delete meter reading success")
+                .message(Translator.toLocale("delete.meter.reading.success"))
                 .build();
     }
 
@@ -78,7 +79,7 @@ public class MeterReadingController {
     public ApiResponse<MeterReadingResponse> getById(@PathVariable String meterReadingId) {
         return ApiResponse.<MeterReadingResponse>builder()
                 .data(meterReadingService.getMeterReadingById(meterReadingId))
-                .message("Get meter reading success")
+                .message(Translator.toLocale("get.meter.reading.success"))
                 .build();
     }
 }

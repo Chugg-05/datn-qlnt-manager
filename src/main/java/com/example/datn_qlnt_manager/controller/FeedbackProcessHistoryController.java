@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import static lombok.AccessLevel.PRIVATE;
 
+import com.example.datn_qlnt_manager.configuration.Translator;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
@@ -30,7 +31,7 @@ public class FeedbackProcessHistoryController {
             @RequestParam(defaultValue = "15") int size) {
         return ApiResponse.<PaginatedResponse<FeedbackProcessHistoryResponse>>builder()
                 .data(feedbackProcessHistoryService.getAllByUserId(feedbackId, query, page, size))
-                .message("Response processing history loaded successfully")
+                .message(Translator.toLocale("response.processing.history.loaded.success"))
                 .build();
     }
 }
