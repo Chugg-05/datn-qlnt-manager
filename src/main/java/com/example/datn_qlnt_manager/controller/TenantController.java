@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
@@ -22,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -66,9 +68,11 @@ public class TenantController {
     }
 
     @Operation(summary = "Thêm khách thuê")
-    @PostMapping
-    public ApiResponse<TenantResponse> createTenant(@Valid @RequestBody TenantCreationRequest request) {
-        TenantResponse response = tenantService.createTenant(request);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<TenantResponse> createTenant(@Valid @ModelAttribute TenantCreationRequest request,
+                                                    @RequestParam MultipartFile frontCCCD,
+                                                    @RequestParam MultipartFile backCCCD) {
+        TenantResponse response = tenantService.createTenant(request, frontCCCD, backCCCD);
         return ApiResponse.<TenantResponse>builder()
                 .message("Tenant created successfully")
                 .data(response)
@@ -78,11 +82,13 @@ public class TenantController {
     @Operation(summary = "Update thông tin khách hàng mới dành cho user")
     @PutMapping("/{tenantId}")
     public ApiResponse<TenantResponse> updateTenant(
-            @Valid @RequestBody TenantUpdateRequest request, @PathVariable("tenantId") String tenantId) {
+            @Valid @ModelAttribute TenantUpdateRequest request, @PathVariable("tenantId") String tenantId,
+            @RequestParam MultipartFile frontCCCD,
+            @RequestParam MultipartFile backCCCD) {
 
         return ApiResponse.<TenantResponse>builder()
                 .message("Tenant updated successfully")
-                .data(tenantService.updateTenant(tenantId, request))
+                .data(tenantService.updateTenant(tenantId, request, frontCCCD, backCCCD))
                 .build();
     }
 

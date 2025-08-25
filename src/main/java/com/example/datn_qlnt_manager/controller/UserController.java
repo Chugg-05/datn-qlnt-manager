@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.controller;
 
+import com.example.datn_qlnt_manager.utils.CloudinaryUtil;
 import jakarta.validation.Valid;
 
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
     UserService userService;
     UserMapper userMapper;
+    CloudinaryUtil cloudinaryUtil;
 
     @Operation(summary = "Lấy thông tin người đang đăng nhập")
     @GetMapping("/me")
@@ -48,7 +50,7 @@ public class UserController {
         var user = userService.getCurrentUser();
 
         if (profilePictureFile != null && !profilePictureFile.isEmpty()) {
-            request.setProfilePicture(userService.uploadProfilePicture(profilePictureFile));
+            request.setProfilePicture(cloudinaryUtil.uploadImage(profilePictureFile,"profile"));
         }
 
         return ApiResponse.<UserResponse>builder()

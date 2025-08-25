@@ -11,15 +11,16 @@ import com.example.datn_qlnt_manager.dto.response.tenant.TenantResponse;
 import com.example.datn_qlnt_manager.dto.statistics.TenantStatistics;
 import com.example.datn_qlnt_manager.entity.Tenant;
 import jakarta.transaction.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface TenantService {
     PaginatedResponse<TenantResponse> getPageAndSearchAndFilterTenantByUserId(TenantFilter filter, int page, int size);
 
     PaginatedResponse<TenantResponse> getTenantWithStatusCancelByUserId(TenantFilter filter, int page, int size);
 
-    TenantResponse createTenant(TenantCreationRequest request);
+    TenantResponse createTenant(TenantCreationRequest request, MultipartFile frontCCCD, MultipartFile backCCCD);
 
-    TenantResponse updateTenant(String tenantId, TenantUpdateRequest request);
+    TenantResponse updateTenant(String tenantId, TenantUpdateRequest request, MultipartFile frontCCCD, MultipartFile backCCCD);
 
     TenantDetailResponse getTenantDetailById(String tenantId);
 
