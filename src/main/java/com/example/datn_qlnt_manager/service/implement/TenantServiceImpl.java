@@ -9,6 +9,7 @@ import com.example.datn_qlnt_manager.entity.Role;
 import com.example.datn_qlnt_manager.entity.Room;
 import com.example.datn_qlnt_manager.mapper.ContractMapper;
 import com.example.datn_qlnt_manager.repository.*;
+import com.example.datn_qlnt_manager.utils.CloudinaryUtil;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -38,6 +39,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -54,6 +56,7 @@ public class TenantServiceImpl implements TenantService {
     RoleRepository roleRepository;
     CodeGeneratorService codeGeneratorService;
     ContractMapper contractMapper;
+    CloudinaryUtil cloudinaryUtil;
 
     @Override
     public PaginatedResponse<TenantResponse> getPageAndSearchAndFilterTenantByUserId(
@@ -81,7 +84,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Transactional
     @Override
-    public TenantResponse createTenant(TenantCreationRequest request) {
+    public TenantResponse createTenant(TenantCreationRequest request, MultipartFile frontCCCD, MultipartFile backCCCD) {
         validateDuplicateTenant(request);
 
         User owner = userService.getCurrentUser();
@@ -94,12 +97,14 @@ public class TenantServiceImpl implements TenantService {
         tenant.setCustomerCode(customerCode);
         tenant.setCreatedAt(Instant.now());
         tenant.setUpdatedAt(Instant.now());
+        tenant.setFrontCCCD(cloudinaryUtil.uploadImage(frontCCCD, "front_cccd"));
+        tenant.setBackCCCD(cloudinaryUtil.uploadImage(backCCCD, "back_cccd"));
 
         return tenantMapper.toTenantResponse(tenantRepository.save(tenant));
     }
 
     @Override
-    public TenantResponse updateTenant(String tenantId, TenantUpdateRequest request) {
+    public TenantResponse updateTenant(String tenantId, TenantUpdateRequest request, MultipartFile frontCCCD, MultipartFile backCCCD) {
         Tenant tenant = tenantRepository.findById(tenantId)
                 .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
 
@@ -118,8 +123,10 @@ public class TenantServiceImpl implements TenantService {
         }
 
         tenantMapper.updateTenant(request, tenant);
-
         tenant.setUpdatedAt(Instant.now());
+        tenant.setEmail(tenant.getEmail());
+        tenant.setFrontCCCD(cloudinaryUtil.uploadImage(frontCCCD, "front_cccd"));
+        tenant.setBackCCCD(cloudinaryUtil.uploadImage(backCCCD, "back_cccd"));
 
         return tenantMapper.toTenantResponse(tenantRepository.save(tenant));
     }
@@ -147,6 +154,8 @@ public class TenantServiceImpl implements TenantService {
                 .totalContract(contractCount)
                 .createdAt(tenant.getCreatedAt())
                 .updatedAt(tenant.getUpdatedAt())
+                .frontCCCD(tenant.getFrontCCCD())
+                .backCCCD(tenant.getBackCCCD())
                 .build();
     }
 
@@ -177,7 +186,6 @@ public class TenantServiceImpl implements TenantService {
                     } else {
                         tenantResponse.setUserId(null);
                     }
-                    tenantResponse.setUserId(tenant.getUser().getId());
                     return tenantResponse;
                 })
                 .toList();

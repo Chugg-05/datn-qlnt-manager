@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.repository.RoomRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,7 @@ public class FloorServiceImpl implements FloorService {
 
     FloorRepository floorRepository;
     BuildingRepository buildingRepository;
+    RoomRepository roomRepository;
     FloorMapper floorMapper;
     CodeGeneratorService codeGeneratorService;
     UserService userService;
@@ -120,6 +122,12 @@ public class FloorServiceImpl implements FloorService {
                         throw new AppException(ErrorCode.FLOOR_ALREADY_EXISTS);
                     }
                 });
+
+        int currentRoomCount = roomRepository.countByFloorId(floorId);
+        if (request.getMaximumRoom() < currentRoomCount) {
+            throw new AppException(ErrorCode.CANNOT_UPDATE_MAXIMUM_ROOM);
+        }
+
         floorMapper.updateFloor(request, floor);
         floor.setUpdatedAt(Instant.now());
         return floorMapper.toResponse(floorRepository.save(floor));

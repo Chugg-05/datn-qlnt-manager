@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.controller;
 
+import com.example.datn_qlnt_manager.configuration.Translator;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,7 @@ public class FeedbackController {
     public ApiResponse<FeedbackResponse> createFeedback(@Valid @RequestBody FeedbackCreationRequest request) {
         return ApiResponse.<FeedbackResponse>builder()
                 .data(feedbackService.createFeedback(request))
-                .message("Feedback created successfully")
+                .message(Translator.toLocale("feedback.created.successfully"))
                 .build();
     }
 
@@ -46,7 +47,7 @@ public class FeedbackController {
             @PathVariable String feedbackId, @Valid @RequestBody FeedbackUpdateRequest request) {
         return ApiResponse.<FeedbackResponse>builder()
                 .data(feedbackService.updateFeedback(feedbackId, request))
-                .message("Feedback created successfully")
+                .message(Translator.toLocale("feedback.updated.success"))
                 .build();
     }
 
@@ -62,7 +63,7 @@ public class FeedbackController {
         FeedBackSelfFilter filter = new FeedBackSelfFilter(rating, feedbackType, feedbackStatus, query);
         return ApiResponse.<PaginatedResponse<FeedbackSelfResponse>>builder()
                 .data(feedbackService.filterMyFeedbacks(filter, page, size))
-                .message("List of feedbacks by current tenant loaded successfully.")
+                .message(Translator.toLocale("list.of.feedbacks.by.current.tenant.loaded.success"))
                 .build();
     }
 
@@ -85,7 +86,7 @@ public class FeedbackController {
                 .build();
         return ApiResponse.<PaginatedResponse<FeedbackResponse>>builder()
                 .data(feedbackService.filterFeedbacksForManager(filter, page, size))
-                .message("Filter feedbacks for manager loaded successfully")
+                .message(Translator.toLocale("filter.feedbacks.for.manager.loaded.success"))
                 .build();
     }
 
@@ -95,7 +96,7 @@ public class FeedbackController {
             @Valid @RequestBody FeedbackStatusUpdateRequest request) {
         return ApiResponse.<FeedbackStatusUpdateResponse>builder()
                 .data(feedbackService.updateFeedbackStatus(request))
-                .message("Feedback status updated successfully")
+                .message(Translator.toLocale("feedback.status.updated.success"))
                 .build();
     }
 }

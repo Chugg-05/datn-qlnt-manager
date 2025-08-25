@@ -25,5 +25,6 @@ public interface TenantMapper {
     @Mapping(target = "tenantStatus", ignore = true)
     @Mapping(target = "hasAccount", ignore = true)
     @Mapping(target = "contractTenants", ignore = true)
+    @Mapping(target = "email", ignore = true)
     void updateTenant(TenantUpdateRequest request, @MappingTarget Tenant tenant);
 }
