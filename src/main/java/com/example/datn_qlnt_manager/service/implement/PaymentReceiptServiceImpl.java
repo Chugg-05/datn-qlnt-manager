@@ -28,6 +28,7 @@ import com.example.datn_qlnt_manager.repository.TenantRepository;
 import com.example.datn_qlnt_manager.service.EmailService;
 
 import com.example.datn_qlnt_manager.service.PaymentReceiptService;
+import com.example.datn_qlnt_manager.service.SystemNotificationService;
 import com.example.datn_qlnt_manager.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -60,6 +61,7 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
     CodeGeneratorService codeGeneratorService;
     UserService userService;
     EmailService emailService;
+    SystemNotificationService systemNotificationService;
     PaymentReceiptMapper paymentReceiptMapper;
     VnpayConfig vnpayConfig;
 
@@ -249,6 +251,23 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
                 paymentReceiptRepository.save(receipt);
                 invoiceRepository.save(invoice);
                 emailService.notifyOwnerForCashReceipt(receipt);
+                logPaymentHistory(receipt, PaymentAction.DA_THANH_TOAN, "Thanh toán thành công cho hóa đơn " + invoice.getInvoiceCode());
+
+                Contract contract = invoice.getContract();
+                List<Tenant> tenants = contract.getContractTenants().stream()
+                        .map(ContractTenant::getTenant)
+                        .toList();
+
+                for (Tenant tenant : tenants) {
+                    systemNotificationService.createNotification(
+                            tenant.getUser().getId(),
+                            "Thanh toán thành công",
+                            "Phiếu thanh toán " + receipt.getReceiptCode() +
+                                    " cho hóa đơn " + invoice.getInvoiceCode() +
+                                    " đã được xác nhận thành công."
+                    );
+                }
+
             }
 
             case ZALOPAY, MOMO -> throw new AppException(ErrorCode.NOT_SUPPORTED_YET);
@@ -286,6 +305,21 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
 
         emailService.notifyOwnerRejectedReceipt(receipt);
 
+        Contract contract = invoice.getContract();
+        List<Tenant> tenants = contract.getContractTenants().stream()
+                .map(ContractTenant::getTenant)
+                .toList();
+
+        for (Tenant tenant : tenants) {
+            systemNotificationService.createNotification(
+                    tenant.getUser().getId(),
+                    "Thanh toán bị từ chối",
+                    "Phiếu thanh toán " + receipt.getReceiptCode()
+                            + " cho hóa đơn " + invoice.getInvoiceCode()
+                            + " đã bị từ chối. Lý do: " + request.getReason()
+            );
+        }
+
         return RejectPaymentResponse.builder()
                 .id(receipt.getId())
                 .paymentStatus(receipt.getPaymentStatus())
@@ -320,6 +354,21 @@ public class PaymentReceiptServiceImpl implements PaymentReceiptService {
         logPaymentHistory(receipt, PaymentAction.DA_THANH_TOAN, "Thanh toán thành công cho hóa đơn " + invoice.getInvoiceCode());
 
         emailService.notifyTenantPaymentConfirmed(receipt);
+
+        Contract contract = invoice.getContract();
+        List<Tenant> tenants = contract.getContractTenants().stream()
+                .map(ContractTenant::getTenant)
+                .toList();
+
+        for (Tenant tenant : tenants) {
+            systemNotificationService.createNotification(
+                    tenant.getUser().getId(),
+                    "Thanh toán thành công",
+                    "Phiếu thanh toán " + receipt.getReceiptCode() +
+                            " cho hóa đơn " + invoice.getInvoiceCode() +
+                            " đã được xác nhận thành công."
+            );
+        }
     }
 
     @Override
