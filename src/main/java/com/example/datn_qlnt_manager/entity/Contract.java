@@ -53,6 +53,9 @@ public class Contract extends AbstractEntity {
     @Column(name = "noi_dung")
     String content;
 
+    @Column(name = "ngay_ket_thuc_ban_dau")
+    LocalDate originalEndDate;
+
     @OneToMany(mappedBy = "contract", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ContractTenant> contractTenants;
 

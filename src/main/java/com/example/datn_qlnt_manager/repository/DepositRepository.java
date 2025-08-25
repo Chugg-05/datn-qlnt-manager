@@ -22,6 +22,7 @@ public interface DepositRepository extends JpaRepository<Deposit, String> {
             d.depositRecipient,
             d.depositAmount,
             d.depositStatus,
+            d.refundAmount,
             d.depositDate,
             d.depositRefundDate,
             d.securityDepositReturnDate,

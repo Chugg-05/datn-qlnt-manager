@@ -265,6 +265,8 @@ public enum ErrorCode {
     CONTRACT_NOT_ELIGIBLE_FOR_EXTENSION(400,"", HttpStatus.BAD_REQUEST),
     TENANT_NOT_ELIGIBLE_FOR_CONTRACT(400,Translator.toLocale("tenant.not.eligible.for.contract"), HttpStatus.BAD_REQUEST),
     CANNOT_UPDATE_MAXIMUM_ROOM(400,Translator.toLocale("cannot.update.maximum.room"), HttpStatus.BAD_REQUEST),
+    INVALID_CONTRACT_DURATION(400,Translator.toLocale("invalid.contract.duration"), HttpStatus.BAD_REQUEST),
+
     // Code: 404
     USER_NOT_FOUND(404, Translator.toLocale("user.not.found"), HttpStatus.NOT_FOUND),
     BUILDING_ID_NOT_FOUND(404, Translator.toLocale("building.id.not.found"), HttpStatus.NOT_FOUND),

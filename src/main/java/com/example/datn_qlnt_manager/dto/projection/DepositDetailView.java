@@ -22,6 +22,7 @@ public class DepositDetailView {
         String depositRecipient;
         BigDecimal depositAmount;
         DepositStatus depositStatus;
+        BigDecimal refundAmount;
         LocalDateTime depositDate;
         LocalDateTime depositRefundDate;
         LocalDateTime securityDepositReturnDate;

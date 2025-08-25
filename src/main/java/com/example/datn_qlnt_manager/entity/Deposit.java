@@ -34,6 +34,9 @@ public class Deposit extends AbstractEntity {
     @Column(name = "trang_thai", nullable = false)
     DepositStatus depositStatus;
 
+    @Column(name = "so_tien_hoan")
+    BigDecimal refundAmount;
+
     @Column(name = "ngay_dat_coc", nullable = false)
     LocalDateTime depositDate;
 

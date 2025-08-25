@@ -146,8 +146,8 @@ public class EmailServiceImpl implements EmailService {
                         "receiptCode", receipt.getReceiptCode(),
                         "amount", FormatUtil.formatCurrency(invoice.getTotalAmount()),
                         "dueDate", FormatUtil.formatDate(invoice.getPaymentDueDate()),
-                        "building", invoice.getContract().getRoom().getFloor().getBuilding().getBuildingName(),
-                        "room", invoice.getContract().getRoom().getRoomCode(),
+                        "building", invoice.getBuildingName(),
+                        "room", invoice.getRoomCode(),
                         "invoiceType", FormatUtil.formatInvoiceType(invoice.getInvoiceType()),
                         "note", invoice.getNote() != null ? invoice.getNote() : "Không có"
                 )
@@ -192,8 +192,8 @@ public class EmailServiceImpl implements EmailService {
                         "invoiceCode", invoice.getInvoiceCode(),
                         "receiptCode", receipt.getReceiptCode(),
                         "amount", FormatUtil.formatCurrency(receipt.getAmount()),
-                        "building", invoice.getContract().getRoom().getFloor().getBuilding().getBuildingName(),
-                        "room", invoice.getContract().getRoom().getRoomCode(),
+                        "building", invoice.getBuildingName(),
+                        "room", invoice.getRoomCode(),
                         "tenant", tenant.getFullName(),
                         "dueDate", FormatUtil.formatDate(invoice.getPaymentDueDate())
                 ));
@@ -237,8 +237,8 @@ public class EmailServiceImpl implements EmailService {
                         "invoiceCode", invoice.getInvoiceCode(),
                         "receiptCode", receipt.getReceiptCode(),
                         "amount", FormatUtil.formatCurrency(receipt.getAmount()),
-                        "building", invoice.getContract().getRoom().getFloor().getBuilding().getBuildingName(),
-                        "room", invoice.getContract().getRoom().getRoomCode(),
+                        "building", invoice.getBuildingName(),
+                        "room", invoice.getRoomCode(),
                         "tenant", tenant.getFullName(),
                         "dueDate", FormatUtil.formatDate(invoice.getPaymentDueDate()),
                         "reason", receipt.getNote()
@@ -289,8 +289,8 @@ public class EmailServiceImpl implements EmailService {
                         "invoiceCode", invoice.getInvoiceCode(),
                         "receiptCode", receipt.getReceiptCode(),
                         "amount", FormatUtil.formatCurrency(receipt.getAmount()),
-                        "building", invoice.getContract().getRoom().getFloor().getBuilding().getBuildingName(),
-                        "room", invoice.getContract().getRoom().getRoomCode(),
+                        "building", invoice.getBuildingName(),
+                        "room", invoice.getRoomCode(),
                         "paymentDate", FormatUtil.formatDateTime(receipt.getPaymentDate())
                 )
         );
@@ -329,10 +329,11 @@ public class EmailServiceImpl implements EmailService {
                 "deposit-refund-to-tenant",
                 Map.of(
                         "name", name,
-                        "amount", FormatUtil.formatCurrency(deposit.getDepositAmount()),
+                        "amount", FormatUtil.formatCurrency(deposit.getRefundAmount()),
                         "building", contract.getRoom().getFloor().getBuilding().getBuildingName(),
                         "room", contract.getRoom().getRoomCode(),
-                        "refundDate", FormatUtil.formatDateTime(deposit.getDepositRefundDate())
+                        "refundDate", FormatUtil.formatDateTime(deposit.getDepositRefundDate()),
+                        "note", deposit.getNote() != null ? deposit.getNote() : "Không có"
                 )
         );
 
