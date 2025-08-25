@@ -9,10 +9,7 @@ import com.example.datn_qlnt_manager.dto.request.ContractTenant.AddTenantToContr
 import com.example.datn_qlnt_manager.dto.request.ContractTenant.RepresentativeChangeRequest;
 import com.example.datn_qlnt_manager.dto.response.contractTenant.ContractTenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.contractTenant.ContractTenantResponse;
-import com.example.datn_qlnt_manager.entity.Contract;
-import com.example.datn_qlnt_manager.entity.ContractTenant;
-import com.example.datn_qlnt_manager.entity.Tenant;
-import com.example.datn_qlnt_manager.entity.User;
+import com.example.datn_qlnt_manager.entity.*;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.repository.ContractRepository;
@@ -20,6 +17,7 @@ import com.example.datn_qlnt_manager.repository.ContractTenantRepository;
 import com.example.datn_qlnt_manager.repository.TenantRepository;
 import com.example.datn_qlnt_manager.repository.UserRepository;
 import com.example.datn_qlnt_manager.service.ContractTenantService;
+import com.example.datn_qlnt_manager.service.SystemNotificationService;
 import com.example.datn_qlnt_manager.service.TenantService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +44,7 @@ public class ContractTenantServiceImpl implements ContractTenantService {
     TenantRepository tenantRepository;
     UserRepository userRepository;
     TenantService tenantService;
+    SystemNotificationService systemNotificationService;
 
     @Override
     public PaginatedResponse<ContractTenantDetailResponse> getTenantsFromContract(
@@ -110,6 +109,8 @@ public class ContractTenantServiceImpl implements ContractTenantService {
         contractTenant.setUpdatedAt(Instant.now());
 
         ContractTenant response = contractTenantRepository.save(contractTenant);
+
+        if (tenant.getUser() != null) { systemNotificationService.createNotification( tenant.getUser().getId(), "Bạn đã được thêm vào hợp đồng", "Bạn đã được thêm vào hợp đồng " + contract.getContractCode() + " của phòng " + contract.getRoom().getRoomCode() ); }
 
         return ContractTenantResponse.builder()
                 .id(response.getId())
