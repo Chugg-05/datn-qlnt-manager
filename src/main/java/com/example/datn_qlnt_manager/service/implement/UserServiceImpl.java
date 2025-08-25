@@ -53,7 +53,6 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
-    Cloudinary cloudinary;
     EmailService emailService;
 
     @Override
@@ -168,22 +167,6 @@ public class UserServiceImpl implements UserService {
         user.setUpdatedAt(Instant.now());
 
         return userMapper.toUserDetailResponse(userRepository.save(user));
-    }
-
-    @Override
-    public String uploadProfilePicture(MultipartFile file) {
-        try {
-            @SuppressWarnings("unchecked") // bỏ qua cảnh báo
-            Map<String, Object> uploadResult = (Map<String, Object>) cloudinary
-                    .uploader()
-                    .upload(
-                            file.getBytes(),
-                            Map.of("resource_type", "image", "upload_preset", "DATN_QLNT", "folder", "avatar"));
-
-            return (String) uploadResult.get("secure_url");
-        } catch (IOException | AppException e) {
-            throw new AppException(ErrorCode.UPLOAD_FAILED);
-        }
     }
 
     @Override

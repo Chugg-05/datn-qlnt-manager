@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import com.example.datn_qlnt_manager.dto.response.notification.SentToUsers;
 import com.cloudinary.Cloudinary;
 
+import com.example.datn_qlnt_manager.utils.CloudinaryUtil;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -56,7 +57,7 @@ public class NotificationServiceImpl implements NotificationService {
     UserRepository userRepository;
     UserService userService;
     NotificationMapper notificationMapper;
-    Cloudinary cloudinary;
+    CloudinaryUtil cloudinaryUtil;
 
     @Override
     public NotificationResponse createNotification(NotificationCreationRequest request, MultipartFile image) {
@@ -72,7 +73,7 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setUser(userService.getCurrentUser());
 
         if (image != null && !image.isEmpty()) {
-            notification.setImage(uploadImage(image));
+            notification.setImage(cloudinaryUtil.uploadImage(image,"notifications"));
         }
 
         List<User> users = getRecipientUsers(request.getSendToAll(), request.getUsers());
@@ -94,7 +95,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
 
         if (image != null && !image.isEmpty()) {
-            notification.setImage(uploadImage(image));
+            notification.setImage(cloudinaryUtil.uploadImage(image, "notifications"));
         }
 
         if (!Boolean.TRUE.equals(request.getSendToAll())
@@ -188,18 +189,6 @@ public class NotificationServiceImpl implements NotificationService {
             throw new AppException(ErrorCode.NOTIFICATION_NOT_FOUND);
         }
         notificationRepository.deleteById(notificationId);
-    }
-
-    private String uploadImage(MultipartFile file) {
-        try {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> uploadResult = (Map<String, Object>) cloudinary.uploader()
-                    .upload(file.getBytes(),
-                            Map.of("resource_type", "image", "upload_preset", "DATN_QLNT", "folder", "notification"));
-            return (String) uploadResult.get("secure_url");
-        } catch (IOException | AppException e) {
-            throw new AppException(ErrorCode.UPLOAD_FAILED);
-        }
     }
 
     // -------------------- Helper Methods --------------------

@@ -1,7 +1,5 @@
 package com.example.datn_qlnt_manager.service;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.UserFilter;
 import com.example.datn_qlnt_manager.dto.request.UserCreationRequest;
@@ -34,8 +32,6 @@ public interface UserService {
     UserResponse updateUser(String userId, UserUpdateRequest request);
 
     void deleteUserById(String userId);
-
-    String uploadProfilePicture(MultipartFile file);
 
     UserDetailResponse getUserById(String userId);
 

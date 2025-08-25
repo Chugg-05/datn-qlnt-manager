@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.controller;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.utils.CloudinaryUtil;
 import jakarta.validation.Valid;
 
 import org.springframework.http.MediaType;
@@ -30,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Admin", description = "API Admin")
 public class AdminController {
     UserService userService;
+    CloudinaryUtil cloudinaryUtil;
 
     @Operation(summary = "Phân trang, tìm kiếm, lọc người dùng")
     @GetMapping
@@ -64,7 +66,7 @@ public class AdminController {
             @RequestParam(name = "profilePictureFile", required = false) MultipartFile profilePictureFile) {
 
         if (profilePictureFile != null && !profilePictureFile.isEmpty()) {
-            request.setProfilePicture(userService.uploadProfilePicture(profilePictureFile));
+            request.setProfilePicture(cloudinaryUtil.uploadImage(profilePictureFile, "profile"));
         }
 
         return ApiResponse.<UserDetailResponse>builder()

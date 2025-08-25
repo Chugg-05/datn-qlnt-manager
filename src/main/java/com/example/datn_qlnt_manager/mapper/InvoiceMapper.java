@@ -16,12 +16,13 @@ import com.example.datn_qlnt_manager.entity.InvoiceDetail;
 @Mapper(componentModel = "spring")
 public interface InvoiceMapper {
 
-    @Mapping(target = "roomId", source = "contract.room.id")
     @Mapping(source = "id", target = "id")
+    @Mapping(target = "roomId", source = "contract.room.id")
     @Mapping(target = "paymentReceiptId", expression = "java(getFirstReceiptId(invoice))")
     @Mapping(source = "invoiceCode", target = "invoiceCode")
-    @Mapping(source = "contract.room.floor.building.buildingName", target = "buildingName")
-    @Mapping(source = "contract.room.roomCode", target = "roomCode")
+    @Mapping(source = "buildingName", target = "buildingName")
+    @Mapping(source = "roomCode", target = "roomCode")
+    @Mapping(source = "tenantName", target = "tenantName")
     @Mapping(source = "month", target = "month")
     @Mapping(source = "year", target = "year")
     @Mapping(source = "totalAmount", target = "totalAmount")
@@ -30,7 +31,6 @@ public interface InvoiceMapper {
     @Mapping(source = "invoiceType", target = "invoiceType")
     @Mapping(source = "note", target = "note")
     @Mapping(source = "createdAt", target = "createdAt")
-//    @Mapping(target = "tenantName", expression = "java(getRepresentativeName(invoice))")
     InvoiceResponse toInvoiceResponse(Invoice invoice);
 
     @Mapping(target = "id", ignore = true)
@@ -42,15 +42,6 @@ public interface InvoiceMapper {
     @Mapping(target = "invoiceStatus", ignore = true)
     @Mapping(target = "invoiceType", ignore = true)
     void updateInvoice(InvoiceUpdateRequest request, @MappingTarget Invoice invoice);
-
-//    default String getRepresentativeName(Invoice invoice) {
-//        if (invoice.getContract() == null || invoice.getContract().getContractTenants() == null) return null;
-//        return invoice.getContract().getContractTenants().stream()
-//                .filter(ct -> Boolean.TRUE.equals(ct.isRepresentative()))
-//                .map(ContractTen::getFullName)
-//                .findFirst()
-//                .orElse(null);
-//    }
 
     default InvoiceItemResponse toItemResponse(InvoiceDetail detail) {
         ServiceCategory category = null;

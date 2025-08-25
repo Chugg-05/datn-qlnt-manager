@@ -1,10 +1,11 @@
 # config cho môi trường chung
 spring:
+  profiles:
+    active:
+      dev
   messages:
     basename: i18n/messages
     encoding: UTF-8
-  profiles:
-    active: prod
 
 server:
   port: 8080

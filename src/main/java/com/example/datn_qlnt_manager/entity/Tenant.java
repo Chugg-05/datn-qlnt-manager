@@ -58,6 +58,12 @@ public class Tenant extends AbstractEntity {
     @Column(name = "dia_chi", nullable = false)
     String address;
 
+    @Column(name = "mat_truoc", nullable = false)
+    String frontCCCD;
+
+    @Column(name = "mat_sau", nullable = false)
+    String backCCCD;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai", nullable = false)
     TenantStatus tenantStatus;

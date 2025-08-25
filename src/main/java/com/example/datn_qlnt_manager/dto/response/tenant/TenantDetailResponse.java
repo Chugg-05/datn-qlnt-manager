@@ -28,6 +28,8 @@ public class TenantDetailResponse implements Serializable {
     String address;
     TenantStatus tenantStatus;
     Long totalContract;
+    String frontCCCD;
+    String backCCCD;
     Instant createdAt;
     Instant updatedAt;
 }
