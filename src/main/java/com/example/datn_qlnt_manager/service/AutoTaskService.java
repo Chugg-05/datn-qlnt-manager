@@ -6,4 +6,6 @@ public interface AutoTaskService {
     void finalizeExpiredContracts();
 
     void updateExpiredInvoices();
+
+    void updateDepositsIfContractCancelled();
 }

@@ -101,7 +101,7 @@ public class DepositServiceImpl implements DepositService {
                 .depositRecipient(user.getFullName())
                 .depositAmount(contract.getDeposit())
                 .depositStatus(DepositStatus.DA_DAT_COC)
-                .refundAmount(BigDecimal.ZERO)
+                .refundAmount(contract.getDeposit())
                 .depositDate(LocalDateTime.now())
                 .depositRefundDate(null)
                 .securityDepositReturnDate(null)

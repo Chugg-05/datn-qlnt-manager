@@ -1,17 +1,8 @@
 package com.example.datn_qlnt_manager.service.implement;
 
-import com.example.datn_qlnt_manager.common.ContractStatus;
-import com.example.datn_qlnt_manager.common.InvoiceStatus;
-import com.example.datn_qlnt_manager.common.PaymentStatus;
-import com.example.datn_qlnt_manager.common.RoomStatus;
-import com.example.datn_qlnt_manager.entity.Contract;
-import com.example.datn_qlnt_manager.entity.Invoice;
-import com.example.datn_qlnt_manager.entity.PaymentReceipt;
-import com.example.datn_qlnt_manager.entity.Room;
-import com.example.datn_qlnt_manager.repository.ContractRepository;
-import com.example.datn_qlnt_manager.repository.InvoiceRepository;
-import com.example.datn_qlnt_manager.repository.PaymentReceiptRepository;
-import com.example.datn_qlnt_manager.repository.RoomRepository;
+import com.example.datn_qlnt_manager.common.*;
+import com.example.datn_qlnt_manager.entity.*;
+import com.example.datn_qlnt_manager.repository.*;
 import com.example.datn_qlnt_manager.service.AutoTaskService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +23,7 @@ public class AutoTaskServiceImpl implements AutoTaskService {
     RoomRepository roomRepository;
     InvoiceRepository invoiceRepository;
     PaymentReceiptRepository paymentReceiptRepository;
+    DepositRepository depositRepository;
 
     @Override
     public void updateContractStatus() {
@@ -83,6 +75,23 @@ public class AutoTaskServiceImpl implements AutoTaskService {
                 receipt.setPaymentStatus(PaymentStatus.QUA_HAN);
                 receipt.setUpdatedAt(Instant.now());
                 paymentReceiptRepository.save(receipt);
+            }
+        }
+    }
+
+    @Override
+    public void updateDepositsIfContractCancelled() {
+        List<Deposit> deposits = depositRepository.findAll();
+
+        for (Deposit deposit : deposits) {
+            Contract contract = deposit.getContract();
+
+            if (contract.getStatus() == ContractStatus.TU_Y_HUY_BO) {
+                deposit.setDepositStatus(DepositStatus.KHONG_TRA_COC);
+                deposit.setNote("Tự ý hủy bỏ hợp đồng không báo trước, không trả cọc");
+                deposit.setUpdatedAt(Instant.now());
+
+                depositRepository.save(deposit);
             }
         }
     }

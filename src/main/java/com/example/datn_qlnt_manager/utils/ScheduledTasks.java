@@ -18,5 +18,6 @@ public class ScheduledTasks {
         autoTaskService.updateContractStatus();
         autoTaskService.finalizeExpiredContracts();
         autoTaskService.updateExpiredInvoices();
+        autoTaskService.updateDepositsIfContractCancelled();
     }
 }
