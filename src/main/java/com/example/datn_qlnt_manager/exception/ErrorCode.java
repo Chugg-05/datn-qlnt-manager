@@ -264,7 +264,7 @@ public enum ErrorCode {
     END_DATE_BEFORE_CURRENT(400,Translator.toLocale("end.date.before.current"),HttpStatus.BAD_REQUEST),
     CONTRACT_NOT_ELIGIBLE_FOR_EXTENSION(400,"", HttpStatus.BAD_REQUEST),
     TENANT_NOT_ELIGIBLE_FOR_CONTRACT(400,Translator.toLocale("tenant.not.eligible.for.contract"), HttpStatus.BAD_REQUEST),
-
+    CANNOT_UPDATE_MAXIMUM_ROOM(400,Translator.toLocale("cannot.update.maximum.room"), HttpStatus.BAD_REQUEST),
     // Code: 404
     USER_NOT_FOUND(404, Translator.toLocale("user.not.found"), HttpStatus.NOT_FOUND),
     BUILDING_ID_NOT_FOUND(404, Translator.toLocale("building.id.not.found"), HttpStatus.NOT_FOUND),
