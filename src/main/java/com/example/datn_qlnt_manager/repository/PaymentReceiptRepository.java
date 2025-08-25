@@ -2,7 +2,9 @@ package com.example.datn_qlnt_manager.repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.example.datn_qlnt_manager.entity.Invoice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -77,5 +79,9 @@ public interface PaymentReceiptRepository extends JpaRepository<PaymentReceipt, 
 	@Query("""
 			SELECT r FROM PaymentReceipt r JOIN r.invoice i WHERE i.id = :invoiceId
 			""")
+
 	PaymentReceipt findByInvoiceId(String invoiceId);
+
+	List<PaymentReceipt> findByInvoice(Invoice invoice);
+
 }

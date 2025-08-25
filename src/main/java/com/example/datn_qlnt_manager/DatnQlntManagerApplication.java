@@ -6,7 +6,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 import com.example.datn_qlnt_manager.configuration.OtpProperties;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableScheduling
 @EnableFeignClients
 @SpringBootApplication
 @EnableConfigurationProperties(OtpProperties.class)

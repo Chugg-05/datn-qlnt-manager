@@ -195,6 +195,9 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 			@Param("endOfMonth") LocalDate endOfMonth
 	);
 
+	List<Contract> findByEndDateBefore(LocalDate endDate); // Thêm phương thức mới
+	List<Contract> findByEndDateBetween(LocalDate startDate, LocalDate endDate);
+
 	boolean existsByRoomIdAndEndDateAfter(String roomId, LocalDate startDate);
 
 }

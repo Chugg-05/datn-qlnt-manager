@@ -241,7 +241,11 @@ public class ContractServiceImpl implements ContractService {
         }
 
         contract.setStatus(ContractStatus.HIEU_LUC);
-        contract.setStartDate(LocalDate.now());
+
+        if (contract.getStartDate().isAfter(LocalDate.now())) {
+            contract.setStartDate(LocalDate.now());
+        }
+
         contract.setUpdatedAt(Instant.now());
 
         depositService.createDepositForContract(contract);

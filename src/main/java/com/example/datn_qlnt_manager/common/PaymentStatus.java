@@ -4,6 +4,7 @@ public enum PaymentStatus {
     CHO_THANH_TOAN,
     CHO_XAC_NHAN,
     DA_THANH_TOAN,
+    QUA_HAN,
     TU_CHOI,
     HUY
 }

@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -222,6 +223,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
 			@Param("month") int month,
 			@Param("year") int year
 	);
+
+	List<Invoice> findByPaymentDueDateBefore(LocalDate date);
 
 	boolean existsByContractIdAndMonthAndYearAndInvoiceType(
 			String contractId, int month, int year, InvoiceType invoiceType);
