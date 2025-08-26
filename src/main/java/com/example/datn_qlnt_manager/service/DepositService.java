@@ -14,6 +14,12 @@ public interface DepositService {
             int size
     );
 
+    PaginatedResponse<DepositDetailView> getDepositsForTenant(
+            DepositFilter filter,
+            int page,
+            int size
+    );
+
     @Transactional
     void createDepositForContract(Contract contract);
 

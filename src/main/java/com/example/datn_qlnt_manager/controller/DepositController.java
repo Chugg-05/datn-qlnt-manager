@@ -26,7 +26,7 @@ public class DepositController {
 
     DepositService depositService;
 
-    @Operation(summary = "Get deposits by user ID")
+    @Operation(summary = "Danh sach cọc theo user ID")
     @GetMapping
     public ApiResponse<List<DepositDetailView>> getDeposits(
             @ModelAttribute DepositFilter filter,
@@ -35,6 +35,23 @@ public class DepositController {
 
         PaginatedResponse<DepositDetailView> result =
                 depositService.getDepositsByUserId(filter, page, size);
+
+        return ApiResponse.<List<DepositDetailView>>builder()
+                .message("Get deposits successfully")
+                .data(result.getData())
+                .meta(result.getMeta())
+                .build();
+    }
+
+    @Operation(summary = "Danh sach cọc theo user ID cho khach thue")
+    @GetMapping("/tenant")
+    public ApiResponse<List<DepositDetailView>> getDepForTenant(
+            @ModelAttribute DepositFilter filter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        PaginatedResponse<DepositDetailView> result =
+                depositService.getDepositsForTenant(filter, page, size);
 
         return ApiResponse.<List<DepositDetailView>>builder()
                 .message("Get deposits successfully")
