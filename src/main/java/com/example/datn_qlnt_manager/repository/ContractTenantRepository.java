@@ -73,6 +73,8 @@ public interface ContractTenantRepository extends JpaRepository<ContractTenant, 
 
     Optional<ContractTenant> findByContractIdAndRepresentativeTrue(String contractId);
 
+    List<ContractTenant> findByContractId(String contractId);
+
     boolean existsByTenantIdAndRepresentativeTrueAndContractIdNot(String tenantId, String contractId);
 
 }

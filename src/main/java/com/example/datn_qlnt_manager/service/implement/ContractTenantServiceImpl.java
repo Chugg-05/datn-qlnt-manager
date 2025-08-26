@@ -1,8 +1,6 @@
 package com.example.datn_qlnt_manager.service.implement;
 
-import com.example.datn_qlnt_manager.common.Meta;
-import com.example.datn_qlnt_manager.common.Pagination;
-import com.example.datn_qlnt_manager.common.UserStatus;
+import com.example.datn_qlnt_manager.common.*;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.ContractTenantFilter;
 import com.example.datn_qlnt_manager.dto.request.ContractTenant.AddTenantToContractRequest;
@@ -88,6 +86,11 @@ public class ContractTenantServiceImpl implements ContractTenantService {
         Contract contract = contractRepository.findById(request.getContractId())
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
+        if (contract.getStatus() != ContractStatus.HIEU_LUC
+               && contract.getStatus() != ContractStatus.SAP_HET_HAN) {
+            throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
+        }
+
         Tenant tenant = tenantRepository.findById(request.getTenantId())
                 .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
 
@@ -96,6 +99,10 @@ public class ContractTenantServiceImpl implements ContractTenantService {
         if (exists) {
             throw new AppException(ErrorCode.TENANT_ALREADY_IN_CONTRACT);
         }
+
+        tenant.setTenantStatus(TenantStatus.DANG_THUE);
+        tenant.setUpdatedAt(Instant.now());
+        tenantRepository.save(tenant);
 
         ContractTenant contractTenant = ContractTenant.builder()
                 .contract(contract)
@@ -110,7 +117,13 @@ public class ContractTenantServiceImpl implements ContractTenantService {
 
         ContractTenant response = contractTenantRepository.save(contractTenant);
 
-        if (tenant.getUser() != null) { systemNotificationService.createNotification( tenant.getUser().getId(), "Bạn đã được thêm vào hợp đồng", "Bạn đã được thêm vào hợp đồng " + contract.getContractCode() + " của phòng " + contract.getRoom().getRoomCode() ); }
+        if (tenant.getUser() != null) {
+            systemNotificationService.createNotification(
+                    tenant.getUser().getId(),
+                    "Bạn đã được thêm vào hợp đồng", "Bạn đã được thêm vào hợp đồng "
+                            + contract.getContractCode()
+                            + " của phòng " + contract.getRoom().getRoomCode() );
+        }
 
         return ContractTenantResponse.builder()
                 .id(response.getId())
@@ -122,6 +135,17 @@ public class ContractTenantServiceImpl implements ContractTenantService {
                 .createdAt(response.getCreatedAt())
                 .updatedAt(response.getUpdatedAt())
                 .build();
+    }
+
+    @Override
+    public void updateEndDateForContractTenants(Contract contract) {
+        if (contract.getEndDate() == null) return;
+        List<ContractTenant> tenants = contractTenantRepository.findByContractId(contract.getId());
+        for (ContractTenant tenant : tenants) {
+            tenant.setEndDate(contract.getEndDate());
+            tenant.setUpdatedAt(Instant.now());
+        }
+        contractTenantRepository.saveAll(tenants);
     }
 
     @Transactional

@@ -12,8 +12,7 @@ import com.example.datn_qlnt_manager.dto.response.asset.AssetLittleResponse;
 import com.example.datn_qlnt_manager.dto.response.service.ServiceLittleResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantLittleResponse;
 import com.example.datn_qlnt_manager.dto.response.vehicle.VehicleBasicResponse;
-import com.example.datn_qlnt_manager.service.DepositService;
-import com.example.datn_qlnt_manager.service.TenantService;
+import com.example.datn_qlnt_manager.service.*;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -34,8 +33,6 @@ import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.ContractMapper;
 import com.example.datn_qlnt_manager.repository.*;
-import com.example.datn_qlnt_manager.service.ContractService;
-import com.example.datn_qlnt_manager.service.UserService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +57,7 @@ public class ContractServiceImpl implements ContractService {
     UserService userService;
     TenantService tenantService;
     DepositService depositService;
+    ContractTenantService contractTenantService;
 
     @Override
     public PaginatedResponse<ContractResponse> getPageAndSearchAndFilterTenantByUserId(
@@ -200,6 +198,8 @@ public class ContractServiceImpl implements ContractService {
         contract.setRoomPrice(contract.getRoom().getPrice());
         contract.setOriginalEndDate(request.getEndDate());
         contract.setUpdatedAt(Instant.now());
+
+        contractTenantService.updateEndDateForContractTenants(contract);
 
         return contractMapper.toContractResponse(contractRepository.save(contract));
     }
@@ -412,6 +412,10 @@ public class ContractServiceImpl implements ContractService {
 
         if (room.getStatus() != RoomStatus.TRONG) {
             throw new AppException(ErrorCode.ROOM_NOT_AVAILABLE);
+        }
+
+        if (room.getFloor().getFloorType() != FloorType.CHO_THUE ) {
+            throw new AppException(ErrorCode.ROOM_NOT_AVAILABLE_FOR_RENT);
         }
 
         int requestedTenantCount = request.getTenants().size();

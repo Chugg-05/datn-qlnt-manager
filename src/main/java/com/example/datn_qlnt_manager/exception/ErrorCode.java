@@ -267,6 +267,7 @@ public enum ErrorCode {
     CANNOT_UPDATE_MAXIMUM_ROOM(400,Translator.toLocale("cannot.update.maximum.room"), HttpStatus.BAD_REQUEST),
     INVALID_CONTRACT_DURATION(400,Translator.toLocale("invalid.contract.duration"), HttpStatus.BAD_REQUEST),
     INVALID_MONTH(400,Translator.toLocale("invalid.month"), HttpStatus.BAD_REQUEST),
+    ROOM_NOT_AVAILABLE_FOR_RENT(400,Translator.toLocale("room.not.available.for.rent"), HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, Translator.toLocale("user.not.found"), HttpStatus.NOT_FOUND),

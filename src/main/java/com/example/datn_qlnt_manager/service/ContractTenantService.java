@@ -6,6 +6,7 @@ import com.example.datn_qlnt_manager.dto.request.ContractTenant.AddTenantToContr
 import com.example.datn_qlnt_manager.dto.request.ContractTenant.RepresentativeChangeRequest;
 import com.example.datn_qlnt_manager.dto.response.contractTenant.ContractTenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.contractTenant.ContractTenantResponse;
+import com.example.datn_qlnt_manager.entity.Contract;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface ContractTenantService {
@@ -20,6 +21,8 @@ public interface ContractTenantService {
 
     @Transactional
     ContractTenantResponse addTenantToContract(AddTenantToContractRequest request);
+
+    void updateEndDateForContractTenants(Contract contract);
 
     @Transactional
     void changeRepresentative(RepresentativeChangeRequest request);
