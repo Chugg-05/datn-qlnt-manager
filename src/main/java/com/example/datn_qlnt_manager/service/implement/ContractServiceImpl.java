@@ -467,6 +467,11 @@ public class ContractServiceImpl implements ContractService {
     }
 
     private void validateContractUpdate(Contract contract, ContractUpdateRequest request) {
+
+        if (contract.getStatus() != ContractStatus.CHO_KICH_HOAT) {
+            throw new AppException(ErrorCode.CONTRACT_NOT_ELIGIBLE_FOR_UPDATE);
+        }
+
         if (!contract.getStartDate().isBefore(request.getEndDate())) {
             throw new AppException(ErrorCode.END_DATE_BEFORE_START_DATE);
         }

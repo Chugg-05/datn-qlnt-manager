@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public enum ErrorCode {
+public enum  ErrorCode {
     // Code: 500
     INTERNAL_SERVER_ERROR(500, Translator.toLocale("internal.server.error"), HttpStatus.INTERNAL_SERVER_ERROR),
     UPLOAD_FAILED(500, Translator.toLocale("upload.failed"), HttpStatus.INTERNAL_SERVER_ERROR),
@@ -268,6 +268,7 @@ public enum ErrorCode {
     INVALID_CONTRACT_DURATION(400,Translator.toLocale("invalid.contract.duration"), HttpStatus.BAD_REQUEST),
     INVALID_MONTH(400,Translator.toLocale("invalid.month"), HttpStatus.BAD_REQUEST),
     ROOM_NOT_AVAILABLE_FOR_RENT(400,Translator.toLocale("room.not.available.for.rent"), HttpStatus.BAD_REQUEST),
+    CONTRACT_NOT_ELIGIBLE_FOR_UPDATE(400,Translator.toLocale("contract.not.eligible.for.update"), HttpStatus.BAD_REQUEST),
 
     // Code: 404
     USER_NOT_FOUND(404, Translator.toLocale("user.not.found"), HttpStatus.NOT_FOUND),
