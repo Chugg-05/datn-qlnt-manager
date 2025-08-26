@@ -108,6 +108,7 @@ public class ContractServiceImpl implements ContractService {
         contract.setRoomPrice(room.getPrice());
         applyUtilityPrices(contract);
         contract.setContent(request.getContent());
+        contract.setOriginalEndDate(request.getEndDate());
 
         contract.setCreatedAt(Instant.now());
         contract.setUpdatedAt(Instant.now());
@@ -197,6 +198,7 @@ public class ContractServiceImpl implements ContractService {
         contractMapper.updateContract(request, contract);
 
         contract.setRoomPrice(contract.getRoom().getPrice());
+        contract.setOriginalEndDate(request.getEndDate());
         contract.setUpdatedAt(Instant.now());
 
         return contractMapper.toContractResponse(contractRepository.save(contract));
@@ -241,7 +243,11 @@ public class ContractServiceImpl implements ContractService {
         }
 
         contract.setStatus(ContractStatus.HIEU_LUC);
-        contract.setStartDate(LocalDate.now());
+
+        if (contract.getStartDate().isAfter(LocalDate.now())) {
+            contract.setStartDate(LocalDate.now());
+        }
+
         contract.setUpdatedAt(Instant.now());
 
         depositService.createDepositForContract(contract);
@@ -298,6 +304,90 @@ public class ContractServiceImpl implements ContractService {
                 pageable
         );
         return buildPaginatedContractResponse(paging, page, size);
+    }
+
+    @Override
+    public ContractResponse restoreContractById(String contractId) {
+        Contract contract = contractRepository
+                .findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+        contract.setStatus(ContractStatus.HIEU_LUC);
+        return null;
+    }
+
+
+    @Override
+    public String updateContent(String contractId, String content) {
+        Contract contract = contractRepository
+                .findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+        contract.setContent(content);
+        return contractRepository.save(contract).getContent();
+    }
+
+    // gia hạn
+    @Override
+    public ContractResponse extendContract(String contractId, ContractExtendRequest request) {
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        if (contract.getStatus() != ContractStatus.HIEU_LUC && contract.getStatus() != ContractStatus.SAP_HET_HAN) {
+            throw new AppException(ErrorCode.CONTRACT_NOT_ELIGIBLE_FOR_EXTENSION);
+        }
+
+        if (request.getNewEndDate().isBefore(contract.getEndDate())
+                || request.getNewEndDate().isEqual(contract.getEndDate())) {
+            throw new AppException(ErrorCode.END_DATE_BEFORE_CURRENT);
+        }
+
+        contract.setEndDate(request.getNewEndDate());
+        contract.setOriginalEndDate(request.getNewEndDate());
+        contract.setUpdatedAt(Instant.now());
+
+        contractRepository.save(contract);
+
+        return contractMapper.toContractResponse(contract);
+    }
+
+    // báo trước
+    @Override
+    public ContractResponse terminateContractWithNotice(String contractId, TerminateContractRequest request) {
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        if (!ContractStatus.HIEU_LUC.equals(contract.getStatus())) {
+            throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
+        }
+
+        if (request.getNewEndDate().isAfter(contract.getEndDate())) {
+            throw new AppException(ErrorCode.INVALID_END_DATE);
+        }
+
+        contract.setStatus(ContractStatus.KET_THUC_CO_BAO_TRUOC);
+        contract.setEndDate(request.getNewEndDate());
+        contract.setUpdatedAt(Instant.now());
+
+        Contract saved = contractRepository.save(contract);
+        return contractMapper.toContractResponse(saved);
+    }
+
+    // tự ý bỏ đi
+    @Override
+    public ContractResponse forceCancelContract(String contractId) {
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        if (!ContractStatus.HIEU_LUC.equals(contract.getStatus())) {
+            throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
+        }
+
+        contract.setStatus(ContractStatus.TU_Y_HUY_BO);
+        contract.setEndDate(LocalDate.now());
+        contract.setUpdatedAt(Instant.now());
+
+        contractRepository.save(contract);
+
+        return contractMapper.toContractResponse(contract);
     }
 
     private void applyUtilityPrices(Contract contract) {
@@ -370,89 +460,6 @@ public class ContractServiceImpl implements ContractService {
         }
 
         return room;
-    }
-
-    @Override
-    public ContractResponse restoreContractById(String contractId) {
-        Contract contract = contractRepository
-                .findById(contractId)
-                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-        contract.setStatus(ContractStatus.HIEU_LUC);
-        return null;
-    }
-
-
-    @Override
-    public String updateContent(String contractId, String content) {
-        Contract contract = contractRepository
-                .findById(contractId)
-                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-        contract.setContent(content);
-        return contractRepository.save(contract).getContent();
-    }
-
-    // gia hạn
-    @Override
-    public ContractResponse extendContract(String contractId, ContractExtendRequest request) {
-        Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-
-        if (contract.getStatus() != ContractStatus.HIEU_LUC && contract.getStatus() != ContractStatus.SAP_HET_HAN) {
-            throw new AppException(ErrorCode.CONTRACT_NOT_ELIGIBLE_FOR_EXTENSION);
-        }
-
-        if (request.getNewEndDate().isBefore(contract.getEndDate())
-                || request.getNewEndDate().isEqual(contract.getEndDate())) {
-            throw new AppException(ErrorCode.END_DATE_BEFORE_CURRENT);
-        }
-
-        contract.setEndDate(request.getNewEndDate());
-        contract.setUpdatedAt(Instant.now());
-
-        contractRepository.save(contract);
-
-        return contractMapper.toContractResponse(contract);
-    }
-
-    // báo trước
-    @Override
-    public ContractResponse terminateContractWithNotice(String contractId, TerminateContractRequest request) {
-        Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-
-        if (!ContractStatus.HIEU_LUC.equals(contract.getStatus())) {
-            throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
-        }
-
-        if (request.getNewEndDate().isAfter(contract.getEndDate())) {
-            throw new AppException(ErrorCode.INVALID_END_DATE);
-        }
-
-        contract.setStatus(ContractStatus.KET_THUC_CO_BAO_TRUOC);
-        contract.setEndDate(request.getNewEndDate());
-        contract.setUpdatedAt(Instant.now());
-
-        Contract saved = contractRepository.save(contract);
-        return contractMapper.toContractResponse(saved);
-    }
-
-    // tự ý bỏ đi
-    @Override
-    public ContractResponse forceCancelContract(String contractId) {
-        Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-
-        if (!ContractStatus.HIEU_LUC.equals(contract.getStatus())) {
-            throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
-        }
-
-        contract.setStatus(ContractStatus.TU_Y_HUY_BO);
-        contract.setEndDate(LocalDate.now());
-        contract.setUpdatedAt(Instant.now());
-
-        contractRepository.save(contract);
-
-        return contractMapper.toContractResponse(contract);
     }
 
     private void validateContractUpdate(Contract contract, ContractUpdateRequest request) {

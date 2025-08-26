@@ -29,8 +29,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Slf4j
@@ -97,9 +101,11 @@ public class DepositServiceImpl implements DepositService {
                 .depositRecipient(user.getFullName())
                 .depositAmount(contract.getDeposit())
                 .depositStatus(DepositStatus.DA_DAT_COC)
+                .refundAmount(contract.getDeposit())
                 .depositDate(LocalDateTime.now())
                 .depositRefundDate(null)
                 .securityDepositReturnDate(null)
+                .depositHoldDate(LocalDate.now())
                 .note("Tiền cọc cho hợp đồng thuê phòng " + contract.getRoom().getRoomCode())
                 .build();
 
@@ -121,8 +127,36 @@ public class DepositServiceImpl implements DepositService {
             throw new AppException(ErrorCode.CONTRACT_NOT_ALLOW_CONFIRM_DEPOSIT);
         }
 
+        BigDecimal refundAmount;
+        BigDecimal depositAmount = deposit.getDepositAmount();
+        String note;
+
+        if (contract.getStatus() == ContractStatus.KET_THUC_DUNG_HAN) {
+            refundAmount = depositAmount;
+            note = "Trả đủ tiền cọc do kết thúc hợp đồng đúng hạn";
+        } else {
+            LocalDate now = LocalDate.now();
+
+            long monthsRented = ChronoUnit.MONTHS.between(contract.getStartDate(), now);
+            long totalMonths = ChronoUnit.MONTHS.between(contract.getStartDate(), contract.getOriginalEndDate());
+
+            if (totalMonths <= 0) {
+                throw new AppException(ErrorCode.INVALID_CONTRACT_DURATION);
+            }
+
+            BigDecimal monthlyDeposit = depositAmount.divide(BigDecimal.valueOf(totalMonths), RoundingMode.HALF_UP);
+            refundAmount = monthlyDeposit.multiply(BigDecimal.valueOf(monthsRented));
+
+            note = String.format(
+                    "Trừ 1 phần tiền cọc do kết thúc hợp đồng trước thời hạn (đã thuê %d/%d tháng)",
+                    monthsRented, totalMonths
+            );
+        }
+
         deposit.setDepositStatus(DepositStatus.CHO_XAC_NHAN);
         deposit.setDepositRefundDate(LocalDateTime.now());
+        deposit.setRefundAmount(refundAmount);
+        deposit.setNote(note);
         deposit.setUpdatedAt(Instant.now());
 
         deposit = depositRepository.save(deposit);
