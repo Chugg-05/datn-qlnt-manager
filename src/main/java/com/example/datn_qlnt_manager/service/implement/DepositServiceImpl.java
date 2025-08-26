@@ -65,22 +65,29 @@ public class DepositServiceImpl implements DepositService {
                 filter.getDepositStatus(),
                 pageable);
 
-        List<DepositDetailView> deposits = paging.getContent();
+        return buildPaginatedDepositResponse(paging, page, size);
+    }
 
-        Meta<?> meta = Meta.builder()
-                .pagination(Pagination.builder()
-                        .count(paging.getNumberOfElements())
-                        .perPage(size)
-                        .currentPage(page)
-                        .totalPages(paging.getTotalPages())
-                        .total(paging.getTotalElements())
-                        .build())
-                .build();
+    @Override
+    public PaginatedResponse<DepositDetailView> getDepositsForTenant(
+            DepositFilter filter,
+            int page,
+            int size
+    ) {
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
 
-        return PaginatedResponse.<DepositDetailView>builder()
-                .data(deposits)
-                .meta(meta)
-                .build();
+        User user = userService.getCurrentUser();
+
+        Page<DepositDetailView> paging = depositRepository.findAllDepositForTenant(
+                user.getId(),
+                filter.getQuery(),
+                filter.getBuilding(),
+                filter.getFloor(),
+                filter.getRoom(),
+                filter.getDepositStatus(),
+                pageable);
+
+        return buildPaginatedDepositResponse(paging, page, size);
     }
 
     @Transactional
@@ -228,6 +235,27 @@ public class DepositServiceImpl implements DepositService {
         return ConfirmDepositResponse.builder()
                 .id(deposit.getId())
                 .depositStatus(deposit.getDepositStatus())
+                .build();
+    }
+
+    private PaginatedResponse<DepositDetailView> buildPaginatedDepositResponse(
+            Page<DepositDetailView> paging, int page, int size) {
+
+        List<DepositDetailView> deposits = paging.getContent();
+
+        Meta<?> meta = Meta.builder()
+                .pagination(Pagination.builder()
+                        .count(paging.getNumberOfElements())
+                        .perPage(size)
+                        .currentPage(page)
+                        .totalPages(paging.getTotalPages())
+                        .total(paging.getTotalElements())
+                        .build())
+                .build();
+
+        return PaginatedResponse.<DepositDetailView>builder()
+                .data(deposits)
+                .meta(meta)
                 .build();
     }
 
