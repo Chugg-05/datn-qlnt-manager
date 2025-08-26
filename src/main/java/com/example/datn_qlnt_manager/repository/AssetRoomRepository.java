@@ -99,4 +99,7 @@ public interface AssetRoomRepository extends JpaRepository<AssetRoom, String> {
 
 	boolean existsByRoomId(String roomId);
 
+	@Query("SELECT COALESCE(SUM(ar.quantity), 0) FROM AssetRoom ar WHERE ar.asset.id = :assetId")
+	int getAllocatedQuantity(@Param("assetId") String assetId);
+
 }
