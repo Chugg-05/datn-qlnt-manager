@@ -4,17 +4,12 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RevenueStatisticResponse {
-    String buildingId;
-    String buildingName;
-    Integer year;
-    Integer month;
+public class InvoiceRevenueResponse {
     BigDecimal expectedRevenue;
     BigDecimal currentRevenue;
     BigDecimal paidRoomFee;
@@ -22,7 +17,4 @@ public class RevenueStatisticResponse {
     BigDecimal paidWaterFee;
     BigDecimal paidServiceFee;
     BigDecimal compensationAmount;
-    BigDecimal damageAmount;
-    BigDecimal overdueAmount;
-    BigDecimal unreturnedDeposit;
 }

@@ -88,6 +88,7 @@ public class AutoTaskServiceImpl implements AutoTaskService {
 
             if (contract.getStatus() == ContractStatus.TU_Y_HUY_BO) {
                 deposit.setDepositStatus(DepositStatus.KHONG_TRA_COC);
+                deposit.setDepositHoldDate(LocalDate.now());
                 deposit.setNote("Tự ý hủy bỏ hợp đồng không báo trước, không trả cọc");
                 deposit.setUpdatedAt(Instant.now());
 

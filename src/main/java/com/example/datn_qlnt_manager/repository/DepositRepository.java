@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+
 @Repository
 public interface DepositRepository extends JpaRepository<Deposit, String> {
     @Query("""
@@ -52,6 +54,26 @@ public interface DepositRepository extends JpaRepository<Deposit, String> {
             @Param("room") String room,
             @Param("depositStatus") DepositStatus depositStatus,
             Pageable pageable
+    );
+
+    @Query("""
+        SELECT COALESCE(SUM(d.refundAmount), 0)
+        FROM Deposit d
+        JOIN d.contract c
+        JOIN c.room r
+        JOIN r.floor f
+        JOIN f.building b
+        WHERE b.user.id = :userId
+          AND  MONTH(d.depositHoldDate) = :month
+          AND YEAR(d.depositHoldDate) = :year
+          AND (:buildingId IS NULL OR b.id = :buildingId)
+          AND d.depositStatus = 'KHONG_TRA_COC'
+    """)
+    BigDecimal getTotalUnreturnedDeposits(
+            @Param("userId") String userId,
+            @Param("month") int month,
+            @Param("year") int year,
+            @Param("buildingId") String buildingId
     );
 
     boolean existsByContractId(String contractId);

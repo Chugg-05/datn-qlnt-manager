@@ -105,6 +105,7 @@ public class DepositServiceImpl implements DepositService {
                 .depositDate(LocalDateTime.now())
                 .depositRefundDate(null)
                 .securityDepositReturnDate(null)
+                .depositHoldDate(LocalDate.now())
                 .note("Tiền cọc cho hợp đồng thuê phòng " + contract.getRoom().getRoomCode())
                 .build();
 
