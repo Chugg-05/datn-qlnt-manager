@@ -48,7 +48,7 @@ public class DepositController {
     public ApiResponse<List<DepositDetailView>> getDepForTenant(
             @ModelAttribute DepositFilter filter,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "15") int size) {
 
         PaginatedResponse<DepositDetailView> result =
                 depositService.getDepositsForTenant(filter, page, size);
