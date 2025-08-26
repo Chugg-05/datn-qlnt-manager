@@ -43,6 +43,7 @@ public class AssetServiceImpl implements AssetService {
 
     AssetMapper assetMapper;
     AssetRepository assetRepository;
+    AssetRoomRepository assetRoomRepository;
     AssetTypeRepository assetTypeRepository;
     RoomRepository roomRepository;
     BuildingRepository buildingRepository;
@@ -104,16 +105,26 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public AssetResponse updateAssetById(String assetId, AssetUpdateRequest request) {
-        Asset asset = assetRepository.findById(assetId).orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
-        assetMapper.updateAsset(asset, request);
-        asset.setAssetStatus(request.getAssetStatus());
-        List<Asset> duplicates = assetRepository.findByNameAssetIgnoreCaseAndBuildingIdAndIdNot(
-                request.getNameAsset(), asset.getBuilding().getId(), assetId);
+        Asset asset = assetRepository.findById(assetId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
+
+        List<Asset> duplicates = assetRepository
+                .findByNameAssetIgnoreCaseAndBuildingIdAndIdNot(
+                        request.getNameAsset(), asset.getBuilding().getId(), assetId);
         if (!duplicates.isEmpty()) {
             throw new AppException(ErrorCode.DUPLICATE_ASSET_NAME);
         }
 
+        int newQuantity = request.getQuantity();
+        int allocatedQuantity = assetRoomRepository.getAllocatedQuantity(assetId);
+        int remainingQuantity = Math.max(newQuantity - allocatedQuantity, 0);
+
+        assetMapper.updateAsset(asset, request);
+
+        asset.setQuantity(newQuantity);
+        asset.setRemainingQuantity(remainingQuantity);
         asset.setUpdatedAt(Instant.now());
+
         return assetMapper.toResponse(assetRepository.save(asset));
     }
 
