@@ -148,7 +148,7 @@ public class AssetController {
     @PutMapping("/restore/{assetId}")
     public ApiResponse<AssetResponse> restoreBuildingById(@PathVariable("assetId") String assetId) {
         return ApiResponse.<AssetResponse>builder()
-                .data(assetService.restoreAssetById(assetId))
+                .data( assetService.restoreAssetById(assetId))
                 .message(Translator.toLocale("asset.has.been.restored"))
                 .build();
     }

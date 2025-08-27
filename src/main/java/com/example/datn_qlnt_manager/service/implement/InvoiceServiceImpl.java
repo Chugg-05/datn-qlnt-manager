@@ -501,6 +501,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 invoiceRepository.findById(invoiceId).orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
 
         if (invoice.getInvoiceStatus() != InvoiceStatus.HUY) {
+            invoice.setPreviousInvoiceStatus(invoice.getInvoiceStatus());
             invoice.setInvoiceStatus(InvoiceStatus.HUY);
 
         } else {
@@ -508,7 +509,6 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
 
         invoice.setUpdatedAt(Instant.now());
-
         invoiceRepository.save(invoice);
     }
 
@@ -561,7 +561,19 @@ public class InvoiceServiceImpl implements InvoiceService {
     public InvoiceResponse restoreInvoiceById(String invoiceId) {
         Invoice invoice =
                 invoiceRepository.findById(invoiceId).orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
-        invoice.setInvoiceStatus(InvoiceStatus.DA_THANH_TOAN);
+
+        InvoiceStatus currentStatus = invoice.getInvoiceStatus();
+        InvoiceStatus previousStatus = invoice.getPreviousInvoiceStatus();
+
+        if (previousStatus != null) {
+            invoice.setInvoiceStatus(previousStatus);
+            invoice.setPreviousInvoiceStatus(currentStatus);
+        } else {
+            invoice.setInvoiceStatus(InvoiceStatus.CHUA_THANH_TOAN);
+
+        }
+
+        invoice.setUpdatedAt(Instant.now());
         return invoiceMapper.toInvoiceResponse(invoiceRepository.save(invoice));
     }
 

@@ -243,7 +243,11 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public void softDeleteAsset(String assetId) {
         Asset asset = assetRepository.findById(assetId).orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
+
+        asset.setPreviousStatus(asset.getAssetStatus());
         asset.setAssetStatus(AssetStatus.HUY);
+        asset.setUpdatedAt(Instant.now());
+
         assetRepository.save(asset);
     }
 
@@ -256,7 +260,19 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public AssetResponse restoreAssetById(String assetId) {
         Asset asset = assetRepository.findById(assetId).orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_FOUND));
-        asset.setAssetStatus(AssetStatus.HOAT_DONG);
+
+        AssetStatus currentStatus = asset.getAssetStatus();
+        AssetStatus previousStatus = asset.getPreviousStatus();
+
+        if (previousStatus != null){
+            asset.setAssetStatus(previousStatus);
+            asset.setPreviousStatus(currentStatus);
+        }
+        else {
+            asset.setPreviousStatus(AssetStatus.HOAT_DONG);
+        }
+
+        asset.setUpdatedAt(Instant.now());
         return assetMapper.toResponse(assetRepository.save(asset));
     }
 

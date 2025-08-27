@@ -39,6 +39,10 @@ public class Vehicle extends AbstractEntity {
     @Column(name = "trang_thai")
     VehicleStatus vehicleStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai_truoc_do")
+    VehicleStatus previousVehicleStatus;
+
     @Column(name = "ngay_dang_ky")
     Date registrationDate;
 

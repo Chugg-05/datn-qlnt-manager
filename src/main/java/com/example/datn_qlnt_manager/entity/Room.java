@@ -44,6 +44,10 @@ public class Room extends AbstractEntity {
     @Column(name = "trang_thai", nullable = false)
     RoomStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai_truoc_do",nullable = false)
+    RoomStatus previousStatus;
+
     @Column(name = "mo_ta", columnDefinition = "TEXT")
     String description;
 

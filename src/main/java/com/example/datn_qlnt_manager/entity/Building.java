@@ -43,6 +43,10 @@ public class Building extends AbstractEntity {
     @Column(name = "trang_thai")
     BuildingStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai_truoc_do")
+    BuildingStatus previousStatus;
+
     @Column(name = "mo_ta")
     String description;
 

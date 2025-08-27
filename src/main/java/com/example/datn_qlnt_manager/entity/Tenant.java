@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.entity;
 import java.time.LocalDate;
 import java.util.Set;
 
+import com.example.datn_qlnt_manager.common.BuildingStatus;
 import jakarta.persistence.*;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -67,6 +68,10 @@ public class Tenant extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai", nullable = false)
     TenantStatus tenantStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai_truoc_do")
+    TenantStatus previousTenantStatus;
 
     @Column(name = "co_tai_khoan", nullable = false)
     Boolean hasAccount;

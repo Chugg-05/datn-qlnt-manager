@@ -136,7 +136,9 @@ public class FloorServiceImpl implements FloorService {
     @Override
     public void softDeleteFloorById(String floorId) { // xóa mềm
         Floor floor = floorRepository.findById(floorId).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+        floor.setPreviousStatus(floor.getStatus());
         floor.setStatus(FloorStatus.KHONG_SU_DUNG);
+        floor.setUpdatedAt(Instant.now());
         floorRepository.save(floor);
     }
 
@@ -210,7 +212,19 @@ public class FloorServiceImpl implements FloorService {
     @Override
     public FloorResponse restoreFloorById(String floorId) {
         Floor floor = floorRepository.findById(floorId).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
-        floor.setStatus(FloorStatus.HOAT_DONG);
+
+        FloorStatus currentStatus = floor.getStatus();
+        FloorStatus previousStatus = floor.getPreviousStatus();
+
+        if (previousStatus != null) {
+            floor.setPreviousStatus(currentStatus);
+            floor.setStatus(previousStatus);
+        }
+        else {
+            floor.setPreviousStatus(FloorStatus.HOAT_DONG);
+        }
+
+        floor.setUpdatedAt(Instant.now());
         return floorMapper.toResponse(floorRepository.save(floor));
     }
 }

@@ -272,6 +272,7 @@ public class ContractServiceImpl implements ContractService {
             throw new AppException(ErrorCode.CANNOT_DELETE_CONTRACT);
         }
 
+        contract.setPreviousContractStatus(contract.getStatus());
         contract.setStatus(ContractStatus.DA_HUY);
         contract.setUpdatedAt(Instant.now());
 
@@ -311,8 +312,20 @@ public class ContractServiceImpl implements ContractService {
         Contract contract = contractRepository
                 .findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-        contract.setStatus(ContractStatus.HIEU_LUC);
-        return null;
+
+        ContractStatus contractStatus = contract.getStatus();
+        ContractStatus previousContractStatus = contract.getPreviousContractStatus();
+
+        if (previousContractStatus != null){
+            contract.setStatus(previousContractStatus);
+            contract.setPreviousContractStatus(contractStatus);
+        }
+        else {
+            contract.setStatus(ContractStatus.CHO_KICH_HOAT);
+        }
+
+        contract.setUpdatedAt(Instant.now());
+        return contractMapper.toContractResponse(contractRepository.save(contract));
     }
 
 

@@ -116,7 +116,10 @@ public class VehicleServiceImpl implements VehicleService {
         Vehicle vehicle =
                 vehicleRepository.findById(vehicleId).orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
 
+        vehicle.setPreviousVehicleStatus(vehicle.getVehicleStatus());
         vehicle.setVehicleStatus(VehicleStatus.KHONG_SU_DUNG);
+        vehicle.setUpdatedAt(Instant.now());
+
         vehicleMapper.toVehicleResponse(vehicleRepository.save(vehicle));
     }
 
@@ -180,7 +183,20 @@ public class VehicleServiceImpl implements VehicleService {
     public VehicleResponse restoreVehicleById(String vehicleId) {
         Vehicle vehicle =
                 vehicleRepository.findById(vehicleId).orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
-        vehicle.setVehicleStatus(VehicleStatus.SU_DUNG);
+
+        VehicleStatus currentVehicleStatus = vehicle.getVehicleStatus();
+        VehicleStatus previousVehicleStatus = vehicle.getPreviousVehicleStatus();
+
+        if (previousVehicleStatus != null){
+            vehicle.setVehicleStatus(previousVehicleStatus);
+            vehicle.setPreviousVehicleStatus(currentVehicleStatus);
+        }
+        else {
+            vehicle.setPreviousVehicleStatus(VehicleStatus.SU_DUNG);
+            vehicle.setPreviousVehicleStatus(vehicle.getVehicleStatus());
+        }
+
+        vehicle.setUpdatedAt(Instant.now());
         return vehicleMapper.toVehicleResponse(vehicleRepository.save(vehicle));
     }
 
