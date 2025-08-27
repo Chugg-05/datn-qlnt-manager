@@ -203,6 +203,7 @@ public class TenantServiceImpl implements TenantService {
             throw new AppException(ErrorCode.TENANT_CANNOT_BE_DELETED);
         }
 
+        tenant.setPreviousTenantStatus(tenant.getTenantStatus());
         tenant.setTenantStatus(TenantStatus.HUY_BO);
         tenant.setUpdatedAt(Instant.now());
 
@@ -300,6 +301,26 @@ public class TenantServiceImpl implements TenantService {
                 .data(tenants)
                 .meta(meta)
                 .build();
+    }
+
+    @Transactional
+    @Override
+    public TenantResponse restoreTenantById(String tenantId) {
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+
+        TenantStatus currentStatus = tenant.getTenantStatus();
+        TenantStatus previousStatus = tenant.getPreviousTenantStatus();
+
+        if (previousStatus != null) {
+            tenant.setTenantStatus(previousStatus);
+            tenant.setPreviousTenantStatus(currentStatus);
+        } else {
+            tenant.setTenantStatus(TenantStatus.CHO_TAO_HOP_DONG);
+        }
+
+        tenant.setUpdatedAt(Instant.now());
+        return tenantMapper.toTenantResponse(tenantRepository.save(tenant));
     }
 
 }

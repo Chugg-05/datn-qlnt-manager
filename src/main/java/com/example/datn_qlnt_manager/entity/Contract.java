@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
+import com.example.datn_qlnt_manager.common.BuildingStatus;
 import jakarta.persistence.*;
 
 import com.example.datn_qlnt_manager.common.ContractStatus;
@@ -43,6 +44,10 @@ public class Contract extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai", nullable = false)
     ContractStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai_truoc_do")
+    ContractStatus previousContractStatus;
 
     @Column(name = "gia_dien")
     BigDecimal electricPrice;

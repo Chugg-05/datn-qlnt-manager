@@ -184,7 +184,7 @@ public class InvoiceController {
     public ApiResponse<InvoiceResponse> restoreInvoiceById(@PathVariable("invoiceId") String invoiceId) {
         return ApiResponse.<InvoiceResponse>builder()
                 .data(invoiceService.restoreInvoiceById(invoiceId))
-                .message("success")
+                .message("Invoice restored successfully")
                 .build();
     }
 }

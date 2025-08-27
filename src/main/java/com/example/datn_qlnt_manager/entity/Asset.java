@@ -42,6 +42,10 @@ public class Asset extends AbstractEntity {
     @Column(name = "tinh_trang", nullable = false)
     AssetStatus assetStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tinh_trang_truoc_do")
+    AssetStatus previousStatus;
+
     @Column(name = "gia_tien", nullable = false)
     BigDecimal price;
 

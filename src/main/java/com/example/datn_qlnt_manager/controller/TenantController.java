@@ -151,4 +151,13 @@ public class TenantController {
                 .build();
     }
 
+    @Operation(summary = "Khôi phục khách hàng đã xóa")
+    @PutMapping("/restore/{tenantId}")
+    public ApiResponse<TenantResponse> restoreTenant(@PathVariable("tenantId") String tenantId) {
+        return ApiResponse.<TenantResponse>builder()
+                .data( tenantService.restoreTenantById(tenantId))
+                .message("Tenant restored successfully")
+                .build();
+    }
+
 }

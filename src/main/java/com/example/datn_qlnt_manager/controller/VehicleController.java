@@ -132,7 +132,7 @@ public class VehicleController {
     public ApiResponse<VehicleResponse> restoreVehicleById(@PathVariable("vehicleId") String vehicleId) {
         return ApiResponse.<VehicleResponse>builder()
                 .data(vehicleService.restoreVehicleById(vehicleId))
-                .message("success")
+                .message("Vehicles restored successfully")
                 .build();
     }
 }

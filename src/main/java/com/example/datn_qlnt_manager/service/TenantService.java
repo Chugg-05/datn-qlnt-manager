@@ -36,4 +36,6 @@ public interface TenantService {
 
     @Transactional
     void ensureTenantHasActiveUser(Tenant tenant);
+
+    TenantResponse restoreTenantById(String tenantId);
 }

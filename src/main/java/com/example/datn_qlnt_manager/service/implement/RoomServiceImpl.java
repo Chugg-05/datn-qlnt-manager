@@ -163,6 +163,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void softDeleteRoomById(String id) {
         Room room = roomRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        room.setPreviousStatus(room.getStatus());
         room.setStatus((RoomStatus.HUY_HOAT_DONG));
         room.setUpdatedAt(Instant.now());
 
@@ -251,7 +252,19 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomResponse restoreRoomById(String roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-        room.setStatus(RoomStatus.TRONG);
+
+        RoomStatus currentStatus = room.getStatus();
+        RoomStatus previousStatus = room.getPreviousStatus();
+
+        if (previousStatus != null) {
+            room.setPreviousStatus(currentStatus);
+            room.setStatus(previousStatus);
+        }
+        else {
+            room.setStatus(RoomStatus.TRONG);
+        }
+
+        room.setUpdatedAt(Instant.now());
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }
     @Override

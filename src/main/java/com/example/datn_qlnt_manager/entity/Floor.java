@@ -34,6 +34,10 @@ public class Floor extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     FloorStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai_truoc_do", nullable = false)
+    FloorStatus previousStatus;
+
     @Column(name = "mo_ta")
     String descriptionFloor;
 

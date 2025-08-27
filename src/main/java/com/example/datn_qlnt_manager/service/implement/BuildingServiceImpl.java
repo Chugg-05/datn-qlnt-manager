@@ -133,7 +133,10 @@ public class BuildingServiceImpl implements BuildingService {
         Building building = buildingRepository
                 .findById(buildingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+
+        building.setPreviousStatus(building.getStatus());
         building.setStatus(BuildingStatus.HUY_HOAT_DONG);
+        building.setUpdatedAt(Instant.now());
         buildingMapper.toBuildingResponse(buildingRepository.save(building));
     }
 
@@ -210,11 +213,21 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public BuildingResponse restoreBuildingById(String buildingId) {
-        Building building = buildingRepository
-                .findById(buildingId)
+        Building building = buildingRepository.findById(buildingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
-        building.setStatus(BuildingStatus.HOAT_DONG);
+        BuildingStatus currentStatus = building.getStatus();
+        BuildingStatus previousStatus = building.getPreviousStatus();
+
+        if(previousStatus != null){
+            building.setStatus(previousStatus);
+            building.setPreviousStatus(currentStatus);
+        }
+        else {
+            building.setPreviousStatus(BuildingStatus.HOAT_DONG);
+        }
+
+        building.setUpdatedAt(Instant.now());
         return buildingMapper.toBuildingResponse(buildingRepository.save(building));
     }
 

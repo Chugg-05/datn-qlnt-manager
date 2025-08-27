@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.example.datn_qlnt_manager.common.RoomStatus;
 import jakarta.persistence.*;
 
 import com.example.datn_qlnt_manager.common.ServiceCalculation;
@@ -43,6 +44,10 @@ public class Service extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai", nullable = false)
     ServiceStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai_truoc_do",nullable = false)
+    ServiceStatus previousStatus;
 
     @Column(name = "mo_ta", columnDefinition = "TEXT")
     String description;

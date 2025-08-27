@@ -171,8 +171,11 @@ public class ServiceServiceImpl implements ServiceService {
     public void softDeleteServiceById(String id) {
         Service service =
                 serviceRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+
+        service.setPreviousStatus(service.getStatus());
         service.setStatus(ServiceStatus.KHONG_SU_DUNG);
         service.setUpdatedAt(Instant.now());
+
         serviceRepository.save(service);
     }
 
@@ -203,7 +206,19 @@ public class ServiceServiceImpl implements ServiceService {
     public ServiceResponse restoreServiceById(String serviceId) {
         Service service =
                 serviceRepository.findById(serviceId).orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
-        service.setStatus(ServiceStatus.HOAT_DONG);
+
+        ServiceStatus serviceStatus = service.getStatus();
+        ServiceStatus previousStatus = service.getPreviousStatus();
+
+        if (previousStatus != null){
+            service.setPreviousStatus(serviceStatus);
+            service.setStatus(previousStatus);
+        }
+        else {
+            service.setStatus(ServiceStatus.HOAT_DONG);
+        }
+
+        service.setUpdatedAt(Instant.now());
         return serviceMapper.toServiceResponse(serviceRepository.save(service));
     }
 

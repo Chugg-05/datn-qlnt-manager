@@ -66,6 +66,10 @@ public class Invoice extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     InvoiceStatus invoiceStatus;
 
+    @Column(name = "trang_thai_truoc_do", nullable = false)
+    @Enumerated(EnumType.STRING)
+    InvoiceStatus previousInvoiceStatus;
+
     @Column(name = "loai_hoa_don", nullable = false)
     @Enumerated(EnumType.STRING)
     InvoiceType invoiceType;
