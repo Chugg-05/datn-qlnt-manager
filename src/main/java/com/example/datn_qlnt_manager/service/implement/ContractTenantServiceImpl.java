@@ -197,6 +197,19 @@ public class ContractTenantServiceImpl implements ContractTenantService {
             throw new AppException(ErrorCode.CANNOT_DELETE_REPRESENTATIVE_TENANT);
         }
 
+        Tenant tenant = contractTenant.getTenant();
+
         contractTenantRepository.delete(contractTenant);
+
+        boolean hasActiveContract = contractTenantRepository.existsByTenantIdAndContract_StatusIn(
+                tenant.getId(),
+                List.of(ContractStatus.HIEU_LUC, ContractStatus.SAP_HET_HAN)
+        );
+
+        if (!hasActiveContract) {
+            tenant.setTenantStatus(TenantStatus.DA_TRA_PHONG);
+            tenant.setUpdatedAt(Instant.now());
+            tenantRepository.save(tenant);
+        }
     }
 }

@@ -1,11 +1,17 @@
 package com.example.datn_qlnt_manager.service;
 
 public interface AutoTaskService {
-    void updateContractStatus();
+    void contractIsAboutToExpire();
 
-    void finalizeExpiredContracts();
+    void expiredContract();
 
-    void updateExpiredInvoices();
+    void roomOutOfContract();
 
-    void updateDepositsIfContractCancelled();
+    void expiredInvoice();
+
+    void noDepositRefund();
+
+    void guestHasCheckedOut();
+
+    void deleteCancelledTenants();
 }

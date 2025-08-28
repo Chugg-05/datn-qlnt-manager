@@ -124,7 +124,9 @@ public class InvoiceServiceImpl implements InvoiceService {
         ContractStatus contractStatus = contract.getStatus();
         if (!(contractStatus == ContractStatus.HIEU_LUC
                 || contractStatus == ContractStatus.SAP_HET_HAN
-                || contractStatus == ContractStatus.TU_Y_HUY_BO)) {
+                || contractStatus == ContractStatus.KET_THUC_CO_BAO_TRUOC
+                || contractStatus == ContractStatus.TU_Y_HUY_BO)
+        ) {
             throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
         }
 
@@ -253,6 +255,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 ContractStatus contractStatus = contract.getStatus();
                 if (!(contractStatus == ContractStatus.HIEU_LUC
                         || contractStatus == ContractStatus.SAP_HET_HAN
+                        || contractStatus == ContractStatus.KET_THUC_CO_BAO_TRUOC
                         || contractStatus == ContractStatus.TU_Y_HUY_BO)) {
                     continue;
                 }
@@ -284,7 +287,6 @@ public class InvoiceServiceImpl implements InvoiceService {
         return responses;
     }
 
-
     private InvoiceType resolveInvoiceType(Contract contract, int month, int year) {
         boolean isLastMonth = isEndMonth(contract, month, year);
 
@@ -309,7 +311,6 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         return InvoiceType.HANG_THANG;
     }
-
 
     private InvoiceDetail mapToInvoiceDetail(InvoiceItemResponse item, Invoice invoice) {
 

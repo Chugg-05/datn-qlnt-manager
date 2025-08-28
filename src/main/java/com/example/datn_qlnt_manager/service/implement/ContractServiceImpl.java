@@ -123,7 +123,8 @@ public class ContractServiceImpl implements ContractService {
                     Tenant tenant = tenantRepository.findById(ctRequest.getTenantId())
                             .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
 
-                    if (tenant.getTenantStatus() == TenantStatus.KHOA || tenant.getTenantStatus() == TenantStatus.HUY_BO) {
+                    if (tenant.getTenantStatus() == TenantStatus.KHOA
+                            || tenant.getTenantStatus() == TenantStatus.HUY_BO) {
                         throw new AppException(ErrorCode.TENANT_NOT_ELIGIBLE_FOR_CONTRACT);
                     }
 
@@ -344,7 +345,9 @@ public class ContractServiceImpl implements ContractService {
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        if (contract.getStatus() != ContractStatus.HIEU_LUC && contract.getStatus() != ContractStatus.SAP_HET_HAN) {
+        if (contract.getStatus() != ContractStatus.HIEU_LUC
+                && contract.getStatus() != ContractStatus.SAP_HET_HAN
+        ) {
             throw new AppException(ErrorCode.CONTRACT_NOT_ELIGIBLE_FOR_EXTENSION);
         }
 
@@ -368,7 +371,9 @@ public class ContractServiceImpl implements ContractService {
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        if (!ContractStatus.HIEU_LUC.equals(contract.getStatus())) {
+        if (contract.getStatus() != ContractStatus.HIEU_LUC
+                && contract.getStatus() != ContractStatus.SAP_HET_HAN
+        ) {
             throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
         }
 
@@ -390,7 +395,9 @@ public class ContractServiceImpl implements ContractService {
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        if (!ContractStatus.HIEU_LUC.equals(contract.getStatus())) {
+        if (contract.getStatus() != ContractStatus.HIEU_LUC
+                && contract.getStatus() != ContractStatus.SAP_HET_HAN
+        ) {
             throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
         }
 

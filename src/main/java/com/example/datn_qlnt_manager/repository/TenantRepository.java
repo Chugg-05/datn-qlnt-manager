@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -113,6 +114,10 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
     List<Tenant> findAllTenantsByRoomId(@Param("roomId") String roomId);
 
     Optional<Tenant> findByUserId(String userId);
+
+    List<Tenant> findAllByTenantStatus(TenantStatus status);
+
+    List<Tenant> findAllByTenantStatusAndDeletedAtBefore(TenantStatus tenantStatus, LocalDate deletedAtBefore);
 
     boolean existsByEmail(String email);
 

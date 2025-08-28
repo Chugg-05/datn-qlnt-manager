@@ -15,9 +15,12 @@ public class ScheduledTasks {
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void executeScheduledTask() {
-        autoTaskService.updateContractStatus();
-        autoTaskService.finalizeExpiredContracts();
-        autoTaskService.updateExpiredInvoices();
-        autoTaskService.updateDepositsIfContractCancelled();
+        autoTaskService.contractIsAboutToExpire();
+        autoTaskService.expiredContract();
+        autoTaskService.roomOutOfContract();
+        autoTaskService.guestHasCheckedOut();
+        autoTaskService.expiredInvoice();
+        autoTaskService.noDepositRefund();
+        autoTaskService.deleteCancelledTenants();
     }
 }
