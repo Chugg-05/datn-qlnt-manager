@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.example.datn_qlnt_manager.configuration.Translator;
 import jakarta.validation.ConstraintViolation;
 
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
         log.error("Unhandled exception occurred: {}", e.getMessage(), e);
         ApiResponse<?> apiResponse = ApiResponse.builder()
-                .message(ErrorCode.INTERNAL_SERVER_ERROR.getMessage())
+                .message(Translator.toLocale(ErrorCode.INTERNAL_SERVER_ERROR.getMessage()))
                 .code(ErrorCode.INTERNAL_SERVER_ERROR.getCode())
                 .build();
 
@@ -38,7 +39,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleAppException(AppException e) {
         ErrorCode errorCode = e.getErrorCode();
         ApiResponse<?> apiResponse = ApiResponse.builder()
-                .message(errorCode.getMessage())
+                .message(Translator.toLocale(errorCode.getMessage()))
                 .code(errorCode.getCode())
                 .build();
 
@@ -52,7 +53,7 @@ public class GlobalExceptionHandler {
 
         ErrorCode errorCode = ErrorCode.API_ENDPOINT_NOT_FOUND;
         ApiResponse<?> apiResponse = ApiResponse.builder()
-                .message(errorCode.getMessage())
+                .message(Translator.toLocale(errorCode.getMessage()))
                 .code(errorCode.getCode())
                 .build();
 
@@ -66,7 +67,7 @@ public class GlobalExceptionHandler {
 
         ErrorCode errorCode = ErrorCode.ACCOUNT_HAS_BEEN_LOCKED;
         ApiResponse<?> apiResponse = ApiResponse.builder()
-                .message(errorCode.getMessage())
+                .message(Translator.toLocale(errorCode.getMessage()))
                 .code(errorCode.getCode())
                 .build();
 
@@ -77,7 +78,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = MissingRequestHeaderException.class)
     public ResponseEntity<ApiResponse<?>> handleMissingRequestHeaderException(MissingRequestHeaderException e) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
-                .message(e.getMessage())
+                .message(Translator.toLocale(e.getMessage()))
                 .code(e.getStatusCode().value())
                 .build();
 
@@ -114,8 +115,8 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(
                 Objects.nonNull(attributes)
-                        ? mapAttribute(errorCode.getMessage(), attributes)
-                        : errorCode.getMessage());
+                        ? mapAttribute(Translator.toLocale(errorCode.getMessage()), attributes)
+                        : Translator.toLocale(errorCode.getMessage()));
 
         return ResponseEntity.badRequest().body(apiResponse);
     }

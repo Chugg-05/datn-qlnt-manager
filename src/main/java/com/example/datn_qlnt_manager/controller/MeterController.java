@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.controller;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.request.meter.ChangeMeterRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -141,6 +142,17 @@ public class MeterController {
         return ApiResponse.<RoomNoMeterCountStatistics>builder()
                 .message("Counting rooms without meter successfully")
                 .data(meterService.countRoomsWithoutMeterByUser())
+                .build();
+    }
+
+    @Operation(summary = "Thay đổi công tơ")
+    @PutMapping("/change/{meterId}")
+    public ApiResponse<MeterResponse> changeMeter (
+            @RequestBody @Valid ChangeMeterRequest request,
+            @PathVariable("meterId") String meterId) {
+        return ApiResponse.<MeterResponse>builder()
+                .message("Meter change successful")
+                .data(meterService.changeMeter(request, meterId))
                 .build();
     }
 }

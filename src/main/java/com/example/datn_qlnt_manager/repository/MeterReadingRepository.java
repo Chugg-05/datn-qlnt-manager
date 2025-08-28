@@ -70,4 +70,6 @@ public interface MeterReadingRepository extends JpaRepository<MeterReading, Stri
             @Param("roomId") String roomId, @Param("userId") String userId);
 
     boolean existsByMeterIdAndMonthAndYear(String meterId, int month, int year);
+
+	List<MeterReading> findAllByMeterCode(String meterCode);
 }

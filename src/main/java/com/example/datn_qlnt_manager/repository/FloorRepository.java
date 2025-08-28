@@ -127,6 +127,9 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
     @Query("SELECT COUNT(f) FROM Floor f WHERE f.building.id = :buildingId")
     int countByBuildingId(@Param("buildingId") String buildingId);
 
+	@Query("SELECT COUNT(f) FROM Floor f WHERE f.building.id = :buildingId AND f.floorType = 'CHO_THUE'")
+	int floorsCountForRent(@Param("buildingId") String buildingId);
+
     @Query(
             """
 	SELECT new com.example.datn_qlnt_manager.dto.statistics.FloorRoomStatisticResponse(

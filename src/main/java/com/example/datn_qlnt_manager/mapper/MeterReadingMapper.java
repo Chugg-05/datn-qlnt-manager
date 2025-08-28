@@ -17,8 +17,8 @@ public interface MeterReadingMapper {
     MeterReading toMeterReadingCreation(MeterReadingCreationRequest request);
 
     @Mapping(target = "meterId", source = "meter.id")
-    @Mapping(target = "meterCode", source = "meter.meterCode")
-    @Mapping(target = "meterName", source = "meter.meterName")
+//    @Mapping(target = "meterCode", source = "meter.meterCode")
+//    @Mapping(target = "meterName", source = "meter.meterName")
     @Mapping(target = "meterType", source = "meter.meterType")
     @Mapping(target = "createdAt", source = "createdAt")
     @Mapping(target = "updatedAt", source = "updatedAt")

@@ -200,4 +200,6 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 
 	boolean existsByRoomIdAndEndDateAfter(String roomId, LocalDate startDate);
 
+	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
+
 }

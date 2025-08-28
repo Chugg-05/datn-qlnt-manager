@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.*;
+import com.example.datn_qlnt_manager.dto.request.meter.ChangeMeterRequest;
+import com.example.datn_qlnt_manager.entity.MeterReading;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -12,10 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.example.datn_qlnt_manager.common.Meta;
-import com.example.datn_qlnt_manager.common.Pagination;
-import com.example.datn_qlnt_manager.common.RoomStatus;
-import com.example.datn_qlnt_manager.common.RoomType;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
 import com.example.datn_qlnt_manager.dto.filter.MeterInitFilterResponse;
@@ -138,6 +137,15 @@ public class MeterServiceImpl implements MeterService {
                 .findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
+
+        //update thông tin công tơ bên chỉ số
+        List<MeterReading> meterReadings = meterReadingRepository.findAllByMeterCode(meter.getMeterCode());
+        for (MeterReading meterReading : meterReadings) {
+            meterReading.setMeterName(request.getMeterName());
+            meterReading.setMeterCode(request.getMeterCode());
+            meterReadingRepository.save(meterReading);
+        }
+
         meterMapper.toMeterUpdate(meter, request);
         meter.setRoom(room);
         meter.setService(service);
@@ -218,5 +226,27 @@ public class MeterServiceImpl implements MeterService {
         User user = userService.getCurrentUser();
         Long count = meterRepository.countRoomsWithoutMeterByUserId(user.getId());
         return new RoomNoMeterCountStatistics(count.intValue());
+    }
+
+
+    @Override
+    public MeterResponse changeMeter(ChangeMeterRequest request, String meterId) {
+        Meter meter = meterRepository.findById(meterId)
+                .orElseThrow(()->new AppException(ErrorCode.METER_NOT_FOUND));
+
+        if (meterRepository.existsByMeterCode(request.getMeterCode())) {
+            throw new AppException(ErrorCode.METER_CODE_EXISTED);
+        }
+
+        meter.setMeterName(request.getMeterName());
+        meter.setMeterCode(request.getMeterCode());
+        meter.setManufactureDate(request.getManufactureDate());
+        meter.setClosestIndex(request.getClosestIndex());
+        meter.setDescriptionMeter(request.getDescriptionMeter());
+        meter.setCreatedAt(Instant.now());
+        meter.setUpdatedAt(Instant.now());
+
+        return meterMapper.toMeterResponse(meterRepository.save(meter));
+
     }
 }
