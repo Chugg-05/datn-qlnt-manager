@@ -269,7 +269,8 @@ public class ContractServiceImpl implements ContractService {
                 .findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        if (contract.getStatus() == ContractStatus.HIEU_LUC || contract.getStatus() == ContractStatus.SAP_HET_HAN) {
+        if (contract.getStatus() == ContractStatus.HIEU_LUC
+                || contract.getStatus() == ContractStatus.SAP_HET_HAN) {
             throw new AppException(ErrorCode.CANNOT_DELETE_CONTRACT);
         }
 
@@ -286,7 +287,7 @@ public class ContractServiceImpl implements ContractService {
                 .findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        if (contract.getStatus() == ContractStatus.HIEU_LUC || contract.getStatus() == ContractStatus.SAP_HET_HAN) {
+        if (contract.getStatus() == ContractStatus.DA_HUY) {
             throw new AppException(ErrorCode.CANNOT_DELETE_CONTRACT);
         }
 
@@ -371,8 +372,8 @@ public class ContractServiceImpl implements ContractService {
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        if (contract.getStatus() != ContractStatus.HIEU_LUC
-                && contract.getStatus() != ContractStatus.SAP_HET_HAN
+        if (!(contract.getStatus() == ContractStatus.HIEU_LUC
+                || contract.getStatus() == ContractStatus.SAP_HET_HAN)
         ) {
             throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
         }

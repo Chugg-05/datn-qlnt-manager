@@ -197,10 +197,7 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant =
                 tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
 
-        if (tenant.getTenantStatus() != TenantStatus.CHO_TAO_HOP_DONG
-                && tenant.getTenantStatus() != TenantStatus.DANG_THUE
-                && tenant.getTenantStatus() != TenantStatus.DA_TRA_PHONG
-        ) {
+        if (tenant.getTenantStatus() == TenantStatus.DANG_THUE) {
             throw new AppException(ErrorCode.TENANT_CANNOT_BE_DELETED);
         }
 
@@ -217,7 +214,7 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant =
                 tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
 
-        if (tenant.getTenantStatus() == TenantStatus.DANG_THUE) {
+        if (tenant.getTenantStatus() == TenantStatus.HUY_BO) {
             throw new AppException(ErrorCode.TENANT_CANNOT_BE_DELETED);
         }
 
