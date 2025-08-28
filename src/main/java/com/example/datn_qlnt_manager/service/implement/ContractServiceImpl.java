@@ -368,7 +368,7 @@ public class ContractServiceImpl implements ContractService {
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        if (!ContractStatus.HIEU_LUC.equals(contract.getStatus())) {
+        if (contract.getStatus() != ContractStatus.HIEU_LUC && contract.getStatus() != ContractStatus.SAP_HET_HAN) {
             throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
         }
 
@@ -390,7 +390,7 @@ public class ContractServiceImpl implements ContractService {
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        if (!ContractStatus.HIEU_LUC.equals(contract.getStatus())) {
+        if (contract.getStatus() != ContractStatus.HIEU_LUC && contract.getStatus() != ContractStatus.SAP_HET_HAN) {
             throw new AppException(ErrorCode.CONTRACT_NOT_ACTIVE);
         }
 
