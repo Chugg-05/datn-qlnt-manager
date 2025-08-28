@@ -10,6 +10,8 @@ import com.example.datn_qlnt_manager.common.BuildingType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Builder
@@ -53,4 +55,7 @@ public class Building extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY) // sửa
     @JoinColumn(name = "user_id")
     User user;
+
+    @Column(name = "ngay_xoa")
+    LocalDate deletedAt;
 }

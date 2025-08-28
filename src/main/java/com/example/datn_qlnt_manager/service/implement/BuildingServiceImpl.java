@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -136,6 +137,7 @@ public class BuildingServiceImpl implements BuildingService {
 
         building.setPreviousStatus(building.getStatus());
         building.setStatus(BuildingStatus.HUY_HOAT_DONG);
+        building.setDeletedAt(LocalDate.now());
         building.setUpdatedAt(Instant.now());
         buildingMapper.toBuildingResponse(buildingRepository.save(building));
     }

@@ -25,6 +25,9 @@ public class AutoTaskServiceImpl implements AutoTaskService {
     PaymentReceiptRepository paymentReceiptRepository;
     DepositRepository depositRepository;
     TenantRepository tenantRepository;
+    AssetRepository assetRepository;
+    BuildingRepository buildingRepository;
+    FloorRepository floorRepository;
 
     @Override
     public void contractIsAboutToExpire() {
@@ -148,6 +151,50 @@ public class AutoTaskServiceImpl implements AutoTaskService {
         );
 
         tenantRepository.deleteAll(tenants);
+    }
+
+    @Override
+    public void deleteCancelledAssets() {
+        LocalDate cutoff = LocalDate.now().minusDays(30);
+
+        List<Asset> assets = assetRepository.findAllByAssetStatusAndDeletedAtBefore(
+                AssetStatus.HUY, cutoff
+        );
+
+        assetRepository.deleteAll(assets);
+    }
+
+    @Override
+    public void deleteCancelledBuildings() {
+        LocalDate cutoff = LocalDate.now().minusDays(30);
+
+        List<Building> buildings = buildingRepository.findAllByStatusAndDeletedAtBefore(
+                BuildingStatus.HUY_HOAT_DONG, cutoff
+        );
+
+        buildingRepository.deleteAll(buildings);
+    }
+
+    @Override
+    public void deleteCancelledContracts() {
+        LocalDate  cutoff = LocalDate.now().minusDays(30);
+
+        List<Contract> contracts = contractRepository.findAllByStatusAndDeletedAtBefore(
+                ContractStatus.DA_HUY, cutoff
+        );
+
+        contractRepository.deleteAll(contracts);
+    }
+
+    @Override
+    public void deleteCancelledFloors() {
+        LocalDate cutoff = LocalDate.now().minusDays(30);
+
+        List<Floor> floors = floorRepository.findAllByStatusAndDeletedAtBefore(
+          FloorStatus.KHONG_SU_DUNG, cutoff
+        );
+
+        floorRepository.deleteAll(floors);
     }
 
     private boolean isContractEnded(Contract contract) {

@@ -198,6 +198,8 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 	List<Contract> findByEndDateBefore(LocalDate endDate); // Thêm phương thức mới
 	List<Contract> findByEndDateBetween(LocalDate startDate, LocalDate endDate);
 
+	List<Contract> findAllByStatusAndDeletedAtBefore(ContractStatus status, LocalDate deletedAtBefore);
+
 	boolean existsByRoomIdAndEndDateAfter(String roomId, LocalDate startDate);
 
 	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);

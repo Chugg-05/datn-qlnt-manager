@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -89,4 +90,6 @@ public interface AssetRepository extends JpaRepository<Asset, String> {
 				WHERE a.assetStatus != com.example.datn_qlnt_manager.common.AssetStatus.HUY
 			""")
     List<Asset> findAllAssets();
+
+	List<Asset> findAllByAssetStatusAndDeletedAtBefore(AssetStatus assetStatus, LocalDate deletedAtBefore);
 }

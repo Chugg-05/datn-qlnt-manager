@@ -8,6 +8,8 @@ import com.example.datn_qlnt_manager.common.FloorType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Builder
@@ -44,4 +46,7 @@ public class Floor extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "toa_nha_id", nullable = false)
     Building building;
+
+    @Column(name = "ngay_xoa")
+    LocalDate deletedAt;
 }
