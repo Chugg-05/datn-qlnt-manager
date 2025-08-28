@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,4 +118,6 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
     List<IdNameAndType> getServiceInfoByUserId(@Param("userId") String userId);
 
     boolean existsByServiceCategoryAndUserId(ServiceCategory serviceCategory, String userId);
+
+	List<Service> findAllByStatusAndDeleteAtBefore(ServiceStatus status, LocalDate deleteAtBefore);
 }

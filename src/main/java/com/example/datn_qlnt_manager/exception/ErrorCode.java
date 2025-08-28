@@ -269,6 +269,7 @@ public enum  ErrorCode {
     ROOM_NOT_AVAILABLE_FOR_RENT(400,"room.not.available.for.rent", HttpStatus.BAD_REQUEST),
     ROOM_CANNOT_BE_DELETED(400, "room.cannot.be.deleted", HttpStatus.BAD_REQUEST),
     CONTRACT_NOT_ELIGIBLE_FOR_UPDATE(400,"contract.not.eligible.for.update", HttpStatus.BAD_REQUEST),
+    CANNOT_UPDATE_ACTUAL_NUMBER_OF_FLOORS(400,"cannot.update.actual.number.of.floors", HttpStatus.BAD_REQUEST),
 
 
     // Code: 404

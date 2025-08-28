@@ -253,4 +253,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
 	boolean existsByContractIdAndMonthAndYearAndInvoiceType(
 			String contractId, int month, int year, InvoiceType invoiceType);
 
+	List<Invoice> findAllByInvoiceStatusAndDeleteAtBefore(InvoiceStatus invoiceStatus, LocalDate deleteAtBefore);
+
 }

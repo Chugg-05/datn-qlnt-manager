@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.entity;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
@@ -51,4 +52,7 @@ public class Vehicle extends AbstractEntity {
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ContractVehicle> contractVehicles;
+
+    @Column(name = "ngay_xoa")
+    LocalDate deleteAt;
 }

@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.service.implement;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -175,6 +176,7 @@ public class ServiceServiceImpl implements ServiceService {
         service.setPreviousStatus(service.getStatus());
         service.setStatus(ServiceStatus.KHONG_SU_DUNG);
         service.setUpdatedAt(Instant.now());
+        service.setDeleteAt(LocalDate.now());
 
         serviceRepository.save(service);
     }

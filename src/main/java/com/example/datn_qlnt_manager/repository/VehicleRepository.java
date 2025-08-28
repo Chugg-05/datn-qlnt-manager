@@ -95,5 +95,5 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
 													 @Param("currentContractId") String currentContractId,
 													 @Param("startDate") LocalDate startDate);
 
-
+	List<Vehicle> findAllByVehicleStatusAndDeleteAtBefore(VehicleStatus vehicleStatus, LocalDate deleteAtBefore);
 }

@@ -508,7 +508,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         } else {
             throw new AppException(ErrorCode.INVOICE_ALREADY_CANCELLED);
         }
-
+        invoice.setDeleteAt(LocalDate.now());
         invoice.setUpdatedAt(Instant.now());
         invoiceRepository.save(invoice);
     }

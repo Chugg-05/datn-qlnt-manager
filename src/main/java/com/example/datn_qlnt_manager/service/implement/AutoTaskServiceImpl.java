@@ -28,6 +28,8 @@ public class AutoTaskServiceImpl implements AutoTaskService {
     AssetRepository assetRepository;
     BuildingRepository buildingRepository;
     FloorRepository floorRepository;
+    ServiceRepository serviceRepository;
+    VehicleRepository vehicleRepository;
 
     @Override
     public void contractIsAboutToExpire() {
@@ -195,6 +197,50 @@ public class AutoTaskServiceImpl implements AutoTaskService {
         );
 
         floorRepository.deleteAll(floors);
+    }
+
+    @Override
+    public void deleteCancelledInvoices() {
+        LocalDate cutoff = LocalDate.now().minusDays(30);
+
+        List<Invoice> invoices = invoiceRepository.findAllByInvoiceStatusAndDeleteAtBefore(
+                InvoiceStatus.HUY, cutoff
+        );
+
+        invoiceRepository.deleteAll(invoices);
+    }
+
+    @Override
+    public void deleteCancelledRooms() {
+        LocalDate cutoff = LocalDate.now().minusDays(30);
+
+        List<Room> rooms = roomRepository.findAllByStatusAndDeleteAtBefore(
+                RoomStatus.HUY_HOAT_DONG, cutoff
+        );
+
+        roomRepository.deleteAll(rooms);
+    }
+
+    @Override
+    public void deleteCancelledServices() {
+        LocalDate cutoff = LocalDate.now().minusDays(30);
+
+        List<com.example.datn_qlnt_manager.entity.Service> services = serviceRepository.findAllByStatusAndDeleteAtBefore(
+                ServiceStatus.KHONG_SU_DUNG, cutoff
+        );
+
+        serviceRepository.deleteAll(services);
+    }
+
+    @Override
+    public void deleteCancelledVehicle() {
+        LocalDate cutoff = LocalDate.now().minusDays(30);
+
+        List<Vehicle> vehicles = vehicleRepository.findAllByVehicleStatusAndDeleteAtBefore(
+                VehicleStatus.KHONG_SU_DUNG, cutoff
+        );
+
+        vehicleRepository.deleteAll(vehicles);
     }
 
     private boolean isContractEnded(Contract contract) {
