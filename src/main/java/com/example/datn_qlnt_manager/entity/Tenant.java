@@ -78,4 +78,8 @@ public class Tenant extends AbstractEntity {
 
     @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY)
     Set<ContractTenant> contractTenants;
+
+    @Column(name = "ngay_xoa")
+    LocalDate deletedAt;
+
 }

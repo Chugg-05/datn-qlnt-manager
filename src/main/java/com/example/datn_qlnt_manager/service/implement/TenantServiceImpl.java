@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.common.UserStatus;
@@ -95,10 +96,10 @@ public class TenantServiceImpl implements TenantService {
         tenant.setUser(null);
         tenant.setOwner(owner);
         tenant.setCustomerCode(customerCode);
-        tenant.setCreatedAt(Instant.now());
-        tenant.setUpdatedAt(Instant.now());
         tenant.setFrontCCCD(cloudinaryUtil.uploadImage(frontCCCD, "front_cccd"));
         tenant.setBackCCCD(cloudinaryUtil.uploadImage(backCCCD, "back_cccd"));
+        tenant.setCreatedAt(Instant.now());
+        tenant.setUpdatedAt(Instant.now());
 
         return tenantMapper.toTenantResponse(tenantRepository.save(tenant));
     }
@@ -205,6 +206,7 @@ public class TenantServiceImpl implements TenantService {
 
         tenant.setPreviousTenantStatus(tenant.getTenantStatus());
         tenant.setTenantStatus(TenantStatus.HUY_BO);
+        tenant.setDeletedAt(LocalDate.now());
         tenant.setUpdatedAt(Instant.now());
 
         tenantRepository.save(tenant);
@@ -270,6 +272,26 @@ public class TenantServiceImpl implements TenantService {
         }
     }
 
+    @Transactional
+    @Override
+    public TenantResponse restoreTenantById(String tenantId) {
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+
+        TenantStatus currentStatus = tenant.getTenantStatus();
+        TenantStatus previousStatus = tenant.getPreviousTenantStatus();
+
+        if (previousStatus != null) {
+            tenant.setTenantStatus(previousStatus);
+            tenant.setPreviousTenantStatus(currentStatus);
+        } else {
+            tenant.setTenantStatus(TenantStatus.CHO_TAO_HOP_DONG);
+        }
+
+        tenant.setUpdatedAt(Instant.now());
+        return tenantMapper.toTenantResponse(tenantRepository.save(tenant));
+    }
+
     private void validateDuplicateTenant(TenantCreationRequest request) {
         if (tenantRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
@@ -301,26 +323,6 @@ public class TenantServiceImpl implements TenantService {
                 .data(tenants)
                 .meta(meta)
                 .build();
-    }
-
-    @Transactional
-    @Override
-    public TenantResponse restoreTenantById(String tenantId) {
-        Tenant tenant = tenantRepository.findById(tenantId)
-                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
-
-        TenantStatus currentStatus = tenant.getTenantStatus();
-        TenantStatus previousStatus = tenant.getPreviousTenantStatus();
-
-        if (previousStatus != null) {
-            tenant.setTenantStatus(previousStatus);
-            tenant.setPreviousTenantStatus(currentStatus);
-        } else {
-            tenant.setTenantStatus(TenantStatus.CHO_TAO_HOP_DONG);
-        }
-
-        tenant.setUpdatedAt(Instant.now());
-        return tenantMapper.toTenantResponse(tenantRepository.save(tenant));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
+import com.example.datn_qlnt_manager.common.ContractStatus;
 import com.example.datn_qlnt_manager.common.Gender;
 import com.example.datn_qlnt_manager.dto.response.contractTenant.ContractTenantDetailResponse;
 import com.example.datn_qlnt_manager.dto.response.tenant.TenantLittleResponse;
@@ -74,6 +75,8 @@ public interface ContractTenantRepository extends JpaRepository<ContractTenant, 
     Optional<ContractTenant> findByContractIdAndRepresentativeTrue(String contractId);
 
     List<ContractTenant> findByContractId(String contractId);
+
+    boolean existsByTenantIdAndContract_StatusIn(String tenantId, List<ContractStatus> statuses);
 
     boolean existsByTenantIdAndRepresentativeTrueAndContractIdNot(String tenantId, String contractId);
 
