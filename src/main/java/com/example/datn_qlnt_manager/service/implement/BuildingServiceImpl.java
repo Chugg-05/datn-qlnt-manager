@@ -122,6 +122,11 @@ public class BuildingServiceImpl implements BuildingService {
             throw new AppException(ErrorCode.BUILDING_NAME_EXISTED);
         }
 
+        int currentFloorCount = floorRepository.countByBuildingId(buildingId);
+        if (currentFloorCount > request.getActualNumberOfFloors()) {
+            throw new AppException(ErrorCode.CANNOT_UPDATE_ACTUAL_NUMBER_OF_FLOORS);
+        }
+
         buildingMapper.updateBuilding(building, request);
 
         building.setUpdatedAt(Instant.now());

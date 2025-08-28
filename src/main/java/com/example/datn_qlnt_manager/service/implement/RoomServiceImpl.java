@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.common.ContractStatus;
@@ -178,6 +179,7 @@ public class RoomServiceImpl implements RoomService {
         room.setPreviousStatus(room.getStatus());
         room.setStatus((RoomStatus.HUY_HOAT_DONG));
         room.setUpdatedAt(Instant.now());
+        room.setDeleteAt(LocalDate.now());
 
         roomRepository.save(room);
     }

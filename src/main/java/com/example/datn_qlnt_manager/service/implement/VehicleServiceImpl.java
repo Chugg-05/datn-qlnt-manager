@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +120,7 @@ public class VehicleServiceImpl implements VehicleService {
         vehicle.setPreviousVehicleStatus(vehicle.getVehicleStatus());
         vehicle.setVehicleStatus(VehicleStatus.KHONG_SU_DUNG);
         vehicle.setUpdatedAt(Instant.now());
+        vehicle.setDeleteAt(LocalDate.now());
 
         vehicleMapper.toVehicleResponse(vehicleRepository.save(vehicle));
     }

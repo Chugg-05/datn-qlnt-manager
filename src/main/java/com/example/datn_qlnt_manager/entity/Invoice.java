@@ -82,4 +82,7 @@ public class Invoice extends AbstractEntity {
 
     @OneToMany(mappedBy = "invoice", fetch = FetchType.LAZY)
     List<PaymentReceipt> paymentReceipts;
+
+    @Column(name = "ngay_xoa")
+    LocalDate deleteAt;
 }

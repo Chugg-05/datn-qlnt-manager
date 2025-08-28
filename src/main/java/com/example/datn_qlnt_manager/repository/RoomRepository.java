@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -310,5 +311,7 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 			@Param("roomId") String roomId,
 			@Param("userId") String userId
 	);
+
+	List<Room> findAllByStatusAndDeleteAtBefore(RoomStatus status, LocalDate deleteAtBefore);
 
 }

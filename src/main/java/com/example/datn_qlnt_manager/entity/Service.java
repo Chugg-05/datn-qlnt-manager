@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -59,4 +60,7 @@ public class Service extends AbstractEntity {
     @Builder.Default
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ServiceRoom> serviceRooms = new HashSet<>();
+
+    @Column(name = "ngay_xoa")
+    LocalDate deleteAt;
 }

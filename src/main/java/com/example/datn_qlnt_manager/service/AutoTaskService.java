@@ -22,4 +22,12 @@ public interface AutoTaskService {
     void deleteCancelledContracts();
 
     void deleteCancelledFloors();
+
+    void deleteCancelledInvoices();
+
+    void deleteCancelledRooms();
+
+    void deleteCancelledServices();
+
+    void deleteCancelledVehicle();
 }
