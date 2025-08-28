@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.common.FloorType;
@@ -148,6 +149,7 @@ public class FloorServiceImpl implements FloorService {
         Floor floor = floorRepository.findById(floorId).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
         floor.setPreviousStatus(floor.getStatus());
         floor.setStatus(FloorStatus.KHONG_SU_DUNG);
+        floor.setDeletedAt(LocalDate.now());
         floor.setUpdatedAt(Instant.now());
         floorRepository.save(floor);
     }

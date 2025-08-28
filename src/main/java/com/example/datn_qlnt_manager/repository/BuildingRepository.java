@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,4 +123,6 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
 	GROUP BY b.id, b.buildingName
 """)
     List<BuildingOccupancyResponse> calculateBuildingOccupancy(@Param("userId") String userId);
+
+	List<Building> findAllByStatusAndDeletedAtBefore(BuildingStatus status, LocalDate deletedAtBefore);
 }

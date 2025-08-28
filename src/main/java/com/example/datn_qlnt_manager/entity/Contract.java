@@ -66,4 +66,7 @@ public class Contract extends AbstractEntity {
 
     @OneToMany(mappedBy = "contract", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ContractVehicle> contractVehicles;
+
+    @Column(name = "ngay_xoa")
+    LocalDate deletedAt;
 }

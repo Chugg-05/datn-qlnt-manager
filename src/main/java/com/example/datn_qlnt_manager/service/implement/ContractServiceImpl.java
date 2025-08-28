@@ -276,6 +276,7 @@ public class ContractServiceImpl implements ContractService {
 
         contract.setPreviousContractStatus(contract.getStatus());
         contract.setStatus(ContractStatus.DA_HUY);
+        contract.setDeletedAt(LocalDate.now());
         contract.setUpdatedAt(Instant.now());
 
         contractRepository.save(contract);

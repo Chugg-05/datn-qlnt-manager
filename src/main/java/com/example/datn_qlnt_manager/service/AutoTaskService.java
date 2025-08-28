@@ -14,4 +14,12 @@ public interface AutoTaskService {
     void guestHasCheckedOut();
 
     void deleteCancelledTenants();
+
+    void deleteCancelledAssets();
+
+    void deleteCancelledBuildings();
+
+    void deleteCancelledContracts();
+
+    void deleteCancelledFloors();
 }

@@ -1,5 +1,6 @@
 package com.example.datn_qlnt_manager.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -143,4 +144,6 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
 	GROUP BY f.id, f.nameFloor
 """)
     List<FloorRoomStatisticResponse> getRoomStatisticTextByFloor(@Param("floorId") String floorId);
+
+	List<Floor> findAllByStatusAndDeletedAtBefore(FloorStatus status, LocalDate deletedAtBefore);
 }

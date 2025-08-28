@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.*;
 
 import org.springframework.data.domain.Page;
@@ -246,6 +247,7 @@ public class AssetServiceImpl implements AssetService {
 
         asset.setPreviousStatus(asset.getAssetStatus());
         asset.setAssetStatus(AssetStatus.HUY);
+        asset.setDeletedAt(LocalDate.now());
         asset.setUpdatedAt(Instant.now());
 
         assetRepository.save(asset);
