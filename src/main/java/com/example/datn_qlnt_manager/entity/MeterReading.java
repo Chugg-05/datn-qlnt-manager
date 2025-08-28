@@ -21,6 +21,12 @@ public class MeterReading extends AbstractEntity {
     @JoinColumn(name = "cong_to_id", nullable = false)
     Meter meter;
 
+    @Column(name = "ma_cong_to")
+    String meterCode;
+
+    @Column(name = "ten_cong_to")
+    String meterName;
+
     @Column(name = "chi_so_cu", nullable = false)
     Integer oldIndex;
 

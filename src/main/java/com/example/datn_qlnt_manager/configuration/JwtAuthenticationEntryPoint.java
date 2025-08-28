@@ -29,7 +29,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         // Tạo đối tượng ApiResponse với mã lỗi và thông báo từ ErrorCode
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(errorCode.getCode())
-                .message(errorCode.getMessage())
+                .message(Translator.toLocale(errorCode.getMessage()))
                 .build();
 
         // Tạo một ObjectMapper để chuyển đổi đối tượng thành JSON

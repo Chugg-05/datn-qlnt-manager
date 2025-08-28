@@ -8,6 +8,7 @@ import com.example.datn_qlnt_manager.common.RoomType;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.MeterFilter;
 import com.example.datn_qlnt_manager.dto.filter.MeterInitFilterResponse;
+import com.example.datn_qlnt_manager.dto.request.meter.ChangeMeterRequest;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.meter.MeterUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.IdAndName;
@@ -46,4 +47,6 @@ public interface MeterService {
             BigDecimal maxPrice);
 
     RoomNoMeterCountStatistics countRoomsWithoutMeterByUser();
+
+    MeterResponse changeMeter(ChangeMeterRequest request, String meterId);
 }

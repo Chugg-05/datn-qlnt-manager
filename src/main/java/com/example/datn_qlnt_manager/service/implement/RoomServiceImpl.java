@@ -3,13 +3,13 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.ContractStatus;
 import com.example.datn_qlnt_manager.dto.response.room.RoomDetailsResponse;
 import com.example.datn_qlnt_manager.dto.statistics.RoomNoServiceStatisticResponse;
 import com.example.datn_qlnt_manager.dto.statistics.RoomStatisticWithoutAssets;
 import com.example.datn_qlnt_manager.dto.statistics.StatisticRoomsWithoutContract;
 import com.example.datn_qlnt_manager.entity.*;
-import com.example.datn_qlnt_manager.repository.BuildingRepository;
-import com.example.datn_qlnt_manager.repository.TenantRepository;
+import com.example.datn_qlnt_manager.repository.*;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -29,8 +29,6 @@ import com.example.datn_qlnt_manager.dto.response.room.RoomResponse;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.mapper.RoomMapper;
-import com.example.datn_qlnt_manager.repository.FloorRepository;
-import com.example.datn_qlnt_manager.repository.RoomRepository;
 import com.example.datn_qlnt_manager.service.RoomService;
 import com.example.datn_qlnt_manager.service.UserService;
 
@@ -50,6 +48,7 @@ public class RoomServiceImpl implements RoomService {
     BuildingRepository buildingRepository;
     UserService userService;
     CodeGeneratorService codeGeneratorService;
+    ContractRepository contractRepository;
     private final TenantRepository tenantRepository;
 
     @Override
@@ -162,6 +161,19 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void softDeleteRoomById(String id) {
+
+        List<ContractStatus> contractStatuses = List.of(
+                ContractStatus.HIEU_LUC,
+                ContractStatus.SAP_HET_HAN,
+                ContractStatus.CHO_KICH_HOAT
+        );
+
+        boolean hasActiveContract = contractRepository.existsByRoomIdAndStatusIn(id, contractStatuses);
+
+        if (hasActiveContract) {
+            throw new AppException(ErrorCode.ROOM_CANNOT_BE_DELETED);
+        }
+
         Room room = roomRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
         room.setPreviousStatus(room.getStatus());
         room.setStatus((RoomStatus.HUY_HOAT_DONG));

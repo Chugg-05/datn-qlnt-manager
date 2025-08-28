@@ -90,6 +90,8 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         }
 
         MeterReading meterReading = meterReadingMapper.toMeterReadingCreation(request);
+        meterReading.setMeterCode(meter.getMeterCode());
+        meterReading.setMeterName(meter.getMeterName());
         meterReading.setMeter(meter);
         meterReading.setOldIndex(meter.getClosestIndex());
         meterReading.setQuantity(request.getNewIndex() - meter.getClosestIndex());
