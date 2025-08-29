@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 
+import com.example.datn_qlnt_manager.dto.request.ChangePasswordRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import com.example.datn_qlnt_manager.dto.request.AuthenticationRequest;
@@ -18,6 +19,8 @@ public interface AuthenticationService {
 
     LoginResponse login(AuthenticationRequest request, HttpServletResponse response)
             throws UnsupportedEncodingException;
+
+    void changePasswordByEmail(ChangePasswordRequest request);
 
     RefreshTokenResponse refreshToken(String refreshToken, HttpServletResponse response) throws ParseException;
 

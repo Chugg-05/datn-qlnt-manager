@@ -5,7 +5,8 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import com.example.datn_qlnt_manager.service.SystemNotificationService;
+import com.example.datn_qlnt_manager.dto.request.ChangePasswordRequest;
+import com.example.datn_qlnt_manager.service.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -32,9 +33,6 @@ import com.example.datn_qlnt_manager.exception.ErrorCode;
 import com.example.datn_qlnt_manager.repository.RoleRepository;
 import com.example.datn_qlnt_manager.repository.UserRepository;
 import com.example.datn_qlnt_manager.repository.client.GoogleClient;
-import com.example.datn_qlnt_manager.service.AuthenticationService;
-import com.example.datn_qlnt_manager.service.OtpService;
-import com.example.datn_qlnt_manager.service.RedisService;
 import com.example.datn_qlnt_manager.utils.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,6 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     OtpService otpService;
     GoogleClient googleClient;
     SystemNotificationService systemNotificationService;
+    UserService userService;
 
     static String KEY_COOKIE = "TRO_HUB_SERVICE";
     static String GRANT_TYPE = "authorization_code";
@@ -186,18 +185,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
 
-        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
-            throw new AppException(ErrorCode.NEW_PASSWORD_SAME_AS_OLD);
-        }
-
-        if (!request.getNewPassword().equals(request.getReNewPassword())) {
-            throw new AppException(ErrorCode.PASSWORDS_CONFIRM_NOT_MATCH);
-        }
+        validatePasswordConditions(request.getNewPassword(), request.getReNewPassword(), user);
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setUpdatedAt(Instant.now());
+
         userRepository.save(user);
 
         otpService.clearOtp(request.getEmail());
+    }
+
+    @Override
+    public void changePasswordByEmail(ChangePasswordRequest request) {
+        User user = userRepository
+                .findByEmail(userService.getCurrentUser().getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new AppException(ErrorCode.OLD_PASSWORD_NOT_MATCH);
+        }
+
+        validatePasswordConditions(request.getNewPassword(), request.getReNewPassword(), user);
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setUpdatedAt(Instant.now());
+
+        userRepository.save(user);
     }
 
     @Override
@@ -273,6 +286,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         cookie.setSecure(true);
         //        cookie.setDomain("localhost");
         response.addCookie(cookie);
+    }
+
+    private void validatePasswordConditions(String newPassword, String reNewPassword, User user) {
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new AppException(ErrorCode.NEW_PASSWORD_SAME_AS_OLD);
+        }
+
+        if (!newPassword.equals(reNewPassword)) {
+            throw new AppException(ErrorCode.PASSWORDS_CONFIRM_NOT_MATCH);
+        }
     }
 
     private LoginResponse getLoginResponse(HttpServletResponse response, User user, boolean isGoogle) {

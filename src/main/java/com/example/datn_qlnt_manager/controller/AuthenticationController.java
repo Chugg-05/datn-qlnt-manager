@@ -143,4 +143,14 @@ public class AuthenticationController {
                 .message("Password reset successful")
                 .build();
     }
+
+    @Operation(summary = "Thay đổi mật khẩuư")
+    @PostMapping("/change-password")
+    public ApiResponse<String> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        authenticationService.changePasswordByEmail(request);
+
+        return ApiResponse.<String>builder()
+                .message("Change password successful")
+                .build();
+    }
 }
