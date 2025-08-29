@@ -13,21 +13,5 @@ public interface AutoTaskService {
 
     void guestHasCheckedOut();
 
-    void deleteCancelledTenants();
-
-    void deleteCancelledAssets();
-
-    void deleteCancelledBuildings();
-
-    void deleteCancelledContracts();
-
-    void deleteCancelledFloors();
-
-    void deleteCancelledInvoices();
-
-    void deleteCancelledRooms();
-
-    void deleteCancelledServices();
-
-    void deleteCancelledVehicle();
+    void deleteCancelledEntities();
 }
