@@ -113,7 +113,7 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
 				cast(s.serviceCategory as string)
 			)
 			FROM Service s
-			WHERE s.user.id = :userId AND s.status != 'KHONG_SU_DUNG'
+			WHERE s.user.id = :userId AND s.status != 'KHONG_SU_DUNG' AND (s.serviceCategory = 'DIEN' OR s.serviceCategory = 'NUOC')
 			""")
     List<IdNameAndType> getServiceInfoByUserId(@Param("userId") String userId);
 

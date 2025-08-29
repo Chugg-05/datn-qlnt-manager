@@ -169,10 +169,10 @@ public class MeterServiceImpl implements MeterService {
     }
 
     @Override
-    public CreateMeterInitResponse getMeterInfoByUserId() {
+    public CreateMeterInitResponse getMeterInfoByUserId(String buildingId) {
         return CreateMeterInitResponse.builder()
                 .rooms(roomRepository.getServiceRoomInfoByUserId(
-                        userService.getCurrentUser().getId()))
+                        userService.getCurrentUser().getId(), buildingId))
                 .services(serviceRepository.getServiceInfoByUserId(
                         userService.getCurrentUser().getId()))
                 .build();
@@ -232,7 +232,7 @@ public class MeterServiceImpl implements MeterService {
     @Override
     public MeterResponse changeMeter(ChangeMeterRequest request, String meterId) {
         Meter meter = meterRepository.findById(meterId)
-                .orElseThrow(()->new AppException(ErrorCode.METER_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.METER_NOT_FOUND));
 
         if (meterRepository.existsByMeterCode(request.getMeterCode())) {
             throw new AppException(ErrorCode.METER_CODE_EXISTED);

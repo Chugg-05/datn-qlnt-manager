@@ -31,7 +31,7 @@ public interface MeterService {
 
     List<MeterReadingMonthlyStatsResponse> getMonthlyStats(String roomId);
 
-    CreateMeterInitResponse getMeterInfoByUserId();
+    CreateMeterInitResponse getMeterInfoByUserId(String buildingId);
 
     MeterInitFilterResponse getMeterFilterByUserId(String buildingId);
 
