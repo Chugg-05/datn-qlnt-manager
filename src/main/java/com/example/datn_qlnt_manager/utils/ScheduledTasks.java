@@ -21,6 +21,6 @@ public class ScheduledTasks {
         autoTaskService.guestHasCheckedOut();
         autoTaskService.expiredInvoice();
         autoTaskService.noDepositRefund();
-        autoTaskService.deleteCancelledTenants();
+        autoTaskService.deleteCancelledEntities();
     }
 }

@@ -145,102 +145,35 @@ public class AutoTaskServiceImpl implements AutoTaskService {
     }
 
     @Override
-    public void deleteCancelledTenants() {
+    public void deleteCancelledEntities() {
         LocalDate cutoff = LocalDate.now().minusDays(30);
 
-        List<Tenant> tenants = tenantRepository.findAllByTenantStatusAndDeletedAtBefore(
-                TenantStatus.HUY_BO, cutoff
-        );
+        buildingRepository.deleteAll(
+                buildingRepository.findAllByStatusAndDeletedAtBefore(BuildingStatus.HUY_HOAT_DONG, cutoff));
 
-        tenantRepository.deleteAll(tenants);
-    }
+        floorRepository.deleteAll(
+                floorRepository.findAllByStatusAndDeletedAtBefore(FloorStatus.KHONG_SU_DUNG, cutoff));
 
-    @Override
-    public void deleteCancelledAssets() {
-        LocalDate cutoff = LocalDate.now().minusDays(30);
+        roomRepository.deleteAll(
+                roomRepository.findAllByStatusAndDeleteAtBefore(RoomStatus.HUY_HOAT_DONG, cutoff));
 
-        List<Asset> assets = assetRepository.findAllByAssetStatusAndDeletedAtBefore(
-                AssetStatus.HUY, cutoff
-        );
+        serviceRepository.deleteAll(
+                serviceRepository.findAllByStatusAndDeleteAtBefore(ServiceStatus.KHONG_SU_DUNG, cutoff));
 
-        assetRepository.deleteAll(assets);
-    }
+        assetRepository.deleteAll(
+                assetRepository.findAllByAssetStatusAndDeletedAtBefore(AssetStatus.HUY, cutoff));
 
-    @Override
-    public void deleteCancelledBuildings() {
-        LocalDate cutoff = LocalDate.now().minusDays(30);
+        tenantRepository.deleteAll(
+                tenantRepository.findAllByTenantStatusAndDeletedAtBefore(TenantStatus.HUY_BO, cutoff));
 
-        List<Building> buildings = buildingRepository.findAllByStatusAndDeletedAtBefore(
-                BuildingStatus.HUY_HOAT_DONG, cutoff
-        );
+        contractRepository.deleteAll(
+                contractRepository.findAllByStatusAndDeletedAtBefore(ContractStatus.DA_HUY, cutoff));
 
-        buildingRepository.deleteAll(buildings);
-    }
+        invoiceRepository.deleteAll(
+                invoiceRepository.findAllByInvoiceStatusAndDeleteAtBefore(InvoiceStatus.HUY, cutoff));
 
-    @Override
-    public void deleteCancelledContracts() {
-        LocalDate  cutoff = LocalDate.now().minusDays(30);
-
-        List<Contract> contracts = contractRepository.findAllByStatusAndDeletedAtBefore(
-                ContractStatus.DA_HUY, cutoff
-        );
-
-        contractRepository.deleteAll(contracts);
-    }
-
-    @Override
-    public void deleteCancelledFloors() {
-        LocalDate cutoff = LocalDate.now().minusDays(30);
-
-        List<Floor> floors = floorRepository.findAllByStatusAndDeletedAtBefore(
-          FloorStatus.KHONG_SU_DUNG, cutoff
-        );
-
-        floorRepository.deleteAll(floors);
-    }
-
-    @Override
-    public void deleteCancelledInvoices() {
-        LocalDate cutoff = LocalDate.now().minusDays(30);
-
-        List<Invoice> invoices = invoiceRepository.findAllByInvoiceStatusAndDeleteAtBefore(
-                InvoiceStatus.HUY, cutoff
-        );
-
-        invoiceRepository.deleteAll(invoices);
-    }
-
-    @Override
-    public void deleteCancelledRooms() {
-        LocalDate cutoff = LocalDate.now().minusDays(30);
-
-        List<Room> rooms = roomRepository.findAllByStatusAndDeleteAtBefore(
-                RoomStatus.HUY_HOAT_DONG, cutoff
-        );
-
-        roomRepository.deleteAll(rooms);
-    }
-
-    @Override
-    public void deleteCancelledServices() {
-        LocalDate cutoff = LocalDate.now().minusDays(30);
-
-        List<com.example.datn_qlnt_manager.entity.Service> services = serviceRepository.findAllByStatusAndDeleteAtBefore(
-                ServiceStatus.KHONG_SU_DUNG, cutoff
-        );
-
-        serviceRepository.deleteAll(services);
-    }
-
-    @Override
-    public void deleteCancelledVehicle() {
-        LocalDate cutoff = LocalDate.now().minusDays(30);
-
-        List<Vehicle> vehicles = vehicleRepository.findAllByVehicleStatusAndDeleteAtBefore(
-                VehicleStatus.KHONG_SU_DUNG, cutoff
-        );
-
-        vehicleRepository.deleteAll(vehicles);
+        vehicleRepository.deleteAll(
+                vehicleRepository.findAllByVehicleStatusAndDeleteAtBefore(VehicleStatus.KHONG_SU_DUNG, cutoff));
     }
 
     private boolean isContractEnded(Contract contract) {
