@@ -87,9 +87,9 @@ public class MeterController {
     }
 
     @Operation(summary = "Hiển thị thông tin liên quan để thêm mới và cập nhật công tơ theo người đang đăng nhập")
-    @GetMapping("/init")
-    public ApiResponse<CreateMeterInitResponse> getMeterInfoByUserId() {
-        CreateMeterInitResponse data = meterService.getMeterInfoByUserId();
+    @GetMapping("/init/{buildingId}")
+    public ApiResponse<CreateMeterInitResponse> getMeterInfoByUserId(@PathVariable("buildingId") String buildingId) {
+        CreateMeterInitResponse data = meterService.getMeterInfoByUserId(buildingId);
         return ApiResponse.<CreateMeterInitResponse>builder()
                 .data(data)
                 .message("Assets has been found!")
