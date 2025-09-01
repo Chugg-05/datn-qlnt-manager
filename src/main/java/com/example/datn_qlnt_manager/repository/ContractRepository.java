@@ -204,4 +204,8 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 
 	boolean existsByRoomIdAndStatusIn(String roomId, List<ContractStatus> statuses);
 
+	boolean existsByRoom_Floor_Building_IdAndStatusIn(String buildingId, List<ContractStatus> statuses);
+
+	boolean existsByRoom_Floor_IdAndStatusIn(String floorId, List<ContractStatus> statuses);
+
 }

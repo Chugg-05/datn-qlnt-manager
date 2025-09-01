@@ -2,16 +2,18 @@ package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.example.datn_qlnt_manager.common.*;
+import com.example.datn_qlnt_manager.entity.Floor;
+import com.example.datn_qlnt_manager.entity.Room;
+import com.example.datn_qlnt_manager.repository.ContractRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.example.datn_qlnt_manager.common.BuildingStatus;
-import com.example.datn_qlnt_manager.common.Meta;
-import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.BuildingFilter;
 import com.example.datn_qlnt_manager.dto.request.building.BuildingCreationRequest;
@@ -49,6 +51,7 @@ public class BuildingServiceImpl implements BuildingService {
     BuildingRepository buildingRepository;
     BuildingMapper buildingMapper;
     UserService userService;
+    ContractRepository contractRepository;
     CodeGeneratorService codeGeneratorService;
     FloorRepository floorRepository;
     RoomRepository roomRepository;
@@ -140,10 +143,13 @@ public class BuildingServiceImpl implements BuildingService {
                 .findById(buildingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
+        validateActiveContracts(buildingId);
+
         building.setPreviousStatus(building.getStatus());
         building.setStatus(BuildingStatus.HUY_HOAT_DONG);
         building.setDeletedAt(LocalDate.now());
         building.setUpdatedAt(Instant.now());
+
         buildingMapper.toBuildingResponse(buildingRepository.save(building));
     }
 
@@ -167,6 +173,8 @@ public class BuildingServiceImpl implements BuildingService {
                 .findByIdAndStatusNot(id, BuildingStatus.HUY_HOAT_DONG)
                 .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
 
+        validateActiveContracts(id);
+
         if (building.getStatus() == BuildingStatus.HOAT_DONG) {
             building.setStatus(BuildingStatus.TAM_KHOA);
             building.setUpdatedAt(Instant.now());
@@ -176,6 +184,15 @@ public class BuildingServiceImpl implements BuildingService {
         } else {
             throw new IllegalStateException("Cannot toggle status for deleted building");
         }
+
+        FloorStatus floorStatus = (building.getStatus() == BuildingStatus.HOAT_DONG)
+                ? FloorStatus.HOAT_DONG : FloorStatus.TAM_KHOA;
+        RoomStatus roomStatus = (building.getStatus() == BuildingStatus.HOAT_DONG)
+                ? RoomStatus.TRONG : RoomStatus.TAM_KHOA;
+
+        updateFloorsAndRooms(id, floorStatus, roomStatus);
+
+        buildingRepository.save(building);
         buildingRepository.save(building);
     }
 
@@ -226,11 +243,10 @@ public class BuildingServiceImpl implements BuildingService {
         BuildingStatus currentStatus = building.getStatus();
         BuildingStatus previousStatus = building.getPreviousStatus();
 
-        if(previousStatus != null){
+        if (previousStatus != null) {
             building.setStatus(previousStatus);
             building.setPreviousStatus(currentStatus);
-        }
-        else {
+        } else {
             building.setPreviousStatus(BuildingStatus.HOAT_DONG);
         }
 
@@ -265,5 +281,43 @@ public class BuildingServiceImpl implements BuildingService {
     public List<BuildingOccupancyResponse> calculateOccupancyByUser() {
         User currentUser = userService.getCurrentUser();
         return buildingRepository.calculateBuildingOccupancy(currentUser.getId());
+    }
+
+    private void updateFloorsAndRooms(String buildingId, FloorStatus floorStatus, RoomStatus roomStatus) {
+        List<Floor> floors = floorRepository.findByBuildingId(buildingId);
+        List<Room> roomsToUpdate = new ArrayList<>();
+
+        floors.forEach(f -> { f.setStatus(floorStatus);
+            List<Room> rooms = roomRepository.findByFloorId(f.getId());
+            rooms.forEach(r -> {
+                if (floorStatus == FloorStatus.TAM_KHOA || floorStatus == FloorStatus.KHONG_SU_DUNG) {
+                    r.setPreviousStatus(r.getStatus());
+                    r.setStatus(RoomStatus.TAM_KHOA);
+                } else if (floorStatus == FloorStatus.HOAT_DONG) {
+                    if (r.getPreviousStatus() != null) {
+                        r.setStatus(r.getPreviousStatus());
+                    } else {
+                        r.setStatus(RoomStatus.TRONG);
+                    }
+                } else {
+                    r.setStatus(roomStatus);
+                }
+                roomsToUpdate.add(r);
+            });
+        });
+
+        roomRepository.saveAll(roomsToUpdate);
+        floorRepository.saveAll(floors);
+    }
+
+    private void validateActiveContracts(String buildingId) {
+        boolean hasActiveOrExpiringContracts = contractRepository
+                .existsByRoom_Floor_Building_IdAndStatusIn(buildingId, List.of(
+                        ContractStatus.HIEU_LUC,
+                        ContractStatus.SAP_HET_HAN
+                ));
+        if (hasActiveOrExpiringContracts) {
+            throw new AppException(ErrorCode.BUILDING_HAS_ACTIVE_CONTRACT);
+        }
     }
 }
