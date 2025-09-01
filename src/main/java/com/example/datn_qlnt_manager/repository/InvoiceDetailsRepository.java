@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.example.datn_qlnt_manager.common.InvoiceStatus;
-import com.example.datn_qlnt_manager.dto.statistics.revenue.InvoiceRevenueResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,67 +13,6 @@ import com.example.datn_qlnt_manager.entity.InvoiceDetail;
 
 @Repository
 public interface InvoiceDetailsRepository extends JpaRepository<InvoiceDetail, String> {
-
-    @Query("""
-        SELECT new com.example.datn_qlnt_manager.dto.statistics.revenue.InvoiceRevenueResponse(
-            COALESCE(SUM(CASE
-                WHEN i.invoiceStatus IN (:statuses)
-                     AND i.month = :month
-                     AND i.year = :year
-                     AND (d.invoiceItemType IS NULL OR d.invoiceItemType <> 'DEN_BU')
-                THEN d.amount ELSE :zero END), :zero),
-    
-            COALESCE(SUM(CASE
-                WHEN i.invoiceStatus = 'DA_THANH_TOAN'
-                     AND i.year = :year
-                     AND i.month = :month
-                     AND (d.invoiceItemType IS NULL OR d.invoiceItemType <> 'DEN_BU')
-                THEN d.amount ELSE :zero END), :zero),
-    
-            COALESCE(SUM(CASE
-                WHEN i.invoiceStatus = 'DA_THANH_TOAN'
-                     AND d.invoiceItemType = 'TIEN_PHONG'
-                THEN d.amount ELSE :zero END), :zero),
-    
-            COALESCE(SUM(CASE
-                WHEN i.invoiceStatus = 'DA_THANH_TOAN'
-                     AND d.invoiceItemType = 'DIEN'
-                THEN d.amount ELSE :zero END), :zero),
-    
-            COALESCE(SUM(CASE
-                WHEN i.invoiceStatus = 'DA_THANH_TOAN'
-                     AND d.invoiceItemType = 'NUOC'
-                THEN d.amount ELSE :zero END), :zero),
-    
-            COALESCE(SUM(CASE
-                WHEN i.invoiceStatus = 'DA_THANH_TOAN'
-                     AND d.invoiceItemType = 'DICH_VU'
-                THEN d.amount ELSE :zero END), :zero),
-    
-            COALESCE(SUM(CASE
-                WHEN i.invoiceStatus = 'DA_THANH_TOAN'
-                     AND d.invoiceItemType = 'DEN_BU'
-                THEN d.amount ELSE :zero END), :zero)
-        )
-        FROM InvoiceDetail d
-        JOIN d.invoice i
-        JOIN i.contract c
-        JOIN c.room r
-        JOIN r.floor f
-        JOIN f.building b
-        WHERE b.user.id = :userId
-        AND  i.month = :month
-        AND i.year = :year
-        AND (:buildingId IS NULL OR b.id = :buildingId)
-    """)
-    InvoiceRevenueResponse getInvoiceRevenueStatistics(
-            @Param("statuses") List<InvoiceStatus> statuses,
-            @Param("userId") String userId,
-            @Param("month") int month,
-            @Param("year") int year,
-            @Param("buildingId") String buildingId,
-            @Param("zero") BigDecimal zero
-    );
 
     @Query(
     """
@@ -97,6 +35,148 @@ public interface InvoiceDetailsRepository extends JpaRepository<InvoiceDetail, S
             @Param("month") int month,
             @Param("year") int year,
             @Param("meterId") String meterId);
+
+    //Doanh thu dự kiến
+    @Query("""
+        SELECT COALESCE(SUM(d.amount), 0)
+        FROM InvoiceDetail d
+        JOIN d.invoice i
+        WHERE i.contract.room.floor.building.user.id = :userId
+          AND i.invoiceStatus IN (:statuses)
+          AND i.month = :month
+          AND i.year = :year
+          AND i.contract.room.floor.building.id = :buildingId
+          AND (d.invoiceItemType IS NULL OR d.invoiceItemType != 'DEN_BU')
+    """)
+    BigDecimal getExpectedRevenue(
+            @Param("userId") String userId,
+            @Param("statuses") List<InvoiceStatus> statuses,
+            @Param("month") Integer month,
+            @Param("year") int year,
+            @Param("buildingId") String buildingId);
+
+    //Doanh thu thực tế
+    @Query("""
+        SELECT COALESCE(SUM(d.amount), 0)
+        FROM InvoiceDetail d
+        JOIN d.invoice i
+        WHERE i.contract.room.floor.building.user.id = :userId
+        AND i.invoiceStatus = 'DA_THANH_TOAN'
+          AND i.month = :month
+          AND i.year = :year
+          AND i.contract.room.floor.building.id = :buildingId
+          AND (d.invoiceItemType IS NULL OR d.invoiceItemType != 'DEN_BU')
+    """)
+    BigDecimal getCurrentRevenue(
+            @Param("userId") String userId,
+            @Param("month") Integer month,
+            @Param("year") int year,
+            @Param("buildingId") String buildingId);
+
+    //Tiền phòng
+    @Query("""
+        SELECT COALESCE(SUM(d.amount), 0)
+        FROM InvoiceDetail d
+        JOIN d.invoice i
+        WHERE i.contract.room.floor.building.user.id = :userId
+          AND i.invoiceStatus = 'DA_THANH_TOAN'
+          AND d.invoiceItemType = 'TIEN_PHONG'
+          AND (:month IS NULL OR i.month = :month)
+          AND i.year = :year
+          AND i.contract.room.floor.building.id = :buildingId
+    """)
+    BigDecimal getRoomRevenue(
+            @Param("userId") String userId,
+            @Param("month") Integer month,
+            @Param("year") int year,
+            @Param("buildingId") String buildingId);
+
+    //Tiền điện nước
+    @Query("""
+        SELECT COALESCE(SUM(d.amount), 0)
+        FROM InvoiceDetail d
+        JOIN d.invoice i
+        WHERE i.contract.room.floor.building.user.id = :userId
+          AND i.invoiceStatus = 'DA_THANH_TOAN'
+          AND d.invoiceItemType = 'DIEN'
+          AND i.month = :month
+          AND i.year = :year
+          AND i.contract.room.floor.building.id = :buildingId
+    """)
+    BigDecimal getElectricRevenue(
+            @Param("userId") String userId,
+            @Param("month") Integer month,
+            @Param("year") int year,
+            @Param("buildingId") String buildingId);
+
+    @Query("""
+        SELECT COALESCE(SUM(d.amount), 0)
+        FROM InvoiceDetail d
+        JOIN d.invoice i
+        WHERE i.contract.room.floor.building.user.id = :userId
+          AND i.invoiceStatus = 'DA_THANH_TOAN'
+          AND d.invoiceItemType = 'NUOC'
+          AND i.month = :month
+          AND i.year = :year
+          AND i.contract.room.floor.building.id = :buildingId
+    """)
+    BigDecimal getWaterRevenue(
+            @Param("userId") String userId,
+            @Param("month") Integer month,
+            @Param("year") int year,
+            @Param("buildingId") String buildingId);
+
+    //Tiền dịch vụ
+    @Query("""
+    SELECT COALESCE(SUM(d.amount), 0)
+    FROM InvoiceDetail d
+    JOIN d.invoice i
+    WHERE i.contract.room.floor.building.user.id = :userId
+      AND i.invoiceStatus = 'DA_THANH_TOAN'
+      AND d.invoiceItemType = 'DICH_VU'
+      AND i.month = :month
+      AND i.year = :year
+      AND i.contract.room.floor.building.id = :buildingId
+    """)
+    BigDecimal getServiceRevenue(
+            @Param("userId") String userId,
+            @Param("month") Integer month,
+            @Param("year") int year,
+            @Param("buildingId") String buildingId);
+
+    @Query("""
+        SELECT COALESCE(SUM(d.amount), 0)
+        FROM InvoiceDetail d
+        JOIN d.invoice i
+        WHERE i.contract.room.floor.building.user.id = :userId
+          AND i.invoiceStatus = 'QUA_HAN'
+          AND i.month = :month
+          AND i.year = :year
+          AND i.contract.room.floor.building.id = :buildingId
+          AND (d.invoiceItemType IS NULL OR d.invoiceItemType != 'DEN_BU')
+    """)
+    BigDecimal getOverdueRevenue(
+            @Param("userId") String userId,
+            @Param("month") Integer month,
+            @Param("year") int year,
+            @Param("buildingId") String buildingId);
+
+    @Query("""
+        SELECT COALESCE(SUM(d.amount), 0)
+        FROM InvoiceDetail d
+        JOIN d.invoice i
+        WHERE i.contract.room.floor.building.user.id = :userId
+          AND i.invoiceStatus = 'KHONG_THE_THANH_TOAN'
+          AND i.month = :month
+          AND i.year = :year
+          AND i.contract.room.floor.building.id = :buildingId
+          AND (d.invoiceItemType IS NULL OR d.invoiceItemType <> 'DEN_BU')
+    """)
+    BigDecimal getUncollectibleRevenue(
+            @Param("userId") String userId,
+            @Param("month") Integer month,
+            @Param("year") int year,
+            @Param("buildingId") String buildingId);
 
     List<InvoiceDetail> findByInvoiceId(String invoiceId);
 }

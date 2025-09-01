@@ -1,10 +1,9 @@
 package com.example.datn_qlnt_manager.controller;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
-import com.example.datn_qlnt_manager.dto.statistics.revenue.RevenueStatisticRequest;
-import com.example.datn_qlnt_manager.dto.statistics.revenue.RevenueStatisticResponse;
+import com.example.datn_qlnt_manager.dto.statistics.revenue.request.RevenueStatisticRequest;
+import com.example.datn_qlnt_manager.dto.statistics.revenue.response.RevenueComparisonResponse;
 import com.example.datn_qlnt_manager.service.RevenueStatisticService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -15,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -24,14 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class RevenueStatisticController {
     RevenueStatisticService revenueStatisticService;
 
-    @Operation(summary = "Thống kê doanh thu")
-    @GetMapping("/statistic")
-    public ApiResponse<RevenueStatisticResponse> getRevenueStatistic(@Valid RevenueStatisticRequest request) {
-        RevenueStatisticResponse response = revenueStatisticService.getRevenueStatistic(request);
+    @GetMapping("/comparison")
+    public ApiResponse<List<RevenueComparisonResponse>> getRevenueComparison(@Valid RevenueStatisticRequest request
+    ) {
+        List<RevenueComparisonResponse> responses =
+                revenueStatisticService.compareRevenueByBuilding(request);
 
-        return ApiResponse.<RevenueStatisticResponse>builder()
-                .message("Get revenue statistic successfully")
-                .data(response)
+        return ApiResponse.<List<RevenueComparisonResponse>>builder()
+                .message("Get revenue comparison successfully")
+                .data(responses)
                 .build();
     }
 }
