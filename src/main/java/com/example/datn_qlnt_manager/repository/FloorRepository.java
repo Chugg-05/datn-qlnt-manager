@@ -146,4 +146,6 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
     List<FloorRoomStatisticResponse> getRoomStatisticTextByFloor(@Param("floorId") String floorId);
 
 	List<Floor> findAllByStatusAndDeletedAtBefore(FloorStatus status, LocalDate deletedAtBefore);
+
+	List<Floor> findByBuildingId(String buildingId);
 }

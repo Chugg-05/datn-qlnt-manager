@@ -136,9 +136,9 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 				FROM Room r
 				LEFT JOIN r.floor f
 				LEFT JOIN f.building b
-				WHERE r.status != 'HUY_HOAT_DONG' AND b.user.id = :userId
+				WHERE r.status != 'HUY_HOAT_DONG' AND b.user.id = :userId AND b.id = :buildingId
 			""")
-    List<IdAndName> getServiceRoomInfoByUserId(@Param("userId") String userId);
+    List<IdAndName> getServiceRoomInfoByUserId(@Param("userId") String userId, @Param("buildingId") String buildingId);
 
     @Query(
             """
@@ -314,4 +314,5 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 
 	List<Room> findAllByStatusAndDeleteAtBefore(RoomStatus status, LocalDate deleteAtBefore);
 
+	List<Room> findByFloorId(String floorId);
 }

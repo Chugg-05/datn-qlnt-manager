@@ -8,5 +8,5 @@ public enum RoomStatus {
     DANG_BAO_TRI,
     CHUA_HOAN_THIEN,
     TAM_KHOA,
-    HUY_HOAT_DONG;
+    HUY_HOAT_DONG
 }

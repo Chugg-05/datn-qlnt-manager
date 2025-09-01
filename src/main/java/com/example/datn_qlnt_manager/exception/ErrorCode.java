@@ -271,6 +271,8 @@ public enum  ErrorCode {
     CONTRACT_NOT_ELIGIBLE_FOR_UPDATE(400,"contract.not.eligible.for.update", HttpStatus.BAD_REQUEST),
     CANNOT_UPDATE_ACTUAL_NUMBER_OF_FLOORS(400,"cannot.update.actual.number.of.floors", HttpStatus.BAD_REQUEST),
     OLD_PASSWORD_NOT_MATCH(400,"old.password.not.match", HttpStatus.BAD_REQUEST),
+    BUILDING_HAS_ACTIVE_CONTRACT(400,"building.has.active.contract", HttpStatus.BAD_REQUEST),
+    FLOOR_HAS_ACTIVE_CONTRACT(400,"floor.has.active.contract", HttpStatus.BAD_REQUEST),
 
 
     // Code: 404
