@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.datn_qlnt_manager.dto.statistics.revenue.DamageOverdueResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -223,29 +222,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
 			@Param("status") InvoiceStatus status,
 			@Param("month") int month,
 			@Param("year") int year
-	);
-
-	@Query("""
-		SELECT new com.example.datn_qlnt_manager.dto.statistics.revenue.DamageOverdueResponse(
-			COALESCE(SUM(CASE WHEN i.invoiceStatus = 'KHONG_THE_THANH_TOAN' THEN i.totalAmount ELSE :zero END), :zero),
-			COALESCE(SUM(CASE WHEN i.invoiceStatus = 'QUA_HAN' THEN i.totalAmount ELSE :zero END), :zero)
-		)
-		FROM Invoice i
-		JOIN i.contract c
-		JOIN c.room r
-		JOIN r.floor f
-		JOIN f.building b
-		WHERE b.user.id = :userId
-		AND  i.month = :month
-	 	AND i.year = :year
-		AND (:buildingId IS NULL OR b.id = :buildingId)
-	""")
-	DamageOverdueResponse getDamageAndOverdueAmount(
-		    @Param("userId") String userId,
-		    @Param("month") int month,
-		    @Param("year") int year,
-			@Param("buildingId") String buildingId,
-		    @Param("zero") BigDecimal zero
 	);
 
 	List<Invoice> findByPaymentDueDateBefore(LocalDate date);

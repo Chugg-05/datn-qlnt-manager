@@ -1,8 +1,11 @@
 package com.example.datn_qlnt_manager.service;
 
-import com.example.datn_qlnt_manager.dto.statistics.revenue.RevenueStatisticRequest;
-import com.example.datn_qlnt_manager.dto.statistics.revenue.RevenueStatisticResponse;
+import com.example.datn_qlnt_manager.dto.statistics.revenue.request.RevenueStatisticRequest;
+import com.example.datn_qlnt_manager.dto.statistics.revenue.response.RevenueComparisonResponse;
+
+import java.util.List;
 
 public interface RevenueStatisticService {
-    RevenueStatisticResponse getRevenueStatistic(RevenueStatisticRequest request);
+    List<RevenueComparisonResponse> compareRevenueByBuilding(RevenueStatisticRequest request);
+
 }
