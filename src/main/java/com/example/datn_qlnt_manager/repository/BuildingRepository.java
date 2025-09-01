@@ -124,5 +124,7 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
 """)
     List<BuildingOccupancyResponse> calculateBuildingOccupancy(@Param("userId") String userId);
 
+	Optional<Building> findFirstByUserId(String userId);
+
 	List<Building> findAllByStatusAndDeletedAtBefore(BuildingStatus status, LocalDate deletedAtBefore);
 }

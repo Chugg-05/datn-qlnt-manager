@@ -42,8 +42,11 @@ public class RevenueStatisticServiceImpl implements RevenueStatisticService {
         int month = Optional.ofNullable(request.getMonth()).orElse(LocalDate.now().getMonthValue());
         int year = Optional.ofNullable(request.getYear()).orElse(LocalDate.now().getYear());
 
-        Building building = buildingRepository.findById(request.getBuildingId())
-                .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+        Building building = Optional.ofNullable(request.getBuildingId())
+                .flatMap(buildingRepository::findById)
+                .orElseGet(() -> buildingRepository.findFirstByUserId(userId)
+                        .orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND)));
+
 
         String buildingId = building.getId();
 
