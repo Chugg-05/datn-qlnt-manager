@@ -2,7 +2,7 @@ package com.example.datn_qlnt_manager.dto.request;
 
 import com.example.datn_qlnt_manager.validator.constraints.PasswordConstraints;
 import lombok.*;
-import lombok.experimental.FieldDefaults;git
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder

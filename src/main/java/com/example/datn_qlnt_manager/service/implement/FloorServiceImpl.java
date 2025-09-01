@@ -4,16 +4,15 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.example.datn_qlnt_manager.common.FloorType;
+import com.example.datn_qlnt_manager.common.*;
+import com.example.datn_qlnt_manager.entity.Room;
+import com.example.datn_qlnt_manager.repository.ContractRepository;
 import com.example.datn_qlnt_manager.repository.RoomRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.example.datn_qlnt_manager.common.FloorStatus;
-import com.example.datn_qlnt_manager.common.Meta;
-import com.example.datn_qlnt_manager.common.Pagination;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FloorFilter;
 import com.example.datn_qlnt_manager.dto.request.floor.FloorCreationRequest;
@@ -45,6 +44,7 @@ public class FloorServiceImpl implements FloorService {
 
     FloorRepository floorRepository;
     BuildingRepository buildingRepository;
+    ContractRepository contractRepository;
     RoomRepository roomRepository;
     FloorMapper floorMapper;
     CodeGeneratorService codeGeneratorService;
@@ -147,10 +147,19 @@ public class FloorServiceImpl implements FloorService {
     @Override
     public void softDeleteFloorById(String floorId) { // xóa mềm
         Floor floor = floorRepository.findById(floorId).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+
+        validateActiveContracts(floorId);
+
         floor.setPreviousStatus(floor.getStatus());
         floor.setStatus(FloorStatus.KHONG_SU_DUNG);
         floor.setDeletedAt(LocalDate.now());
         floor.setUpdatedAt(Instant.now());
+
+        roomRepository.findByFloorId(floorId).forEach(r -> {
+            r.setPreviousStatus(r.getStatus());
+            r.setStatus(RoomStatus.HUY_HOAT_DONG);
+        });
+
         floorRepository.save(floor);
     }
 
@@ -178,6 +187,8 @@ public class FloorServiceImpl implements FloorService {
                 .findByIdAndStatusNot(id, FloorStatus.KHONG_SU_DUNG)
                 .orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
 
+        validateActiveContracts(id);
+
         if (floor.getStatus() == FloorStatus.HOAT_DONG) {
             floor.setStatus(FloorStatus.TAM_KHOA);
             floor.setUpdatedAt(Instant.now());
@@ -187,12 +198,66 @@ public class FloorServiceImpl implements FloorService {
         } else {
             throw new IllegalStateException("Cannot toggle status for deleted floor");
         }
+
+        List<Room> rooms = roomRepository.findByFloorId(id);
+        rooms.forEach(room -> {
+            if (floor.getStatus() == FloorStatus.HOAT_DONG) {
+                if (room.getPreviousStatus() != null) {
+                    room.setStatus(room.getPreviousStatus());
+                } else {
+                    room.setStatus(RoomStatus.TRONG);
+                }
+            } else {
+                room.setPreviousStatus(room.getStatus());
+                room.setStatus(RoomStatus.TAM_KHOA);
+            }
+        });
+
         floorRepository.save(floor);
     }
 
     @Override
     public List<IdAndName> getFloorsByUserId() {
         return floorRepository.getFloorsByUserId(userService.getCurrentUser().getId());
+    }
+
+    @Override
+    public List<FloorRoomStatisticResponse> getRoomStatisticTextByFloor(String floorId) {
+        return floorRepository.getRoomStatisticTextByFloor(floorId);
+    }
+
+    @Override
+    public FloorResponse restoreFloorById(String floorId) {
+        Floor floor = floorRepository.findById(floorId).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
+
+        FloorStatus currentStatus = floor.getStatus();
+        FloorStatus previousStatus = floor.getPreviousStatus();
+
+        if (previousStatus != null) {
+            floor.setPreviousStatus(currentStatus);
+            floor.setStatus(previousStatus);
+        }
+        else {
+            floor.setPreviousStatus(FloorStatus.HOAT_DONG);
+        }
+
+        List<Room> rooms = roomRepository.findByFloorId(floorId);
+        rooms.forEach(room -> {
+            RoomStatus currentRoomStatus = room.getStatus();
+            RoomStatus previousRoomStatus = room.getPreviousStatus();
+
+            if (previousRoomStatus != null) {
+                room.setPreviousStatus(currentRoomStatus);
+                room.setStatus(previousRoomStatus);
+            } else {
+                room.setPreviousStatus(RoomStatus.TRONG);
+            }
+        });
+
+        roomRepository.saveAll(rooms);
+
+        floor.setUpdatedAt(Instant.now());
+        return floorMapper.toResponse(floorRepository.save(floor));
     }
 
     private PaginatedResponse<FloorResponse> buildPaginatedFloorResponse(Page<Floor> paging, int page, int size) {
@@ -216,27 +281,15 @@ public class FloorServiceImpl implements FloorService {
                 .build();
     }
 
-    @Override
-    public List<FloorRoomStatisticResponse> getRoomStatisticTextByFloor(String floorId) {
-        return floorRepository.getRoomStatisticTextByFloor(floorId);
-    }
+    private void validateActiveContracts(String floorId) {
+        boolean hasActiveOrExpiringContracts = contractRepository
+                .existsByRoom_Floor_IdAndStatusIn(
+                        floorId,
+                        List.of(ContractStatus.HIEU_LUC, ContractStatus.SAP_HET_HAN)
+                );
 
-    @Override
-    public FloorResponse restoreFloorById(String floorId) {
-        Floor floor = floorRepository.findById(floorId).orElseThrow(() -> new AppException(ErrorCode.FLOOR_NOT_FOUND));
-
-        FloorStatus currentStatus = floor.getStatus();
-        FloorStatus previousStatus = floor.getPreviousStatus();
-
-        if (previousStatus != null) {
-            floor.setPreviousStatus(currentStatus);
-            floor.setStatus(previousStatus);
+        if (hasActiveOrExpiringContracts) {
+            throw new AppException(ErrorCode.FLOOR_HAS_ACTIVE_CONTRACT);
         }
-        else {
-            floor.setPreviousStatus(FloorStatus.HOAT_DONG);
-        }
-
-        floor.setUpdatedAt(Instant.now());
-        return floorMapper.toResponse(floorRepository.save(floor));
     }
 }
