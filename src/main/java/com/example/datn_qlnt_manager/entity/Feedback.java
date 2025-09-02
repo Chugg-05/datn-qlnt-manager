@@ -12,19 +12,17 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @Builder
-@Table(name = "phan_hoi")
+@Table(name = "phan_hoi_va_ho_tro")
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Feedback extends AbstractEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_thue_id", nullable = false)
-    Tenant tenant;
+    @Column(name = "ten_khach", nullable = false)
+    String nameSender;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "phong_id", nullable = false)
-    Room room;
+    @Column(name = "ma_phong", nullable = false)
+    String roomCode;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "loai_phan_hoi", nullable = false)
@@ -42,4 +40,7 @@ public class Feedback extends AbstractEntity {
 
     @Column(name = "tep_dinh_kem")
     String attachment;
+
+    @Column(name = "ly_do_tu_choi")
+    String rejectionReason;
 }

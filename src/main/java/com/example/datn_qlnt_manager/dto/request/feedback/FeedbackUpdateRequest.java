@@ -20,9 +20,6 @@ public class FeedbackUpdateRequest {
     @NotNull(message = "FEED_BACK_TYPE_NOT_FOUND")
     FeedbackType feedbackType;
 
-    @NotNull(message = "FEED_BACK_STATUS_NOT_FOUND")
-    FeedbackStatus feedbackStatus;
-
     @NotNull(message = "RATING_NOT_FOUND")
     @Min(value = 1, message = "RATING_TOO_LOW")
     @Max(value = 5, message = "RATING_TOO_HIGH")

@@ -273,6 +273,8 @@ public enum  ErrorCode {
     OLD_PASSWORD_NOT_MATCH(400,"old.password.not.match", HttpStatus.BAD_REQUEST),
     BUILDING_HAS_ACTIVE_CONTRACT(400,"building.has.active.contract", HttpStatus.BAD_REQUEST),
     FLOOR_HAS_ACTIVE_CONTRACT(400,"floor.has.active.contract", HttpStatus.BAD_REQUEST),
+    INVALID_FEEDBACK_STATUS(400,"invalid.feedback.status", HttpStatus.BAD_REQUEST),
+    TENANT_NOT_RENT_ROOM(400,"tenant.not.rent.room", HttpStatus.BAD_REQUEST),
 
 
     // Code: 404
@@ -320,6 +322,7 @@ public enum  ErrorCode {
     CONTRACT_TENANT_NOT_FOUND(404, "contract.tenant.not.found", HttpStatus.NOT_FOUND),
     CONTRACT_VEHICLE_NOT_FOUND(404, "contract.vehicle.not.found", HttpStatus.NOT_FOUND),
     DEPOSIT_NOT_FOUND(404, "deposit.not.found", HttpStatus.NOT_FOUND),
+    REJECT_REASON_CANNOT_BLANK(404, "reject.reason.cannot.blank", HttpStatus.BAD_REQUEST),
 
     // feedback
     FEED_BACK_NOT_FOUND(404, "feedback.not.found", HttpStatus.NOT_FOUND),
@@ -334,6 +337,8 @@ public enum  ErrorCode {
     ASSET_STATUS_NOT_FOUND(404, "asset.status.not.found", HttpStatus.NOT_FOUND),
     PAYMENT_RECEIPT_NOT_FOUND(404, "payment.receipt.not.found", HttpStatus.NOT_FOUND),
     ASSET_ROOM_NOT_FOUND(404, "asset.room.not.found", HttpStatus.NOT_FOUND),
+    CANNOT_UPDATE_PROCESSED_FEEDBACK(400,"cannot.update.processed.feedback", HttpStatus.BAD_REQUEST),
+    FEED_BACK_HISTORY_NOT_FOUND(404, "feedback.history.not.found", HttpStatus.NOT_FOUND),
 
     // notification
     NOTIFICATION_TITLE_REQUIRED(404, "notification.title.required", HttpStatus.NOT_FOUND),

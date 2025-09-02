@@ -315,4 +315,6 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 	List<Room> findAllByStatusAndDeleteAtBefore(RoomStatus status, LocalDate deleteAtBefore);
 
 	List<Room> findByFloorId(String floorId);
+
+	List<Room> findAllByRoomCode(String roomCode);
 }

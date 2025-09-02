@@ -4,5 +4,6 @@ public enum FeedbackStatus {
     CHUA_XU_LY,
     DANG_XU_LY,
     DA_XU_LY,
-    HUY
+    HUY,
+    TU_CHOI,
 }

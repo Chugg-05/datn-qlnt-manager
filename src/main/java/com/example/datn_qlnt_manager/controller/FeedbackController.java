@@ -1,22 +1,21 @@
 package com.example.datn_qlnt_manager.controller;
 
+import com.example.datn_qlnt_manager.common.FeedbackStatus;
+import com.example.datn_qlnt_manager.common.FeedbackType;
 import com.example.datn_qlnt_manager.configuration.Translator;
+import com.example.datn_qlnt_manager.dto.PaginatedResponse;
+import com.example.datn_qlnt_manager.dto.filter.FeedBackSelfFilter;
+import com.example.datn_qlnt_manager.dto.filter.FeedbackFilter;
+import com.example.datn_qlnt_manager.dto.request.feedback.RejectFeedbackRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.datn_qlnt_manager.common.FeedbackStatus;
-import com.example.datn_qlnt_manager.common.FeedbackType;
 import com.example.datn_qlnt_manager.dto.ApiResponse;
-import com.example.datn_qlnt_manager.dto.PaginatedResponse;
-import com.example.datn_qlnt_manager.dto.filter.FeedBackSelfFilter;
-import com.example.datn_qlnt_manager.dto.filter.FeedbackFilter;
 import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackCreationRequest;
 import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackStatusUpdateRequest;
 import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackResponse;
-import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackSelfResponse;
-import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackStatusUpdateResponse;
 import com.example.datn_qlnt_manager.service.FeedbackService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,7 +52,7 @@ public class FeedbackController {
 
     @Operation(summary = "Khách thuê xem, tìm kiếm và lọc phản hồi của họ")
     @GetMapping("/my-feedbacks")
-    public ApiResponse<PaginatedResponse<FeedbackSelfResponse>> filterMyFeedbacks(
+    public ApiResponse<PaginatedResponse<FeedbackResponse>> filterMyFeedbacks(
             @RequestParam(required = false) Integer rating,
             @RequestParam(required = false) FeedbackType feedbackType,
             @RequestParam(required = false) FeedbackStatus feedbackStatus,
@@ -61,13 +60,13 @@ public class FeedbackController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size) {
         FeedBackSelfFilter filter = new FeedBackSelfFilter(rating, feedbackType, feedbackStatus, query);
-        return ApiResponse.<PaginatedResponse<FeedbackSelfResponse>>builder()
+        return ApiResponse.<PaginatedResponse<FeedbackResponse>>builder()
                 .data(feedbackService.filterMyFeedbacks(filter, page, size))
                 .message(Translator.toLocale("list.of.feedbacks.by.current.tenant.loaded.success"))
                 .build();
     }
 
-    @Operation(summary = "Quản lý xem, tìm kiếm ,lọc phản hồi theo các tòa nhà của họ")
+    @Operation(summary = "Chủ xem, tìm kiếm ,lọc phản hồi theo các tòa nhà của họ")
     @GetMapping("/find-all")
     public ApiResponse<PaginatedResponse<FeedbackResponse>> filterFeedbacksForManager(
             @RequestParam(required = false) String buildingId,
@@ -90,13 +89,25 @@ public class FeedbackController {
                 .build();
     }
 
-    @Operation(summary = "Xác nhận hoặc cập nhật trạng thái phản hồi")
+    @Operation(summary = "Xác nhận phản hồi")
     @PutMapping("/update-status")
-    public ApiResponse<FeedbackStatusUpdateResponse> updateFeedbackStatus(
+    public ApiResponse<FeedbackResponse> updateFeedbackStatus(
             @Valid @RequestBody FeedbackStatusUpdateRequest request) {
-        return ApiResponse.<FeedbackStatusUpdateResponse>builder()
+        return ApiResponse.<FeedbackResponse>builder()
                 .data(feedbackService.updateFeedbackStatus(request))
                 .message(Translator.toLocale("feedback.status.updated.success"))
                 .build();
     }
+
+    @Operation(summary = "Từ chối yêu cầu")
+    @PutMapping("/reject/{feedbackId}")
+    public ApiResponse<FeedbackResponse> rejectFeedback(
+            @PathVariable String feedbackId,
+            @Valid @RequestBody RejectFeedbackRequest request) {
+        return ApiResponse.<FeedbackResponse>builder()
+                .data(feedbackService.rejectFeedback(feedbackId, request))
+                .message("Feedback Rejected Success")
+                .build();
+    }
+
 }

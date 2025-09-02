@@ -16,9 +16,5 @@ public interface FeedbackMapper {
 
     void updateFeedback(@MappingTarget Feedback feedback, FeedbackUpdateRequest request);
 
-    @Mapping(source = "tenant.id", target = "tenantId")
-    @Mapping(source = "tenant.fullName", target = "fullName")
-    @Mapping(source = "room.id", target = "roomId")
-    @Mapping(source = "room.roomCode", target = "roomCode")
     FeedbackResponse toResponse(Feedback feedback);
 }
