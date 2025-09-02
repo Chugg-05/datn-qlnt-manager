@@ -13,8 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FeedbackCreationRequest {
 
-    String tenantId;
-
+    @NotBlank(message = "ROOM_NOT_FOUND")
     String roomId;
 
     @NotBlank(message = "CONTENT_NOT_FOUND")

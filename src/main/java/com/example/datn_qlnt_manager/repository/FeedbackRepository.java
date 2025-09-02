@@ -2,6 +2,7 @@ package com.example.datn_qlnt_manager.repository;
 
 import java.util.List;
 
+import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,83 +12,65 @@ import org.springframework.stereotype.Repository;
 
 import com.example.datn_qlnt_manager.common.FeedbackStatus;
 import com.example.datn_qlnt_manager.common.FeedbackType;
-import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackResponse;
-import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackSelfResponse;
 import com.example.datn_qlnt_manager.entity.Feedback;
 
 @Repository
 public interface FeedbackRepository extends JpaRepository<Feedback, String> {
 
-    List<Feedback> findAllByTenantIdAndRoomIdAndFeedbackTypeAndFeedbackStatusIn(
+    List<Feedback> findAllByNameSenderAndRoomCodeAndFeedbackTypeAndFeedbackStatusIn(
             String tenantId, String roomId, FeedbackType feedbackType, List<FeedbackStatus> statuses);
 
     // khách thuê xem lại feedback
-    @Query(
-            """
-	SELECT new com.example.datn_qlnt_manager.dto.response.feedback.FeedbackSelfResponse(
-		t.fullName,
-		r.roomCode,
-		f.content,
-		f.rating,
-		f.feedbackStatus,
-		f.feedbackType,
-		f.attachment,
-		f.createdAt,
-		f.updatedAt
-	)
-	FROM Feedback f
-	JOIN f.tenant t
-	JOIN f.room r
-	WHERE t.owner.id = :ownerId
-	AND (:rating IS NULL OR f.rating = :rating)
-	AND (:feedbackType IS NULL OR f.feedbackType = :feedbackType)
-	AND (:feedbackStatus IS NULL OR f.feedbackStatus = :feedbackStatus)
-	AND (:query IS NULL OR LOWER(f.content) LIKE LOWER(CONCAT('%', :query, '%')))
-	ORDER BY f.updatedAt DESC
-""")
-    Page<FeedbackSelfResponse> findByTenantOwnerIdWithFilter(
-            @Param("ownerId") String ownerId,
+    @Query("""
+        SELECT f
+        FROM Feedback f
+        WHERE f.nameSender = :nameSender
+        AND (:rating IS NULL OR f.rating = :rating)
+        AND (:feedbackType IS NULL OR f.feedbackType = :feedbackType)
+        AND (:feedbackStatus IS NULL OR f.feedbackStatus = :feedbackStatus)
+        AND (:query IS NULL OR LOWER(f.content) LIKE LOWER(CONCAT('%', :query, '%')))
+        """)
+    Page<Feedback> findAllBySenderWithFilter(
+            @Param("nameSender") String nameSender,
             @Param("rating") Integer rating,
             @Param("feedbackType") FeedbackType feedbackType,
             @Param("feedbackStatus") FeedbackStatus feedbackStatus,
             @Param("query") String query,
-            Pageable pageable);
+            Pageable pageable
+    );
 
-    // quản lí xem feedback của khách thuê theo tòa của họ
-    @Query(
-            """
-	SELECT new com.example.datn_qlnt_manager.dto.response.feedback.FeedbackResponse(
-		f.id,
-		t.id,
-		t.fullName,
-		r.id,
-		r.roomCode,
-		f.content,
-		f.feedbackType,
-		f.rating,
-		f.attachment,
-		f.feedbackStatus,
-		f.createdAt,
-		f.updatedAt
-	)
-	FROM Feedback f
-	JOIN f.tenant t
-	JOIN f.room r
-	JOIN r.floor fl
-	JOIN fl.building b
-	WHERE b.user.id = :userId
-	AND (:buildingId IS NULL OR b.id = :buildingId)
-	AND (:status IS NULL OR f.feedbackStatus =  :status)
-	AND (:rating IS NULL OR f.rating = :rating)
-	AND (:feedbackType IS NULL OR f.feedbackType = :feedbackType)
-	AND (
-		:query IS NULL OR :query = '' OR
-		LOWER(f.content) LIKE LOWER(CONCAT('%', :query, '%')) OR
-		LOWER(t.fullName) LIKE LOWER(CONCAT('%', :query, '%')) OR
-		LOWER(r.roomCode) LIKE LOWER(CONCAT('%', :query, '%'))
-	)
-	ORDER BY f.updatedAt DESC
-""")
+    // Chủ xem feedback của khách thuê theo tòa của họ
+    @Query("""
+    SELECT new com.example.datn_qlnt_manager.dto.response.feedback.FeedbackResponse(
+        f.id,
+        f.nameSender,
+        f.roomCode,
+        f.content,
+        f.feedbackType,
+        f.rating,
+        f.attachment,
+        f.feedbackStatus,
+        f.rejectionReason,
+        f.createdAt,
+        f.updatedAt
+    )
+    FROM Feedback f
+    WHERE f.roomCode IN (
+        SELECT r.roomCode
+        FROM Room r
+        WHERE r.floor.building.user.id = :userId
+        AND (:buildingId IS NULL OR r.floor.building.id = :buildingId)
+    )
+    AND (:status IS NULL OR f.feedbackStatus = :status)
+    AND (:rating IS NULL OR f.rating = :rating)
+    AND (:feedbackType IS NULL OR f.feedbackType = :feedbackType)
+    AND (
+        :query IS NULL OR :query = '' OR
+        LOWER(f.content) LIKE LOWER(CONCAT('%', :query, '%')) OR
+        LOWER(f.roomCode) LIKE LOWER(CONCAT('%', :query, '%'))
+    )
+    ORDER BY f.updatedAt DESC
+    """)
     Page<FeedbackResponse> findAllByFilter(
             @Param("userId") String userId,
             @Param("buildingId") String buildingId,

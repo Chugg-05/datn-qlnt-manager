@@ -10,6 +10,9 @@ import org.springframework.stereotype.Repository;
 import com.example.datn_qlnt_manager.dto.response.feedbackProcessHistory.FeedbackProcessHistoryResponse;
 import com.example.datn_qlnt_manager.entity.FeedbackProcessHistory;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface FeedbackProcessHistoryRepository extends CrudRepository<FeedbackProcessHistory, String> {
     @Query(
@@ -41,4 +44,6 @@ public interface FeedbackProcessHistoryRepository extends CrudRepository<Feedbac
             @Param("feedbackId") String feedbackId,
             @Param("query") String query,
             Pageable pageable);
+
+	Optional<FeedbackProcessHistory> findAllByFeedbackId(String feedbackId);
 }

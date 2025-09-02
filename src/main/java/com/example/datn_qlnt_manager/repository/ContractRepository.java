@@ -208,4 +208,19 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 
 	boolean existsByRoom_Floor_IdAndStatusIn(String floorId, List<ContractStatus> statuses);
 
+	@Query("""
+    SELECT c
+    FROM Contract c
+    JOIN c.contractTenants ct
+    JOIN ct.tenant t
+    WHERE t.id = :tenantId
+      AND c.status IN :statuses
+      AND c.deletedAt IS NULL
+""")
+	List<Contract> findByTenantIdAndStatusIn(
+			@Param("tenantId") String tenantId,
+			@Param("statuses") List<ContractStatus> statuses
+	);
+
+
 }
