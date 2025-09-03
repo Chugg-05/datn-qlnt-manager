@@ -9,6 +9,7 @@ import java.util.Locale;
 import com.example.datn_qlnt_manager.common.InvoiceStatus;
 import com.example.datn_qlnt_manager.common.InvoiceType;
 
+import com.example.datn_qlnt_manager.common.VehicleType;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,6 +53,15 @@ public class FormatUtil {
             case CHUA_THANH_TOAN -> "Chưa thanh toán";
             case KHONG_THE_THANH_TOAN -> "Không thể thanh toán";
             case HUY -> "Đã hủy";
+        };
+    }
+
+    public static String formatVehicleType(VehicleType type) {
+        return switch (type) {
+            case XE_DAP -> "Xe đạp";
+            case XE_MAY -> "Xe máy";
+            case O_TO -> "Ô tô";
+            case KHAC -> "Khác";
         };
     }
 }

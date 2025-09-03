@@ -3,22 +3,26 @@ package com.example.datn_qlnt_manager.service;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FeedBackSelfFilter;
 import com.example.datn_qlnt_manager.dto.filter.FeedbackFilter;
-import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackStatusUpdateRequest;
-import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackUpdateRequest;
-import com.example.datn_qlnt_manager.dto.request.feedback.RejectFeedbackRequest;
+import com.example.datn_qlnt_manager.dto.request.feedback.*;
 import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface FeedbackService {
     FeedbackResponse createFeedback(FeedbackCreationRequest request);
-
-    FeedbackResponse updateFeedback(String feedbackId, FeedbackUpdateRequest request);
 
     PaginatedResponse<FeedbackResponse> filterMyFeedbacks(FeedBackSelfFilter filter, int page, int size);
 
     PaginatedResponse<FeedbackResponse> filterFeedbacksForManager(FeedbackFilter filter, int page, int size);
 
-FeedbackResponse updateFeedbackStatus(FeedbackStatusUpdateRequest request);
-
     FeedbackResponse rejectFeedback(String feedbackId, RejectFeedbackRequest request);
+
+    FeedbackResponse startProcessing(String feedbackId);
+
+    FeedbackResponse completeProcessing(String feedbackId);
+
+    FeedbackResponse changeVehicleFeedBack(FeedbackChangeVehicleRequest request, MultipartFile image);
+
+    FeedbackResponse FeedbackTerminateContract(FeedbackTerminateContractRequest request);
+
+    FeedbackResponse rateFeedback(String feedbackId,FeedbackRatingRequest request);
 }

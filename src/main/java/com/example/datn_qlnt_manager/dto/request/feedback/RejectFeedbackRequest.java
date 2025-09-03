@@ -10,6 +10,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RejectFeedbackRequest {
-    @NotBlank(message = "reject.reason.cannot.blank")
+    @NotBlank(message = "REJECT_REASON_CANNOT_BLANK")
     String rejectionReason;
 }

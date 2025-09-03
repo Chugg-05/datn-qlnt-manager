@@ -6,15 +6,13 @@ import com.example.datn_qlnt_manager.configuration.Translator;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FeedBackSelfFilter;
 import com.example.datn_qlnt_manager.dto.filter.FeedbackFilter;
-import com.example.datn_qlnt_manager.dto.request.feedback.RejectFeedbackRequest;
+import com.example.datn_qlnt_manager.dto.request.feedback.*;
 import jakarta.validation.Valid;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.datn_qlnt_manager.dto.ApiResponse;
-import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackStatusUpdateRequest;
-import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackResponse;
 import com.example.datn_qlnt_manager.service.FeedbackService;
 
@@ -22,6 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/feed-backs")
@@ -37,16 +36,6 @@ public class FeedbackController {
         return ApiResponse.<FeedbackResponse>builder()
                 .data(feedbackService.createFeedback(request))
                 .message(Translator.toLocale("feedback.created.successfully"))
-                .build();
-    }
-
-    @Operation(summary = "Sửa phản hồi")
-    @PutMapping("/{feedbackId}")
-    public ApiResponse<FeedbackResponse> updateFeedback(
-            @PathVariable String feedbackId, @Valid @RequestBody FeedbackUpdateRequest request) {
-        return ApiResponse.<FeedbackResponse>builder()
-                .data(feedbackService.updateFeedback(feedbackId, request))
-                .message(Translator.toLocale("feedback.updated.success"))
                 .build();
     }
 
@@ -89,16 +78,6 @@ public class FeedbackController {
                 .build();
     }
 
-    @Operation(summary = "Xác nhận phản hồi")
-    @PutMapping("/update-status")
-    public ApiResponse<FeedbackResponse> updateFeedbackStatus(
-            @Valid @RequestBody FeedbackStatusUpdateRequest request) {
-        return ApiResponse.<FeedbackResponse>builder()
-                .data(feedbackService.updateFeedbackStatus(request))
-                .message(Translator.toLocale("feedback.status.updated.success"))
-                .build();
-    }
-
     @Operation(summary = "Từ chối yêu cầu")
     @PutMapping("/reject/{feedbackId}")
     public ApiResponse<FeedbackResponse> rejectFeedback(
@@ -110,4 +89,54 @@ public class FeedbackController {
                 .build();
     }
 
+    @Operation(summary = "Tiếp nhận phản hồi")
+    @PutMapping("/start-processing/{feedbackId}")
+    public ApiResponse<FeedbackResponse> startProcessing(@PathVariable("feedbackId") String feedbackId) {
+        return ApiResponse.<FeedbackResponse>builder()
+                .data(feedbackService.startProcessing(feedbackId))
+                .message("Feedback marked as processing")
+                .build();
+    }
+
+    @Operation(summary = "Đã xử lý phản hồi")
+    @PutMapping("/complete-processing/{feedbackId}")
+    public ApiResponse<FeedbackResponse> completeProcessing(@PathVariable("feedbackId") String feedbackId) {
+        return ApiResponse.<FeedbackResponse>builder()
+                .data(feedbackService.completeProcessing(feedbackId))
+                .message("Feedback marked as completed")
+                .build();
+    }
+
+    @Operation(summary = "Đánh giá phản hồi")
+    @PutMapping("/rating/{feedbackId}")
+    public ApiResponse<FeedbackResponse> rateFeedback(
+            @PathVariable String feedbackId,
+            @Valid @RequestBody FeedbackRatingRequest request) {
+
+        return ApiResponse.<FeedbackResponse>builder()
+                .data(feedbackService.rateFeedback(feedbackId, request))
+                .message("Feedback rated successfully")
+                .build();
+    }
+
+    @Operation(summary = "Khách gửi yêu cầu hỗ trợ thay đổi phương tiện")
+    @PostMapping(value = "/change-vehicle", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<FeedbackResponse> changeVehicleFeedback(
+            @Valid @ModelAttribute FeedbackChangeVehicleRequest request,
+            @RequestParam(required = false) MultipartFile image) {
+        return ApiResponse.<FeedbackResponse>builder()
+                .data(feedbackService.changeVehicleFeedBack(request, image))
+                .message("Change Vehicle Feedback Success")
+                .build();
+    }
+
+    @Operation(summary = "Khách gửi yêu cầu hỗ trợ chấm dứt hợp đồng trước thời hạn và gia hạn")
+    @PostMapping("/terminate-extend-contract")
+    public ApiResponse<FeedbackResponse> terminateContract(
+            @Valid @RequestBody FeedbackTerminateContractRequest request) {
+        return ApiResponse.<FeedbackResponse>builder()
+                .data(feedbackService.FeedbackTerminateContract(request))
+                .message("Terminate Contract Success")
+                .build();
+    }
 }

@@ -28,6 +28,9 @@ public class Feedback extends AbstractEntity {
     @Column(name = "loai_phan_hoi", nullable = false)
     FeedbackType feedbackType;
 
+    @Column(name = "ten_phan_hoi", nullable = false)
+    String feedbackName;
+
     @Column(name = "noi_dung", nullable = false)
     String content;
 
