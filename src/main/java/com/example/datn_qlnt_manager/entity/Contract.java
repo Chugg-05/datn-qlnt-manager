@@ -29,6 +29,9 @@ public class Contract extends AbstractEntity {
     @JoinColumn(name = "phong_id", nullable = false)
     Room room;
 
+    @Column(name = "ma_phong", nullable = false)
+    String roomCode;
+
     @Column(name = "ngay_bat_dau", nullable = false)
     LocalDate startDate;
 
