@@ -172,11 +172,29 @@ public interface InvoiceDetailsRepository extends JpaRepository<InvoiceDetail, S
           AND i.contract.room.floor.building.id = :buildingId
           AND (d.invoiceItemType IS NULL OR d.invoiceItemType <> 'DEN_BU')
     """)
-    BigDecimal getUncollectibleRevenue(
+    BigDecimal getIrrecoverableRevenue(
             @Param("userId") String userId,
             @Param("month") Integer month,
             @Param("year") int year,
             @Param("buildingId") String buildingId);
+
+    @Query("""
+        SELECT COALESCE(SUM(d.amount), 0)
+        FROM InvoiceDetail d
+        JOIN d.invoice i
+        WHERE i.invoiceStatus = 'DA_THANH_TOAN'
+          AND i.contract.room.floor.building.user.id = :userId
+          AND i.year = :year
+          AND (:buildingId IS NULL OR i.contract.room.floor.building.id = :buildingId)
+          AND (d.invoiceItemType IS NULL OR d.invoiceItemType != 'DEN_BU')
+          AND i.month = :month
+    """)
+    BigDecimal getActualRevenueByMonth(
+            @Param("userId") String userId,
+            @Param("year") int year,
+            @Param("month") int month,
+            @Param("buildingId") String buildingId
+    );
 
     List<InvoiceDetail> findByInvoiceId(String invoiceId);
 }
