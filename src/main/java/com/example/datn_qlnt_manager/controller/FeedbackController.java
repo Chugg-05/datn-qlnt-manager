@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/feed-backs")
 @RequiredArgsConstructor
@@ -139,4 +141,39 @@ public class FeedbackController {
                 .message("Terminate Contract Success")
                 .build();
     }
+    @Operation(summary = "Khách gửi yêu cầu thêm phương tiện")
+    @PostMapping("/create-vehicle")
+    public ApiResponse<FeedbackResponse> createVehicleByTenant(
+            @Valid @ModelAttribute FeedbackCreationVehicleRequest request,
+            @RequestParam(required = false) MultipartFile vehicleRegistrationCard) {
+        return ApiResponse.<FeedbackResponse>builder()
+                .data(feedbackService.createFeedbackVehicleByTenant(request, vehicleRegistrationCard))
+                .message("Create Vehicle Feedback Success")
+                .build();
+    }
+
+    @Operation(summary = "Khách gửi yêu cầu xóa thành viên khỏi phòng")
+    @PostMapping("/delete-tenant-not-rent")
+    public ApiResponse<FeedbackResponse> createFeedBackDeleteTenantNotRent (
+            @Valid @RequestBody FeedbackDeleteTenantRequest request
+    ) {
+        return ApiResponse.<FeedbackResponse>builder()
+                .data(feedbackService.createFeedbackDeleteTenant(request))
+                .message("Feedback has been sent")
+                .build();
+    }
+
+    @Operation(summary = "Khách gửi yêu cầu đổi đại diện phòng")
+    @PostMapping("/change-representative")
+    public ApiResponse<FeedbackResponse> createFeedBackChangeRepresentative (
+            @Valid @ModelAttribute FeedbackChangeRepresentativeRequest request,
+            @RequestParam(required = false) List<MultipartFile> CCCD
+    ) {
+        return ApiResponse.<FeedbackResponse>builder()
+                .data(feedbackService.changeRepreserntative(request, CCCD))
+                .message("Feedback has been sent")
+                .build();
+    }
+
+
 }
