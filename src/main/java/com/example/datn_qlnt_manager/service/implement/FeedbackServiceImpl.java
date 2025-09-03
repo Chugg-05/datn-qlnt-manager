@@ -84,6 +84,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         }
 
         Feedback feedback = feedbackMapper.toEntity(request);
+        feedback.setUser(currentUser());
         feedback.setNameSender(currentUser().getFullName());
         feedback.setRoomCode(room.getRoomCode());
         feedback.setCreatedAt(Instant.now());
@@ -138,6 +139,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         checkDuplicateFeedback(room, content);
 
         Feedback feedback = new Feedback();
+        feedback.setUser(currentUser());
         feedback.setNameSender(currentUser().getFullName());
         feedback.setRoomCode(room.getRoomCode());
         feedback.setFeedbackType(FeedbackType.HO_TRO);
@@ -193,6 +195,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         checkDuplicateFeedback(room, content);
 
         Feedback feedback = new Feedback();
+        feedback.setUser(currentUser());
         feedback.setNameSender(currentUser().getFullName());
         feedback.setRoomCode(room.getRoomCode());
         feedback.setFeedbackType(FeedbackType.HO_TRO);
@@ -300,6 +303,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         checkDuplicateFeedback(room, content);
 
         Feedback feedback = new Feedback();
+        feedback.setUser(currentUser());
         feedback.setNameSender(currentUser().getFullName());
         feedback.setRoomCode(room.getRoomCode());
         feedback.setFeedbackType(FeedbackType.HO_TRO);
@@ -327,12 +331,12 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     public PaginatedResponse<FeedbackResponse> filterMyFeedbacks(FeedBackSelfFilter filter, int page, int size) {
-        String currentUserName = userService.getCurrentUser().getFullName();
+        String currentUserId = userService.getCurrentUser().getId();
 
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         Page<Feedback> pageResult = feedbackRepository.findAllBySenderWithFilter(
-                currentUserName,
+                currentUserId,
                 filter.getRating(),
                 filter.getFeedbackType(),
                 filter.getFeedbackStatus(),
@@ -489,6 +493,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         checkDuplicateFeedback(room, content);
 
         Feedback feedback = new Feedback();
+        feedback.setUser(currentUser());
         feedback.setNameSender(currentUser().getFullName());
         feedback.setRoomCode(room.getRoomCode());
         feedback.setFeedbackType(FeedbackType.HO_TRO);
@@ -560,6 +565,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         checkDuplicateFeedback(room, content);
 
         Feedback feedback = new Feedback();
+        feedback.setUser(currentUser());
         feedback.setNameSender(currentUser().getFullName());
         feedback.setRoomCode(room.getRoomCode());
         feedback.setFeedbackType(FeedbackType.HO_TRO);
