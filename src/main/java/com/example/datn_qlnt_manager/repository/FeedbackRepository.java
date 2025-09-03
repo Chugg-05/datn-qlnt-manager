@@ -24,14 +24,15 @@ public interface FeedbackRepository extends JpaRepository<Feedback, String> {
     @Query("""
         SELECT f
         FROM Feedback f
-        WHERE f.nameSender = :nameSender
+        JOIN f.user u
+        WHERE u.id = :userId
         AND (:rating IS NULL OR f.rating = :rating)
         AND (:feedbackType IS NULL OR f.feedbackType = :feedbackType)
         AND (:feedbackStatus IS NULL OR f.feedbackStatus = :feedbackStatus)
         AND (:query IS NULL OR LOWER(f.content) LIKE LOWER(CONCAT('%', :query, '%')))
         """)
     Page<Feedback> findAllBySenderWithFilter(
-            @Param("nameSender") String nameSender,
+            @Param("userId") String userId,
             @Param("rating") Integer rating,
             @Param("feedbackType") FeedbackType feedbackType,
             @Param("feedbackStatus") FeedbackStatus feedbackStatus,

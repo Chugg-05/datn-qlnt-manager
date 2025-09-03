@@ -46,4 +46,8 @@ public class Feedback extends AbstractEntity {
 
     @Column(name = "ly_do_tu_choi")
     String rejectionReason;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
 }
