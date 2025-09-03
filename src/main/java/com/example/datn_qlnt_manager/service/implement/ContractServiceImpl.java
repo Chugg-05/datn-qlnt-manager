@@ -103,6 +103,7 @@ public class ContractServiceImpl implements ContractService {
 
         contract.setContractCode(contractCode);
         contract.setRoom(room);
+        contract.setRoomCode(room.getRoomCode());
         contract.setRoomPrice(room.getPrice());
         applyUtilityPrices(contract);
         contract.setContent(request.getContent());
@@ -181,9 +182,10 @@ public class ContractServiceImpl implements ContractService {
 
             contractVehicleRepository.saveAll(contractVehicles);
         }
-        var res = contractMapper.toContractResponse(contract);
-        res.setContent(contract.getContent());
-        return res;
+        var response = contractMapper.toContractResponse(contract);
+        response.setContent(contract.getContent());
+
+        return response;
     }
 
     @Transactional
@@ -288,7 +290,7 @@ public class ContractServiceImpl implements ContractService {
                 .findById(contractId)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        if (contract.getStatus() == ContractStatus.DA_HUY) {
+        if (contract.getStatus() != ContractStatus.DA_HUY) {
             throw new AppException(ErrorCode.CANNOT_DELETE_CONTRACT);
         }
 
@@ -432,12 +434,12 @@ public class ContractServiceImpl implements ContractService {
         Room room = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
-        if (room.getStatus() != RoomStatus.TRONG) {
-            throw new AppException(ErrorCode.ROOM_NOT_AVAILABLE);
-        }
-
         if (room.getFloor().getFloorType() != FloorType.CHO_THUE ) {
             throw new AppException(ErrorCode.ROOM_NOT_AVAILABLE_FOR_RENT);
+        }
+
+        if (room.getStatus() != RoomStatus.TRONG) {
+            throw new AppException(ErrorCode.ROOM_NOT_AVAILABLE);
         }
 
         int requestedTenantCount = request.getTenants().size();

@@ -214,7 +214,7 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant =
                 tenantRepository.findById(tenantId).orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
 
-        if (tenant.getTenantStatus() == TenantStatus.HUY_BO) {
+        if (tenant.getTenantStatus() != TenantStatus.HUY_BO) {
             throw new AppException(ErrorCode.TENANT_CANNOT_BE_DELETED);
         }
 

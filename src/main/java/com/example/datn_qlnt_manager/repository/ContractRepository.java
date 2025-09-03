@@ -74,7 +74,7 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 			c.id,
 			r.id,
 			c.contractCode,
-			r.roomCode,
+			c.roomCode,
 			owner.fullName,
 			owner.phoneNumber,
 			t.fullName,
@@ -131,14 +131,6 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 		WHERE c.room.floor.building.user.id = :userId
 	""")
     ContractStatistics getTotalContractByStatus(@Param("userId") String userId);
-
-    @Query("""
-		SELECT c FROM Contract c
-		WHERE c.startDate <= :endOfMonth
-		AND c.endDate >= :startOfMonth
-	""")
-    List<Contract> findValidContractsInMonth(
-            @Param("startOfMonth") LocalDate startOfMonth, @Param("endOfMonth") LocalDate endOfMonth);
 
 	@Query("""
 		SELECT c FROM Contract c
