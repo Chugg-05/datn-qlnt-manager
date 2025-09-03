@@ -3,7 +3,10 @@ package com.example.datn_qlnt_manager.service.implement;
 import com.example.datn_qlnt_manager.common.InvoiceStatus;
 import com.example.datn_qlnt_manager.common.RevenueCategory;
 import com.example.datn_qlnt_manager.dto.statistics.revenue.request.RevenueStatisticRequest;
+import com.example.datn_qlnt_manager.dto.statistics.revenue.request.RevenueYearRequest;
+import com.example.datn_qlnt_manager.dto.statistics.revenue.response.MonthlyRevenueResponse;
 import com.example.datn_qlnt_manager.dto.statistics.revenue.response.RevenueComparisonResponse;
+import com.example.datn_qlnt_manager.dto.statistics.revenue.response.RevenueYearResponse;
 import com.example.datn_qlnt_manager.entity.Building;
 import com.example.datn_qlnt_manager.exception.AppException;
 import com.example.datn_qlnt_manager.exception.ErrorCode;
@@ -34,7 +37,7 @@ public class RevenueStatisticServiceImpl implements RevenueStatisticService {
     UserService userService;
 
     @Override
-    public List<RevenueComparisonResponse> compareRevenueByBuilding(RevenueStatisticRequest request) {
+    public List<RevenueComparisonResponse> getMonthlyRevenueNextMonthByBuilding(RevenueStatisticRequest request) {
         List<RevenueComparisonResponse> results = new ArrayList<>();
 
         String userId = userService.getCurrentUser().getId();
@@ -118,8 +121,8 @@ public class RevenueStatisticServiceImpl implements RevenueStatisticService {
         //Không thể thanh toán
         results.add(buildResponse(
                 RevenueCategory.DAMAGE,
-                invoiceDetailsRepository.getUncollectibleRevenue(userId, month, year, buildingId),
-                invoiceDetailsRepository.getUncollectibleRevenue(userId, prevMonth, prevYear, buildingId)
+                invoiceDetailsRepository.getIrrecoverableRevenue(userId, month, year, buildingId),
+                invoiceDetailsRepository.getIrrecoverableRevenue(userId, prevMonth, prevYear, buildingId)
         ));
 
         //Tiền cọc giữ lại
@@ -131,6 +134,43 @@ public class RevenueStatisticServiceImpl implements RevenueStatisticService {
 
         return results;
     }
+
+    @Override
+    public RevenueYearResponse getActualRevenueByYear(RevenueYearRequest request) {
+        String ownerId = userService.getCurrentUser().getId();
+
+        int year = Optional.ofNullable(request.getYear()).orElse(LocalDate.now().getYear());
+        String buildingId = request.getBuildingId();
+
+        List<MonthlyRevenueResponse> months = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (int m = 1; m <= 12; m++) {
+            BigDecimal amount = invoiceDetailsRepository.getActualRevenueByMonth(ownerId, year, m, buildingId);
+            if (amount == null) {
+                amount = BigDecimal.ZERO;
+            }
+            months.add(new MonthlyRevenueResponse(m, amount, BigDecimal.ZERO));
+            total = total.add(amount);
+        }
+
+        if (total.compareTo(BigDecimal.ZERO) > 0) {
+            for (MonthlyRevenueResponse mr : months) {
+                BigDecimal percent = mr.getAmount()
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(total, 2, RoundingMode.HALF_UP);
+                mr.setPercent(percent);
+            }
+        }
+
+        return RevenueYearResponse.builder()
+                .year(year)
+                .buildingId(buildingId)
+                .totalAmount(total)
+                .months(months)
+                .build();
+    }
+
 
     private RevenueComparisonResponse buildResponse(
             RevenueCategory category,
