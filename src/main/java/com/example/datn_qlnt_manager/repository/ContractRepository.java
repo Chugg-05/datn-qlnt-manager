@@ -1,6 +1,7 @@
 package com.example.datn_qlnt_manager.repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -221,6 +222,8 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
 			@Param("tenantId") String tenantId,
 			@Param("statuses") List<ContractStatus> statuses
 	);
+
+	List<Contract> findByRoomIdAndStatusIn(String roomId, Collection<ContractStatus> statuses);
 
 
 }

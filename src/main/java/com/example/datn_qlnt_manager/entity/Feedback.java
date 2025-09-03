@@ -24,12 +24,12 @@ public class Feedback extends AbstractEntity {
     @Column(name = "ma_phong", nullable = false)
     String roomCode;
 
+    @Column(name = "ten_phan_hoi", nullable = false)
+    String feedbackName;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "loai_phan_hoi", nullable = false)
     FeedbackType feedbackType;
-
-    @Column(name = "ten_phan_hoi", nullable = false)
-    String feedbackName;
 
     @Column(name = "noi_dung", nullable = false)
     String content;

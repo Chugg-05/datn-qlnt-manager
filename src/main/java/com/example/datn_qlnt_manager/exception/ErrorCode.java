@@ -277,6 +277,12 @@ public enum  ErrorCode {
     TENANT_NOT_RENT_ROOM(400,"tenant.not.rent.room", HttpStatus.BAD_REQUEST),
     INVALID_TERMINATE_DATE(400,"invalid.terminate.date", HttpStatus.BAD_REQUEST),
     INVALID_EXTEND_DATE_AFTER(400,"invalid.extend.date.after", HttpStatus.BAD_REQUEST),
+    INVALID_VEHICLE_REGISTRATION_CARD_BLANK(400,"invalid.vehicle.registration.card.blank", HttpStatus.BAD_REQUEST),
+    CANNOT_DELETE_REPRESENTATIVE(400, "cannot.delete.representative", HttpStatus.BAD_REQUEST),
+    TENANT_REPRESENTATIVE_DUPLICATE(400, "tenant.representative.duplicate", HttpStatus.BAD_REQUEST),
+    INVALID_REPRESENTATIVE_CHANGE_TYPE_NULL(400, "invalid.representative.change.type.null", HttpStatus.BAD_REQUEST),
+    STAY_IN_ROOM_REQUIRED(400, "stay.in.room.required", HttpStatus.BAD_REQUEST),
+    NEW_TENANT_REQUIRED(400, "new.tenant.required", HttpStatus.BAD_REQUEST),
 
 
     // Code: 404
