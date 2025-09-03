@@ -275,6 +275,8 @@ public enum  ErrorCode {
     FLOOR_HAS_ACTIVE_CONTRACT(400,"floor.has.active.contract", HttpStatus.BAD_REQUEST),
     INVALID_FEEDBACK_STATUS(400,"invalid.feedback.status", HttpStatus.BAD_REQUEST),
     TENANT_NOT_RENT_ROOM(400,"tenant.not.rent.room", HttpStatus.BAD_REQUEST),
+    INVALID_TERMINATE_DATE(400,"invalid.terminate.date", HttpStatus.BAD_REQUEST),
+    INVALID_EXTEND_DATE_AFTER(400,"invalid.extend.date.after", HttpStatus.BAD_REQUEST),
 
 
     // Code: 404
@@ -323,6 +325,10 @@ public enum  ErrorCode {
     CONTRACT_VEHICLE_NOT_FOUND(404, "contract.vehicle.not.found", HttpStatus.NOT_FOUND),
     DEPOSIT_NOT_FOUND(404, "deposit.not.found", HttpStatus.NOT_FOUND),
     REJECT_REASON_CANNOT_BLANK(404, "reject.reason.cannot.blank", HttpStatus.BAD_REQUEST),
+    IMAGE_FEEDBACK_REQUIRED(404, "image.feedback.required", HttpStatus.BAD_REQUEST),
+    TERMINATE_DATE_NOT_BLANK(404, "terminate.date.not.blank", HttpStatus.BAD_REQUEST),
+    CONTRACT_FEEDBACK_TYPE_NOT_BLANK(404, "contract.feedback.type.not.blank", HttpStatus.BAD_REQUEST),
+    INVALID_EXTEND_DATE_BLANK(404,"invalid.extend.date.blank", HttpStatus.BAD_REQUEST),
 
     // feedback
     FEED_BACK_NOT_FOUND(404, "feedback.not.found", HttpStatus.NOT_FOUND),
@@ -339,6 +345,9 @@ public enum  ErrorCode {
     ASSET_ROOM_NOT_FOUND(404, "asset.room.not.found", HttpStatus.NOT_FOUND),
     CANNOT_UPDATE_PROCESSED_FEEDBACK(400,"cannot.update.processed.feedback", HttpStatus.BAD_REQUEST),
     FEED_BACK_HISTORY_NOT_FOUND(404, "feedback.history.not.found", HttpStatus.NOT_FOUND),
+    FEEDBACK_NAME_NOT_BLANK(404, "feedback.name.blank", HttpStatus.BAD_REQUEST),
+    FEEDBACK_RATING_ALREADY_RATED(400,"feedback.rating.already.rated", HttpStatus.BAD_REQUEST),
+    FEEDBACK_NOT_COMPLETED(400,"feedback.not.completed", HttpStatus.BAD_REQUEST),
 
     // notification
     NOTIFICATION_TITLE_REQUIRED(404, "notification.title.required", HttpStatus.NOT_FOUND),
@@ -378,6 +387,7 @@ public enum  ErrorCode {
     PAYMENT_RECEIPT_CANNOT_BE_UPDATED(409, "payment.receipt.cannot.be.updated", HttpStatus.BAD_REQUEST),
     INVALID_PAYMENT_STATUS_CHANGE(409, "invalid.payment.status.change", HttpStatus.BAD_REQUEST),
     PAYMENT_RECEIPT_ALREADY_EXISTS(409, "payment.receipt.already.exists", HttpStatus.BAD_REQUEST),
+    INVALID_FEEDBACK_STATUS_COMPLETE(409, "invalid.feedback.status.complete", HttpStatus.BAD_REQUEST),
 
     ;
 

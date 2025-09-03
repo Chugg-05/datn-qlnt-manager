@@ -16,16 +16,14 @@ public class FeedbackCreationRequest {
     @NotBlank(message = "ROOM_NOT_FOUND")
     String roomId;
 
+    @NotBlank(message = "FEEDBACK_NAME_NOT_BLANK")
+    String feedbackName;
+
     @NotBlank(message = "CONTENT_NOT_FOUND")
     String content;
 
     @NotNull(message = "FEED_BACK_TYPE_NOT_FOUND")
     FeedbackType feedbackType;
-
-    @NotNull(message = "RATING_NOT_FOUND")
-    @Min(value = 1, message = "RATING_TOO_LOW")
-    @Max(value = 5, message = "RATING_TOO_HIGH")
-    Integer rating;
 
     String attachment;
 }

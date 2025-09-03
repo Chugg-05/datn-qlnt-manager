@@ -1,16 +1,17 @@
 package com.example.datn_qlnt_manager.service.implement;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
-import com.example.datn_qlnt_manager.common.ContractStatus;
-import com.example.datn_qlnt_manager.common.Meta;
-import com.example.datn_qlnt_manager.common.Pagination;
+import com.example.datn_qlnt_manager.common.*;
 import com.example.datn_qlnt_manager.dto.PaginatedResponse;
 import com.example.datn_qlnt_manager.dto.filter.FeedBackSelfFilter;
 import com.example.datn_qlnt_manager.dto.filter.FeedbackFilter;
-import com.example.datn_qlnt_manager.dto.request.feedback.RejectFeedbackRequest;
+import com.example.datn_qlnt_manager.dto.request.feedback.*;
 import com.example.datn_qlnt_manager.repository.*;
+import com.example.datn_qlnt_manager.utils.CloudinaryUtil;
+import com.example.datn_qlnt_manager.utils.FormatUtil;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -19,10 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.example.datn_qlnt_manager.common.FeedbackStatus;
-import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackCreationRequest;
-import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackStatusUpdateRequest;
-import com.example.datn_qlnt_manager.dto.request.feedback.FeedbackUpdateRequest;
 import com.example.datn_qlnt_manager.dto.response.feedback.FeedbackResponse;
 import com.example.datn_qlnt_manager.entity.*;
 import com.example.datn_qlnt_manager.exception.AppException;
@@ -34,6 +31,7 @@ import com.example.datn_qlnt_manager.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -44,9 +42,11 @@ public class FeedbackServiceImpl implements FeedbackService {
     TenantRepository tenantRepository;
     ContractRepository contractRepository;
     RoomRepository roomRepository;
+    VehicleRepository vehicleRepository;
     FeedbackMapper feedbackMapper;
     UserService userService;
     FeedbackProcessHistoryRepository feedbackProcessHistoryRepository;
+    CloudinaryUtil cloudinaryUtil;
 
     @Override
     @Transactional
@@ -81,7 +81,7 @@ public class FeedbackServiceImpl implements FeedbackService {
                         currentUser.getFullName(),
                         room.getRoomCode(),
                         request.getFeedbackType(),
-                        List.of(FeedbackStatus.CHUA_XU_LY)
+                        List.of(FeedbackStatus.CHO_XU_LY)
                 );
 
         boolean isDuplicate = existingFeedbacks.stream()
@@ -112,25 +112,8 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public FeedbackResponse updateFeedback(String feedbackId, FeedbackUpdateRequest request) {
-        Feedback feedback = feedbackRepository
-                .findById(feedbackId)
-                .orElseThrow(() -> new AppException(ErrorCode.FEED_BACK_NOT_FOUND));
-
-        User currentUser = userService.getCurrentUser();
-        if (!feedback.getNameSender().equals(currentUser.getFullName())) {
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-        }
-
-        feedbackMapper.updateFeedback(feedback, request);
-        feedback.setUpdatedAt(Instant.now());
-
-        return feedbackMapper.toResponse(feedbackRepository.save(feedback));
-    }
-
-    @Override
     public PaginatedResponse<FeedbackResponse> filterMyFeedbacks(FeedBackSelfFilter filter, int page, int size) {
-        String currentUserName = userService.getCurrentUser().getFullName(); // hoặc userId nếu dùng id
+        String currentUserName = userService.getCurrentUser().getFullName();
 
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
@@ -193,33 +176,6 @@ public class FeedbackServiceImpl implements FeedbackService {
                 .build();
     }
 
-@Override
-@Transactional
-public FeedbackResponse updateFeedbackStatus(FeedbackStatusUpdateRequest request) {
-    User currentUser = userService.getCurrentUser();
-
-    Feedback feedback = feedbackRepository.findById(request.getFeedbackId())
-            .orElseThrow(() -> new AppException(ErrorCode.FEED_BACK_NOT_FOUND));
-
-    checkOwnerPermission(feedback, currentUser.getId());
-
-    if (feedback.getFeedbackStatus() == FeedbackStatus.DA_XU_LY ||
-            feedback.getFeedbackStatus() == FeedbackStatus.TU_CHOI) {
-        throw new AppException(ErrorCode.CANNOT_UPDATE_PROCESSED_FEEDBACK);
-    }
-
-    feedback.setFeedbackStatus(request.getFeedbackStatus());
-    feedback.setUpdatedAt(Instant.now());
-    Feedback savedFeedback = feedbackRepository.save(feedback);
-
-    FeedbackProcessHistory history = getFeedbackHistory(savedFeedback);
-    history.setNote(request.getNote());
-    history.setTime(savedFeedback.getUpdatedAt());
-    feedbackProcessHistoryRepository.save(history);
-
-    return feedbackMapper.toResponse(savedFeedback);
-}
-
     @Override
     @Transactional
     public FeedbackResponse rejectFeedback(String feedbackId, RejectFeedbackRequest request) {
@@ -228,7 +184,7 @@ public FeedbackResponse updateFeedbackStatus(FeedbackStatusUpdateRequest request
         Feedback feedback = feedbackRepository.findById(feedbackId)
                 .orElseThrow(() -> new AppException(ErrorCode.FEED_BACK_NOT_FOUND));
 
-        if (feedback.getFeedbackStatus() != FeedbackStatus.CHUA_XU_LY) {
+        if (feedback.getFeedbackStatus() != FeedbackStatus.CHO_XU_LY) {
             throw new AppException(ErrorCode.INVALID_FEEDBACK_STATUS);
         }
 
@@ -242,6 +198,206 @@ public FeedbackResponse updateFeedbackStatus(FeedbackStatusUpdateRequest request
         FeedbackProcessHistory history = getFeedbackHistory(savedFeedback);
         history.setNote("Chủ building từ chối feedback");
         history.setTime(savedFeedback.getUpdatedAt());
+        feedbackProcessHistoryRepository.save(history);
+
+        return feedbackMapper.toResponse(savedFeedback);
+    }
+
+    @Override
+    @Transactional
+    public FeedbackResponse startProcessing(String feedbackId) {
+        User currentUser = userService.getCurrentUser();
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new AppException(ErrorCode.FEED_BACK_NOT_FOUND));
+
+        checkOwnerPermission(feedback, currentUser.getId());
+
+        if (feedback.getFeedbackStatus() != FeedbackStatus.CHO_XU_LY) {
+            throw new AppException(ErrorCode.INVALID_FEEDBACK_STATUS);
+        }
+
+        feedback.setFeedbackStatus(FeedbackStatus.DANG_XU_LY);
+        feedback.setUpdatedAt(Instant.now());
+        Feedback savedFeedback = feedbackRepository.save(feedback);
+
+        FeedbackProcessHistory history = getFeedbackHistory(savedFeedback);
+        history.setNote("Chủ building bắt đầu xử lý feedback");
+        history.setTime(savedFeedback.getUpdatedAt());
+        feedbackProcessHistoryRepository.save(history);
+
+        return feedbackMapper.toResponse(savedFeedback);
+    }
+
+    @Override
+    @Transactional
+    public FeedbackResponse completeProcessing(String feedbackId) {
+        User currentUser = userService.getCurrentUser();
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new AppException(ErrorCode.FEED_BACK_NOT_FOUND));
+
+        checkOwnerPermission(feedback, currentUser.getId());
+
+        if (feedback.getFeedbackStatus() != FeedbackStatus.DANG_XU_LY) {
+            throw new AppException(ErrorCode.INVALID_FEEDBACK_STATUS_COMPLETE);
+        }
+
+        feedback.setFeedbackStatus(FeedbackStatus.DA_XU_LY);
+        feedback.setUpdatedAt(Instant.now());
+        Feedback savedFeedback = feedbackRepository.save(feedback);
+
+        FeedbackProcessHistory history = getFeedbackHistory(savedFeedback);
+        history.setNote("Chủ building hoàn tất xử lý feedback");
+        history.setTime(savedFeedback.getUpdatedAt());
+        feedbackProcessHistoryRepository.save(history);
+
+        return feedbackMapper.toResponse(savedFeedback);
+    }
+
+    @Override
+    public FeedbackResponse changeVehicleFeedBack(FeedbackChangeVehicleRequest request, MultipartFile image) {
+        if (image == null || image.isEmpty()) {
+            throw new AppException(ErrorCode.IMAGE_FEEDBACK_REQUIRED);
+        }
+
+        Tenant tenant = tenantRepository.findByUserId(currentUser().getId())
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+
+        Room room = validateCreateFeedback(tenant, request.getRoomId());
+
+        Vehicle vehicle = vehicleRepository.findById(request.getOldVehicleId())
+                .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
+
+        String content = "Khách hàng " + tenant.getFullName() + " ở phòng " + room.getRoomCode()
+                + " yêu cầu thay đổi phương tiện "
+                + FormatUtil.formatVehicleType(vehicle.getVehicleType()) + " - " + vehicle.getLicensePlate()
+                + " với lý do là: " + request.getReason();
+
+        checkDuplicateFeedback(room, content);
+
+        Feedback feedback = new Feedback();
+        feedback.setNameSender(currentUser().getFullName());
+        feedback.setRoomCode(room.getRoomCode());
+        feedback.setFeedbackType(FeedbackType.HO_TRO);
+        feedback.setFeedbackName("Yêu cầu thay đổi phương tiện cho khách thuê phòng: "
+                + room.getRoomCode() + ", tòa: " + room.getFloor().getBuilding().getBuildingName());
+        feedback.setContent(content);
+        feedback.setFeedbackStatus(FeedbackStatus.CHO_XU_LY);
+        feedback.setAttachment(cloudinaryUtil.uploadImage(image, "feedback"));
+        feedback.setCreatedAt(Instant.now());
+        feedback.setUpdatedAt(Instant.now());
+
+        Feedback savedFeedback = feedbackRepository.save(feedback);
+
+
+        FeedbackProcessHistory history = FeedbackProcessHistory.builder()
+                .feedback(savedFeedback)
+                .user(currentUser())
+                .note("Khách thuê gửi yêu cầu thay đổi phương tiện vào phòng")
+                .time(savedFeedback.getUpdatedAt())
+                .build();
+        feedbackProcessHistoryRepository.save(history);
+
+        return feedbackMapper.toResponse(savedFeedback);
+    }
+
+    @Override
+    public FeedbackResponse FeedbackTerminateContract(FeedbackTerminateContractRequest request) {
+        Tenant tenant = tenantRepository.findByUserId(currentUser().getId())
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_FOUND));
+
+        Room room = validateCreateFeedback(tenant, request.getRoomId());
+
+        Contract contract = contractRepository.findByTenantIdAndStatusIn(
+                        tenant.getId(),
+                        List.of(ContractStatus.HIEU_LUC, ContractStatus.SAP_HET_HAN))
+                .stream()
+                .filter(c -> c.getRoom().getId().equals(request.getRoomId()))
+                .findFirst()
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_RENT_ROOM));
+
+        if (request.getContractFeedbackType() == ContractFeedbackType.TERMINATE) {
+            LocalDate terminatedDate = request.getTerminateDate();
+            if (terminatedDate == null) {
+                throw new AppException(ErrorCode.TERMINATE_DATE_NOT_BLANK);
+            }
+            if (terminatedDate.isAfter(contract.getEndDate())) {
+                throw new AppException(ErrorCode.INVALID_TERMINATE_DATE);
+            }
+        } else if (request.getContractFeedbackType() == ContractFeedbackType.EXTEND) {
+            LocalDate extendDate = request.getExtendDate();
+            if (extendDate == null) {
+                throw new AppException(ErrorCode.INVALID_EXTEND_DATE_BLANK);
+            }
+            if (!extendDate.isAfter(contract.getEndDate())) {
+                throw new AppException(ErrorCode.INVALID_EXTEND_DATE_AFTER);
+            }
+        }
+
+        String content = buildFeedbackContent(
+                request.getContractFeedbackType(), tenant, room,
+                request.getTerminateDate(), request.getExtendDate()
+        );
+
+        String feedbackName = buildFeedbackName(
+                request.getContractFeedbackType(), room,
+                request.getTerminateDate(), request.getExtendDate()
+        );
+
+        checkDuplicateFeedback(room, content);
+
+        Feedback feedback = new Feedback();
+        feedback.setNameSender(currentUser().getFullName());
+        feedback.setRoomCode(room.getRoomCode());
+        feedback.setFeedbackType(FeedbackType.HO_TRO);
+        feedback.setFeedbackName(feedbackName);
+        feedback.setContent(content);
+        feedback.setFeedbackStatus(FeedbackStatus.CHO_XU_LY);
+        feedback.setCreatedAt(Instant.now());
+        feedback.setUpdatedAt(Instant.now());
+
+        Feedback savedFeedback = feedbackRepository.save(feedback);
+
+        FeedbackProcessHistory history = FeedbackProcessHistory.builder()
+                .feedback(savedFeedback)
+                .user(currentUser())
+                .note(buildFeedbackNote(request.getContractFeedbackType()))
+                .time(savedFeedback.getUpdatedAt())
+                .build();
+        feedbackProcessHistoryRepository.save(history);
+
+        return feedbackMapper.toResponse(savedFeedback);
+    }
+
+    @Override
+    public FeedbackResponse rateFeedback(String feedbackId, FeedbackRatingRequest request) {
+        User currentUser = userService.getCurrentUser();
+
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new AppException(ErrorCode.FEED_BACK_NOT_FOUND));
+
+        if (!feedback.getNameSender().equals(currentUser.getFullName())) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        if (feedback.getFeedbackStatus() != FeedbackStatus.DA_XU_LY) {
+            throw new AppException(ErrorCode.FEEDBACK_NOT_COMPLETED);
+        }
+
+        if (feedback.getRating() != null) {
+            throw new AppException(ErrorCode.FEEDBACK_RATING_ALREADY_RATED);
+        }
+
+        feedback.setRating(request.getRating());
+        feedback.setUpdatedAt(Instant.now());
+
+        Feedback savedFeedback = feedbackRepository.save(feedback);
+
+        FeedbackProcessHistory history = FeedbackProcessHistory.builder()
+                .feedback(savedFeedback)
+                .user(currentUser)
+                .note("Khách thuê đã đánh giá phản hồi với số sao: " + request.getRating())
+                .time(savedFeedback.getUpdatedAt())
+                .build();
         feedbackProcessHistoryRepository.save(history);
 
         return feedbackMapper.toResponse(savedFeedback);
@@ -274,4 +430,87 @@ public FeedbackResponse updateFeedbackStatus(FeedbackStatusUpdateRequest request
                 .orElseThrow(() -> new AppException(ErrorCode.FEED_BACK_HISTORY_NOT_FOUND));
     }
 
+    private User currentUser() {
+        return userService.getCurrentUser();
+    }
+
+    private Room validateCreateFeedback (Tenant tenant, String roomId) {
+        List<Contract> contracts = contractRepository.findByTenantIdAndStatusIn(
+                tenant.getId(),
+                List.of(ContractStatus.HIEU_LUC, ContractStatus.SAP_HET_HAN)
+        );
+
+        if (contracts.isEmpty()) {
+            throw new AppException(ErrorCode.TENANT_NOT_IN_CONTRACT);
+        }
+
+        Contract  contract = contracts.stream()
+                .filter(c -> c.getRoom().getId().equals(roomId))
+                .findFirst()
+                .orElseThrow(() -> new AppException(ErrorCode.TENANT_NOT_RENT_ROOM));
+
+        Room room = contract.getRoom();
+        if (room == null) {
+            throw new AppException(ErrorCode.ROOM_NOT_FOUND);
+        }
+
+        return room;
+    }
+
+    private void checkDuplicateFeedback(Room room, String content) {
+        String normalizedContent = normalizeContent(content);
+
+        List<Feedback> existingFeedbacks =
+                feedbackRepository.findAllByNameSenderAndRoomCodeAndFeedbackTypeAndFeedbackStatusIn(
+                        currentUser().getFullName(),
+                        room.getRoomCode(),
+                        FeedbackType.HO_TRO,
+                        List.of(FeedbackStatus.CHO_XU_LY)
+                );
+
+        boolean isDuplicate = existingFeedbacks.stream()
+                .filter(f -> f.getContent() != null)
+                .map(f -> normalizeContent(f.getContent()))
+                .anyMatch(c -> c.equals(normalizedContent));
+
+        if (isDuplicate) {
+            throw new AppException(ErrorCode.FEED_BACK_DUPLICATED);
+        }
+    }
+
+
+    private String buildFeedbackContent(ContractFeedbackType type, Tenant tenant, Room room, LocalDate terminateDate, LocalDate extendDate) {
+        String buildingName = room.getFloor().getBuilding().getBuildingName();
+        String roomCode = room.getRoomCode();
+
+        return switch (type) {
+            case TERMINATE -> "Khách hàng " + tenant.getFullName() + " yêu cầu hỗ trợ chấm dứt hợp đồng phòng " + roomCode
+                    + " tại tòa " + buildingName
+                    + " trước thời hạn, vào ngày " + terminateDate;
+            case EXTEND -> "Khách hàng " + tenant.getFullName() + " yêu cầu hỗ trợ gia hạn hợp đồng phòng " + roomCode
+                    + " tại tòa " + buildingName
+                    + " đến ngày " + extendDate;
+        };
+    }
+
+    private String buildFeedbackName(ContractFeedbackType type, Room room, LocalDate terminateDate, LocalDate extendDate) {
+        String buildingName = room.getFloor().getBuilding().getBuildingName();
+        String roomCode = room.getRoomCode();
+
+        return switch (type) {
+            case TERMINATE -> "Yêu cầu hỗ trợ chấm dứt hợp đồng trước hạn - phòng: "
+                    + roomCode + ", tòa: " + buildingName
+                    + " vào ngày: " + terminateDate;
+            case EXTEND -> "Yêu cầu hỗ trợ gia hạn hợp đồng - phòng: "
+                    + roomCode + ", tòa: " + buildingName
+                    + " đến ngày: " + extendDate;
+        };
+    }
+
+    private String buildFeedbackNote(ContractFeedbackType type) {
+        return switch (type) {
+            case TERMINATE -> "Khách thuê gửi yêu cầu chấm dứt hợp đồng trước thời hạn";
+            case EXTEND -> "Khách thuê gửi yêu cầu gia hạn hợp đồng";
+        };
+    }
 }
