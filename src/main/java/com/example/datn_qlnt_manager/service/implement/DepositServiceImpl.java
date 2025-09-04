@@ -180,7 +180,7 @@ public class DepositServiceImpl implements DepositService {
         if (deposit.getDepositStatus() != DepositStatus.CHO_XAC_NHAN
                 && deposit.getDepositStatus() != DepositStatus.CHUA_NHAN_COC
         ) {
-            throw new AppException(ErrorCode.CONTRACT_NOT_ALLOW_CONFIRM_DEPOSIT);
+            throw new AppException(ErrorCode.OWNER_NOT_CONFIRMED);
         }
 
         deposit.setDepositStatus(DepositStatus.DA_HOAN_TRA);
@@ -199,7 +199,7 @@ public class DepositServiceImpl implements DepositService {
         Deposit deposit = getDepositOrThrow(depositId);
 
         if (deposit.getDepositStatus() != DepositStatus.CHO_XAC_NHAN) {
-            throw new AppException(ErrorCode.CONTRACT_NOT_ALLOW_CONFIRM_DEPOSIT);
+            throw new AppException(ErrorCode.OWNER_NOT_CONFIRMED);
         }
 
         deposit.setDepositStatus(DepositStatus.CHUA_NHAN_COC);
