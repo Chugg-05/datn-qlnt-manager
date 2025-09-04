@@ -108,6 +108,11 @@ public class MeterServiceImpl implements MeterService {
                 .findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
+        if ((service.getServiceCategory() == ServiceCategory.DIEN && request.getMeterType() != MeterType.DIEN)
+                || (service.getServiceCategory() == ServiceCategory.NUOC && request.getMeterType() != MeterType.NUOC)) {
+            throw new AppException(ErrorCode.METER_TYPE_NOT_MATCH_SERVICE);
+        }
+
         Meter meter = meterMapper.toMeterCreation(request);
         meter.setRoom(room);
         meter.setService(service);
@@ -129,6 +134,7 @@ public class MeterServiceImpl implements MeterService {
             }
             meter.setMeterCode(request.getMeterCode());
         }
+
         Room room = roomRepository
                 .findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
@@ -137,6 +143,10 @@ public class MeterServiceImpl implements MeterService {
                 .findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
+        if ((service.getServiceCategory() == ServiceCategory.DIEN && request.getMeterType() != MeterType.DIEN)
+                || (service.getServiceCategory() == ServiceCategory.NUOC && request.getMeterType() != MeterType.NUOC)) {
+            throw new AppException(ErrorCode.METER_TYPE_NOT_MATCH_SERVICE);
+        }
 
         //update thông tin công tơ bên chỉ số
         List<MeterReading> meterReadings = meterReadingRepository.findAllByMeterCode(meter.getMeterCode());

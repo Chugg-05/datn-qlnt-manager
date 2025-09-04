@@ -283,6 +283,7 @@ public enum  ErrorCode {
     INVALID_REPRESENTATIVE_CHANGE_TYPE_NULL(400, "invalid.representative.change.type.null", HttpStatus.BAD_REQUEST),
     STAY_IN_ROOM_REQUIRED(400, "stay.in.room.required", HttpStatus.BAD_REQUEST),
     NEW_TENANT_REQUIRED(400, "new.tenant.required", HttpStatus.BAD_REQUEST),
+    METER_TYPE_NOT_MATCH_SERVICE(400,"meter.type.not.match.service",HttpStatus.BAD_REQUEST),
 
 
     // Code: 404

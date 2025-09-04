@@ -116,10 +116,9 @@ public class AssetRoomServiceImpl implements AssetRoomService {
                         AssetBeLongTo.PHONG,
                         "Đã thêm " + asset.getNameAsset() + " vào phòng " + room.getRoomCode());
 
-                if (!assetRoomRepository.existsByRoomAndAsset(room, asset)) {
                     asset.setRemainingQuantity(Math.max(asset.getRemainingQuantity() - 1, 0));
                     assetRepository.save(asset);
-                }
+
             }
 
             case CA_NHAN -> {
