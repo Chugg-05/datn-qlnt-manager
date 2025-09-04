@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import com.example.datn_qlnt_manager.common.InvoiceStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -41,6 +42,10 @@ public class InvoiceDetailServiceImpl implements InvoiceDetailService {
     public InvoiceItemResponse createInvoiceDetail(InvoiceDetailCreationRequest request) {
         Invoice invoice = getInvoice(request.getInvoiceId());
 
+        if (invoice.getInvoiceStatus() != InvoiceStatus.CHUA_THANH_TOAN) {
+            throw new AppException(ErrorCode.INVOICE_NOT_EDITABLE);
+        }
+
         InvoiceDetail detail;
 
         switch (request.getInvoiceItemType()) {
@@ -62,6 +67,10 @@ public class InvoiceDetailServiceImpl implements InvoiceDetailService {
     @Override
     public InvoiceItemResponse updateInvoiceDetail(String detailId, InvoiceDetailUpdateRequest request) {
         InvoiceDetail detail = getInvoiceDetail(detailId);
+
+        if (detail.getInvoice().getInvoiceStatus() != InvoiceStatus.CHUA_THANH_TOAN) {
+            throw new AppException(ErrorCode.INVOICE_NOT_EDITABLE);
+        }
 
         if (request.getNewIndex() != null) {
             if (detail.getOldIndex() != null && request.getNewIndex() < detail.getOldIndex()) {
@@ -104,6 +113,10 @@ public class InvoiceDetailServiceImpl implements InvoiceDetailService {
     public void deleteInvoiceDetail(String detailId) {
         InvoiceDetail detail = getInvoiceDetail(detailId);
         Invoice invoice = detail.getInvoice();
+
+        if (invoice.getInvoiceStatus() != InvoiceStatus.CHUA_THANH_TOAN) {
+            throw new AppException(ErrorCode.INVOICE_NOT_EDITABLE);
+        }
 
         if (detail.getInvoiceItemType() == InvoiceItemType.TIEN_PHONG) {
             throw new AppException(ErrorCode.CANNOT_DELETE_ROOM_CHARGE);
