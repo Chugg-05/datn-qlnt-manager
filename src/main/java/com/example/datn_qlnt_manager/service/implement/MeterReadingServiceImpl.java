@@ -3,6 +3,7 @@ package com.example.datn_qlnt_manager.service.implement;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.transaction.Transactional;
 
@@ -70,18 +71,14 @@ public class MeterReadingServiceImpl implements MeterReadingService {
                 .findById(request.getMeterId())
                 .orElseThrow(() -> new AppException(ErrorCode.METER_NOT_FOUND));
 
-        if (request.getMonth() == null && request.getYear() == null) {
-            LocalDate now = LocalDate.now();
-            request.setMonth(now.getMonthValue());
-            request.setYear(now.getYear());
-        } else if (request.getMonth() == null) {
-            throw new AppException(ErrorCode.MONTH_NOT_FOUND);
-        } else if (request.getYear() == null) {
-            throw new AppException(ErrorCode.YEAR_NOT_FOUND);
-        }
+        Integer month = Optional.ofNullable(request.getMonth()).orElse(LocalDate.now().getMonthValue());
+        Integer year = Optional.ofNullable(request.getYear()).orElse(LocalDate.now().getYear());
+
+        request.setMonth(month);
+        request.setYear(year);
 
         if (meterReadingRepository.existsByMeterIdAndMonthAndYear(
-                request.getMeterId(), request.getMonth(), request.getYear())) {
+                meter.getId(), month, year)) {
             throw new AppException(ErrorCode.METER_READING_EXISTED);
         }
 
