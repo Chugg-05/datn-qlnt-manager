@@ -108,6 +108,12 @@ public class MeterServiceImpl implements MeterService {
                 .findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
 
+        if (service.getServiceCategory() == ServiceCategory.NUOC
+                && service.getServiceCalculation() != ServiceCalculation.TINH_THEO_SO) {
+            throw new AppException(ErrorCode.CANNOT_CREATE_WATER_METER_READING);
+        }
+
+
         if ((service.getServiceCategory() == ServiceCategory.DIEN && request.getMeterType() != MeterType.DIEN)
                 || (service.getServiceCategory() == ServiceCategory.NUOC && request.getMeterType() != MeterType.NUOC)) {
             throw new AppException(ErrorCode.METER_TYPE_NOT_MATCH_SERVICE);

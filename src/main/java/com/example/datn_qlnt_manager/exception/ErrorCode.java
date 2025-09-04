@@ -284,6 +284,8 @@ public enum  ErrorCode {
     STAY_IN_ROOM_REQUIRED(400, "stay.in.room.required", HttpStatus.BAD_REQUEST),
     NEW_TENANT_REQUIRED(400, "new.tenant.required", HttpStatus.BAD_REQUEST),
     METER_TYPE_NOT_MATCH_SERVICE(400,"meter.type.not.match.service",HttpStatus.BAD_REQUEST),
+    OWNER_NOT_CONFIRMED(400, "owner.not.confirmed", HttpStatus.BAD_REQUEST),
+    CANNOT_CREATE_WATER_METER_READING(400,"cannot.create.water.meter.reading", HttpStatus.BAD_REQUEST),
 
 
     // Code: 404
