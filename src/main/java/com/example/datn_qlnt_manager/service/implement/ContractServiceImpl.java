@@ -296,9 +296,28 @@ public class ContractServiceImpl implements ContractService {
         }
 
         Room room = contract.getRoom();
-        room.setStatus(RoomStatus.TRONG);
-        room.setUpdatedAt(Instant.now());
-        roomRepository.save(room);
+        if (room.getStatus() != RoomStatus.TRONG) {
+            room.setStatus(RoomStatus.TRONG);
+            room.setUpdatedAt(Instant.now());
+            roomRepository.save(room);
+        }
+
+        List<ContractTenant> contractTenants = contractTenantRepository.findByContractId(contract.getId());
+        for (ContractTenant ct : contractTenants) {
+            Tenant tenant = ct.getTenant();
+
+            boolean hasOtherActiveContract = contractTenantRepository.existsByTenantIdAndContractStatusIn(
+                    tenant.getId(),
+                    List.of(ContractStatus.HIEU_LUC, ContractStatus.SAP_HET_HAN)
+            );
+
+            if (!hasOtherActiveContract) {
+                tenant.setTenantStatus(TenantStatus.DA_TRA_PHONG);
+                tenant.setUpdatedAt(Instant.now());
+                tenantRepository.save(tenant);
+            }
+        }
+
 
         contractRepository.delete(contract);
     }

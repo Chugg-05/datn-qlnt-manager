@@ -80,4 +80,6 @@ public interface ContractTenantRepository extends JpaRepository<ContractTenant, 
 
     boolean existsByTenantIdAndRepresentativeTrueAndContractIdNot(String tenantId, String contractId);
 
+    boolean existsByTenantIdAndContractStatusIn(String tenantId, List<ContractStatus> statuses);
+
 }
