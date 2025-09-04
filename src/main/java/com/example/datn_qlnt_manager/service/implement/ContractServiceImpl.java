@@ -284,6 +284,7 @@ public class ContractServiceImpl implements ContractService {
         contractRepository.save(contract);
     }
 
+    @Transactional
     @Override
     public void deleteContractById(String contractId) {
         Contract contract = contractRepository
@@ -293,6 +294,11 @@ public class ContractServiceImpl implements ContractService {
         if (contract.getStatus() != ContractStatus.DA_HUY) {
             throw new AppException(ErrorCode.CANNOT_DELETE_CONTRACT);
         }
+
+        Room room = contract.getRoom();
+        room.setStatus(RoomStatus.TRONG);
+        room.setUpdatedAt(Instant.now());
+        roomRepository.save(room);
 
         contractRepository.delete(contract);
     }
