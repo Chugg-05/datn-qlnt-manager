@@ -285,7 +285,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     // Check trùng danh mục, mỗi danh mục chỉ 1 bản ghi trừ danh mục 'KHAC'
     private void validateDuplicateCategory(ServiceCategory category, String userId) {
-        if (category == ServiceCategory.KHAC) {
+        if (category == ServiceCategory.KHAC || category == ServiceCategory.NUOC) {
             return;
         }
 
