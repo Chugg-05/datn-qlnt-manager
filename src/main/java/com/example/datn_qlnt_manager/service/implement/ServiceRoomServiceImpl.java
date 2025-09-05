@@ -207,8 +207,11 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
             throw new AppException(ErrorCode.SERVICE_NOT_ACTIVE);
         }
 
-        boolean exists = serviceRoomRepository.existsByRoomAndService(room, service);
-        if (exists) {
+        // Check nếu phòng đã có dịch vụ cùng category
+        boolean existsCategory = serviceRoomRepository.existsByRoomAndServiceCategory(
+                room, service.getServiceCategory());
+
+        if (existsCategory) {
             throw new AppException(ErrorCode.SERVICE_ROOM_ALREADY_EXISTS);
         }
 
@@ -226,6 +229,7 @@ public class ServiceRoomServiceImpl implements ServiceRoomService {
 
         return serviceRoomMapper.toServiceRoomResponse(serviceRoomRepository.save(serviceRoom));
     }
+
 
     @Transactional
     @Override

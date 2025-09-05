@@ -112,7 +112,12 @@ public class ServiceServiceImpl implements ServiceService {
     public ServiceResponse createService(ServiceCreationRequest request) {
         User user = userService.getCurrentUser();
 
-        validateDuplicateCategory(request.getServiceCategory(), user.getId());
+        validateDuplicateCategory(
+                request.getServiceCategory(),
+                request.getServiceCalculation(),
+                user.getId()
+        );
+
 
         validateCalculationWithCategory(request.getServiceCalculation(), request.getServiceCategory());
 
@@ -284,14 +289,23 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     // Check trùng danh mục, mỗi danh mục chỉ 1 bản ghi trừ danh mục 'KHAC'
-    private void validateDuplicateCategory(ServiceCategory category, String userId) {
-        if (category == ServiceCategory.KHAC || category == ServiceCategory.NUOC) {
-            return;
+    private void validateDuplicateCategory(ServiceCategory category, ServiceCalculation calculation, String userId) {
+        if (category == ServiceCategory.KHAC) {
+            return; // danh mục KHAC không bị giới hạn
         }
 
-        boolean exists = serviceRepository.existsByServiceCategoryAndUserId(category, userId);
-        if (exists) {
-            throw new AppException(ErrorCode.DUPLICATE_SERVICE_CATEGORY);
+        if (category != ServiceCategory.NUOC) {
+            // các danh mục khác vẫn chỉ có 1 bản ghi
+            boolean exists = serviceRepository.existsByServiceCategoryAndUserId(category, userId);
+            if (exists) {
+                throw new AppException(ErrorCode.DUPLICATE_SERVICE_CATEGORY);
+            }
+        } else {
+            // danh mục NUOC có thể có 2 bản ghi khác calculation
+            boolean exists = serviceRepository.existsByServiceCategoryAndServiceCalculationAndUserId(category, calculation, userId);
+            if (exists) {
+                throw new AppException(ErrorCode.DUPLICATE_SERVICE_CATEGORY);
+            }
         }
     }
 }
