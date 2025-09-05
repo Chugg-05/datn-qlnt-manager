@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.datn_qlnt_manager.common.ServiceCategory;
 import com.example.datn_qlnt_manager.dto.response.IdNameAndType;
 import com.example.datn_qlnt_manager.common.RoomStatus;
 import com.example.datn_qlnt_manager.common.RoomType;
@@ -129,6 +130,10 @@ public interface ServiceRoomRepository extends JpaRepository<ServiceRoom, String
     """)
     List<ServiceLittleResponse> findAllServiceLittleResponseByRoomId(@Param("roomId") String roomId);
 
+    @Query("SELECT CASE WHEN COUNT(sr) > 0 THEN true ELSE false END " +
+            "FROM ServiceRoom sr " +
+            "WHERE sr.room = :room AND sr.service.serviceCategory = :category")
+    boolean existsByRoomAndServiceCategory(@Param("room") Room room, @Param("category") ServiceCategory category);
 
     boolean existsByRoomAndService(Room room, Service service);
 

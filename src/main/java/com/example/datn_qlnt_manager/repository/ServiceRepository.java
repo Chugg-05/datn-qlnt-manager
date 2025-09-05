@@ -120,4 +120,7 @@ public interface ServiceRepository extends JpaRepository<Service, String> {
     boolean existsByServiceCategoryAndUserId(ServiceCategory serviceCategory, String userId);
 
 	List<Service> findAllByStatusAndDeleteAtBefore(ServiceStatus status, LocalDate deleteAtBefore);
+
+	boolean existsByServiceCategoryAndServiceCalculationAndUserId(ServiceCategory category, ServiceCalculation calculation, String userId);
+
 }
